@@ -1,21 +1,38 @@
+# TODO: _unindent() could be a annotation
+
+def _unindent(spaces, the_string):
+    lines = []
+    start = ' '*spaces
+    for a_line in the_string.splitlines():
+        if a_line.startswith(start):
+            lines.append(a_line[spaces:])
+        else:
+            lines.append(a_line)
+    return '\n'.join(lines)
 
 class ArduinoProxy(object):
     
     INPUT = "I"
     OUTPUT = "O"
     
-    def __init__(self, tty):
-        self._tty = tty
-        # self._speed = speed
+    def __init__(self, tty, speed=115200):
+        # For communicating with the computer, use one of these rates: 300, 1200, 2400, 4800,
+        #    9600, 14400, 19200, 28800, 38400, 57600, or 115200.        
+        self.tty = tty
+        self.speed = speed
     
     def __arduino_setup(self):
         # FIXME: implementar!
-        return """
-        char lastCmd[128];
+        return _unindent(8, """
+        /*
+         * THIS FILE IS GENERATED AUTOMATICALLI WITH generate-pde.sh
+         * WHICH IS PART OF THE PROYECT "PyArduinoProxy"
+         */
+        
+        char lastCmd[128]; // buffer size of Serial
         
         void setup() {
-            // Serial.xxxxxxx()
-            
+            Serial.begin(%(speed)d);
         }
         
         void readCmd() {
@@ -34,7 +51,8 @@ class ArduinoProxy(object):
         }
 
         void sendOkResponse() {
-            // Serial.writeXxxxx("OK")
+            Serial.print("OK");
+            Serial.write((uint8_t)0);
         }
         
         int stringToInt(String str) {
@@ -42,10 +60,14 @@ class ArduinoProxy(object):
             str.toCharArray(buff, (str.length() + 1));
             return atoi(buff); 
         }
+        
         void sendIntResponse(int value) {
-            // Serial.writeXxxxx(value, INTEGER)
+            Serial.print(value, DEC);
+            Serial.write((uint8_t)0);
         }
-        """
+        """ % {
+            'speed': self.speed, 
+        })
 
     ##def __arduino_loop(self):
     ##    # FIXME: implementar!
@@ -63,7 +85,7 @@ class ArduinoProxy(object):
     
     # Digital I/O
     def __arduino__pinMode(self):
-        return """
+        return _unindent(12, """
             void _pinMode(String cmd) {
                 if(!cmd.startsWith("%(method)s")) {
                     return;
@@ -87,7 +109,7 @@ class ArduinoProxy(object):
         'method': 'pinMode', 
         'INPUT': ArduinoProxy.INPUT, 
         'OUTPUT': ArduinoProxy.OUTPUT, 
-    }
+    })
     
     def pinMode(self, pin, mode):
         """
@@ -116,7 +138,7 @@ class ArduinoProxy(object):
         pass
     
     def __arduino__analogRead(self):
-        return """
+        return _unindent(12, """
             void _analogRead(String cmd) {
                 if(!cmd.startsWith("%(method)s")) {
                     return;
@@ -129,7 +151,7 @@ class ArduinoProxy(object):
             }
         """ % {
         'method': 'analogRead', 
-    }
+    })
     
     def analogRead(self, pin):
         """
@@ -144,9 +166,13 @@ class ArduinoProxy(object):
 
 if __name__ == '__main__':
     proxy = ArduinoProxy('')
+    
+    print proxy._ArduinoProxy__arduino_setup()
+    
+    # Methods contains the methods, except 'setup()'
     methods = [a_method[len('_ArduinoProxy__arduino_'):]
         for a_method in dir(proxy)
-            if a_method.startswith('_ArduinoProxy__arduino_')]
+            if a_method.startswith('_ArduinoProxy__arduino_') and a_method != '_ArduinoProxy__arduino_setup']
     
     for method_name in methods:
         method = getattr(proxy, '_ArduinoProxy__arduino_' + method_name)
