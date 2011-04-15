@@ -1,5 +1,12 @@
 # TODO: _unindent() could be a annotation
 
+import serial
+
+try:
+    from cStringIO import StringIO
+except ImportError:
+    from StringIO import StringIO
+
 def _unindent(spaces, the_string):
     lines = []
     start = ' '*spaces
@@ -15,11 +22,15 @@ class ArduinoProxy(object):
     INPUT = "I"
     OUTPUT = "O"
     
-    def __init__(self, tty, speed=115200):
+    def __init__(self, tty, speed=9600):
         # For communicating with the computer, use one of these rates: 300, 1200, 2400, 4800,
         #    9600, 14400, 19200, 28800, 38400, 57600, or 115200.        
         self.tty = tty
         self.speed = speed
+        self.serial_port = None
+        if tty:
+            self.serial_port = serial.Serial(port=tty, baudrate=speed, bytesize=8, parity='N',
+                stopbits=1, timeout=5)
     
     def _setup(self):
         # FIXME: implementar!
@@ -68,11 +79,23 @@ class ArduinoProxy(object):
     _setup.proxy_function = False
     
     def sendCmd(self, cmd):
-        # FIXME: implementar
+        """
+        Sends a command to the arduino. The command is terminated with a 0x00.
+        Returns the response as a string.
+        """
+        self.serial_port.write(cmd)
+        self.serial_port.write(0x00)
+        self.serial_port.flush()
         
-        # Serial.send("%s\x00" % cmd)
+        response_buffer = StringIO()
+        while True:
+            byte = self.serial_port.read()
+            if byte == 0x00:
+                break
+            else:
+                response_buffer.write(byte)
         
-        pass
+        return response_buffer.getvalue()
     
     # Digital I/O
     def _pinMode(self):
