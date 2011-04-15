@@ -79,28 +79,36 @@ class ArduinoProxy(object):
         }
         
         void readCmd() {
-            int incomingByte = 0xff;
+            int incomingByte = -1;
             int pos = 0;
-            lastCmd[0] = 0;
             
-            while (Serial.available() > 0 && pos < 128) {
-                // read the incoming byte:
-                lastCmd[pos] = Serial.read();
-                if(lastCmd[pos] == 0) {
-                    break;
+            while (pos < 127) {
+                incomingByte = Serial.read();
+                if(incomingByte == -1) {
+                    if(pos == 0)
+                        delay(100);
+                    else 
+                        delay(5);
+                    continue;
                 }
-                pos++;
+                // "\\n" == 10
+                if(incomingByte == 10) {
+                    lastCmd[pos] = 0x00;
+                    return;
+                }
+                lastCmd[pos++] = incomingByte;
             }
+            
+            if(pos == 127)
+                lastCmd[pos] = 0x00;
         }
 
         void sendInvalidCmdResponse() {
-            Serial.print("%(INVALID_CMD)s");
-            Serial.write((uint8_t)0);
+            Serial.println("%(INVALID_CMD)s");
         }
         
         void sendOkResponse() {
-            Serial.print("OK");
-            Serial.write((uint8_t)0);
+            Serial.println("OK");
         }
         
         int stringToInt(String str) {
@@ -110,8 +118,7 @@ class ArduinoProxy(object):
         }
         
         void sendIntResponse(int value) {
-            Serial.print(value, DEC);
-            Serial.write((uint8_t)0);
+            Serial.println(value, DEC);
         }
         """ % {
             'speed': self.speed, 
@@ -127,18 +134,20 @@ class ArduinoProxy(object):
         Returns the response as a string.
         """
         self.serial_port.write(cmd)
-        self.serial_port.write(0x00)
+        self.serial_port.write("\n")
         self.serial_port.flush()
         
-        response_buffer = StringIO()
-        while True:
-            byte = self.serial_port.read()
-            if byte == 0x00:
-                break
-            else:
-                response_buffer.write(byte)
+        #    response_buffer = StringIO()
+        #    while True:
+        #        byte = self.serial_port.read()
+        #        if byte == 0x00:
+        #            break
+        #        else:
+        #            response_buffer.write(byte)
+        #
+        #    response = response_buffer.getvalue()
         
-        response = response_buffer.getvalue()
+        response = self.serial_port.readline(eol='\r\n')
         
         if not len(response):
             raise(InvalidResponse())
@@ -269,6 +278,27 @@ class ArduinoProxy(object):
     
     def analogWrite(self):
         pass
+
+    def _ping(self):
+        return _unindent(12, """
+            void _ping(String cmd) {
+                if(!cmd.startsWith("%(method)s")) {
+                    return;
+                }
+                sendOkResponse();
+            }
+        """ % {
+        'method': '_ping', 
+        })
+    
+    _ping.include_in_pde = True
+    _ping.proxy_function = True
+    
+    def ping(self):
+        # FIXME: validate pin and value
+        cmd = "_ping"
+        ret = self.sendCmd(cmd)
+        return ret
 
 if __name__ == '__main__':
     proxy = ArduinoProxy('')
