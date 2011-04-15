@@ -17,10 +17,27 @@ def _unindent(spaces, the_string):
             lines.append(a_line)
     return '\n'.join(lines)
 
+class InvalidCommand(Exception):
+    """
+    The Arduino reported an error in the command
+    """
+    pass
+
+class InvalidResponse(Exception):
+    """
+    The response from the Arduino isn't valid.
+    """
+    pass
+
 class ArduinoProxy(object):
     
     INPUT = "I"
     OUTPUT = "O"
+    
+    HIGH = "H"
+    LOW = "L"
+    
+    INVALID_CMD = "INVALID_CMD"
     
     def __init__(self, tty, speed=9600):
         # For communicating with the computer, use one of these rates: 300, 1200, 2400, 4800,
@@ -28,12 +45,11 @@ class ArduinoProxy(object):
         self.tty = tty
         self.speed = speed
         self.serial_port = None
-        if tty:
+        if tty != '':
             self.serial_port = serial.Serial(port=tty, baudrate=speed, bytesize=8, parity='N',
                 stopbits=1, timeout=5)
     
     def _setup(self):
-        # FIXME: implementar!
         return _unindent(8, """
         char lastCmd[128]; // buffer size of Serial
         
@@ -56,6 +72,11 @@ class ArduinoProxy(object):
             }
         }
 
+        void sendInvalidCmdResponse() {
+            Serial.print("%(INVALID_CMD)s");
+            Serial.write((uint8_t)0);
+        }
+        
         void sendOkResponse() {
             Serial.print("OK");
             Serial.write((uint8_t)0);
@@ -73,6 +94,7 @@ class ArduinoProxy(object):
         }
         """ % {
             'speed': self.speed, 
+            'INVALID_CMD': ArduinoProxy.INVALID_CMD, 
         })
     
     _setup.include_in_pde = True
@@ -95,7 +117,15 @@ class ArduinoProxy(object):
             else:
                 response_buffer.write(byte)
         
-        return response_buffer.getvalue()
+        response = response_buffer.getvalue()
+        
+        if not len(response):
+            raise(InvalidResponse())
+
+        if response == ArduinoProxy.INVALID_CMD:
+            raise(InvalidCommand())
+
+        return response
     
     # Digital I/O
     def _pinMode(self):
@@ -118,12 +148,13 @@ class ArduinoProxy(object):
                     sendOkResponse();
                     return;
                 }
+                sendInvalidCmdResponse();
             }
         """ % {
         'method': 'pinMode', 
         'INPUT': ArduinoProxy.INPUT, 
         'OUTPUT': ArduinoProxy.OUTPUT, 
-    })
+        })
     
     _pinMode.include_in_pde = True
     _pinMode.proxy_function = True
@@ -144,8 +175,42 @@ class ArduinoProxy(object):
         ret = self.sendCmd(cmd)
         return ret
 
-    def digitalWrite(self):
-        pass
+    def _digitalWrite(self):
+        return _unindent(12, """
+            void _digitalWrite(String cmd) {
+                if(!cmd.startsWith("%(method)s")) {
+                    return;
+                }
+                int index_of_pin = cmd.indexOf(' ');
+                int index_of_value = cmd.indexOf(' ', index_of_pin+1);
+                String pin = cmd.substring(index_of_pin, index_of_value);
+                String value = cmd.substring(index_of_value);
+                if(value.equals("%(HIGH)s")) {
+                    digitalWrite(stringToInt(pin), HIGH);
+                    sendOkResponse();
+                    return;
+                }
+                if(value.equals("%(LOW)s")) {
+                    digitalWrite(stringToInt(pin), LOW);
+                    sendOkResponse();
+                    return;
+                }
+                sendInvalidCmdResponse();
+            }
+        """ % {
+        'method': '_digitalWrite', 
+        'HIGH': ArduinoProxy.HIGH, 
+        'LOW': ArduinoProxy.LOW, 
+        })
+    
+    _digitalWrite.include_in_pde = True
+    _digitalWrite.proxy_function = True
+    
+    def digitalWrite(self, value):
+        # FIXME: validate pin and value
+        cmd = "_digitalWrite %d %s" % (pin, value)
+        ret = self.sendCmd(cmd)
+        return ret
     
     def digitalRead(self):
         pass
@@ -190,7 +255,7 @@ if __name__ == '__main__':
     print _unindent(8, """
         /*
          * THIS FILE IS GENERATED AUTOMATICALLI WITH generate-pde.sh
-         * WHICH IS PART OF THE PROYECT "PyArduinoProxy"
+         * WHICH IS PART OF THE PROJECT "PyArduinoProxy"
          */
     """)
     
