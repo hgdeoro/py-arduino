@@ -21,14 +21,9 @@ class ArduinoProxy(object):
         self.tty = tty
         self.speed = speed
     
-    def __arduino_setup(self):
+    def _setup(self):
         # FIXME: implementar!
         return _unindent(8, """
-        /*
-         * THIS FILE IS GENERATED AUTOMATICALLI WITH generate-pde.sh
-         * WHICH IS PART OF THE PROYECT "PyArduinoProxy"
-         */
-        
         char lastCmd[128]; // buffer size of Serial
         
         void setup() {
@@ -68,13 +63,9 @@ class ArduinoProxy(object):
         """ % {
             'speed': self.speed, 
         })
-
-    ##def __arduino_loop(self):
-    ##    # FIXME: implementar!
-    ##    return """
-    ##    void loop() {
-    ##    }
-    ##    """
+    
+    _setup.include_in_pde = True
+    _setup.proxy_function = False
     
     def sendCmd(self, cmd):
         # FIXME: implementar
@@ -84,7 +75,7 @@ class ArduinoProxy(object):
         pass
     
     # Digital I/O
-    def __arduino__pinMode(self):
+    def _pinMode(self):
         return _unindent(12, """
             void _pinMode(String cmd) {
                 if(!cmd.startsWith("%(method)s")) {
@@ -110,6 +101,9 @@ class ArduinoProxy(object):
         'INPUT': ArduinoProxy.INPUT, 
         'OUTPUT': ArduinoProxy.OUTPUT, 
     })
+    
+    _pinMode.include_in_pde = True
+    _pinMode.proxy_function = True
     
     def pinMode(self, pin, mode):
         """
@@ -137,7 +131,7 @@ class ArduinoProxy(object):
     def analogReference(self):
         pass
     
-    def __arduino__analogRead(self):
+    def _analogRead(self):
         return _unindent(12, """
             void _analogRead(String cmd) {
                 if(!cmd.startsWith("%(method)s")) {
@@ -153,6 +147,9 @@ class ArduinoProxy(object):
         'method': 'analogRead', 
     })
     
+    _analogRead.include_in_pde = True
+    _analogRead.proxy_function = True
+    
     def analogRead(self, pin):
         """
         * map input voltages between 0 and 5 volts into integer values between 0 and 1023.
@@ -166,23 +163,33 @@ class ArduinoProxy(object):
 
 if __name__ == '__main__':
     proxy = ArduinoProxy('')
-    
-    print proxy._ArduinoProxy__arduino_setup()
-    
-    # Methods contains the methods, except 'setup()'
-    methods = [a_method[len('_ArduinoProxy__arduino_'):]
-        for a_method in dir(proxy)
-            if a_method.startswith('_ArduinoProxy__arduino_') and a_method != '_ArduinoProxy__arduino_setup']
-    
-    for method_name in methods:
-        method = getattr(proxy, '_ArduinoProxy__arduino_' + method_name)
-        print method()
 
+    print _unindent(8, """
+        /*
+         * THIS FILE IS GENERATED AUTOMATICALLI WITH generate-pde.sh
+         * WHICH IS PART OF THE PROYECT "PyArduinoProxy"
+         */
+    """)
+    
+    # All this functions have 'include_in_pde' == True
+    pde_functions = [getattr(proxy, a_function) for a_function in dir(proxy)
+        if getattr(getattr(proxy, a_function), 'include_in_pde', None) is True]
+    
+    # First functions that have 'proxy_function' == False
+    for a_function in [a_function for a_function in pde_functions
+            if getattr(a_function, 'proxy_function', None) is False]:
+        print a_function()
+    
+    # Now the real, interesting functions...
+    for a_function in [a_function for a_function in pde_functions
+            if getattr(a_function, 'proxy_function', None) is True]:
+        print a_function()
+    
+    # Now, generate the loop()
     print "void loop() {"
     print "    readCmd();"
-    for method_name in methods:
-        if method_name in ['setup']:
-            continue
-        print "    //" + method_name + "(cmd);"
-        print "    " + method_name + "(String(lastCmd));"
+    
+    for a_function in [a_function for a_function in pde_functions
+            if getattr(a_function, 'proxy_function', None) is True]:
+        print "    " + a_function.__name__ + "(String(lastCmd));"
     print "}"
