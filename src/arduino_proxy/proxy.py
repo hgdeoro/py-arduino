@@ -51,9 +51,30 @@ class ArduinoProxy(object):
     
     def _setup(self):
         return _unindent(8, """
+        
+        #define PIN_ONBOARD_LED 13  // DIGITAL
+        #define PIN_START_BUTTON 12 // DIGITAL
+        
         char lastCmd[128]; // buffer size of Serial
         
+        void wait_start() {
+            digitalWrite(PIN_START_BUTTON, HIGH); // turn on pullup resistors
+            int state = HIGH;
+            while(digitalRead(PIN_START_BUTTON) == HIGH) {
+                digitalWrite(PIN_ONBOARD_LED, state); // turn the onboard led ON/OFF
+                state = !state;
+                delay(100);
+            }
+            digitalWrite(PIN_ONBOARD_LED, HIGH); // turn the onboard led ON
+        }
+        
         void setup() {
+            // Pin 13 has an LED connected on most Arduino boards.
+            pinMode(PIN_ONBOARD_LED, OUTPUT);
+            pinMode(PIN_START_BUTTON, INPUT);
+
+            wait_start();
+        
             Serial.begin(%(speed)d);
         }
         
