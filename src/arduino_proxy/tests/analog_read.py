@@ -22,7 +22,10 @@ import sys
 
 from arduino_proxy import ArduinoProxy
 
-def main():
+def default_callback(value):
+    print value
+
+def main(callback):
     argv = list(sys.argv)
     if "--debug" in argv:
         logging.basicConfig(level=logging.DEBUG)
@@ -46,11 +49,12 @@ def main():
     proxy = ArduinoProxy(serial, 9600)
     try:
         while True:
-            print proxy.analogRead(analog_port)
+            value = proxy.analogRead(analog_port)
+            callback(value)
             if not do_loop:
                 break
     finally:
         proxy.close()
 
 if __name__ == '__main__':
-    main()
+    main(default_callback)
