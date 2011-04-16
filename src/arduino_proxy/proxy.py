@@ -1,11 +1,10 @@
 # TODO: _unindent() could be a annotation
 
+import logging
 import serial
+import time
 
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from StringIO import StringIO
+logger = logging.getLogger(__name__)
 
 def _unindent(spaces, the_string):
     lines = []
@@ -41,13 +40,16 @@ class ArduinoProxy(object):
     
     def __init__(self, tty, speed=9600):
         # For communicating with the computer, use one of these rates: 300, 1200, 2400, 4800,
-        #    9600, 14400, 19200, 28800, 38400, 57600, or 115200.        
+        #    9600, 14400, 19200, 28800, 38400, 57600, or 115200.
+        logger.debug("Instantiating ArduinoProxy('%s', %d)..." % (tty, speed))
         self.tty = tty
         self.speed = speed
         self.serial_port = None
         if tty != '':
             self.serial_port = serial.Serial(port=tty, baudrate=speed, bytesize=8, parity='N',
                 stopbits=1, timeout=5)
+            logger.debug("Opening serial port...")
+            self.serial_port.open()
     
     def _setup(self):
         return _unindent(8, """
@@ -86,9 +88,7 @@ class ArduinoProxy(object):
                 incomingByte = Serial.read();
                 if(incomingByte == -1) {
                     if(pos == 0)
-                        delay(100);
-                    else 
-                        delay(5);
+                        delay(10);
                     continue;
                 }
                 // "\\n" == 10
@@ -109,6 +109,10 @@ class ArduinoProxy(object):
         
         void sendOkResponse() {
             Serial.println("OK");
+        }
+        
+        void sendPingOkResponse() {
+            Serial.println("PING_OK");
         }
         
         int stringToInt(String str) {
@@ -133,21 +137,22 @@ class ArduinoProxy(object):
         Sends a command to the arduino. The command is terminated with a 0x00.
         Returns the response as a string.
         """
+        logger.debug("sendCmd() called...")
+        
+        start = time.time()
         self.serial_port.write(cmd)
         self.serial_port.write("\n")
         self.serial_port.flush()
+        end = time.time()
+        logger.debug("sendCmd() - self.serial_port.flush() FINISHED - Took: %.2f secs." %
+            (end-start))
         
-        #    response_buffer = StringIO()
-        #    while True:
-        #        byte = self.serial_port.read()
-        #        if byte == 0x00:
-        #            break
-        #        else:
-        #            response_buffer.write(byte)
-        #
-        #    response = response_buffer.getvalue()
-        
+        logger.debug("sendCmd() - waiting for response...")
+        start = time.time()
         response = self.serial_port.readline(eol='\r\n')
+        response = response.strip()
+        end = time.time()
+        logger.debug("sendCmd() - Got response - Took: %.2f secs." % (end-start))
         
         if not len(response):
             raise(InvalidResponse())
@@ -285,7 +290,7 @@ class ArduinoProxy(object):
                 if(!cmd.startsWith("%(method)s")) {
                     return;
                 }
-                sendOkResponse();
+                sendPingOkResponse();
             }
         """ % {
         'method': '_ping', 
@@ -298,7 +303,14 @@ class ArduinoProxy(object):
         # FIXME: validate pin and value
         cmd = "_ping"
         ret = self.sendCmd(cmd)
+        if ret != 'PING_OK':
+            raise(InvalidResponse("The response to a ping() should be an 'PING_OK', not '%s'" %
+                ret))
         return ret
+    
+    def close(self):
+        if self.serial_port:
+            self.serial_port.close()
 
 if __name__ == '__main__':
     proxy = ArduinoProxy('')
