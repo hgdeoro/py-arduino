@@ -79,7 +79,7 @@ void sendIntResponse(int value) {
 
 
 void _analogRead(String cmd) {
-    if(!cmd.startsWith("analogRead")) {
+    if(!cmd.startsWith("_analogRead")) {
         return;
     }
     int index_of_pin = cmd.indexOf(' ');
@@ -113,7 +113,7 @@ void _digitalWrite(String cmd) {
         
 
 void _pinMode(String cmd) {
-    if(!cmd.startsWith("pinMode")) {
+    if(!cmd.startsWith("_pinMode")) {
         return;
     }
     int index_of_pin = cmd.indexOf(' ');
