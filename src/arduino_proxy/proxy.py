@@ -23,6 +23,11 @@ import logging
 import serial
 import time
 
+try:
+    from cStringIO import StringIO
+except ImportError:
+    from StringIO import StringIO
+
 logger = logging.getLogger(__name__) # pylint: disable=C0103
 
 def _unindent(spaces, the_string):
@@ -44,6 +49,12 @@ class InvalidCommand(Exception):
 class InvalidResponse(Exception):
     """
     The response from the Arduino isn't valid.
+    """
+    pass
+
+class EmptyResponse(Exception):
+    """
+    The response from the Arduino was empty.
     """
     pass
 
@@ -159,26 +170,31 @@ class ArduinoProxy(object):
         Sends a command to the arduino. The command is terminated with a 0x00.
         Returns the response as a string.
         """
-        logger.debug("sendCmd() called...")
+        logger.debug("sendCmd() called. cmd: '%s'" % cmd)
         
-        start = time.time()
         self.serial_port.write(cmd)
         self.serial_port.write("\n")
         self.serial_port.flush()
-        end = time.time()
-        logger.debug("sendCmd() - self.serial_port.flush() FINISHED - Took: %.2f secs." %
-            (end-start))
         
         logger.debug("sendCmd() - waiting for response...")
         start = time.time()
-        response = self.serial_port.readline(eol='\r\n')
-        response = response.strip()
-        end = time.time()
-        logger.debug("sendCmd() - Got response - Took: %.2f secs." % (end-start))
+        response = StringIO()
+        while True:
+            #logger.debug("sendCmd() - Doing self.serial_port.read()")
+            char = self.serial_port.read()
+            #logger.debug("sendCmd() - Received: '%s'" % char)
+            if len(char) == 1:
+                if char in ['\n', '\r']:
+                    if response.getvalue(): # response.len doesn't works for cStringIO
+                    # If got '\n' or '\r' after some valid text, break the loop
+                        break
+                else:
+                    response.write(char)
         
-        if not len(response):
-            raise(InvalidResponse())
-
+        response = response.getvalue().strip()
+        end = time.time()
+        logger.debug("sendCmd() - Got response: '%s' - Took: %.2f secs." % (response, (end-start)))
+        
         if response == ArduinoProxy.INVALID_CMD:
             raise(InvalidCommand())
 
@@ -208,7 +224,7 @@ class ArduinoProxy(object):
                 sendInvalidCmdResponse();
             }
         """ % {
-        'method': 'pinMode', 
+        'method': '_pinMode', 
         'INPUT': ArduinoProxy.INPUT, 
         'OUTPUT': ArduinoProxy.OUTPUT, 
         })
@@ -289,7 +305,7 @@ class ArduinoProxy(object):
                 return;
             }
         """ % {
-        'method': 'analogRead', 
+        'method': '_analogRead', 
     })
     
     _analogRead.include_in_pde = True # pylint: disable=W0612
