@@ -38,7 +38,7 @@ class ArduinoProxy(object):
     
     INVALID_CMD = "INVALID_CMD"
     
-    def __init__(self, tty, speed=9600):
+    def __init__(self, tty, speed=9600, wait_after_open=3):
         # For communicating with the computer, use one of these rates: 300, 1200, 2400, 4800,
         #    9600, 14400, 19200, 28800, 38400, 57600, or 115200.
         logger.debug("Instantiating ArduinoProxy('%s', %d)..." % (tty, speed))
@@ -46,10 +46,13 @@ class ArduinoProxy(object):
         self.speed = speed
         self.serial_port = None
         if tty != '':
+            logger.debug("Opening serial port...")
             self.serial_port = serial.Serial(port=tty, baudrate=speed, bytesize=8, parity='N',
                 stopbits=1, timeout=5)
-            logger.debug("Opening serial port...")
             self.serial_port.open()
+            logger.debug("Open OK. Now waiting for Arduino's reset")
+            time.sleep(wait_after_open)
+            logger.debug("Done.")
     
     def _setup(self):
         return _unindent(8, """
