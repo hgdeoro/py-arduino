@@ -19,11 +19,10 @@
 
 import logging
 import sys
-import time
 
 from arduino_proxy import ArduinoProxy
 
-if __name__ == '__main__':
+def main():
     logging.basicConfig(level=logging.DEBUG)
     proxy = ArduinoProxy(sys.argv[1], 9600)
     try:
@@ -34,3 +33,6 @@ if __name__ == '__main__':
     except KeyboardInterrupt:
         proxy.close()
         raise
+
+if __name__ == '__main__':
+    main()

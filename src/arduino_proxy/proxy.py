@@ -23,7 +23,7 @@ import logging
 import serial
 import time
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__) # pylint: disable=C0103
 
 def _unindent(spaces, the_string):
     lines = []
@@ -151,10 +151,10 @@ class ArduinoProxy(object):
             'INVALID_CMD': ArduinoProxy.INVALID_CMD, 
         })
     
-    _setup.include_in_pde = True
-    _setup.proxy_function = False
+    _setup.include_in_pde = True # pylint: disable=W0612
+    _setup.proxy_function = False # pylint: disable=W0612
     
-    def sendCmd(self, cmd):
+    def sendCmd(self, cmd): # pylint: disable=C0103
         """
         Sends a command to the arduino. The command is terminated with a 0x00.
         Returns the response as a string.
@@ -185,7 +185,7 @@ class ArduinoProxy(object):
         return response
     
     # Digital I/O
-    def _pinMode(self):
+    def _pinMode(self): # pylint: disable=C0103,R0201
         return _unindent(12, """
             void _pinMode(String cmd) {
                 if(!cmd.startsWith("%(method)s")) {
@@ -213,10 +213,10 @@ class ArduinoProxy(object):
         'OUTPUT': ArduinoProxy.OUTPUT, 
         })
     
-    _pinMode.include_in_pde = True
-    _pinMode.proxy_function = True
+    _pinMode.include_in_pde = True # pylint: disable=W0612
+    _pinMode.proxy_function = True # pylint: disable=W0612
     
-    def pinMode(self, pin, mode):
+    def pinMode(self, pin, mode): # pylint: disable=C0103
         """
         * ...vast majority of Arduino (Atmega) analog pins, may be configured, and used,
         in exactly the same manner as digital pins.
@@ -232,7 +232,7 @@ class ArduinoProxy(object):
         ret = self.sendCmd(cmd)
         return ret
 
-    def _digitalWrite(self):
+    def _digitalWrite(self): # pylint: disable=C0103,R0201
         return _unindent(12, """
             void _digitalWrite(String cmd) {
                 if(!cmd.startsWith("%(method)s")) {
@@ -260,23 +260,23 @@ class ArduinoProxy(object):
         'LOW': ArduinoProxy.LOW, 
         })
     
-    _digitalWrite.include_in_pde = True
-    _digitalWrite.proxy_function = True
+    _digitalWrite.include_in_pde = True # pylint: disable=W0612
+    _digitalWrite.proxy_function = True # pylint: disable=W0612
     
-    def digitalWrite(self, value):
+    def digitalWrite(self, pin, value): # pylint: disable=C0103
         # FIXME: validate pin and value
         cmd = "_digitalWrite %d %s" % (pin, value)
         ret = self.sendCmd(cmd)
         return ret
     
-    def digitalRead(self):
+    def digitalRead(self): # pylint: disable=C0103
         pass
 
     #Analog I/O
-    def analogReference(self):
+    def analogReference(self): # pylint: disable=C0103
         pass
     
-    def _analogRead(self):
+    def _analogRead(self): # pylint: disable=C0103,R0201
         return _unindent(12, """
             void _analogRead(String cmd) {
                 if(!cmd.startsWith("%(method)s")) {
@@ -292,10 +292,10 @@ class ArduinoProxy(object):
         'method': 'analogRead', 
     })
     
-    _analogRead.include_in_pde = True
-    _analogRead.proxy_function = True
+    _analogRead.include_in_pde = True # pylint: disable=W0612
+    _analogRead.proxy_function = True # pylint: disable=W0612
     
-    def analogRead(self, pin):
+    def analogRead(self, pin): # pylint: disable=C0103
         """
         * map input voltages between 0 and 5 volts into integer values between 0 and 1023.
         """
@@ -303,10 +303,10 @@ class ArduinoProxy(object):
         ret = self.sendCmd(cmd)
         return ret
     
-    def analogWrite(self):
+    def analogWrite(self): # pylint: disable=C0103
         pass
 
-    def _ping(self):
+    def _ping(self): # pylint: disable=C0103,R0201
         return _unindent(12, """
             void _ping(String cmd) {
                 if(!cmd.startsWith("%(method)s")) {
@@ -318,10 +318,10 @@ class ArduinoProxy(object):
         'method': '_ping', 
         })
     
-    _ping.include_in_pde = True
-    _ping.proxy_function = True
+    _ping.include_in_pde = True # pylint: disable=W0612
+    _ping.proxy_function = True # pylint: disable=W0612
     
-    def ping(self):
+    def ping(self): # pylint: disable=C0103
         # FIXME: validate pin and value
         cmd = "_ping"
         ret = self.sendCmd(cmd)
@@ -334,7 +334,7 @@ class ArduinoProxy(object):
         if self.serial_port:
             self.serial_port.close()
 
-if __name__ == '__main__':
+def main():
     proxy = ArduinoProxy('')
 
     print _unindent(8, """
@@ -349,20 +349,23 @@ if __name__ == '__main__':
         if getattr(getattr(proxy, a_function), 'include_in_pde', None) is True]
     
     # First functions that have 'proxy_function' == False
-    for a_function in [a_function for a_function in pde_functions
+    for function in [a_function for a_function in pde_functions
             if getattr(a_function, 'proxy_function', None) is False]:
-        print a_function()
+        print function()
     
     # Now the real, interesting functions...
-    for a_function in [a_function for a_function in pde_functions
+    for function in [a_function for a_function in pde_functions
             if getattr(a_function, 'proxy_function', None) is True]:
-        print a_function()
+        print function()
     
     # Now, generate the loop()
     print "void loop() {"
     print "    readCmd();"
     
-    for a_function in [a_function for a_function in pde_functions
+    for function in [a_function for a_function in pde_functions
             if getattr(a_function, 'proxy_function', None) is True]:
-        print "    " + a_function.__name__ + "(String(lastCmd));"
+        print "    " + function.__name__ + "(String(lastCmd));"
     print "}"
+
+if __name__ == '__main__':
+    main()
