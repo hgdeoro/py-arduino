@@ -80,8 +80,9 @@ class ArduinoProxy(object):
             self.serial_port = serial.Serial(port=tty, baudrate=speed, bytesize=8, parity='N',
                 stopbits=1, timeout=5)
             self.serial_port.open()
-            logger.debug("Open OK. Now waiting for Arduino's reset")
-            time.sleep(wait_after_open)
+            if wait_after_open > 0:
+                logger.debug("Open OK. Now waiting for Arduino's reset")
+                time.sleep(wait_after_open)
             logger.debug("Done.")
     
     def _setup(self):
