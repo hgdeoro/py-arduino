@@ -29,6 +29,7 @@ SRC_DIR = os.path.split(SRC_DIR)[0] # SRC_DIR
 sys.path.append(os.path.abspath(SRC_DIR))
 
 from arduino_proxy.tests import default_main
+from arduino_proxy.proxy import CommandTimeout
 
 def main():
     
@@ -38,11 +39,15 @@ def main():
             sys.stdout.write("Ping sent...")
             sys.stdout.flush()
             start = time.time()
-            proxy.ping()
-            end = time.time()
-            sys.stdout.write(" OK - Time=%.3f ms\n" % ((end-start)*1000))
-            sys.stdout.flush()
-            time.sleep(1)
+            try:
+                proxy.ping()
+                end = time.time()
+                sys.stdout.write(" OK - Time=%.3f ms\n" % ((end-start)*1000))
+                sys.stdout.flush()
+                time.sleep(1)
+            except CommandTimeout:
+                sys.stdout.write(" timeout\n")
+                sys.stdout.flush()
     except KeyboardInterrupt:
         print ""
         proxy.close()

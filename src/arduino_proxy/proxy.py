@@ -58,6 +58,12 @@ class EmptyResponse(Exception):
     """
     pass
 
+class CommandTimeout(Exception):
+    """
+    Timeout detected while waiting for Arduino's response.
+    """
+    pass
+
 class ArduinoProxy(object):
     
     INPUT = "I"
@@ -68,7 +74,7 @@ class ArduinoProxy(object):
     
     INVALID_CMD = "INVALID_CMD"
     
-    def __init__(self, tty, speed=9600, wait_after_open=3):
+    def __init__(self, tty, speed=9600, wait_after_open=3, timeout=5):
         # For communicating with the computer, use one of these rates: 300, 1200, 2400, 4800,
         #    9600, 14400, 19200, 28800, 38400, 57600, or 115200.
         logger.debug("Instantiating ArduinoProxy('%s', %d)..." % (tty, speed))
@@ -78,7 +84,7 @@ class ArduinoProxy(object):
         if tty != '':
             logger.debug("Opening serial port...")
             self.serial_port = serial.Serial(port=tty, baudrate=speed, bytesize=8, parity='N',
-                stopbits=1, timeout=5)
+                stopbits=1, timeout=timeout)
             self.serial_port.open()
             if wait_after_open > 0:
                 logger.debug("Open OK. Now waiting for Arduino's reset")
@@ -170,6 +176,9 @@ class ArduinoProxy(object):
         """
         Sends a command to the arduino. The command is terminated with a 0x00.
         Returns the response as a string.
+        
+        Raises:
+        - CommandTimeout: if a timeout is detected while reading response.
         """
         logger.debug("sendCmd() called. cmd: '%s'" % cmd)
         
@@ -180,6 +189,7 @@ class ArduinoProxy(object):
         logger.debug("sendCmd() - waiting for response...")
         start = time.time()
         response = StringIO()
+        timeout = False
         while True:
             #logger.debug("sendCmd() - Doing self.serial_port.read()")
             char = self.serial_port.read()
@@ -191,7 +201,13 @@ class ArduinoProxy(object):
                         break
                 else:
                     response.write(char)
+            else:
+                # Timeout
+                timeout = True
+                break
         
+        if timeout:
+            raise(CommandTimeout())
         response = response.getvalue().strip()
         end = time.time()
         logger.debug("sendCmd() - Got response: '%s' - Took: %.2f secs." % (response, (end-start)))
