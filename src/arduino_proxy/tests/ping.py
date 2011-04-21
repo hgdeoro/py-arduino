@@ -18,6 +18,7 @@
 ##    along with Py-Arduino-Proxy; see the file LICENSE.txt.
 ##-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
+import glob
 import logging
 import optparse
 import os
@@ -37,11 +38,15 @@ def main():
     parser.add_option("--debug",
         action="store_true", dest="debug", default=False,
         help="Show debug messages.")
+    parser.add_option("--initial-wait",
+        action="store", dest="initial_wait", default=None,
+        help="How many seconds wait before conect (workaround for auto-reset on connect bug).")
 
     (options, args) = parser.parse_args()
     
     if len(args) == 0:
-        parser.error("must specify the serial device (like /dev/ttyACM0)")
+        parser.error("must specify the serial device (like /dev/ttyACM0). " + \
+            "Serial devices that looks like Arduinos: %s." % ', '.join(glob.glob('/dev/ttyACM*')))
     elif len(args) > 1:
         parser.error("you specified more than one argument")
     
@@ -50,16 +55,28 @@ def main():
     else:
         logging.basicConfig(level=logging.ERROR)
     
-    print "Warning: the initial connection to the Arduino device may take some seconds..."
-    proxy = ArduinoProxy(args[0], 9600)
+    if options.initial_wait == 0:
+        proxy = ArduinoProxy(args[0], 9600, wait_after_open=0)
+    else:
+        if options.initial_wait is None:
+            print "Warning: waiting some seconds to let the Arduino reset..."
+            proxy = ArduinoProxy(args[0], 9600)
+        else:
+            print "Warning: waiting %d seconds to let the Arduino reset..." % \
+                int(options.initial_wait)
+            proxy = ArduinoProxy(args[0], 9600, wait_after_open=int(options.initial_wait))
     try:
         while True:
+            sys.stdout.write("Ping sent...")
+            sys.stdout.flush()
             start = time.time()
             proxy.ping()
             end = time.time()
-            print "Ping OK. Tiempo: %.3f ms" % ((end-start)*1000)
+            sys.stdout.write(" OK - Time=%.3f ms\n" % ((end-start)*1000))
+            sys.stdout.flush()
             time.sleep(1)
     except KeyboardInterrupt:
+        print ""
         proxy.close()
 
 if __name__ == '__main__':
