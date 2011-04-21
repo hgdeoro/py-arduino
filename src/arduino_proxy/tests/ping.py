@@ -18,9 +18,6 @@
 ##    along with Py-Arduino-Proxy; see the file LICENSE.txt.
 ##-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-import glob
-import logging
-import optparse
 import os
 import sys
 import time
@@ -31,40 +28,11 @@ SRC_DIR = os.path.split(SRC_DIR)[0] # SRC_DIR/arduino_proxy
 SRC_DIR = os.path.split(SRC_DIR)[0] # SRC_DIR
 sys.path.append(os.path.abspath(SRC_DIR))
 
-from arduino_proxy import ArduinoProxy
+from arduino_proxy.tests import default_main
 
 def main():
-    parser = optparse.OptionParser(usage="usage: %prog [options] serial_device")
-    parser.add_option("--debug",
-        action="store_true", dest="debug", default=False,
-        help="Show debug messages.")
-    parser.add_option("--initial-wait",
-        action="store", dest="initial_wait", default=None,
-        help="How many seconds wait before conect (workaround for auto-reset on connect bug).")
-
-    (options, args) = parser.parse_args()
     
-    if len(args) == 0:
-        parser.error("must specify the serial device (like /dev/ttyACM0). " + \
-            "Serial devices that looks like Arduinos: %s." % ', '.join(glob.glob('/dev/ttyACM*')))
-    elif len(args) > 1:
-        parser.error("you specified more than one argument")
-    
-    if options.debug:
-        logging.basicConfig(level=logging.DEBUG)
-    else:
-        logging.basicConfig(level=logging.ERROR)
-    
-    if options.initial_wait == 0:
-        proxy = ArduinoProxy(args[0], 9600, wait_after_open=0)
-    else:
-        if options.initial_wait is None:
-            print "Warning: waiting some seconds to let the Arduino reset..."
-            proxy = ArduinoProxy(args[0], 9600)
-        else:
-            print "Warning: waiting %d seconds to let the Arduino reset..." % \
-                int(options.initial_wait)
-            proxy = ArduinoProxy(args[0], 9600, wait_after_open=int(options.initial_wait))
+    options, args, proxy = default_main() # pylint: disable=W0612
     try:
         while True:
             sys.stdout.write("Ping sent...")
