@@ -42,6 +42,8 @@ Here is a diagram that I've used to connect the LM35 to the Arduino:
 
 ![LM35 Circuit](https://github.com/hgdeoro/py-arduino-proxy/raw/master/examples/lm35_bb.png "LM35 Circuit")
 
+That's taken from [http://forum.drbit.nl/viewtopic.php?id=36](http://forum.drbit.nl/viewtopic.php?id=36).
+
 Install: python application
 ---------------------------
 
