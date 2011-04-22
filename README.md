@@ -64,9 +64,7 @@ Workaround for Ubuntu
 > software to appear to lock up, or even Linux having trouble using the
 > serial port for your Uno.
 
-I've made a [simple workaround](https://gist.github.com/922501) for this problem:
-
-<script src="https://gist.github.com/922501.js?file=wait_push_button_to_start.pde"></script>
+I've made a simple workaround for this problem: [see the code](https://gist.github.com/922501)
 
 When the scripts starts, it waits to the PIN 12 to become 'LOW' (and while waiting,
 the onboard led, associated with PIN 13, keeps blinking).
