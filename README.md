@@ -40,7 +40,7 @@ check the temperature reported by a LM35 running:
 
 Here is a diagram that I've used to connect the LM35 to the Arduino:
 
-![LM35 Circuit](examples/lm35_bb.png "LM35 Circuit")
+![LM35 Circuit](https://github.com/hgdeoro/py-arduino-proxy/raw/master/examples/lm35_bb.png "LM35 Circuit")
 
 Install: python application
 ---------------------------
