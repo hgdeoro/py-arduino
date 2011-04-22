@@ -66,12 +66,22 @@ Workaround for Ubuntu
 
 I've made a simple workaround for this problem: [see the code](https://gist.github.com/922501)
 
-When the scripts starts, it waits to the PIN 12 to become 'LOW' (and while waiting,
-the onboard led, associated with PIN 13, keeps blinking).
+Before calling 'loop()', the program pauses itself until the PIN 12 become 'LOW'.
+As a visual aid, while the program is waiting, the onboard LED keeps blinking. Once
+a 'LOW' on PIN 12 is detected, the program start the execution.
 
-To let the 'loop()' start, make a connection between Ground and PIN 12 (using a 10k resistor).
-You can put that resistor, so the Arduino doesn't keep waiting. The next time you need to
-upload a new program, remove the resistor, and you won't be affected by the bug.
+The 'LOW' could be done attaching a 10k resistor from the GROUND to the PIN 12.
+After that, the onboard LED will be ON (no blinking), and the program will keep
+running (you can remove the resistor).
+
+Note: this must be done every time the Arduino is powered-on, and every time you
+reset the Arduino (pushing the RESET button, or connecting through the serial console).
+Since the Arduino auto-reset every time you connect using the USB serial port
+(from the IDE, or from py-arduino-proxy), it's advisable to keep the 10k resistor
+connecting Ground to PIN 12.
+
+The next time you need to upload a new program, remove the resistor, and you won't be affected by the bug,
+since the real program in 'loop()' won't be sending data using the serial port.
 
 ![Workaround for Ubuntu](https://github.com/hgdeoro/py-arduino-proxy/raw/master/examples/ubuntu-workaround_bb.png "Workaround for Ubuntu")
 
