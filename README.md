@@ -56,8 +56,24 @@ Install: upload sketch
 Open the sketch with Arduino (the file will be located at /usr/local/py-arduino-proxy/pde/py-arduino-proxy.pde),
 compile and upload it.
 
-Workaround for firmware bug
----------------------------
+Workaround for Ubuntu
+---------------------
 
-TODO: DOCUMENT THIS!
+> Are you using an Arduino Uno on Linux? If so, you may have noticed that
+> writing to the serial port in a loop can cause the Arduino Editor/Programmer
+> software to appear to lock up, or even Linux having trouble using the
+> serial port for your Uno.
+
+I've made a [simple workaround](https://gist.github.com/922501) for this problem:
+
+<script src="https://gist.github.com/922501.js?file=wait_push_button_to_start.pde"></script>
+
+When the scripts starts, it waits to the PIN 12 to become 'LOW' (and while waiting,
+the onboard led, associated with PIN 13, keeps blinking).
+
+To let the 'loop()' start, make a connection between Ground and PIN 12 (using a 10k resistor).
+You can put that resistor, so the Arduino doesn't keep waiting. The next time you need to
+upload a new program, remove the resistor, and you won't be affected by the bug.
+
+![Workaround for Ubuntu](https://github.com/hgdeoro/py-arduino-proxy/raw/master/examples/ubuntu-workaround_bb.png "Workaround for Ubuntu")
 
