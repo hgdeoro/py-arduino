@@ -54,7 +54,7 @@ Install: upload sketch
 ----------------------
 
 Open the sketch with Arduino (the file will be located at /usr/local/py-arduino-proxy/pde/py-arduino-proxy.pde),
-compile and upload it.
+compile and upload it. You'll need to put a 10k resistor joining Ground to PIN 12 (see image below: 'Workaround for Ubuntu').
 
 Workaround for Ubuntu
 ---------------------
