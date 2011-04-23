@@ -64,6 +64,8 @@ class ArduinoEmulator(threading.Thread):
             self.serial_connection.write("PING_OK\n")
         elif splitted[0] == '_analogRead':
             self.serial_connection.write("%d\n" % random.randint(0, 1023))
+        elif splitted[0] == '_connect':
+            self.serial_connection.write("%s\n" % splitted[1])
         else:
             logger.error("run_cmd() - INVALID COMMAND: %s", pprint.pformat(cmd))
     
@@ -104,7 +106,8 @@ class SerialConnectionMock(object):
     The MASTER endpoint, on the Py-Arduino-Proxy side,
     and the SLAVE endpoint, on the Arduino Emulator side.
     """
-    def __init__(self, other_side=None, timeout=1, *args, **kwargs):
+    def __init__(self, other_side=None, timeout=1, initial_in_buffer_contents='',
+            initial_out_buffer_contents='', *args, **kwargs):
         
         if other_side:
             # other_side != None -> Arduino side (SLAVE)
@@ -115,8 +118,8 @@ class SerialConnectionMock(object):
             self.logger = logging.getLogger('SerialConnectionMock.ARDUINO')
         else:
             # other_side == None -> Python side (MASTER)
-            self._out_buffer = ''
-            self._in_buffer = ''
+            self._out_buffer = initial_out_buffer_contents
+            self._in_buffer = initial_in_buffer_contents
             self.timeout = timeout
             self._lock = threading.RLock()
             self.master_of = SerialConnectionMock(other_side=self)
@@ -185,6 +188,28 @@ class SerialConnectionMock(object):
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+class TestArduinoProxyWithInitialContentInSerialBuffer(unittest.TestCase):
+    """
+    Testcase for commands.
+    """
+    def setUp(self):
+        self.proxy = ArduinoProxy(tty='')
+        self.proxy.serial_port = SerialConnectionMock(timeout=10, 
+            initial_in_buffer_contents="** SOME TEXT **\n" * 5)
+        self.emulator = ArduinoEmulator(self.proxy.serial_port.get_other_side())
+        self.emulator.start()
+
+    def test_ping(self):
+        self.proxy.connect()
+        response = self.proxy.ping()
+        self.assertEquals(response, 'PING_OK')
+
+    def tearDown(self):
+        self.proxy.close()
+        self.emulator.stop_running()
+        self.emulator.join()
+        logger.debug("tearDown(): %s", str(self.proxy.serial_port))
+
 class TestArduinoProxy(unittest.TestCase):
     """
     Testcase for commands.
@@ -199,6 +224,14 @@ class TestArduinoProxy(unittest.TestCase):
     def test_ping(self):
         response = self.proxy.ping()
         self.assertEquals(response, 'PING_OK')
+    
+    def test_multiping(self):
+        for i in range(0, 10):
+            start = time.time()
+            response = self.proxy.ping()
+            end = time.time()
+            self.assertEquals(response, 'PING_OK')
+            logging.info("PING took %.2f ms" % ((end-start)*1000))
     
     def test_analog_read(self):
         response = self.proxy.analogRead(5)

@@ -20,8 +20,10 @@
 # TODO: _unindent() could be a annotation
 
 import logging
+import pprint
 import serial
 import time
+import uuid
 
 try:
     from cStringIO import StringIO
@@ -64,6 +66,8 @@ class CommandTimeout(Exception):
     """
     pass
 
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 class ArduinoProxy(object):
     
     INPUT = "I"
@@ -74,7 +78,7 @@ class ArduinoProxy(object):
     
     INVALID_CMD = "INVALID_CMD"
     
-    def __init__(self, tty, speed=9600, wait_after_open=3, timeout=5):
+    def __init__(self, tty, speed=9600, wait_after_open=3, timeout=5, call_connect=True):
         # For communicating with the computer, use one of these rates: 300, 1200, 2400, 4800,
         #    9600, 14400, 19200, 28800, 38400, 57600, or 115200.
         logger.debug("Instantiating ArduinoProxy('%s', %d)..." % (tty, speed))
@@ -89,6 +93,8 @@ class ArduinoProxy(object):
             if wait_after_open > 0:
                 logger.debug("Open OK. Now waiting for Arduino's reset")
                 time.sleep(wait_after_open)
+            if call_connect:
+                self.connect()
             logger.debug("Done.")
     
     def _setup(self):
@@ -155,6 +161,10 @@ class ArduinoProxy(object):
             Serial.println("PING_OK");
         }
         
+        void sendStringResponse(String the_string) {
+            Serial.println(the_string);
+        }
+        
         int stringToInt(String str) {
             char buff[str.length() + 1];
             str.toCharArray(buff, (str.length() + 1));
@@ -164,6 +174,12 @@ class ArduinoProxy(object):
         void sendIntResponse(int value) {
             Serial.println(value, DEC);
         }
+        
+        void sendConnectOkResponse(String cmd) {
+            int index_of_uuid = cmd.indexOf(' ');
+            String uuid = cmd.substring(index_of_uuid);
+            sendStringResponse(uuid);
+        }
         """ % {
             'speed': self.speed, 
             'INVALID_CMD': ArduinoProxy.INVALID_CMD, 
@@ -171,6 +187,39 @@ class ArduinoProxy(object):
     
     _setup.include_in_pde = True # pylint: disable=W0612
     _setup.proxy_function = False # pylint: disable=W0612
+    
+    def getNextResponse(self):
+        """
+        Waits for a response from the serial.
+        Raises CommandTimeout if a timeout while reading is detected.
+        """
+        logger.debug("getNextResponse() - waiting for response...")
+        start = time.time()
+        response = StringIO()
+        while True:
+            char = self.serial_port.read()
+            if len(char) == 1:
+                # Got a char
+                if char in ['\n', '\r']:
+                    if response.getvalue(): # response.len doesn't works for cStringIO
+                        # If got '\n' or '\r' after some valid text, break the loop
+                        break
+                else:
+                    response.write(char)
+            else:
+                # Got '' -> Timeout
+                if response.getvalue():
+                    msg = "Timeout detected, with parcial response: %s" % \
+                        pprint.pformat(response.getvalue())
+                    logger.warn(msg)
+                    raise(CommandTimeout(msg))
+                else:
+                    raise(CommandTimeout())
+        
+        response = response.getvalue().strip()
+        end = time.time()
+        logger.debug("sendCmd() - Got response: '%s' - Took: %.2f secs." % (response, (end-start)))
+        return response
     
     def sendCmd(self, cmd): # pylint: disable=C0103
         """
@@ -186,36 +235,14 @@ class ArduinoProxy(object):
         self.serial_port.write("\n")
         self.serial_port.flush()
         
-        logger.debug("sendCmd() - waiting for response...")
-        start = time.time()
-        response = StringIO()
-        timeout = False
-        while True:
-            #logger.debug("sendCmd() - Doing self.serial_port.read()")
-            char = self.serial_port.read()
-            #logger.debug("sendCmd() - Received: '%s'" % char)
-            if len(char) == 1:
-                if char in ['\n', '\r']:
-                    if response.getvalue(): # response.len doesn't works for cStringIO
-                    # If got '\n' or '\r' after some valid text, break the loop
-                        break
-                else:
-                    response.write(char)
-            else:
-                # Timeout
-                timeout = True
-                break
-        
-        if timeout:
-            raise(CommandTimeout())
-        response = response.getvalue().strip()
-        end = time.time()
-        logger.debug("sendCmd() - Got response: '%s' - Took: %.2f secs." % (response, (end-start)))
+        response = self.getNextResponse() # Raises CommandTimeout
         
         if response == ArduinoProxy.INVALID_CMD:
             raise(InvalidCommand())
-
+        
         return response
+    
+    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
     
     # Digital I/O
     def _pinMode(self): # pylint: disable=C0103,R0201
@@ -264,7 +291,9 @@ class ArduinoProxy(object):
         cmd = "_pinMode %d %s" % (pin, mode)
         ret = self.sendCmd(cmd)
         return ret
-
+    
+    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    
     def _digitalWrite(self): # pylint: disable=C0103,R0201
         return _unindent(12, """
             void _digitalWrite(String cmd) {
@@ -302,12 +331,18 @@ class ArduinoProxy(object):
         ret = self.sendCmd(cmd)
         return ret
     
+    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    
     def digitalRead(self): # pylint: disable=C0103
         pass
-
+    
+    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    
     #Analog I/O
     def analogReference(self): # pylint: disable=C0103
         pass
+    
+    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
     
     def _analogRead(self): # pylint: disable=C0103,R0201
         return _unindent(12, """
@@ -336,9 +371,13 @@ class ArduinoProxy(object):
         ret = self.sendCmd(cmd)
         return ret
     
+    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    
     def analogWrite(self): # pylint: disable=C0103
         pass
-
+    
+    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    
     def _ping(self): # pylint: disable=C0103,R0201
         return _unindent(12, """
             void _ping(String cmd) {
@@ -362,6 +401,38 @@ class ArduinoProxy(object):
             raise(InvalidResponse("The response to a ping() should be an 'PING_OK', not '%s'" %
                 ret))
         return ret
+    
+    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    
+    def _connect(self): # pylint: disable=C0103,R0201
+        return _unindent(12, """
+            void _connect(String cmd) {
+                if(!cmd.startsWith("%(method)s")) {
+                    return;
+                }
+                sendConnectOkResponse(cmd);
+            }
+        """ % {
+        'method': '_connect', 
+        })
+    
+    _connect.include_in_pde = True # pylint: disable=W0612
+    _connect.proxy_function = True # pylint: disable=W0612
+    
+    def connect(self): # pylint: disable=C0103
+        # FIXME: validate pin and value
+        random_uuid = str(uuid.uuid4())
+        cmd = "_connect %s" % random_uuid
+        ret = self.sendCmd(cmd)
+        
+        while ret != random_uuid:
+            logger.warn("connect(): Ignoring invalid response: %s", pprint.pformat(ret))
+            # Go for the uuid, or a timeout exception!
+            ret = self.getNextResponse()
+        
+        return ret
+    
+    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
     
     def close(self):
         if self.serial_port:
