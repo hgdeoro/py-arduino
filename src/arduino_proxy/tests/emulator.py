@@ -21,6 +21,7 @@
 import logging
 import os
 import pprint
+import random
 import threading
 import serial
 import sys
@@ -38,7 +39,14 @@ from arduino_proxy import ArduinoProxy
 
 logger = logging.getLogger(__name__)
 
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 class ArduinoEmulator(threading.Thread):
+    """
+    Arduino emulator :-D
+    
+    Reads commands from serial console and responds.
+    """
     
     logger = logging.getLogger('ArduinoEmulator')
     
@@ -54,6 +62,8 @@ class ArduinoEmulator(threading.Thread):
         splitted = cmd.split()
         if splitted[0] == '_ping':
             self.serial_connection.write("PING_OK\n")
+        elif splitted[0] == '_analogRead':
+            self.serial_connection.write("%d\n" % random.randint(0, 1023))
         else:
             logger.error("run_cmd() - INVALID COMMAND: %s", pprint.pformat(cmd))
     
@@ -85,9 +95,15 @@ class ArduinoEmulator(threading.Thread):
 
     def stop_running(self):
         self.running = False
-    
+
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 class SerialConnectionMock(object):
-    
+    """
+    Virtual serial connection. There are 2 endpoints.
+    The MASTER endpoint, on the Py-Arduino-Proxy side,
+    and the SLAVE endpoint, on the Arduino Emulator side.
+    """
     def __init__(self, other_side=None, timeout=1, *args, **kwargs):
         
         if other_side:
@@ -166,8 +182,13 @@ class SerialConnectionMock(object):
         return "SerialConnectionMock\n" + \
                     " + in_buffer: %s\n" % pprint.pformat(self._in_buffer) + \
                     " + out_buffer: %s\n" % pprint.pformat(self._out_buffer)
-    
+
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 class TestArduinoProxy(unittest.TestCase):
+    """
+    Testcase for commands.
+    """
     
     def setUp(self):
         self.proxy = ArduinoProxy(tty='')
@@ -176,13 +197,22 @@ class TestArduinoProxy(unittest.TestCase):
         self.emulator.start()
     
     def test_ping(self):
-        self.proxy.ping()
+        response = self.proxy.ping()
+        self.assertEquals(response, 'PING_OK')
+    
+    def test_analog_read(self):
+        response = self.proxy.analogRead(5)
+        response = int(response)
+        if response < 0 or response > 1023:
+            self.fail("analogRead() returned invalid value: %d" % response)
     
     def tearDown(self):
         self.proxy.close()
         self.emulator.stop_running()
         self.emulator.join()
         logger.debug("tearDown(): %s", str(self.proxy.serial_port))
+
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 if __name__ == '__main__':
     args = list(sys.argv)
