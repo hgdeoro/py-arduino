@@ -25,7 +25,7 @@ char* received_parameters[MAX_RECEIVED_PARAMETERS] = { 0 };
 // received from Serial. This limit the max. length that a
 // parameter may have.
 
-#define TEMPORARY_ARRAY_SIZE 32
+#define TEMPORARY_ARRAY_SIZE 64
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Flag setted when a newline was found while reading from Serial.
