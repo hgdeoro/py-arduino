@@ -17,4 +17,5 @@
 ##    along with Py-Arduino-Proxy; see the file LICENSE.txt.
 ##-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-from arduino_proxy.proxy import ArduinoProxy, InvalidResponse, InvalidCommand
+from arduino_proxy.proxy import ArduinoProxy, InvalidCommand, InvalidResponse, EmptyResponse, \
+    CommandTimeout, InvalidArgument

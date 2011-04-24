@@ -35,7 +35,7 @@ SRC_DIR = os.path.split(SRC_DIR)[0] # SRC_DIR/arduino_proxy
 SRC_DIR = os.path.split(SRC_DIR)[0] # SRC_DIR
 sys.path.append(os.path.abspath(SRC_DIR))
 
-from arduino_proxy import ArduinoProxy
+from arduino_proxy import ArduinoProxy, InvalidArgument
 
 logger = logging.getLogger(__name__)
 
@@ -64,6 +64,8 @@ class ArduinoEmulator(threading.Thread):
             self.serial_connection.write("PING_OK\n")
         elif splitted[0] == '_analogRead':
             self.serial_connection.write("%d\n" % random.randint(0, 1023))
+        elif splitted[0] == '_digitalWrite':
+            self.serial_connection.write("OK\n")
         elif splitted[0] == '_connect':
             self.serial_connection.write("%s\n" % splitted[1])
         else:
@@ -238,7 +240,21 @@ class TestArduinoProxy(unittest.TestCase):
         response = int(response)
         if response < 0 or response > 1023:
             self.fail("analogRead() returned invalid value: %d" % response)
-    
+
+    def test_analog_read_invalid_parameters(self):
+        for an_arg in (None, 'something', Exception(), 1.1):
+            self.assertRaises(InvalidArgument, self.proxy.analogRead, an_arg)
+
+    def test_digital_write(self):
+        self.proxy.digitalWrite(1, ArduinoProxy.HIGH)
+        self.proxy.digitalWrite(1, ArduinoProxy.LOW)
+
+    def test_digital_write_invalid_parameters(self):
+        for an_arg in (None, 'something', Exception(), 1.1):
+            self.assertRaises(InvalidArgument, self.proxy.digitalWrite, 99, an_arg)
+            self.assertRaises(InvalidArgument, self.proxy.digitalWrite, an_arg, ArduinoProxy.HIGH)
+            self.assertRaises(InvalidArgument, self.proxy.digitalWrite, an_arg, ArduinoProxy.LOW)
+
     def tearDown(self):
         self.proxy.close()
         self.emulator.stop_running()
