@@ -1,6 +1,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <inttypes.h>
+
+#include "py_arduino_proxy.h"
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // If PY_ARDUINO_PROXY_DEVEL is defined, the generated code
@@ -8,11 +11,6 @@
 // this means the code won't run on Arduino
 
 #define PY_ARDUINO_PROXY_DEVEL // removed when generating the sketch.
-
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// typedef for proxied functions.
-
-typedef void (* proxied_function_ptr) ();
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // MAX_RECEIVED_PARAMETERS: max count of parameter received from Serial.
@@ -34,33 +32,114 @@ char* received_parameters[MAX_RECEIVED_PARAMETERS] = { 0 };
 
 int new_line_found = 0;
 
+#define PIN_ONBOARD_LED 13  // DIGITAL
+#define PIN_START_BUTTON 12 // DIGITAL
+
 #ifndef PY_ARDUINO_PROXY_DEVEL
 	
-	// PROXIED_FUNCTION_COUNT: how many proxied functions we have
-	#define PROXIED_FUNCTION_COUNT %(PROXIED_FUNCTION_COUNT)s // {***PLACEHOLDER***}
+	%(proxied_function_source)s // {***PLACEHOLDER***}
 	
-	proxied_function_ptr function_ptr[PROXIED_FUNCTION_COUNT] = { 0 };
-	char* function_name[PROXIED_FUNCTION_COUNT] = { 0 };
-
-	int readChar() {
-		return Serial.read();
+	// PROXIED_FUNCTION_COUNT: how many proxied functions we have
+	#define PROXIED_FUNCTION_COUNT %(proxied_function_count)d // {***PLACEHOLDER***}
+	
+	proxied_function_ptr function_ptr[PROXIED_FUNCTION_COUNT] = { %(proxied_function_ptrs)s }; // {***PLACEHOLDER***}
+	char*               function_name[PROXIED_FUNCTION_COUNT] = { %(proxied_function_names)s }; // {***PLACEHOLDER***}
+	
+	# define read_char() Serial.read()
+	
+	void setup_serial() {
+		Serial.begin(%(serial_speed)d); // {***PLACEHOLDER***}
 	}
 	
-	void setup_command_arrays() {
-		%(setup_command_arrays)s // {***PLACEHOLDER***}
+	void wait_start() {
+		digitalWrite(PIN_START_BUTTON, HIGH); // turn on pullup resistors
+		int state = HIGH;
+		while(digitalRead(PIN_START_BUTTON) == HIGH) {
+			digitalWrite(PIN_ONBOARD_LED, state); // turn the onboard led ON/OFF
+			state = !state;
+			delay(100);
+		}
+		digitalWrite(PIN_ONBOARD_LED, HIGH); // turn the onboard led ON
+	}
+	
+	void send_int_response(int value) {
+		Serial.println(value, DEC);
+	}
+
+	void send_invalid_parameter_response() {
+		Serial.println("%(INVALID_CMD)s"); // {***PLACEHOLDER***}
+	}
+	
+	void send_invalid_cmd_response() {
+		Serial.println("%(INVALID_CMD)s"); // {***PLACEHOLDER***}
+	}
+	
+	void send_ok_response() {
+		Serial.println("OK");
 	}
 	
 #endif
 
+#ifdef PY_ARDUINO_PROXY_DEVEL // Taken from : wiring.h - Partial implementation of the Wiring API for the ATmega8. Part of Arduino - http://www.arduino.cc/
+
+#define HIGH 0x1
+#define LOW  0x0
+
+#define INPUT 0x0
+#define OUTPUT 0x1
+
+#define true 0x1
+#define false 0x0
+
+#define CHANGE 1
+#define FALLING 2
+#define RISING 3
+
+#define interrupts() sei()
+#define noInterrupts() cli()
+
+typedef unsigned int word;
+
+#define bit(b) (1UL << (b))
+
+typedef uint8_t boolean;
+typedef uint8_t byte;
+
+void pinMode(uint8_t a, uint8_t b) { }
+void digitalWrite(uint8_t a, uint8_t b) { }
+int digitalRead(uint8_t a) { return 0; }
+int analogRead(uint8_t a) { return 0; }
+void analogReference(uint8_t mode) { }
+void analogWrite(uint8_t a, int b) { }
+
+unsigned long millis(void) { return 0; }
+unsigned long micros(void) { return 0; }
+void delay(unsigned long a) { }
+void delayMicroseconds(unsigned int us) { }
+unsigned long pulseIn(uint8_t pin, uint8_t state, unsigned long timeout) { return 0; }
+
+// void attachInterrupt(uint8_t a, void (*)(void) b, int mode) { }
+// void detachInterrupt(uint8_t a) { }
+
+#endif
+
 #ifdef PY_ARDUINO_PROXY_DEVEL
+
+	void _ping() {
+		printf("ping()\n");
+	}
+	
+	void _analogRead() {
+		printf("_analogRead() PIN %s\n", received_parameters[1]);
+	}
 
 	// PROXIED_FUNCTION_COUNT: how many proxied functions we have
 	#define PROXIED_FUNCTION_COUNT 2
 
-	proxied_function_ptr function_ptr[PROXIED_FUNCTION_COUNT] = { 0 };
-	char* function_name[PROXIED_FUNCTION_COUNT] = { 0 };
+	proxied_function_ptr function_ptr[PROXIED_FUNCTION_COUNT] = { _ping, _analogRead, };
+	char* function_name[PROXIED_FUNCTION_COUNT] = { "_ping", "_analogRead", };
 
-	int readChar() {
+	int read_char() {
 		char* text = "_ping\n_analogRead 5\n_some_invalid_command\n";
 		static int next_return = 0;
 		int ret = (int) text[next_return];
@@ -70,26 +149,17 @@ int new_line_found = 0;
 		return ret;
 	}
 	
-	void delay(int d) { }
-	
-	void _ping() {
-		printf("ping()\n");
-	}
-	
-	void _analogRead() {
-		printf("_analogRead() PIN %s\n", received_parameters[1]);
-	}
-	
-	void setup_command_arrays() {
-		function_ptr[0] = _ping;
-		function_name[0] = "_ping";
-		function_ptr[1] = _analogRead;
-		function_name[1] = "_analogRead";
-	}
-	
-	void sendInvalidCmdResponse() {
+	void send_invalid_cmd_response() {
 		printf("INVALID FUNCTION: '%s'\n", received_parameters[0]);
 	}
+	
+	void wait_start() { }
+	
+	void setup_serial() { }
+	
+	void send_int_response(int value) { }
+	
+	void send_invalid_parameter_response() { }
 	
 #endif
 
@@ -103,7 +173,7 @@ void read_one_param(char* tmp_array) {
 	int pos = 0;
 	while (pos < (TEMPORARY_ARRAY_SIZE-1)) {
 
-		incomingByte = readChar();
+		incomingByte = read_char();
 		if(incomingByte == -1) {
 			// no data
 			if(pos == 0 && received_parameters[0] == NULL) {
@@ -187,28 +257,34 @@ proxied_function_ptr get_function_by_name(char* name) {
 void loop() {
 	read_parameters();
 	
-	//#ifdef PY_ARDUINO_PROXY_DEVEL
-	//int i;
-	//for(i=0; i<MAX_RECEIVED_PARAMETERS; i++) {
-	//	if(received_parameters[i] != NULL) {
-	//		printf("Parametro[%d]: %s\n", i, received_parameters[i]);
-	//	}
-	//}
-	//#endif
+	#ifdef PY_ARDUINO_PROXY_DEVEL
+	int i;
+	for(i=0; i<MAX_RECEIVED_PARAMETERS; i++) {
+		if(received_parameters[i] != NULL) {
+			printf(" -> Parametro[%d]: %s\n", i, received_parameters[i]);
+		}
+	}
+	#endif
 	
 	proxied_function_ptr function = get_function_by_name(received_parameters[0]);
 	if(function != NULL) {
 		(function)();
 	} else {
-		sendInvalidCmdResponse();
+		send_invalid_cmd_response();
 	}
 }
 
-#ifdef PY_ARDUINO_PROXY_DEVEL
-
 void setup() {
-	setup_command_arrays();
+	// Pin 13 has an LED connected on most Arduino boards.
+	pinMode(PIN_ONBOARD_LED, OUTPUT);
+	pinMode(PIN_START_BUTTON, INPUT);
+
+	wait_start();
+
+	setup_serial();
 }
+
+#ifdef PY_ARDUINO_PROXY_DEVEL
 
 int main() {
 	setup();

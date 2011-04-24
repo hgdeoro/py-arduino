@@ -20,8 +20,12 @@
 # TODO: _unindent() could be a annotation
 
 import logging
+import os
+import os.path
 import pprint
 import serial
+import shutil
+import sys
 import time
 import uuid
 
@@ -66,15 +70,32 @@ class CommandTimeout(Exception):
     """
     pass
 
+class InvalidArgument(Exception):
+    """
+    A method was called with invalid argument type or values.
+    """
+    pass
+
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 class ArduinoProxy(object):
     
-    INPUT = "I"
-    OUTPUT = "O"
+    #define HIGH 0x1
+    #define LOW  0x0
+    HIGH = 0x01
+    LOW = 0x00
+
+    #define INPUT 0x0
+    #define OUTPUT 0x1
+    INPUT = 0x00
+    OUTPUT = 0x01
     
-    HIGH = "H"
-    LOW = "L"
+    #define CHANGE 1
+    #define FALLING 2
+    #define RISING 3
+    CHANGE = 1
+    FALLING = 2
+    RISING = 3
     
     INVALID_CMD = "INVALID_CMD"
     
@@ -96,97 +117,6 @@ class ArduinoProxy(object):
             if call_connect:
                 self.connect()
             logger.debug("Done.")
-    
-    def _setup(self):
-        return _unindent(8, """
-        
-        #define PIN_ONBOARD_LED 13  // DIGITAL
-        #define PIN_START_BUTTON 12 // DIGITAL
-        
-        char lastCmd[128]; // buffer size of Serial
-        
-        void wait_start() {
-            digitalWrite(PIN_START_BUTTON, HIGH); // turn on pullup resistors
-            int state = HIGH;
-            while(digitalRead(PIN_START_BUTTON) == HIGH) {
-                digitalWrite(PIN_ONBOARD_LED, state); // turn the onboard led ON/OFF
-                state = !state;
-                delay(100);
-            }
-            digitalWrite(PIN_ONBOARD_LED, HIGH); // turn the onboard led ON
-        }
-        
-        void setup() {
-            // Pin 13 has an LED connected on most Arduino boards.
-            pinMode(PIN_ONBOARD_LED, OUTPUT);
-            pinMode(PIN_START_BUTTON, INPUT);
-
-            wait_start();
-        
-            Serial.begin(%(speed)d);
-        }
-        
-        void readCmd() {
-            int incomingByte = -1;
-            int pos = 0;
-            
-            while (pos < 127) {
-                incomingByte = Serial.read();
-                if(incomingByte == -1) {
-                    if(pos == 0)
-                        delay(10);
-                    continue;
-                }
-                // "\\n" == 10
-                if(incomingByte == 10) {
-                    lastCmd[pos] = 0x00;
-                    return;
-                }
-                lastCmd[pos++] = incomingByte;
-            }
-            
-            if(pos == 127)
-                lastCmd[pos] = 0x00;
-        }
-
-        void sendInvalidCmdResponse() {
-            Serial.println("%(INVALID_CMD)s");
-        }
-        
-        void sendOkResponse() {
-            Serial.println("OK");
-        }
-        
-        void sendPingOkResponse() {
-            Serial.println("PING_OK");
-        }
-        
-        void sendStringResponse(String the_string) {
-            Serial.println(the_string);
-        }
-        
-        int stringToInt(String str) {
-            char buff[str.length() + 1];
-            str.toCharArray(buff, (str.length() + 1));
-            return atoi(buff); 
-        }
-        
-        void sendIntResponse(int value) {
-            Serial.println(value, DEC);
-        }
-        
-        void sendConnectOkResponse(String cmd) {
-            int index_of_uuid = cmd.indexOf(' ');
-            String uuid = cmd.substring(index_of_uuid);
-            sendStringResponse(uuid);
-        }
-        """ % {
-            'speed': self.speed, 
-            'INVALID_CMD': ArduinoProxy.INVALID_CMD, 
-        })
-    
-    _setup.include_in_pde = True # pylint: disable=W0612
-    _setup.proxy_function = False # pylint: disable=W0612
     
     def getNextResponse(self):
         """
@@ -247,31 +177,18 @@ class ArduinoProxy(object):
     # Digital I/O
     def _pinMode(self): # pylint: disable=C0103,R0201
         return _unindent(12, """
-            void _pinMode(String cmd) {
-                if(!cmd.startsWith("%(method)s")) {
+            void _pinMode() {
+                int pin = atoi(received_parameters[1]);
+                int mode = atoi(received_parameters[2]);
+                if(mode != INPUT && mode != OUTPUT) {
+                    send_invalid_parameter_response();
                     return;
                 }
-                int index_of_pin = cmd.indexOf(' ');
-                int index_of_mode = cmd.indexOf(' ', index_of_pin+1);
-                String pin = cmd.substring(index_of_pin, index_of_mode);
-                String mode = cmd.substring(index_of_mode);
-                if(mode.equals("%(INPUT)s")) {
-                    pinMode(stringToInt(pin), INPUT);
-                    sendOkResponse();
-                    return;
-                }
-                if(mode.equals("%(OUTPUT)s")) {
-                    pinMode(stringToInt(pin), OUTPUT);
-                    sendOkResponse();
-                    return;
-                }
-                sendInvalidCmdResponse();
+                // FIXME: validate pin
+                pinMode(pin, mode);
+                send_ok_response();
             }
-        """ % {
-        'method': '_pinMode', 
-        'INPUT': ArduinoProxy.INPUT, 
-        'OUTPUT': ArduinoProxy.OUTPUT, 
-        })
+        """)
     
     _pinMode.include_in_pde = True # pylint: disable=W0612
     _pinMode.proxy_function = True # pylint: disable=W0612
@@ -285,10 +202,13 @@ class ArduinoProxy(object):
         * NOTE: Digital pin 13 is harder to use as a digital input than the other digital pins
         because it has an LED and resistor attached to it that's soldered to the board
         * it is a good idea to connect OUTPUT pins to other devices with 470omh or 1k resistors
-        
-        TODO: The analog input pins can be used as digital pins, referred to as A0, A1, etc.
         """
-        cmd = "_pinMode %d %s" % (pin, mode)
+        # TODO: The analog input pins can be used as digital pins, referred to as A0, A1, etc.
+        # FIXME: validate pin and value
+        # FIXME: add doc for parameters and exceptions
+        if not type(pin) is int or not mode in [ArduinoProxy.INPUT, ArduinoProxy.OUTPUT]:
+            raise(InvalidArgument())
+        cmd = "_pinMode %d %d" % (pin, mode)
         ret = self.sendCmd(cmd)
         return ret
     
@@ -296,38 +216,29 @@ class ArduinoProxy(object):
     
     def _digitalWrite(self): # pylint: disable=C0103,R0201
         return _unindent(12, """
-            void _digitalWrite(String cmd) {
-                if(!cmd.startsWith("%(method)s")) {
+            void _digitalWrite() {
+                int pin = atoi(received_parameters[1]);
+                int value = atoi(received_parameters[2]);
+                
+                if(value != HIGH && value != LOW) {
+                    send_invalid_parameter_response();
                     return;
                 }
-                int index_of_pin = cmd.indexOf(' ');
-                int index_of_value = cmd.indexOf(' ', index_of_pin+1);
-                String pin = cmd.substring(index_of_pin, index_of_value);
-                String value = cmd.substring(index_of_value);
-                if(value.equals("%(HIGH)s")) {
-                    digitalWrite(stringToInt(pin), HIGH);
-                    sendOkResponse();
-                    return;
-                }
-                if(value.equals("%(LOW)s")) {
-                    digitalWrite(stringToInt(pin), LOW);
-                    sendOkResponse();
-                    return;
-                }
-                sendInvalidCmdResponse();
+                
+                digitalWrite(pin, value);
+                send_ok_response();
             }
-        """ % {
-        'method': '_digitalWrite', 
-        'HIGH': ArduinoProxy.HIGH, 
-        'LOW': ArduinoProxy.LOW, 
-        })
+        """)
     
     _digitalWrite.include_in_pde = True # pylint: disable=W0612
     _digitalWrite.proxy_function = True # pylint: disable=W0612
     
     def digitalWrite(self, pin, value): # pylint: disable=C0103
         # FIXME: validate pin and value
-        cmd = "_digitalWrite %d %s" % (pin, value)
+        # FIXME: add doc for parameters and exceptions
+        if not type(pin) is int or not value in [ArduinoProxy.LOW, ArduinoProxy.HIGH]:
+            raise(InvalidArgument())
+        cmd = "_digitalWrite %d %d" % (pin, value)
         ret = self.sendCmd(cmd)
         return ret
     
@@ -346,19 +257,13 @@ class ArduinoProxy(object):
     
     def _analogRead(self): # pylint: disable=C0103,R0201
         return _unindent(12, """
-            void _analogRead(String cmd) {
-                if(!cmd.startsWith("%(method)s")) {
-                    return;
-                }
-                int index_of_pin = cmd.indexOf(' ');
-                String pin = cmd.substring(index_of_pin);
-                int value = analogRead(stringToInt(pin));
-                sendIntResponse(value);
+            void _analogRead() {
+                int pin = atoi(received_parameters[1]);
+                int value = analogRead(pin);
+                send_int_response(value);
                 return;
             }
-        """ % {
-        'method': '_analogRead', 
-    })
+        """)
     
     _analogRead.include_in_pde = True # pylint: disable=W0612
     _analogRead.proxy_function = True # pylint: disable=W0612
@@ -367,6 +272,10 @@ class ArduinoProxy(object):
         """
         * map input voltages between 0 and 5 volts into integer values between 0 and 1023.
         """
+        # FIXME: validate pin
+        # FIXME: add doc for parameters and exceptions
+        if not type(pin) is int:
+            raise(InvalidArgument())
         cmd = "_analogRead %d" % (pin)
         ret = self.sendCmd(cmd)
         return ret
@@ -380,21 +289,16 @@ class ArduinoProxy(object):
     
     def _ping(self): # pylint: disable=C0103,R0201
         return _unindent(12, """
-            void _ping(String cmd) {
-                if(!cmd.startsWith("%(method)s")) {
-                    return;
-                }
-                sendPingOkResponse();
+            void _ping() {
+                Serial.println("PING_OK");
             }
-        """ % {
-        'method': '_ping', 
-        })
+        """)
     
     _ping.include_in_pde = True # pylint: disable=W0612
     _ping.proxy_function = True # pylint: disable=W0612
     
     def ping(self): # pylint: disable=C0103
-        # FIXME: validate pin and value
+        # FIXME: add doc
         cmd = "_ping"
         ret = self.sendCmd(cmd)
         if ret != 'PING_OK':
@@ -406,21 +310,16 @@ class ArduinoProxy(object):
     
     def _connect(self): # pylint: disable=C0103,R0201
         return _unindent(12, """
-            void _connect(String cmd) {
-                if(!cmd.startsWith("%(method)s")) {
-                    return;
-                }
-                sendConnectOkResponse(cmd);
+            void _connect() {
+                Serial.println(received_parameters[1]);
             }
-        """ % {
-        'method': '_connect', 
-        })
+        """)
     
     _connect.include_in_pde = True # pylint: disable=W0612
     _connect.proxy_function = True # pylint: disable=W0612
     
     def connect(self): # pylint: disable=C0103
-        # FIXME: validate pin and value
+        # FIXME: add doc
         random_uuid = str(uuid.uuid4())
         cmd = "_connect %s" % random_uuid
         ret = self.sendCmd(cmd)
@@ -435,41 +334,93 @@ class ArduinoProxy(object):
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
     
     def close(self):
+        # FIXME: add doc
         if self.serial_port:
             self.serial_port.close()
 
 def main():
+    
+    if len(sys.argv) != 2:
+        raise(Exception("Must specify output directory!"))
+    
+    output_dir = sys.argv[1]
+    if not os.path.isdir(output_dir):
+        raise(Exception("Output path isn't a directory! Path: %s" % output_dir))
+    
+    SRC_DIR = os.path.split(os.path.realpath(__file__))[0] # SRC_DIR/arduino_proxy/tests
+    SRC_DIR = os.path.split(SRC_DIR)[0] # SRC_DIR/arduino_proxy
+    SRC_DIR = os.path.split(SRC_DIR)[0] # SRC_DIR
+    C_INPUT_FILENAME = os.path.join(SRC_DIR, 'src-c', 'arduino.c')
+    H_INPUT_FILENAME = os.path.join(SRC_DIR, 'src-c', 'py_arduino_proxy.h')
+    
+    c_file = open(C_INPUT_FILENAME, 'r')
+    c_file_lines = [line.strip('\r\n') for line in c_file.readlines()]
+    for i in range(0, len(c_file_lines)):
+        splitted = c_file_lines[i].split()
+        if len(splitted) >= 3 and \
+                splitted[0] == '#define' and \
+                splitted[1] == 'PY_ARDUINO_PROXY_DEVEL' and \
+                splitted[2].startswith('//'):
+            c_file_lines[i] = '// ' + c_file_lines[i]
+            break
+    
+    output = StringIO()
+    output.write(_unindent(8, """
+        //
+        // THIS FILE IS GENERATED AUTOMATICALLI WITH generate-pde.sh
+        // WHICH IS PART OF THE PROJECT "PyArduinoProxy"
+        //
+    """))
+    output.write("\n\n")
+    
     proxy = ArduinoProxy('')
+    
+    # All this functions have 'proxy_function' == True
+    proxy_functions = [getattr(proxy, a_function) for a_function in dir(proxy)
+        if getattr(getattr(proxy, a_function), 'proxy_function', None) is True]
+    
+    proxied_function_source = StringIO()
+    proxied_function_names = StringIO()
+    proxied_function_ptrs = StringIO()
+    for function in proxy_functions:
+        proxied_function_source.write("\n")
+        proxied_function_source.write(function())
+        proxied_function_source.write("\n")
+        proxied_function_names.write('"%s", ' % function.__name__)
+        proxied_function_ptrs.write('%s, ' % function.__name__)
 
-    print _unindent(8, """
-        /*
-         * THIS FILE IS GENERATED AUTOMATICALLI WITH generate-pde.sh
-         * WHICH IS PART OF THE PROJECT "PyArduinoProxy"
-         */
-    """)
+    placeholder_values = {
+        'proxied_function_count': len(proxy_functions), 
+        'proxied_function_names': proxied_function_names.getvalue(), 
+        'proxied_function_ptrs': proxied_function_ptrs.getvalue(), 
+        'proxied_function_source': proxied_function_source.getvalue(), 
+        'serial_speed': proxy.speed, 
+        'INVALID_CMD': ArduinoProxy.INVALID_CMD, 
+    }
     
-    # All this functions have 'include_in_pde' == True
-    pde_functions = [getattr(proxy, a_function) for a_function in dir(proxy)
-        if getattr(getattr(proxy, a_function), 'include_in_pde', None) is True]
+    for line in c_file_lines:
+        splitted = line.split()
+        if len(splitted) > 2 and \
+                splitted[-2] == '//' and \
+                splitted[-1] == '{***PLACEHOLDER***}':
+            output.write('// >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<\n')
+            try:
+                output.write(line % placeholder_values)
+            except TypeError:
+                print "> "
+                print "> Error while trying to replace values in line with PLACEHOLDER"
+                print "> Line: %s" % line
+                print "> "
+                raise
+        else:
+            output.write(line)
+        output.write('\n')
     
-    # First functions that have 'proxy_function' == False
-    for function in [a_function for a_function in pde_functions
-            if getattr(a_function, 'proxy_function', None) is False]:
-        print function()
+    output_file_c = open(os.path.join(output_dir, 'py_arduino_proxy.pde'), 'w')
+    output_file_c.write(output.getvalue())
+    output_file_c.close()
     
-    # Now the real, interesting functions...
-    for function in [a_function for a_function in pde_functions
-            if getattr(a_function, 'proxy_function', None) is True]:
-        print function()
+    shutil.copyfile(H_INPUT_FILENAME, os.path.join(output_dir, 'py_arduino_proxy.h'))
     
-    # Now, generate the loop()
-    print "void loop() {"
-    print "    readCmd();"
-    
-    for function in [a_function for a_function in pde_functions
-            if getattr(a_function, 'proxy_function', None) is True]:
-        print "    " + function.__name__ + "(String(lastCmd));"
-    print "}"
-
 if __name__ == '__main__':
     main()
