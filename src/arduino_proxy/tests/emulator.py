@@ -68,7 +68,10 @@ class ArduinoEmulator(threading.Thread):
             self.serial_connection.write("OK\n")
         elif splitted[0] == '_connect':
             self.serial_connection.write("%s\n" % splitted[1])
+        elif splitted[0] == '_pinMode':
+            self.serial_connection.write("OK\n")
         else:
+            self.serial_connection.write("%s\n" % ArduinoProxy.INVALID_CMD)
             logger.error("run_cmd() - INVALID COMMAND: %s", pprint.pformat(cmd))
     
     def read_cmd(self):
@@ -246,14 +249,24 @@ class TestArduinoProxy(unittest.TestCase):
             self.assertRaises(InvalidArgument, self.proxy.analogRead, an_arg)
 
     def test_digital_write(self):
-        self.proxy.digitalWrite(1, ArduinoProxy.HIGH)
-        self.proxy.digitalWrite(1, ArduinoProxy.LOW)
+        self.proxy.digitalWrite(99, ArduinoProxy.HIGH)
+        self.proxy.digitalWrite(99, ArduinoProxy.LOW)
 
     def test_digital_write_invalid_parameters(self):
         for an_arg in (None, 'something', Exception(), 1.1):
             self.assertRaises(InvalidArgument, self.proxy.digitalWrite, 99, an_arg)
             self.assertRaises(InvalidArgument, self.proxy.digitalWrite, an_arg, ArduinoProxy.HIGH)
             self.assertRaises(InvalidArgument, self.proxy.digitalWrite, an_arg, ArduinoProxy.LOW)
+
+    def test_pin_mode(self):
+        self.proxy.pinMode(99, ArduinoProxy.OUTPUT)
+        self.proxy.pinMode(99, ArduinoProxy.INPUT)
+
+    def test_pin_mode_invalid_parameters(self):
+        for an_arg in (None, 'something', Exception(), 1.1):
+            self.assertRaises(InvalidArgument, self.proxy.pinMode, 99, an_arg)
+            self.assertRaises(InvalidArgument, self.proxy.pinMode, an_arg, ArduinoProxy.OUTPUT)
+            self.assertRaises(InvalidArgument, self.proxy.pinMode, an_arg, ArduinoProxy.INPUT)
 
     def tearDown(self):
         self.proxy.close()
