@@ -79,7 +79,7 @@ class ArduinoEmulator(threading.Thread):
             a_char = self.serial_connection.read()
             logger.debug("self.serial_connection.read() - a_char: %s", pprint.pformat(a_char))
             if a_char == '': # timeout
-                time.sleep(0.1)
+                time.sleep(0.001)
                 continue
             
             if a_char == '\n': # new line
@@ -183,7 +183,7 @@ class SerialConnectionMock(object):
             finally:
                 self._lock.release()
             if wait:
-                time.sleep(0.1)
+                time.sleep(0.001)
         self.logger.debug("read() -> ''")
         return ''
 
@@ -200,7 +200,7 @@ class TestArduinoProxyWithInitialContentInSerialBuffer(unittest.TestCase):
     """
     def setUp(self): # pylint: disable=C0103
         self.proxy = ArduinoProxy(tty='')
-        self.proxy.serial_port = SerialConnectionMock(timeout=10, 
+        self.proxy.serial_port = SerialConnectionMock( \
             initial_in_buffer_contents="** SOME TEXT **\n" * 5)
         self.emulator = ArduinoEmulator(self.proxy.serial_port.get_other_side())
         self.emulator.start()
@@ -213,6 +213,7 @@ class TestArduinoProxyWithInitialContentInSerialBuffer(unittest.TestCase):
     def tearDown(self): # pylint: disable=C0103
         self.proxy.close()
         self.emulator.stop_running()
+        logger.info("tearDown(): emulator.join()")
         self.emulator.join()
         logger.debug("tearDown(): %s", str(self.proxy.serial_port))
 
@@ -272,6 +273,7 @@ class TestArduinoProxy(unittest.TestCase):
     def tearDown(self): # pylint: disable=C0103
         self.proxy.close()
         self.emulator.stop_running()
+        logger.info("tearDown(): emulator.join()")
         self.emulator.join()
         logger.debug("tearDown(): %s", str(self.proxy.serial_port))
 

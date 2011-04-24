@@ -144,10 +144,10 @@ class ArduinoProxy(object):
         
         response = response.getvalue().strip()
         end = time.time()
-        logger.debug("sendCmd() - Got response: '%s' - Took: %.2f secs." % (response, (end-start)))
+        logger.debug("get_next_response() - Got response: '%s' - Took: %.2f secs." % (response, (end-start)))
         return response
     
-    def sendCmd(self, cmd): # pylint: disable=C0103
+    def send_cmd(self, cmd):
         """
         Sends a command to the arduino. The command is terminated with a 0x00.
         Returns the response as a string.
@@ -155,7 +155,7 @@ class ArduinoProxy(object):
         Raises:
         - CommandTimeout: if a timeout is detected while reading response.
         """
-        logger.debug("sendCmd() called. cmd: '%s'" % cmd)
+        logger.debug("send_cmd() called. cmd: '%s'" % cmd)
         
         self.serial_port.write(cmd)
         self.serial_port.write("\n")
@@ -205,7 +205,7 @@ class ArduinoProxy(object):
         if not type(pin) is int or not mode in [ArduinoProxy.INPUT, ArduinoProxy.OUTPUT]:
             raise(InvalidArgument())
         cmd = "_pinMode %d %d" % (pin, mode)
-        ret = self.sendCmd(cmd)
+        ret = self.send_cmd(cmd)
         return ret
     
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -235,7 +235,7 @@ class ArduinoProxy(object):
         if not type(pin) is int or not value in [ArduinoProxy.LOW, ArduinoProxy.HIGH]:
             raise(InvalidArgument())
         cmd = "_digitalWrite %d %d" % (pin, value)
-        ret = self.sendCmd(cmd)
+        ret = self.send_cmd(cmd)
         return ret
     
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -273,7 +273,7 @@ class ArduinoProxy(object):
         if not type(pin) is int:
             raise(InvalidArgument())
         cmd = "_analogRead %d" % (pin)
-        ret = self.sendCmd(cmd)
+        ret = self.send_cmd(cmd)
         return ret
     
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -296,7 +296,7 @@ class ArduinoProxy(object):
     def ping(self): # pylint: disable=C0103
         # FIXME: add doc
         cmd = "_ping"
-        ret = self.sendCmd(cmd)
+        ret = self.send_cmd(cmd)
         if ret != 'PING_OK':
             raise(InvalidResponse("The response to a ping() should be an 'PING_OK', not '%s'" %
                 ret))
@@ -318,7 +318,7 @@ class ArduinoProxy(object):
         # FIXME: add doc
         random_uuid = str(uuid.uuid4())
         cmd = "_connect %s" % random_uuid
-        ret = self.sendCmd(cmd)
+        ret = self.send_cmd(cmd)
         
         while ret != random_uuid:
             logger.warn("connect(): Ignoring invalid response: %s", pprint.pformat(ret))
