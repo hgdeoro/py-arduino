@@ -23,7 +23,6 @@ import os
 import pprint
 import random
 import threading
-import serial
 import sys
 import time
 import unittest
@@ -37,7 +36,7 @@ sys.path.append(os.path.abspath(SRC_DIR))
 
 from arduino_proxy import ArduinoProxy, InvalidArgument
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__) # pylint: disable=C0103
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -111,15 +110,15 @@ class SerialConnectionMock(object):
     The MASTER endpoint, on the Py-Arduino-Proxy side,
     and the SLAVE endpoint, on the Arduino Emulator side.
     """
-    def __init__(self, other_side=None, timeout=1, initial_in_buffer_contents='',
-            initial_out_buffer_contents='', *args, **kwargs):
+    def __init__(self, other_side=None, timeout=1, # pylint: disable=W0613
+            initial_in_buffer_contents='', initial_out_buffer_contents='', *args, **kwargs):
         
         if other_side:
             # other_side != None -> Arduino side (SLAVE)
             self.master_of = None
             self.slave_of = weakref.ref(other_side)
             self.timeout = other_side.timeout
-            self._lock = other_side._lock
+            self._lock = other_side._lock # pylint: disable=W0212
             self.logger = logging.getLogger('SerialConnectionMock.ARDUINO')
         else:
             # other_side == None -> Python side (MASTER)
@@ -147,7 +146,8 @@ class SerialConnectionMock(object):
             if self.master_of:
                 self._out_buffer = self._out_buffer + buff
             else:
-                self.slave_of()._in_buffer = self.slave_of()._in_buffer + buff
+                self.slave_of()._in_buffer = \
+                    self.slave_of()._in_buffer + buff # pylint: disable=W0212
         finally:
             self._lock.release()
     
@@ -172,9 +172,10 @@ class SerialConnectionMock(object):
                         wait = True
                 else:
                     # WE are in the slave side
-                    if self.slave_of()._out_buffer:
-                        a_char = self.slave_of()._out_buffer[0]
-                        self.slave_of()._out_buffer = self.slave_of()._out_buffer[1:]
+                    if self.slave_of()._out_buffer: # pylint: disable=W0212
+                        a_char = self.slave_of()._out_buffer[0] # pylint: disable=W0212
+                        self.slave_of()._out_buffer = \
+                            self.slave_of()._out_buffer[1:] # pylint: disable=W0212
                         self.logger.debug("read() -> %s", pprint.pformat(a_char))
                         return a_char
                     else:
@@ -197,7 +198,7 @@ class TestArduinoProxyWithInitialContentInSerialBuffer(unittest.TestCase):
     """
     Testcase for commands.
     """
-    def setUp(self):
+    def setUp(self): # pylint: disable=C0103
         self.proxy = ArduinoProxy(tty='')
         self.proxy.serial_port = SerialConnectionMock(timeout=10, 
             initial_in_buffer_contents="** SOME TEXT **\n" * 5)
@@ -209,7 +210,7 @@ class TestArduinoProxyWithInitialContentInSerialBuffer(unittest.TestCase):
         response = self.proxy.ping()
         self.assertEquals(response, 'PING_OK')
 
-    def tearDown(self):
+    def tearDown(self): # pylint: disable=C0103
         self.proxy.close()
         self.emulator.stop_running()
         self.emulator.join()
@@ -220,7 +221,7 @@ class TestArduinoProxy(unittest.TestCase):
     Testcase for commands.
     """
     
-    def setUp(self):
+    def setUp(self): # pylint: disable=C0103
         self.proxy = ArduinoProxy(tty='')
         self.proxy.serial_port = SerialConnectionMock()
         self.emulator = ArduinoEmulator(self.proxy.serial_port.get_other_side())
@@ -231,20 +232,20 @@ class TestArduinoProxy(unittest.TestCase):
         self.assertEquals(response, 'PING_OK')
     
     def test_multiping(self):
-        for i in range(0, 10):
+        for i in range(0, 10): # pylint: disable=W0612
             start = time.time()
             response = self.proxy.ping()
             end = time.time()
             self.assertEquals(response, 'PING_OK')
-            logging.info("PING took %.2f ms" % ((end-start)*1000))
+            logging.info("PING took %.2f ms", ((end-start)*1000))
     
     def test_analog_read(self):
         response = self.proxy.analogRead(5)
         response = int(response)
         if response < 0 or response > 1023:
             self.fail("analogRead() returned invalid value: %d" % response)
-
-    def test_analog_read_invalid_parameters(self):
+        
+        # test with invalid arguments
         for an_arg in (None, 'something', Exception(), 1.1):
             self.assertRaises(InvalidArgument, self.proxy.analogRead, an_arg)
 
@@ -252,7 +253,7 @@ class TestArduinoProxy(unittest.TestCase):
         self.proxy.digitalWrite(99, ArduinoProxy.HIGH)
         self.proxy.digitalWrite(99, ArduinoProxy.LOW)
 
-    def test_digital_write_invalid_parameters(self):
+        # test with invalid arguments
         for an_arg in (None, 'something', Exception(), 1.1):
             self.assertRaises(InvalidArgument, self.proxy.digitalWrite, 99, an_arg)
             self.assertRaises(InvalidArgument, self.proxy.digitalWrite, an_arg, ArduinoProxy.HIGH)
@@ -262,13 +263,13 @@ class TestArduinoProxy(unittest.TestCase):
         self.proxy.pinMode(99, ArduinoProxy.OUTPUT)
         self.proxy.pinMode(99, ArduinoProxy.INPUT)
 
-    def test_pin_mode_invalid_parameters(self):
+        # test with invalid arguments
         for an_arg in (None, 'something', Exception(), 1.1):
             self.assertRaises(InvalidArgument, self.proxy.pinMode, 99, an_arg)
             self.assertRaises(InvalidArgument, self.proxy.pinMode, an_arg, ArduinoProxy.OUTPUT)
             self.assertRaises(InvalidArgument, self.proxy.pinMode, an_arg, ArduinoProxy.INPUT)
 
-    def tearDown(self):
+    def tearDown(self): # pylint: disable=C0103
         self.proxy.close()
         self.emulator.stop_running()
         self.emulator.join()
@@ -277,11 +278,11 @@ class TestArduinoProxy(unittest.TestCase):
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 if __name__ == '__main__':
-    args = list(sys.argv)
-    if '--debug' in args:
+    ARGS = list(sys.argv)
+    if '--debug' in ARGS:
         logging.basicConfig(level=logging.DEBUG)
-        args.remove('--debug')
+        ARGS.remove('--debug')
     else:
         logging.basicConfig(level=logging.INFO)
     
-    unittest.main(argv=args)
+    unittest.main(argv=ARGS)

@@ -20,12 +20,8 @@
 # TODO: _unindent() could be a annotation
 
 import logging
-import os
-import os.path
 import pprint
 import serial
-import shutil
-import sys
 import time
 import uuid
 
@@ -118,12 +114,12 @@ class ArduinoProxy(object):
                 self.connect()
             logger.debug("Done.")
     
-    def getNextResponse(self):
+    def get_next_response(self):
         """
         Waits for a response from the serial.
         Raises CommandTimeout if a timeout while reading is detected.
         """
-        logger.debug("getNextResponse() - waiting for response...")
+        logger.debug("get_next_response() - waiting for response...")
         start = time.time()
         response = StringIO()
         while True:
@@ -165,7 +161,7 @@ class ArduinoProxy(object):
         self.serial_port.write("\n")
         self.serial_port.flush()
         
-        response = self.getNextResponse() # Raises CommandTimeout
+        response = self.get_next_response() # Raises CommandTimeout
         
         if response == ArduinoProxy.INVALID_CMD:
             raise(InvalidCommand())
@@ -327,7 +323,7 @@ class ArduinoProxy(object):
         while ret != random_uuid:
             logger.warn("connect(): Ignoring invalid response: %s", pprint.pformat(ret))
             # Go for the uuid, or a timeout exception!
-            ret = self.getNextResponse()
+            ret = self.get_next_response()
         
         return ret
     
@@ -337,90 +333,3 @@ class ArduinoProxy(object):
         # FIXME: add doc
         if self.serial_port:
             self.serial_port.close()
-
-def main():
-    
-    if len(sys.argv) != 2:
-        raise(Exception("Must specify output directory!"))
-    
-    output_dir = sys.argv[1]
-    if not os.path.isdir(output_dir):
-        raise(Exception("Output path isn't a directory! Path: %s" % output_dir))
-    
-    SRC_DIR = os.path.split(os.path.realpath(__file__))[0] # SRC_DIR/arduino_proxy/tests
-    SRC_DIR = os.path.split(SRC_DIR)[0] # SRC_DIR/arduino_proxy
-    SRC_DIR = os.path.split(SRC_DIR)[0] # SRC_DIR
-    C_INPUT_FILENAME = os.path.join(SRC_DIR, 'src-c', 'arduino.c')
-    H_INPUT_FILENAME = os.path.join(SRC_DIR, 'src-c', 'py_arduino_proxy.h')
-    
-    c_file = open(C_INPUT_FILENAME, 'r')
-    c_file_lines = [line.strip('\r\n') for line in c_file.readlines()]
-    for i in range(0, len(c_file_lines)):
-        splitted = c_file_lines[i].split()
-        if len(splitted) >= 3 and \
-                splitted[0] == '#define' and \
-                splitted[1] == 'PY_ARDUINO_PROXY_DEVEL' and \
-                splitted[2].startswith('//'):
-            c_file_lines[i] = '// ' + c_file_lines[i]
-            break
-    
-    output = StringIO()
-    output.write(_unindent(8, """
-        //
-        // THIS FILE IS GENERATED AUTOMATICALLI WITH generate-pde.sh
-        // WHICH IS PART OF THE PROJECT "PyArduinoProxy"
-        //
-    """))
-    output.write("\n\n")
-    
-    proxy = ArduinoProxy('')
-    
-    # All this functions have 'proxy_function' == True
-    proxy_functions = [getattr(proxy, a_function) for a_function in dir(proxy)
-        if getattr(getattr(proxy, a_function), 'proxy_function', None) is True]
-    
-    proxied_function_source = StringIO()
-    proxied_function_names = StringIO()
-    proxied_function_ptrs = StringIO()
-    for function in proxy_functions:
-        proxied_function_source.write("\n")
-        proxied_function_source.write(function())
-        proxied_function_source.write("\n")
-        proxied_function_names.write('"%s", ' % function.__name__)
-        proxied_function_ptrs.write('%s, ' % function.__name__)
-
-    placeholder_values = {
-        'proxied_function_count': len(proxy_functions), 
-        'proxied_function_names': proxied_function_names.getvalue(), 
-        'proxied_function_ptrs': proxied_function_ptrs.getvalue(), 
-        'proxied_function_source': proxied_function_source.getvalue(), 
-        'serial_speed': proxy.speed, 
-        'INVALID_CMD': ArduinoProxy.INVALID_CMD, 
-    }
-    
-    for line in c_file_lines:
-        splitted = line.split()
-        if len(splitted) > 2 and \
-                splitted[-2] == '//' and \
-                splitted[-1] == '{***PLACEHOLDER***}':
-            output.write('// >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<\n')
-            try:
-                output.write(line % placeholder_values)
-            except TypeError:
-                print "> "
-                print "> Error while trying to replace values in line with PLACEHOLDER"
-                print "> Line: %s" % line
-                print "> "
-                raise
-        else:
-            output.write(line)
-        output.write('\n')
-    
-    output_file_c = open(os.path.join(output_dir, 'py_arduino_proxy.pde'), 'w')
-    output_file_c.write(output.getvalue())
-    output_file_c.close()
-    
-    shutil.copyfile(H_INPUT_FILENAME, os.path.join(output_dir, 'py_arduino_proxy.h'))
-    
-if __name__ == '__main__':
-    main()
