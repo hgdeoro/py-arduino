@@ -20,7 +20,6 @@
 
 import os
 import sys
-import time
 
 # Setup PYTHONPATH
 SRC_DIR = os.path.split(os.path.realpath(__file__))[0] # SRC_DIR/arduino_proxy/tests
@@ -47,7 +46,7 @@ def main():
         while True:
             for value in range(0, 256):
                 proxy.analogWrite(pwm_digital_port, value)
-            for value in range(255,-1, -1):
+            for value in range(255, -1, -1):
                 proxy.analogWrite(pwm_digital_port, value)
     except KeyboardInterrupt:
         print ""

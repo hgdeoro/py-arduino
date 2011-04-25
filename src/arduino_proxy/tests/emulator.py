@@ -65,7 +65,7 @@ class ArduinoEmulator(threading.Thread):
             value = random.randint(0, 1023)
             self.serial_connection.write("%d\n" % value)
         elif splitted[0] == '_digitalRead':
-            value = [ArduinoProxy.HIGH, ArduinoProxy.LOW][random.randint(0,1)]
+            value = [ArduinoProxy.HIGH, ArduinoProxy.LOW][random.randint(0, 1)]
             self.serial_connection.write("%d\n" % value)
         elif splitted[0] == '_digitalWrite':
             self.serial_connection.write("OK\n")
@@ -223,7 +223,7 @@ class TestArduinoProxyWithInitialContentInSerialBuffer(unittest.TestCase):
         self.emulator.join()
         logger.debug("tearDown(): %s", str(self.proxy.serial_port))
 
-class TestArduinoProxy(unittest.TestCase):
+class TestArduinoProxy(unittest.TestCase): # pylint: disable=R0904
     """
     Testcase for commands.
     """

@@ -82,7 +82,8 @@ class ArduinoProxy(object):
     
     INVALID_CMD = "INVALID_CMD"
     
-    def __init__(self, tty, speed=9600, wait_after_open=3, timeout=5, call_connect=True):
+    def __init__(self, tty, speed=9600, wait_after_open=3, timeout=5, # pylint: disable=R0913
+            call_connect=True):
         # For communicating with the computer, use one of these rates: 300, 1200, 2400, 4800,
         #    9600, 14400, 19200, 28800, 38400, 57600, or 115200.
         logger.debug("Instantiating ArduinoProxy('%s', %d)..." % (tty, speed))
