@@ -42,35 +42,22 @@ def _unindent(spaces, the_string):
             lines.append(a_line)
     return '\n'.join(lines)
 
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 class InvalidCommand(Exception):
-    """
-    The Arduino reported an error in the command
-    """
-    pass
+    """The Arduino reported an error in the command"""
 
 class InvalidResponse(Exception):
-    """
-    The response from the Arduino isn't valid.
-    """
-    pass
+    """The response from the Arduino isn't valid."""
 
 class EmptyResponse(Exception):
-    """
-    The response from the Arduino was empty.
-    """
-    pass
+    """The response from the Arduino was empty."""
 
 class CommandTimeout(Exception):
-    """
-    Timeout detected while waiting for Arduino's response.
-    """
-    pass
+    """Timeout detected while waiting for Arduino's response."""
 
 class InvalidArgument(Exception):
-    """
-    A method was called with invalid argument type or values.
-    """
-    pass
+    """A method was called with invalid argument type or values."""
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -144,7 +131,8 @@ class ArduinoProxy(object):
         
         response = response.getvalue().strip()
         end = time.time()
-        logger.debug("get_next_response() - Got response: '%s' - Took: %.2f secs." % (response, (end-start)))
+        logger.debug("get_next_response() - Got response: '%s' - Took: %.2f secs." % (
+            response, (end-start)))
         return response
     
     def send_cmd(self, cmd):
@@ -154,6 +142,7 @@ class ArduinoProxy(object):
         
         Raises:
         - CommandTimeout: if a timeout is detected while reading response.
+        - InvalidCommand: if the Arduino reported the sent command as invalid.
         """
         logger.debug("send_cmd() called. cmd: '%s'" % cmd)
         
@@ -186,7 +175,6 @@ class ArduinoProxy(object):
             }
         """)
     
-    _pinMode.include_in_pde = True # pylint: disable=W0612
     _pinMode.proxy_function = True # pylint: disable=W0612
     
     def pinMode(self, pin, mode): # pylint: disable=C0103
@@ -205,8 +193,13 @@ class ArduinoProxy(object):
         if not type(pin) is int or not mode in [ArduinoProxy.INPUT, ArduinoProxy.OUTPUT]:
             raise(InvalidArgument())
         cmd = "_pinMode %d %d" % (pin, mode)
-        ret = self.send_cmd(cmd)
-        return ret
+        response = self.send_cmd(cmd) # raises CommandTimeout,InvalidCommand
+        
+        if response != "OK":
+            raise(InvalidResponse("The response wasn't 'OK'. Response: %s" % \
+                pprint.pformat(response)))
+        
+        return response
     
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
     
@@ -226,7 +219,6 @@ class ArduinoProxy(object):
             }
         """)
     
-    _digitalWrite.include_in_pde = True # pylint: disable=W0612
     _digitalWrite.proxy_function = True # pylint: disable=W0612
     
     def digitalWrite(self, pin, value): # pylint: disable=C0103
@@ -235,13 +227,56 @@ class ArduinoProxy(object):
         if not type(pin) is int or not value in [ArduinoProxy.LOW, ArduinoProxy.HIGH]:
             raise(InvalidArgument())
         cmd = "_digitalWrite %d %d" % (pin, value)
-        ret = self.send_cmd(cmd)
-        return ret
+        response = self.send_cmd(cmd) # raises CommandTimeout,InvalidCommand
+        
+        if response != "OK":
+            raise(InvalidResponse("The response wasn't 'OK'. Response: %s" % \
+                pprint.pformat(response)))
+        
+        return response
     
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
     
-    def digitalRead(self): # pylint: disable=C0103
-        pass
+    def _digitalRead(self): # pylint: disable=C0103,R0201
+        return _unindent(12, """
+            void _digitalRead() {
+                int pin = atoi(received_parameters[1]);
+                int value = digitalRead(pin);
+                send_int_response(value);
+                return;
+            }
+        """)
+    
+    _digitalRead.proxy_function = True # pylint: disable=W0612
+    
+    def digitalRead(self, pin): # pylint: disable=C0103
+        """
+        * Reads the value from a specified digital pin, either HIGH or LOW.
+        
+        Parameters:
+        - pin: the pin to be read
+        
+        Raises:
+        - InvalidResponse: if the response isn't valid
+        """
+        # FIXME: validate pin
+        # FIXME: add doc for parameters and exceptions
+        if not type(pin) is int:
+            raise(InvalidArgument())
+        cmd = "_digitalRead %d" % (pin)
+        response = self.send_cmd(cmd) # raises CommandTimeout,InvalidCommand
+        
+        try:
+            int_response = int(response)
+        except ValueError:
+            raise(InvalidResponse("The response couldn't be converted to int. Response: %s" % \
+                pprint.pformat(response)))
+        
+        if int_response in [ArduinoProxy.HIGH, ArduinoProxy.LOW]:
+            return int_response
+        
+        raise(InvalidResponse("The response isn't HIGH (%d) nor LOW (%d). Response: %s" % (
+            ArduinoProxy.HIGH, ArduinoProxy.LOW, int_response)))
     
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
     
@@ -261,7 +296,6 @@ class ArduinoProxy(object):
             }
         """)
     
-    _analogRead.include_in_pde = True # pylint: disable=W0612
     _analogRead.proxy_function = True # pylint: disable=W0612
     
     def analogRead(self, pin): # pylint: disable=C0103
@@ -273,8 +307,19 @@ class ArduinoProxy(object):
         if not type(pin) is int:
             raise(InvalidArgument())
         cmd = "_analogRead %d" % (pin)
-        ret = self.send_cmd(cmd)
-        return ret
+        response = self.send_cmd(cmd) # raises CommandTimeout,InvalidCommand
+        
+        try:
+            int_response = int(response)
+        except ValueError:
+            raise(InvalidResponse("The response couldn't be converted to int. Response: %s" % \
+                pprint.pformat(response)))
+        
+        if int_response >= 0 and int_response <= 1023:
+            return int_response
+        
+        raise(InvalidResponse("The response isn't in the valid range of 0-1023. " + \
+            "Response: %d" % int_response))
     
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
     
@@ -290,17 +335,16 @@ class ArduinoProxy(object):
             }
         """)
     
-    _ping.include_in_pde = True # pylint: disable=W0612
     _ping.proxy_function = True # pylint: disable=W0612
     
     def ping(self): # pylint: disable=C0103
         # FIXME: add doc
         cmd = "_ping"
-        ret = self.send_cmd(cmd)
-        if ret != 'PING_OK':
-            raise(InvalidResponse("The response to a ping() should be an 'PING_OK', not '%s'" %
-                ret))
-        return ret
+        response = self.send_cmd(cmd) # raises CommandTimeout,InvalidCommand
+        if response != 'PING_OK':
+            raise(InvalidResponse("The response to a ping() wasn't 'PING_OK'. Response: %s" %
+                pprint.pformat(response)))
+        return response
     
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
     
@@ -311,25 +355,24 @@ class ArduinoProxy(object):
             }
         """)
     
-    _connect.include_in_pde = True # pylint: disable=W0612
     _connect.proxy_function = True # pylint: disable=W0612
     
     def connect(self): # pylint: disable=C0103
         # FIXME: add doc
         random_uuid = str(uuid.uuid4())
         cmd = "_connect %s" % random_uuid
-        ret = self.send_cmd(cmd)
+        response = self.send_cmd(cmd) # raises CommandTimeout,InvalidCommand
         
-        while ret != random_uuid:
-            logger.warn("connect(): Ignoring invalid response: %s", pprint.pformat(ret))
+        while response != random_uuid:
+            logger.warn("connect(): Ignoring invalid response: %s", pprint.pformat(response))
             # Go for the uuid, or a timeout exception!
-            ret = self.get_next_response()
+            response = self.get_next_response()
         
-        return ret
+        return response
     
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
     
     def close(self):
-        # FIXME: add doc
+        """Closes the serial port."""
         if self.serial_port:
             self.serial_port.close()

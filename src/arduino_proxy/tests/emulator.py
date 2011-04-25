@@ -62,7 +62,11 @@ class ArduinoEmulator(threading.Thread):
         if splitted[0] == '_ping':
             self.serial_connection.write("PING_OK\n")
         elif splitted[0] == '_analogRead':
-            self.serial_connection.write("%d\n" % random.randint(0, 1023))
+            value = random.randint(0, 1023)
+            self.serial_connection.write("%d\n" % value)
+        elif splitted[0] == '_digitalRead':
+            value = [ArduinoProxy.HIGH, ArduinoProxy.LOW][random.randint(0,1)]
+            self.serial_connection.write("%d\n" % value)
         elif splitted[0] == '_digitalWrite':
             self.serial_connection.write("OK\n")
         elif splitted[0] == '_connect':
@@ -242,7 +246,7 @@ class TestArduinoProxy(unittest.TestCase):
     
     def test_analog_read(self):
         response = self.proxy.analogRead(5)
-        response = int(response)
+        self.assertTrue(type(response) is int)
         if response < 0 or response > 1023:
             self.fail("analogRead() returned invalid value: %d" % response)
         
@@ -250,6 +254,14 @@ class TestArduinoProxy(unittest.TestCase):
         for an_arg in (None, 'something', Exception(), 1.1):
             self.assertRaises(InvalidArgument, self.proxy.analogRead, an_arg)
 
+    def test_digital_read(self):
+        response = self.proxy.digitalRead(99)
+        self.assertTrue(response in [ArduinoProxy.HIGH, ArduinoProxy.LOW])
+        
+        # test with invalid arguments
+        for an_arg in (None, 'something', Exception(), 1.1):
+            self.assertRaises(InvalidArgument, self.proxy.digitalRead, an_arg)
+    
     def test_digital_write(self):
         self.proxy.digitalWrite(99, ArduinoProxy.HIGH)
         self.proxy.digitalWrite(99, ArduinoProxy.LOW)
