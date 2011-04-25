@@ -36,13 +36,20 @@ sys.path.append(os.path.abspath(SRC_DIR))
 
 from arduino_proxy import ArduinoProxy
 
+COUNT = 10
+
 def main():
     if len(sys.argv) == 1:
         tty_device = os.environ['TTY_DEVICE']
         analog_port = os.environ['ANALOG_PORT']
         proxy = ArduinoProxy(tty_device, 9600)
-        value = proxy.analogRead(int(analog_port))
-        print "temp.value %.2f" % ((5.0 * int(value) * 100.0)/1024.0)
+        sum = 0.0
+        for i in range(0, COUNT):
+            value = proxy.analogRead(int(analog_port))
+            value = ((5.0 * value * 100.0)/1024.0)
+            sum = sum + value
+        value = sum/float(COUNT)
+        print "temp.value %.2f" % value
     else:
         if sys.argv[1] == "config":
             print "graph_title Temperature"
