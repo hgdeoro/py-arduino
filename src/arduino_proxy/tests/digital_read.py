@@ -30,11 +30,17 @@ sys.path.append(os.path.abspath(SRC_DIR))
 from arduino_proxy.tests import default_main
 from arduino_proxy import ArduinoProxy
 
-def default_callback(value):
+def default_callback(value, options):
     if value == ArduinoProxy.HIGH:
-        print "HIGH"
+        if options.numerical:
+            print "1"
+        else:
+            print "HIGH"
     elif value == ArduinoProxy.LOW:
-        print "LOW"
+        if options.numerical:
+            print "0"
+        else:
+            print "LOW"
     else:
         raise(Exception("Invalid value for a digital read: '%s'" % str(value)))
 
@@ -46,6 +52,9 @@ def add_options_callback(parser):
     parser.add_option("--loop",
         action="store_true", dest="loop", default=False,
         help="Keep reading and printing the values.")
+    parser.add_option("--numerical",
+        action="store_true", dest="numerical", default=False,
+        help="Prints 1 or 0 instead of 'HIGH' and 'LOW'.")
 
 def main(callback):
     options, args, proxy = default_main(quiet=True, optparse_usage=\
@@ -58,7 +67,7 @@ def main(callback):
         proxy.pinMode(digital_port, ArduinoProxy.INPUT)
         while True:
             value = proxy.digitalRead(digital_port)
-            callback(value)
+            callback(value, options)
             if not options.loop:
                 break
     except KeyboardInterrupt:
