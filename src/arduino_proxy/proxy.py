@@ -280,9 +280,10 @@ class ArduinoProxy(object):
     
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
     
+    # TODO: implement analogReference()
     #Analog I/O
-    def analogReference(self): # pylint: disable=C0103
-        pass
+    # def analogReference(self): # pylint: disable=C0103
+    #     pass
     
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
     
@@ -323,8 +324,40 @@ class ArduinoProxy(object):
     
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
     
-    def analogWrite(self): # pylint: disable=C0103
-        pass
+    def _analogWrite(self): # pylint: disable=C0103,R0201
+        return _unindent(12, """
+            void _analogWrite() {
+                int pin = atoi(received_parameters[1]);
+                int value = atoi(received_parameters[2]);
+                
+                if(value < 0 || value > 255) {
+                    send_invalid_parameter_response();
+                    return;
+                }
+                
+                analogWrite(pin, value);
+                send_ok_response();
+            }
+        """)
+    
+    _analogWrite.proxy_function = True # pylint: disable=W0612
+    
+    def analogWrite(self, pin, value): # pylint: disable=C0103
+        """
+        Writes an analog value (PWM wave) to a pin
+        """
+        # FIXME: validate pin and value
+        # FIXME: add doc for parameters and exceptions
+        if not type(pin) is int or not type(value) is int or value < 0 or value > 255:
+            raise(InvalidArgument())
+        cmd = "_analogWrite %d %d" % (pin, value)
+        response = self.send_cmd(cmd) # raises CommandTimeout,InvalidCommand
+        
+        if response != "OK":
+            raise(InvalidResponse("The response wasn't 'OK'. Response: %s" % \
+                pprint.pformat(response)))
+        
+        return response
     
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
     

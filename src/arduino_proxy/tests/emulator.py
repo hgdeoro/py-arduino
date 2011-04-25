@@ -69,6 +69,8 @@ class ArduinoEmulator(threading.Thread):
             self.serial_connection.write("%d\n" % value)
         elif splitted[0] == '_digitalWrite':
             self.serial_connection.write("OK\n")
+        elif splitted[0] == '_analogWrite':
+            self.serial_connection.write("OK\n")
         elif splitted[0] == '_connect':
             self.serial_connection.write("%s\n" % splitted[1])
         elif splitted[0] == '_pinMode':
@@ -271,6 +273,22 @@ class TestArduinoProxy(unittest.TestCase):
             self.assertRaises(InvalidArgument, self.proxy.digitalWrite, 99, an_arg)
             self.assertRaises(InvalidArgument, self.proxy.digitalWrite, an_arg, ArduinoProxy.HIGH)
             self.assertRaises(InvalidArgument, self.proxy.digitalWrite, an_arg, ArduinoProxy.LOW)
+
+    def test_analog_write(self):
+        for value in range(0, 256):
+            self.proxy.analogWrite(99, value)
+
+        # test with invalid arguments
+        self.assertRaises(InvalidArgument, self.proxy.analogWrite, 99, -1)
+        self.assertRaises(InvalidArgument, self.proxy.analogWrite, 99, 256)
+        self.assertRaises(InvalidArgument, self.proxy.analogWrite, 99, 1000)
+        
+        for an_arg in (None, 'something', Exception(), 1.1):
+            self.assertRaises(InvalidArgument, self.proxy.analogWrite, 99, an_arg)
+            self.assertRaises(InvalidArgument, self.proxy.analogWrite, an_arg, 0)
+            self.assertRaises(InvalidArgument, self.proxy.analogWrite, an_arg, 1)
+            self.assertRaises(InvalidArgument, self.proxy.analogWrite, an_arg, 100)
+            self.assertRaises(InvalidArgument, self.proxy.analogWrite, an_arg, 255)
 
     def test_pin_mode(self):
         self.proxy.pinMode(99, ArduinoProxy.OUTPUT)

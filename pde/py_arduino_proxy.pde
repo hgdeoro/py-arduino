@@ -56,6 +56,21 @@ void _analogRead() {
         
 
 
+void _analogWrite() {
+    int pin = atoi(received_parameters[1]);
+    int value = atoi(received_parameters[2]);
+    
+    if(value < 0 || value > 255) {
+        send_invalid_parameter_response();
+        return;
+    }
+    
+    analogWrite(pin, value);
+    send_ok_response();
+}
+        
+
+
 void _connect() {
     Serial.println(received_parameters[1]);
 }
@@ -108,12 +123,12 @@ void _ping() {
 	
 	// PROXIED_FUNCTION_COUNT: how many proxied functions we have
 // >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
-	#define PROXIED_FUNCTION_COUNT 6 // {***PLACEHOLDER***}
+	#define PROXIED_FUNCTION_COUNT 7 // {***PLACEHOLDER***}
 	
 // >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
-	proxied_function_ptr function_ptr[PROXIED_FUNCTION_COUNT] = { _analogRead, _connect, _digitalRead, _digitalWrite, _pinMode, _ping,  }; // {***PLACEHOLDER***}
+	proxied_function_ptr function_ptr[PROXIED_FUNCTION_COUNT] = { _analogRead, _analogWrite, _connect, _digitalRead, _digitalWrite, _pinMode, _ping,  }; // {***PLACEHOLDER***}
 // >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
-	char*               function_name[PROXIED_FUNCTION_COUNT] = { "_analogRead", "_connect", "_digitalRead", "_digitalWrite", "_pinMode", "_ping",  }; // {***PLACEHOLDER***}
+	char*               function_name[PROXIED_FUNCTION_COUNT] = { "_analogRead", "_analogWrite", "_connect", "_digitalRead", "_digitalWrite", "_pinMode", "_ping",  }; // {***PLACEHOLDER***}
 	
 	# define read_char() Serial.read()
 	
