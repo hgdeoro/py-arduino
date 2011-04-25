@@ -4,9 +4,12 @@ Py-Arduino-Proxy
 Python application to communicate with Arduinos. The current version let you:
 
 * check communication with Arduino (ping)
+* validate the connection, removing any pre-existing data in the serial buffer
 * set pinMode()
+* read digital values (LOW, HIGIH) with digitalRead()
 * write digital values (LOW, HIGIH) with digitalWrite()
 * read analog values with analogRead()
+* generate PWM output with analogWrite()
 
 Example usage: ping
 -------------------
@@ -43,6 +46,28 @@ Here is a diagram that I've used to connect the LM35 to the Arduino:
 ![LM35 Circuit](https://github.com/hgdeoro/py-arduino-proxy/raw/master/examples/lm35_bb.png "LM35 Circuit")
 
 That's taken from [http://forum.drbit.nl/viewtopic.php?id=36](http://forum.drbit.nl/viewtopic.php?id=36).
+
+Example: charting values with Munin
+-----------------------------------
+
+Here is a chart generated with Munin:
+
+![Munin Chart](https://github.com/hgdeoro/py-arduino-proxy/raw/master/examples/munin-temperature-at-sunlight.png "Munin Chart").
+
+Example: accessing Arduino from the shell
+-----------------------------------------
+
+Read the analog port 0, from the Arduino connected in /dev/ttyACM0:
+
+	horacio@eeepc:~$ /usr/local/py-arduino-proxy/src/arduino_proxy/tests/analog_read.py /dev/ttyACM0 0
+	18
+
+Read the digital port 0, from the Arduino connected in /dev/ttyACM0:
+
+	horacio@eeepc:~$ /usr/local/py-arduino-proxy/src/arduino_proxy/tests/digital_read.py /dev/ttyACM0 0 
+	HIGH
+	horacio@eeepc:~$ /usr/local/py-arduino-proxy/src/arduino_proxy/tests/digital_read.py --numerical /dev/ttyACM0 0
+	1
 
 Install: python application
 ---------------------------
