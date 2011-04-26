@@ -113,3 +113,18 @@ since the real program in 'loop()' won't be sending data using the serial port.
 
 ![Workaround for Ubuntu](https://github.com/hgdeoro/py-arduino-proxy/raw/master/examples/ubuntu-workaround_bb.png "Workaround for Ubuntu")
 
+License and copyright
+=====================
+
+Py-Arduino-Proxy - Access your Arduino from Python
+Copyright (C) 2011 - Horacio Guillermo de Oro <hgdeoro@gmail.com>
+
+Py-Arduino-Proxy is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation version 2.
+
+Py-Arduino-Proxy is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License version 2 for more details.
+
