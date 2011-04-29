@@ -160,23 +160,12 @@ class ArduinoProxy(object):
     
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
     
-    # Digital I/O
-    def _pinMode(self): # pylint: disable=C0103,R0201
-        return _unindent(12, """
-            void _pinMode() {
-                int pin = atoi(received_parameters[1]);
-                int mode = atoi(received_parameters[2]);
-                if(mode != INPUT && mode != OUTPUT) {
-                    send_invalid_parameter_response();
-                    return;
-                }
-                // FIXME: validate pin
-                pinMode(pin, mode);
-                send_ok_response();
-            }
-        """)
+    def close(self):
+        """Closes the serial port."""
+        if self.serial_port:
+            self.serial_port.close()
     
-    _pinMode.proxy_function = True # pylint: disable=W0612
+    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
     
     def pinMode(self, pin, mode): # pylint: disable=C0103
         """
@@ -202,8 +191,40 @@ class ArduinoProxy(object):
         
         return response
     
+    # Digital I/O
+    def _pinMode(self): # pylint: disable=C0103,R0201
+        return _unindent(12, """
+            void _pinMode() {
+                int pin = atoi(received_parameters[1]);
+                int mode = atoi(received_parameters[2]);
+                if(mode != INPUT && mode != OUTPUT) {
+                    send_invalid_parameter_response();
+                    return;
+                }
+                // FIXME: validate pin
+                pinMode(pin, mode);
+                send_ok_response();
+            }
+        """)
+    
+    _pinMode.proxy_function = True # pylint: disable=W0612
+    
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
     
+    def digitalWrite(self, pin, value): # pylint: disable=C0103
+        # FIXME: validate pin and value
+        # FIXME: add doc for parameters and exceptions
+        if not type(pin) is int or not value in [ArduinoProxy.LOW, ArduinoProxy.HIGH]:
+            raise(InvalidArgument())
+        cmd = "_digitalWrite %d %d" % (pin, value)
+        response = self.send_cmd(cmd) # raises CommandTimeout,InvalidCommand
+        
+        if response != "OK":
+            raise(InvalidResponse("The response wasn't 'OK'. Response: %s" % \
+                pprint.pformat(response)))
+        
+        return response
+
     def _digitalWrite(self): # pylint: disable=C0103,R0201
         return _unindent(12, """
             void _digitalWrite() {
@@ -221,34 +242,8 @@ class ArduinoProxy(object):
         """)
     
     _digitalWrite.proxy_function = True # pylint: disable=W0612
-    
-    def digitalWrite(self, pin, value): # pylint: disable=C0103
-        # FIXME: validate pin and value
-        # FIXME: add doc for parameters and exceptions
-        if not type(pin) is int or not value in [ArduinoProxy.LOW, ArduinoProxy.HIGH]:
-            raise(InvalidArgument())
-        cmd = "_digitalWrite %d %d" % (pin, value)
-        response = self.send_cmd(cmd) # raises CommandTimeout,InvalidCommand
-        
-        if response != "OK":
-            raise(InvalidResponse("The response wasn't 'OK'. Response: %s" % \
-                pprint.pformat(response)))
-        
-        return response
-    
+
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-    
-    def _digitalRead(self): # pylint: disable=C0103,R0201
-        return _unindent(12, """
-            void _digitalRead() {
-                int pin = atoi(received_parameters[1]);
-                int value = digitalRead(pin);
-                send_int_response(value);
-                return;
-            }
-        """)
-    
-    _digitalRead.proxy_function = True # pylint: disable=W0612
     
     def digitalRead(self, pin): # pylint: disable=C0103
         """
@@ -279,6 +274,18 @@ class ArduinoProxy(object):
         raise(InvalidResponse("The response isn't HIGH (%d) nor LOW (%d). Response: %s" % (
             ArduinoProxy.HIGH, ArduinoProxy.LOW, int_response)))
     
+    def _digitalRead(self): # pylint: disable=C0103,R0201
+        return _unindent(12, """
+            void _digitalRead() {
+                int pin = atoi(received_parameters[1]);
+                int value = digitalRead(pin);
+                send_int_response(value);
+                return;
+            }
+        """)
+    
+    _digitalRead.proxy_function = True # pylint: disable=W0612
+    
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
     
     # TODO: implement analogReference()
@@ -287,18 +294,6 @@ class ArduinoProxy(object):
     #     pass
     
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-    
-    def _analogRead(self): # pylint: disable=C0103,R0201
-        return _unindent(12, """
-            void _analogRead() {
-                int pin = atoi(received_parameters[1]);
-                int value = analogRead(pin);
-                send_int_response(value);
-                return;
-            }
-        """)
-    
-    _analogRead.proxy_function = True # pylint: disable=W0612
     
     def analogRead(self, pin): # pylint: disable=C0103
         """
@@ -323,7 +318,36 @@ class ArduinoProxy(object):
         raise(InvalidResponse("The response isn't in the valid range of 0-1023. " + \
             "Response: %d" % int_response))
     
+    def _analogRead(self): # pylint: disable=C0103,R0201
+        return _unindent(12, """
+            void _analogRead() {
+                int pin = atoi(received_parameters[1]);
+                int value = analogRead(pin);
+                send_int_response(value);
+                return;
+            }
+        """)
+    
+    _analogRead.proxy_function = True # pylint: disable=W0612
+    
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    
+    def analogWrite(self, pin, value): # pylint: disable=C0103
+        """
+        Writes an analog value (PWM wave) to a pin
+        """
+        # FIXME: validate pin and value
+        # FIXME: add doc for parameters and exceptions
+        if not type(pin) is int or not type(value) is int or value < 0 or value > 255:
+            raise(InvalidArgument())
+        cmd = "_analogWrite %d %d" % (pin, value)
+        response = self.send_cmd(cmd) # raises CommandTimeout,InvalidCommand
+        
+        if response != "OK":
+            raise(InvalidResponse("The response wasn't 'OK'. Response: %s" % \
+                pprint.pformat(response)))
+        
+        return response
     
     def _analogWrite(self): # pylint: disable=C0103,R0201
         return _unindent(12, """
@@ -343,33 +367,7 @@ class ArduinoProxy(object):
     
     _analogWrite.proxy_function = True # pylint: disable=W0612
     
-    def analogWrite(self, pin, value): # pylint: disable=C0103
-        """
-        Writes an analog value (PWM wave) to a pin
-        """
-        # FIXME: validate pin and value
-        # FIXME: add doc for parameters and exceptions
-        if not type(pin) is int or not type(value) is int or value < 0 or value > 255:
-            raise(InvalidArgument())
-        cmd = "_analogWrite %d %d" % (pin, value)
-        response = self.send_cmd(cmd) # raises CommandTimeout,InvalidCommand
-        
-        if response != "OK":
-            raise(InvalidResponse("The response wasn't 'OK'. Response: %s" % \
-                pprint.pformat(response)))
-        
-        return response
-    
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-    
-    def _ping(self): # pylint: disable=C0103,R0201
-        return _unindent(12, """
-            void _ping() {
-                Serial.println("PING_OK");
-            }
-        """)
-    
-    _ping.proxy_function = True # pylint: disable=W0612
     
     def ping(self): # pylint: disable=C0103
         # FIXME: add doc
@@ -380,16 +378,16 @@ class ArduinoProxy(object):
                 pprint.pformat(response)))
         return response
     
-    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-    
-    def _connect(self): # pylint: disable=C0103,R0201
+    def _ping(self): # pylint: disable=C0103,R0201
         return _unindent(12, """
-            void _connect() {
-                Serial.println(received_parameters[1]);
+            void _ping() {
+                Serial.println("PING_OK");
             }
         """)
     
-    _connect.proxy_function = True # pylint: disable=W0612
+    _ping.proxy_function = True # pylint: disable=W0612
+    
+    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
     
     def connect(self): # pylint: disable=C0103
         # FIXME: add doc
@@ -404,9 +402,11 @@ class ArduinoProxy(object):
         
         return response
     
-    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    def _connect(self): # pylint: disable=C0103,R0201
+        return _unindent(12, """
+            void _connect() {
+                Serial.println(received_parameters[1]);
+            }
+        """)
     
-    def close(self):
-        """Closes the serial port."""
-        if self.serial_port:
-            self.serial_port.close()
+    _connect.proxy_function = True # pylint: disable=W0612
