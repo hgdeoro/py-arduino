@@ -136,14 +136,20 @@ class ArduinoProxy(object):
             response, (end-start)))
         return response
     
-    def send_cmd(self, cmd):
+    def send_cmd(self, cmd, expected_response=None):
         """
         Sends a command to the arduino. The command is terminated with a 0x00.
         Returns the response as a string.
         
+        Parameters:
+        - cmd
+        - expected_response
+        
         Raises:
         - CommandTimeout: if a timeout is detected while reading response.
         - InvalidCommand: if the Arduino reported the sent command as invalid.
+        - InvalidResponse: raised when 'expected_response is not None, an
+            the response doesn't equals to 'expected_response'.
         """
         logger.debug("send_cmd() called. cmd: '%s'" % cmd)
         
@@ -155,6 +161,12 @@ class ArduinoProxy(object):
         
         if response == ArduinoProxy.INVALID_CMD:
             raise(InvalidCommand())
+        
+        if expected_response is not None:
+            if response != expected_response:
+                raise(InvalidResponse("The response wasn't the expected. " + \
+                    "Expected: '%s'. Response: '%s'" % (expected_response,
+                    pprint.pformat(response))))
         
         return response
     
@@ -185,13 +197,9 @@ class ArduinoProxy(object):
         if not type(pin) is int or not mode in [ArduinoProxy.INPUT, ArduinoProxy.OUTPUT]:
             raise(InvalidArgument())
         cmd = "_pinMode %d %d" % (pin, mode)
-        response = self.send_cmd(cmd) # raises CommandTimeout,InvalidCommand
         
-        if response != "OK":
-            raise(InvalidResponse("The response wasn't 'OK'. Response: %s" % \
-                pprint.pformat(response)))
-        
-        return response
+        return self.send_cmd(cmd, expected_response="OK")
+        # raises CommandTimeout,InvalidCommand,InvalidResponse
     
     pinMode.arduino_code = _unindent(12, """
             void _pinMode() {
@@ -215,13 +223,8 @@ class ArduinoProxy(object):
         if not type(pin) is int or not value in [ArduinoProxy.LOW, ArduinoProxy.HIGH]:
             raise(InvalidArgument())
         cmd = "_digitalWrite %d %d" % (pin, value)
-        response = self.send_cmd(cmd) # raises CommandTimeout,InvalidCommand
-        
-        if response != "OK":
-            raise(InvalidResponse("The response wasn't 'OK'. Response: %s" % \
-                pprint.pformat(response)))
-        
-        return response
+        return self.send_cmd(cmd, expected_response="OK")
+        # raises CommandTimeout,InvalidCommand,InvalidResponse
     
     digitalWrite.arduino_code = _unindent(12, """
             void _digitalWrite() {
@@ -330,13 +333,9 @@ class ArduinoProxy(object):
         if not type(pin) is int or not type(value) is int or value < 0 or value > 255:
             raise(InvalidArgument())
         cmd = "_analogWrite %d %d" % (pin, value)
-        response = self.send_cmd(cmd) # raises CommandTimeout,InvalidCommand
         
-        if response != "OK":
-            raise(InvalidResponse("The response wasn't 'OK'. Response: %s" % \
-                pprint.pformat(response)))
-        
-        return response
+        return self.send_cmd(cmd, expected_response="OK")
+        # raises CommandTimeout,InvalidCommand,InvalidResponse
     
     analogWrite.arduino_code = _unindent(12, """
             void _analogWrite() {
@@ -358,11 +357,8 @@ class ArduinoProxy(object):
     def ping(self): # pylint: disable=C0103
         # FIXME: add doc
         cmd = "_ping"
-        response = self.send_cmd(cmd) # raises CommandTimeout,InvalidCommand
-        if response != 'PING_OK':
-            raise(InvalidResponse("The response to a ping() wasn't 'PING_OK'. Response: %s" %
-                pprint.pformat(response)))
-        return response
+        return self.send_cmd(cmd, expected_response="PING_OK")
+        # raises CommandTimeout,InvalidCommand,InvalidResponse
     
     ping.arduino_code = _unindent(12, """
             void _ping() {
@@ -398,11 +394,7 @@ class ArduinoProxy(object):
 ##  and don't forget to let the '_' when appropiate.
 ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 #    def XXXXXXXXXX(self):
-#        response = self.send_cmd("_XXXXXXXXXX")
-#        if response != 'OK':
-#            raise(InvalidResponse("The response to a ping() wasn't 'OK'. Response: %s" %
-#                pprint.pformat(response)))
-#        return response
+#        return self.send_cmd("_XXXXXXXXXX", expected_response="OK")
 #    
 #    XXXXXXXXXX.arduino_code = """
 #            void _XXXXXXXXXX() {
