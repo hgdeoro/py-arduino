@@ -18,6 +18,7 @@
 ##    along with Py-Arduino-Proxy; see the file LICENSE.txt.
 ##-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
+import logging
 import os
 import os.path
 import shutil
@@ -45,6 +46,9 @@ def main():
     c_input_filename = os.path.join(SRC_DIR, 'src-c', 'arduino.c')
     h_input_filename = os.path.join(SRC_DIR, 'src-c', 'py_arduino_proxy.h')
     
+    logging.info("Template for .c/.pde file: %s", c_input_filename)
+    logging.info("Template for .h file: %s", h_input_filename)
+    
     c_file = open(c_input_filename, 'r')
     c_file_lines = [line.strip('\r\n') for line in c_file.readlines()]
     for i in range(0, len(c_file_lines)):
@@ -67,19 +71,25 @@ def main():
     
     proxy = ArduinoProxy('')
     
+    all_attributes = [ getattr(proxy, an_attribute_name) for an_attribute_name in dir(proxy) ]
+    
     # All this functions have 'proxy_function' == True
-    proxy_functions = [getattr(proxy, a_function) for a_function in dir(proxy)
-        if getattr(getattr(proxy, a_function), 'proxy_function', None) is True]
+    proxy_functions = [an_attribute for an_attribute in all_attributes
+        if getattr(an_attribute, 'arduino_code', False)]
+    
+    logging.info("Proxy functions:")
+    for function in proxy_functions:
+        logging.info(" + %s()", function.__name__)
     
     proxied_function_source = StringIO()
     proxied_function_names = StringIO()
     proxied_function_ptrs = StringIO()
     for function in proxy_functions:
         proxied_function_source.write("\n")
-        proxied_function_source.write(function())
+        proxied_function_source.write(function.arduino_code)
         proxied_function_source.write("\n")
-        proxied_function_names.write('"%s", ' % function.__name__)
-        proxied_function_ptrs.write('%s, ' % function.__name__)
+        proxied_function_names.write('"_%s", ' % function.__name__)
+        proxied_function_ptrs.write('_%s, ' % function.__name__)
 
     placeholder_values = {
         'proxied_function_count': len(proxy_functions), 
@@ -90,6 +100,7 @@ def main():
         'INVALID_CMD': ArduinoProxy.INVALID_CMD, 
     }
     
+    logging.info("Generating C/PDE file...")
     for line in c_file_lines:
         splitted = line.split()
         if len(splitted) > 2 and \
@@ -98,6 +109,7 @@ def main():
             output.write('// >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<\n')
             try:
                 output.write(line % placeholder_values)
+                logging.info(" + PLACEHOLDER found. Line: %s", line)
             except TypeError:
                 print "> "
                 print "> Error while trying to replace values in line with PLACEHOLDER"
@@ -108,11 +120,20 @@ def main():
             output.write(line)
         output.write('\n')
     
-    output_file_c = open(os.path.join(output_dir, 'py_arduino_proxy.pde'), 'w')
+    # Writing .C/.PDE file
+    output_file_c_filename = os.path.join(output_dir, 'py_arduino_proxy.pde')
+    logging.info("Writing to %s", output_file_c_filename)
+    output_file_c = open(output_file_c_filename, 'w')
     output_file_c.write(output.getvalue())
     output_file_c.close()
     
-    shutil.copyfile(h_input_filename, os.path.join(output_dir, 'py_arduino_proxy.h'))
+    # Coping .H file
+    output_file_h_filename = os.path.join(output_dir, 'py_arduino_proxy.h')
+    logging.info("Copying to %s", output_file_h_filename)
+    shutil.copyfile(h_input_filename, output_file_h_filename)
+    
+    logging.info("Done!")
     
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.INFO)
     main()

@@ -166,6 +166,8 @@ class ArduinoProxy(object):
             self.serial_port.close()
     
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    ## HERE STARTS PROXIED FUNCTIONS
+    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
     
     def pinMode(self, pin, mode): # pylint: disable=C0103
         """
@@ -191,9 +193,7 @@ class ArduinoProxy(object):
         
         return response
     
-    # Digital I/O
-    def _pinMode(self): # pylint: disable=C0103,R0201
-        return _unindent(12, """
+    pinMode.arduino_code = _unindent(12, """
             void _pinMode() {
                 int pin = atoi(received_parameters[1]);
                 int mode = atoi(received_parameters[2]);
@@ -206,9 +206,7 @@ class ArduinoProxy(object):
                 send_ok_response();
             }
         """)
-    
-    _pinMode.proxy_function = True # pylint: disable=W0612
-    
+
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
     
     def digitalWrite(self, pin, value): # pylint: disable=C0103
@@ -224,9 +222,8 @@ class ArduinoProxy(object):
                 pprint.pformat(response)))
         
         return response
-
-    def _digitalWrite(self): # pylint: disable=C0103,R0201
-        return _unindent(12, """
+    
+    digitalWrite.arduino_code = _unindent(12, """
             void _digitalWrite() {
                 int pin = atoi(received_parameters[1]);
                 int value = atoi(received_parameters[2]);
@@ -240,8 +237,6 @@ class ArduinoProxy(object):
                 send_ok_response();
             }
         """)
-    
-    _digitalWrite.proxy_function = True # pylint: disable=W0612
 
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
     
@@ -274,8 +269,7 @@ class ArduinoProxy(object):
         raise(InvalidResponse("The response isn't HIGH (%d) nor LOW (%d). Response: %s" % (
             ArduinoProxy.HIGH, ArduinoProxy.LOW, int_response)))
     
-    def _digitalRead(self): # pylint: disable=C0103,R0201
-        return _unindent(12, """
+    digitalRead.arduino_code = _unindent(12, """
             void _digitalRead() {
                 int pin = atoi(received_parameters[1]);
                 int value = digitalRead(pin);
@@ -283,8 +277,6 @@ class ArduinoProxy(object):
                 return;
             }
         """)
-    
-    _digitalRead.proxy_function = True # pylint: disable=W0612
     
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
     
@@ -318,8 +310,7 @@ class ArduinoProxy(object):
         raise(InvalidResponse("The response isn't in the valid range of 0-1023. " + \
             "Response: %d" % int_response))
     
-    def _analogRead(self): # pylint: disable=C0103,R0201
-        return _unindent(12, """
+    analogRead.arduino_code = _unindent(12, """
             void _analogRead() {
                 int pin = atoi(received_parameters[1]);
                 int value = analogRead(pin);
@@ -327,8 +318,6 @@ class ArduinoProxy(object):
                 return;
             }
         """)
-    
-    _analogRead.proxy_function = True # pylint: disable=W0612
     
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
     
@@ -349,8 +338,7 @@ class ArduinoProxy(object):
         
         return response
     
-    def _analogWrite(self): # pylint: disable=C0103,R0201
-        return _unindent(12, """
+    analogWrite.arduino_code = _unindent(12, """
             void _analogWrite() {
                 int pin = atoi(received_parameters[1]);
                 int value = atoi(received_parameters[2]);
@@ -365,8 +353,6 @@ class ArduinoProxy(object):
             }
         """)
     
-    _analogWrite.proxy_function = True # pylint: disable=W0612
-    
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
     
     def ping(self): # pylint: disable=C0103
@@ -378,14 +364,11 @@ class ArduinoProxy(object):
                 pprint.pformat(response)))
         return response
     
-    def _ping(self): # pylint: disable=C0103,R0201
-        return _unindent(12, """
+    ping.arduino_code = _unindent(12, """
             void _ping() {
                 Serial.println("PING_OK");
             }
         """)
-    
-    _ping.proxy_function = True # pylint: disable=W0612
     
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
     
@@ -402,11 +385,8 @@ class ArduinoProxy(object):
         
         return response
     
-    def _connect(self): # pylint: disable=C0103,R0201
-        return _unindent(12, """
+    connect.arduino_code = _unindent(12, """
             void _connect() {
                 Serial.println(received_parameters[1]);
             }
         """)
-    
-    _connect.proxy_function = True # pylint: disable=W0612
