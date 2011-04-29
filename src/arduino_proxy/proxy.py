@@ -390,3 +390,29 @@ class ArduinoProxy(object):
                 Serial.println(received_parameters[1]);
             }
         """)
+
+## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+## EXAMPLE CODE FOR NEW FUNCTION
+## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+## Replace 'XXXXXXXXXX' for the function name. Pay special attention
+##  and don't forget to let the '_' when appropiate.
+## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+#    def XXXXXXXXXX(self):
+#        response = self.send_cmd("_XXXXXXXXXX")
+#        if response != 'OK':
+#            raise(InvalidResponse("The response to a ping() wasn't 'OK'. Response: %s" %
+#                pprint.pformat(response)))
+#        return response
+#    
+#    XXXXXXXXXX.arduino_code = """
+#            void _XXXXXXXXXX() {
+#                
+#                // here
+#                // goes
+#                // Arduino
+#                // code
+#                
+#                // Send 'OK' to the PC.
+#                Serial.println("OK");
+#            }
+#    """
