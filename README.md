@@ -10,6 +10,11 @@ Python application to communicate with Arduinos. The current version let you:
 * write digital values (LOW, HIGIH) with digitalWrite()
 * read analog values with analogRead()
 * generate PWM output with analogWrite()
+* get the values returned by millis() and micros()
+* execute delay() and delayMicroseconds()
+
+And now is very easy add your custom methods... See at the end of [proxy.py](https://github.com/hgdeoro/py-arduino-proxy/blob/master/src/arduino_proxy/proxy.py)
+for further information.
 
 Example usage: ping
 -------------------
