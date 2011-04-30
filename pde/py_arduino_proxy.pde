@@ -66,13 +66,41 @@ void _analogWrite() {
     }
     
     analogWrite(pin, value);
-    send_ok_response();
+    send_char_array_response("AW_OK");
 }
         
 
 
 void _connect() {
     Serial.println(received_parameters[1]);
+}
+        
+
+
+void _delay() {
+    int value = atoi(received_parameters[1]);
+    
+    if(value < 0) {
+        send_invalid_parameter_response();
+        return;
+    }
+    
+    delay(value);
+    send_char_array_response("D_OK");
+}
+        
+
+
+void _delayMicroseconds() {
+    int value = atoi(received_parameters[1]);
+    
+    if(value < 0) {
+        send_invalid_parameter_response();
+        return;
+    }
+    
+    delayMicroseconds(value);
+    send_char_array_response("DMS_OK");
 }
         
 
@@ -96,7 +124,19 @@ void _digitalWrite() {
     }
     
     digitalWrite(pin, value);
-    send_ok_response();
+    send_char_array_response("DW_OK");
+}
+        
+
+
+void _micros() {
+    Serial.println(micros());
+}
+        
+
+
+void _millis() {
+    Serial.println(millis());
 }
         
 
@@ -110,7 +150,7 @@ void _pinMode() {
     }
     // FIXME: validate pin
     pinMode(pin, mode);
-    send_ok_response();
+    send_char_array_response("PM_OK");
 }
         
 
@@ -123,12 +163,12 @@ void _ping() {
 	
 	// PROXIED_FUNCTION_COUNT: how many proxied functions we have
 // >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
-	#define PROXIED_FUNCTION_COUNT 7 // {***PLACEHOLDER***}
+	#define PROXIED_FUNCTION_COUNT 11 // {***PLACEHOLDER***}
 	
 // >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
-	proxied_function_ptr function_ptr[PROXIED_FUNCTION_COUNT] = { _analogRead, _analogWrite, _connect, _digitalRead, _digitalWrite, _pinMode, _ping,  }; // {***PLACEHOLDER***}
+	proxied_function_ptr function_ptr[PROXIED_FUNCTION_COUNT] = { _analogRead, _analogWrite, _connect, _delay, _delayMicroseconds, _digitalRead, _digitalWrite, _micros, _millis, _pinMode, _ping,  }; // {***PLACEHOLDER***}
 // >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
-	char*               function_name[PROXIED_FUNCTION_COUNT] = { "_analogRead", "_analogWrite", "_connect", "_digitalRead", "_digitalWrite", "_pinMode", "_ping",  }; // {***PLACEHOLDER***}
+	char*               function_name[PROXIED_FUNCTION_COUNT] = { "_analogRead", "_analogWrite", "_connect", "_delay", "_delayMicroseconds", "_digitalRead", "_digitalWrite", "_micros", "_millis", "_pinMode", "_ping",  }; // {***PLACEHOLDER***}
 	
 	# define read_char() Serial.read()
 	
@@ -164,6 +204,10 @@ void _ping() {
 	
 	void send_ok_response() {
 		Serial.println("OK");
+	}
+	
+	void send_char_array_response(char* response) {
+		Serial.println(response);
 	}
 	
 #endif
@@ -248,6 +292,8 @@ unsigned long pulseIn(uint8_t pin, uint8_t state, unsigned long timeout) { retur
 	void send_int_response(int value) { }
 	
 	void send_invalid_parameter_response() { }
+	
+	void send_char_array_response(char* response) { }
 	
 #endif
 
