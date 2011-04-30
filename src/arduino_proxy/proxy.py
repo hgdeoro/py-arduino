@@ -90,6 +90,7 @@ class ArduinoProxy(object):
         self.tty = tty
         self.speed = speed
         self.serial_port = None
+        self.timeout = timeout
         if tty != '':
             logger.debug("Opening serial port...")
             self.serial_port = serial.Serial(port=tty, baudrate=speed, bytesize=8, parity='N',
@@ -102,7 +103,7 @@ class ArduinoProxy(object):
                 self.connect()
             logger.debug("Done.")
     
-    def get_next_response(self):
+    def get_next_response(self, timeout=None):
         """
         Waits for a response from the serial.
         Raises CommandTimeout if a timeout while reading is detected.
@@ -110,6 +111,13 @@ class ArduinoProxy(object):
         logger.debug("get_next_response() - waiting for response...")
         start = time.time()
         response = StringIO()
+        if timeout is None: # Use default timeout
+            if self.serial_port.getTimeout() != self.timeout:
+                self.serial_port.timeout = self.timeout
+        else: # Use custom timeout
+            if self.serial_port.getTimeout() != timeout:
+                self.serial_port.timeout = timeout
+        
         while True:
             char = self.serial_port.read()
             if len(char) == 1:
@@ -132,11 +140,11 @@ class ArduinoProxy(object):
         
         response = response.getvalue().strip()
         end = time.time()
-        logger.debug("get_next_response() - Got response: '%s' - Took: %.2f secs." % (
-            response, (end-start)))
+        logger.debug("get_next_response() - Got response: '%s' - Took: %.2f secs.",
+            response, (end-start))
         return response
     
-    def send_cmd(self, cmd, expected_response=None):
+    def send_cmd(self, cmd, expected_response=None, timeout=None):
         """
         Sends a command to the arduino. The command is terminated with a 0x00.
         Returns the response as a string.
@@ -157,7 +165,7 @@ class ArduinoProxy(object):
         self.serial_port.write("\n")
         self.serial_port.flush()
         
-        response = self.get_next_response() # Raises CommandTimeout
+        response = self.get_next_response(timeout=timeout) # Raises CommandTimeout
         
         if response == ArduinoProxy.INVALID_CMD:
             raise(InvalidCommand())
@@ -388,16 +396,38 @@ class ArduinoProxy(object):
         """)
 
 ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-## EXAMPLE CODE FOR NEW FUNCTION
+## EXAMPLE CODE FOR NEW FUNCTIONS
 ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 ## Replace 'XXXXXXXXXX' for the function name. Pay special attention
 ##  and don't forget to let the '_' when appropiate.
 ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+#
 #    def XXXXXXXXXX(self):
 #        return self.send_cmd("_XXXXXXXXXX", expected_response="OK")
 #    
 #    XXXXXXXXXX.arduino_code = """
 #            void _XXXXXXXXXX() {
+#                
+#                // here
+#                // goes
+#                // Arduino
+#                // code
+#                
+#                // Send 'OK' to the PC.
+#                Serial.println("OK");
+#            }
+#    """
+
+## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+## If the Arduino may take some time to respond, you can
+##  use a larger timeout. Example: with timeout=60 we will
+##  wait for 1 minute.
+## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+#    def YYYYYYYYYY(self):
+#        return self.send_cmd("_YYYYYYYYYY", expected_response="OK",timeout=60)
+#    
+#    YYYYYYYYYY.arduino_code = """
+#            void _YYYYYYYYYY() {
 #                
 #                // here
 #                // goes

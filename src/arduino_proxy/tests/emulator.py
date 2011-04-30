@@ -192,7 +192,10 @@ class SerialConnectionMock(object):
                 time.sleep(0.001)
         self.logger.debug("read() -> ''")
         return ''
-
+    
+    def getTimeout(self):
+        return self.timeout
+    
     def __str__(self):
         return "SerialConnectionMock\n" + \
                     " + in_buffer: %s\n" % pprint.pformat(self._in_buffer) + \
