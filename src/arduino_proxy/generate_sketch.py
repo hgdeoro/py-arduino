@@ -70,12 +70,7 @@ def main():
     output.write("\n\n")
     
     proxy = ArduinoProxy('')
-    
-    all_attributes = [ getattr(proxy, an_attribute_name) for an_attribute_name in dir(proxy) ]
-    
-    # All this functions have 'proxy_function' == True
-    proxy_functions = [an_attribute for an_attribute in all_attributes
-        if getattr(an_attribute, 'arduino_code', False)]
+    proxy_functions = proxy.get_proxy_functions()
     
     logging.info("Proxy functions:")
     for function in proxy_functions:

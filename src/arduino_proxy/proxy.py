@@ -184,7 +184,16 @@ class ArduinoProxy(object):
         """Closes the serial port."""
         if self.serial_port:
             self.serial_port.close()
+
+    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
     
+    def get_proxy_functions(self):
+        """Returns a list of proxy functions"""
+        all_attributes = [ getattr(self, an_attribute_name) for an_attribute_name in dir(self) ]
+        proxy_functions = [an_attribute for an_attribute in all_attributes
+            if getattr(an_attribute, 'arduino_code', False)]
+        return proxy_functions
+
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
     ## HERE STARTS PROXIED FUNCTIONS
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -206,7 +215,7 @@ class ArduinoProxy(object):
             raise(InvalidArgument())
         cmd = "_pinMode %d %d" % (pin, mode)
         
-        return self.send_cmd(cmd, expected_response="OK")
+        return self.send_cmd(cmd, expected_response="PM_OK")
         # raises CommandTimeout,InvalidCommand,InvalidResponse
     
     pinMode.arduino_code = _unindent(12, """
@@ -219,7 +228,7 @@ class ArduinoProxy(object):
                 }
                 // FIXME: validate pin
                 pinMode(pin, mode);
-                send_ok_response();
+                send_char_array_response("PM_OK");
             }
         """)
 
@@ -231,7 +240,7 @@ class ArduinoProxy(object):
         if not type(pin) is int or not value in [ArduinoProxy.LOW, ArduinoProxy.HIGH]:
             raise(InvalidArgument())
         cmd = "_digitalWrite %d %d" % (pin, value)
-        return self.send_cmd(cmd, expected_response="OK")
+        return self.send_cmd(cmd, expected_response="DW_OK")
         # raises CommandTimeout,InvalidCommand,InvalidResponse
     
     digitalWrite.arduino_code = _unindent(12, """
@@ -245,7 +254,7 @@ class ArduinoProxy(object):
                 }
                 
                 digitalWrite(pin, value);
-                send_ok_response();
+                send_char_array_response("DW_OK");
             }
         """)
 
@@ -342,7 +351,7 @@ class ArduinoProxy(object):
             raise(InvalidArgument())
         cmd = "_analogWrite %d %d" % (pin, value)
         
-        return self.send_cmd(cmd, expected_response="OK")
+        return self.send_cmd(cmd, expected_response="AW_OK")
         # raises CommandTimeout,InvalidCommand,InvalidResponse
     
     analogWrite.arduino_code = _unindent(12, """
@@ -356,7 +365,7 @@ class ArduinoProxy(object):
                 }
                 
                 analogWrite(pin, value);
-                send_ok_response();
+                send_char_array_response("AW_OK");
             }
         """)
     
@@ -414,7 +423,7 @@ class ArduinoProxy(object):
 #                // code
 #                
 #                // Send 'OK' to the PC.
-#                Serial.println("OK");
+#                send_char_array_response("OK");
 #            }
 #    """
 
@@ -435,6 +444,6 @@ class ArduinoProxy(object):
 #                // code
 #                
 #                // Send 'OK' to the PC.
-#                Serial.println("OK");
+#                send_char_array_response("OK");
 #            }
 #    """

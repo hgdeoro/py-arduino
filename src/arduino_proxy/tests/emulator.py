@@ -68,13 +68,13 @@ class ArduinoEmulator(threading.Thread):
             value = [ArduinoProxy.HIGH, ArduinoProxy.LOW][random.randint(0, 1)]
             self.serial_connection.write("%d\n" % value)
         elif splitted[0] == '_digitalWrite':
-            self.serial_connection.write("OK\n")
+            self.serial_connection.write("DW_OK\n")
         elif splitted[0] == '_analogWrite':
-            self.serial_connection.write("OK\n")
+            self.serial_connection.write("AW_OK\n")
         elif splitted[0] == '_connect':
             self.serial_connection.write("%s\n" % splitted[1])
         elif splitted[0] == '_pinMode':
-            self.serial_connection.write("OK\n")
+            self.serial_connection.write("PM_OK\n")
         else:
             self.serial_connection.write("%s\n" % ArduinoProxy.INVALID_CMD)
             logger.error("run_cmd() - INVALID COMMAND: %s", pprint.pformat(cmd))

@@ -78,6 +78,10 @@ int new_line_found = 0;
 		Serial.println("OK");
 	}
 	
+	void send_char_array_response(char* response) {
+		Serial.println(response);
+	}
+	
 #endif
 
 #ifdef PY_ARDUINO_PROXY_DEVEL // Taken from : wiring.h - Partial implementation of the Wiring API for the ATmega8. Part of Arduino - http://www.arduino.cc/
@@ -160,6 +164,8 @@ unsigned long pulseIn(uint8_t pin, uint8_t state, unsigned long timeout) { retur
 	void send_int_response(int value) { }
 	
 	void send_invalid_parameter_response() { }
+	
+	void send_char_array_response(char* response) { }
 	
 #endif
 
