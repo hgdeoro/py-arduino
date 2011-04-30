@@ -144,14 +144,17 @@ class ArduinoProxy(object):
             response, (end-start))
         return response
     
-    def send_cmd(self, cmd, expected_response=None, timeout=None):
+    def send_cmd(self, cmd, expected_response=None, timeout=None, response_transformer=None):
         """
         Sends a command to the arduino. The command is terminated with a 0x00.
         Returns the response as a string.
         
         Parameters:
-        - cmd
-        - expected_response
+        - cmd: the command to send (string)
+        - expected_response: the response we expect from the Arduino. If response_transformer is
+            not None, the response is first transformed, and then compared to 'expected_response'.
+        - response_transformer: the method to call to transform. Must receive a string (the value
+            recieved from the Arduino).
         
         Raises:
         - CommandTimeout: if a timeout is detected while reading response.
@@ -168,15 +171,37 @@ class ArduinoProxy(object):
         response = self.get_next_response(timeout=timeout) # Raises CommandTimeout
         
         if response == ArduinoProxy.INVALID_CMD:
-            raise(InvalidCommand())
+            raise(InvalidCommand("Arduino responded with INVALID_CMD"))
         
-        if expected_response is not None:
-            if response != expected_response:
-                raise(InvalidResponse("The response wasn't the expected. " + \
-                    "Expected: '%s'. Response: '%s'" % (expected_response,
+        transformed_response = None
+        if response_transformer is not None: # must transform the response
+            try:
+                transformed_response = response_transformer(response)
+            except BaseException, e:
+                raise(InvalidResponse("The response couldn't be transformed. " + \
+                    "Response: %s. Exception: %s" % (pprint.pformat(e),
                     pprint.pformat(response))))
         
-        return response
+        if expected_response is not None: # must check the response
+            if transformed_response is not None:
+                if transformed_response != expected_response:
+                    raise(InvalidResponse(
+                        "The response (after transforming) wasn't the expected. " + \
+                        "Expected: '%s'. " % pprint.pformat(expected_response) + \
+                        "Transformed response: %s. " % pprint.pformat(transformed_response) + \
+                        "Original response: %s. " % pprint.pformat(response) \
+                    ))
+            elif response != expected_response:
+                raise(InvalidResponse(
+                    "The response wasn't the expected. " + \
+                    "Expected: %s. " % pprint.pformat(expected_response) + \
+                    "Response: %s." % pprint.pformat(response) \
+                ))
+        
+        if response_transformer is not None:
+            return transformed_response
+        else:
+            return response
     
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
     
@@ -316,19 +341,13 @@ class ArduinoProxy(object):
         if not type(pin) is int:
             raise(InvalidArgument())
         cmd = "_analogRead %d" % (pin)
-        response = self.send_cmd(cmd) # raises CommandTimeout,InvalidCommand
+        response = self.send_cmd(cmd, response_transformer=int) # raises CommandTimeout,InvalidCommand
         
-        try:
-            int_response = int(response)
-        except ValueError:
-            raise(InvalidResponse("The response couldn't be converted to int. Response: %s" % \
-                pprint.pformat(response)))
-        
-        if int_response >= 0 and int_response <= 1023:
-            return int_response
+        if response >= 0 and response <= 1023:
+            return response
         
         raise(InvalidResponse("The response isn't in the valid range of 0-1023. " + \
-            "Response: %d" % int_response))
+            "Response: %d" % response))
     
     analogRead.arduino_code = _unindent(12, """
             void _analogRead() {
@@ -401,6 +420,115 @@ class ArduinoProxy(object):
     connect.arduino_code = _unindent(12, """
             void _connect() {
                 Serial.println(received_parameters[1]);
+            }
+        """)
+
+    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    
+    def delay(self, value): # pylint: disable=C0103
+        """
+        http://arduino.cc/en/Reference/Delay
+        Pauses the program for the amount of time (in miliseconds) specified as parameter.
+        (There are 1000 milliseconds in a second.)
+
+        Parameters:
+        - value: how much to pause, in miliseconds.
+        """
+        if not type(value) is int:
+            raise(InvalidArgument("value must be an integer"))
+        if not value >= 0:
+            raise(InvalidArgument("value must be greater or equals than 0"))
+        
+        response = self.send_cmd("_delay %d" % value, expected_response="D_OK")
+        # raises CommandTimeout,InvalidCommand,InvalidResponse
+        
+        return response
+    
+    delay.arduino_code = _unindent(12, """
+            void _delay() {
+                int value = atoi(received_parameters[1]);
+                
+                if(value < 0) {
+                    send_invalid_parameter_response();
+                    return;
+                }
+                
+                delay(value);
+                send_char_array_response("D_OK");
+            }
+        """)
+
+    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    
+    def delayMicroseconds(self, value): # pylint: disable=C0103
+        """
+        http://arduino.cc/en/Reference/DelayMicroseconds
+        Pauses the program for the amount of time (in microseconds) specified as parameter. There
+        are a thousand microseconds in a millisecond, and a million microseconds in a second.
+        Currently, the largest value that will produce an accurate delay is 16383. This could change
+        in future Arduino releases. For delays longer than a few thousand microseconds, you should
+        use delay() instead.
+        
+        Parameters:
+        - value: how much to pause, in microseconds.
+        """
+        if not type(value) is int:
+            raise(InvalidArgument("value must be an integer"))
+        if not value >= 0:
+            raise(InvalidArgument("value must be greater or equals than 0"))
+        
+        return self.send_cmd("_delayMicroseconds %d" % value, expected_response="DMS_OK")
+        # raises CommandTimeout,InvalidCommand,InvalidResponse
+    
+    delayMicroseconds.arduino_code = _unindent(12, """
+            void _delayMicroseconds() {
+                int value = atoi(received_parameters[1]);
+                
+                if(value < 0) {
+                    send_invalid_parameter_response();
+                    return;
+                }
+                
+                delayMicroseconds(value);
+                send_char_array_response("DMS_OK");
+            }
+        """)
+    
+    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    
+    def millis(self): # pylint: disable=C0103
+        """
+        http://arduino.cc/en/Reference/Millis
+        Returns the number of milliseconds since the Arduino board began running the current
+        program. This number will overflow (go back to zero), after approximately 50 days.
+        """
+        return self.send_cmd("_millis", response_transformer=int)
+        # raises CommandTimeout,InvalidCommand,InvalidResponse
+    
+    millis.arduino_code = _unindent(12, """
+            void _millis() {
+                Serial.println(millis());
+            }
+        """)
+
+    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    
+    def micros(self): # pylint: disable=C0103
+        """
+        http://arduino.cc/en/Reference/Micros
+        Returns the number of microseconds since the Arduino board began running the current
+        program. This number will overflow (go back to zero), after approximately 70 minutes.
+        On 16 MHz Arduino boards (e.g. Duemilanove and Nano), this function has a resolution of
+        four microseconds (i.e. the value returned is always a multiple of four). On 8 MHz Arduino
+        boards (e.g. the LilyPad), this function has a resolution of eight microseconds.
+        Note: there are 1,000 microseconds in a millisecond and 1,000,000 microseconds in a second.
+        """
+        return self.send_cmd("_micros", response_transformer=int)
+        # raises CommandTimeout,InvalidCommand,InvalidResponse
+    
+    micros.arduino_code = _unindent(12, """
+            void _micros() {
+                Serial.println(micros());
             }
         """)
 

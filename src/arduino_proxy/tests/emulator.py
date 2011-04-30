@@ -34,7 +34,7 @@ SRC_DIR = os.path.split(SRC_DIR)[0] # SRC_DIR/arduino_proxy
 SRC_DIR = os.path.split(SRC_DIR)[0] # SRC_DIR
 sys.path.append(os.path.abspath(SRC_DIR))
 
-from arduino_proxy import ArduinoProxy, InvalidArgument
+from arduino_proxy import ArduinoProxy, InvalidArgument, InvalidResponse, InvalidCommand
 
 logger = logging.getLogger(__name__) # pylint: disable=C0103
 
@@ -75,6 +75,14 @@ class ArduinoEmulator(threading.Thread):
             self.serial_connection.write("%s\n" % splitted[1])
         elif splitted[0] == '_pinMode':
             self.serial_connection.write("PM_OK\n")
+        elif splitted[0] == '_delay':
+            self.serial_connection.write("D_OK\n")
+        elif splitted[0] == '_delayMicroseconds':
+            self.serial_connection.write("DMS_OK\n")
+        elif splitted[0] == '_millis':
+            self.serial_connection.write("%d\n" % random.randint(0, 999999))
+        elif splitted[0] == '_micros':
+            self.serial_connection.write("%d\n" % random.randint(0, 999999))
         else:
             self.serial_connection.write("%s\n" % ArduinoProxy.INVALID_CMD)
             logger.error("run_cmd() - INVALID COMMAND: %s", pprint.pformat(cmd))
@@ -226,7 +234,7 @@ class TestArduinoProxyWithInitialContentInSerialBuffer(unittest.TestCase):
         self.emulator.join()
         logger.debug("tearDown(): %s", str(self.proxy.serial_port))
 
-class TestArduinoProxy(unittest.TestCase): # pylint: disable=R0904
+class TestProxiedMethodsOfArduinoProxy(unittest.TestCase): # pylint: disable=R0904
     """
     Testcase for commands.
     """
@@ -303,6 +311,72 @@ class TestArduinoProxy(unittest.TestCase): # pylint: disable=R0904
             self.assertRaises(InvalidArgument, self.proxy.pinMode, an_arg, ArduinoProxy.OUTPUT)
             self.assertRaises(InvalidArgument, self.proxy.pinMode, an_arg, ArduinoProxy.INPUT)
 
+    def test_delay(self):
+        self.proxy.delay(0)
+        self.proxy.delay(99)
+        self.proxy.delayMicroseconds(0)
+        self.proxy.delayMicroseconds(99)
+
+        # test with invalid arguments
+        for an_arg in (None, 'something', Exception(), -1):
+            self.assertRaises(InvalidArgument, self.proxy.delay, an_arg)
+            self.assertRaises(InvalidArgument, self.proxy.delayMicroseconds, an_arg)
+    
+    def test_millis_micros(self):
+        self.assertTrue(self.proxy.millis() >= 0)
+        self.assertTrue(self.proxy.micros() >= 0)
+    
+    def tearDown(self): # pylint: disable=C0103
+        self.proxy.close()
+        self.emulator.stop_running()
+        logger.info("tearDown(): emulator.join()")
+        self.emulator.join()
+        logger.debug("tearDown(): %s", str(self.proxy.serial_port))
+
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+class TestInternalsOfArduinoProxy(unittest.TestCase): # pylint: disable=R0904
+    
+    def setUp(self): # pylint: disable=C0103
+        self.proxy = ArduinoProxy(tty='')
+        self.proxy.serial_port = SerialConnectionMock()
+        self.emulator = ArduinoEmulator(self.proxy.serial_port.get_other_side())
+        self.emulator.start()
+    
+    def test_send_cmd(self):
+        
+        def valid_transformer1(arg1):
+            return arg1
+
+        def valid_transformer2(arg1):
+            return "RESPONSE_FROM_TRANSFORMER"
+        
+        def invalid_transformer1():
+            pass
+        
+        def invalid_transformer2(arg1, arg2):
+            pass
+        
+        def invalid_transformer3(arg1):
+            raise(Exception("Exception while transforming"))
+        
+        # send_cmd(self, cmd, expected_response=None, timeout=None, response_transformer=None):
+        self.proxy.send_cmd("_millis", response_transformer=int)
+        self.proxy.send_cmd("_millis", response_transformer=valid_transformer1)
+        self.proxy.send_cmd("_millis", response_transformer=valid_transformer2,
+            expected_response="RESPONSE_FROM_TRANSFORMER")
+        
+        self.assertRaises(InvalidResponse, self.proxy.send_cmd, "_millis",
+            response_transformer=invalid_transformer1)
+        self.assertRaises(InvalidResponse, self.proxy.send_cmd, "_millis", 
+            response_transformer=invalid_transformer2)
+        self.assertRaises(InvalidResponse, self.proxy.send_cmd, "_millis", 
+            response_transformer=invalid_transformer3)
+        
+        self.assertRaises(InvalidResponse, self.proxy.send_cmd, "_millis", expected_response="X")
+        
+        self.assertRaises(InvalidCommand, self.proxy.send_cmd, "_INEXISTING_CMD")
+    
     def tearDown(self): # pylint: disable=C0103
         self.proxy.close()
         self.emulator.stop_running()

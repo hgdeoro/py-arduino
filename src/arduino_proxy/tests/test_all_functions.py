@@ -33,28 +33,18 @@ from arduino_proxy.tests import default_main
 def main():
     options, args, proxy = default_main()
     try:
-
-        print "connect()"
-        proxy.connect()
-
-        print "ping()"
-        proxy.ping()
-        
-        print "pinMode()"
-        proxy.pinMode(13, ArduinoProxy.OUTPUT)
-        
-        print "analogRead()"
-        proxy.analogRead(0)
-        
-        print "analogWrite()"
-        proxy.analogWrite(0, 128)
-        
-        print "digitalRead()"
-        proxy.digitalRead(0)
-        
-        print "digitalWrite()"
-        proxy.digitalWrite(0, ArduinoProxy.HIGH)
-    
+        print "connect() -> %s" % str(proxy.connect())
+        print "ping() -> %s" % str(proxy.ping())
+        print "pinMode() -> %s" % str(proxy.pinMode(13, ArduinoProxy.OUTPUT))
+        print "analogRead() -> %s" % str(proxy.analogRead(0))
+        print "analogWrite() -> %s" % str(proxy.analogWrite(0, 128))
+        print "digitalRead() -> %s" % str(proxy.digitalRead(0))
+        print "digitalWrite() -> %s" % str(proxy.digitalWrite(0, ArduinoProxy.HIGH))
+        print "digitalRead() -> %s" % str(proxy.digitalRead(0))
+        print "delay() -> %s" % str(proxy.delay(1))
+        print "delayMicroseconds() -> %s" % str(proxy.delayMicroseconds(1))
+        print "millis() -> %s " % str(proxy.millis())
+        print "micros() -> %s" % str(proxy.micros())
     except KeyboardInterrupt:
         print ""
     except Exception:
