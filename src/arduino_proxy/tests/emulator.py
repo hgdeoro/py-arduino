@@ -84,7 +84,7 @@ class ArduinoEmulator(threading.Thread):
         elif splitted[0] == '_micros':
             self.serial_connection.write("%d\n" % random.randint(0, 999999))
         else:
-            self.serial_connection.write("%s\n" % ArduinoProxy.INVALID_CMD)
+            self.serial_connection.write("%s 0\n" % ArduinoProxy.INVALID_CMD)
             logger.error("run_cmd() - INVALID COMMAND: %s", pprint.pformat(cmd))
     
     def read_cmd(self):
@@ -391,7 +391,10 @@ if __name__ == '__main__':
     if '--debug' in ARGS:
         logging.basicConfig(level=logging.DEBUG)
         ARGS.remove('--debug')
-    else:
+    elif '--info' in ARGS:
         logging.basicConfig(level=logging.INFO)
+        ARGS.remove('--info')
+    else:
+        logging.basicConfig(level=logging.WARN)
     
     unittest.main(argv=ARGS)

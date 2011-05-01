@@ -46,6 +46,17 @@ def _unindent(spaces, the_string):
 
 class InvalidCommand(Exception):
     """The Arduino reported an error in the command"""
+    
+    def __init__(self, msg, error_code=None):
+        Exception.__init__(self, msg)
+        self.error_code = error_code
+
+class InvalidParameter(Exception):
+    """The Arduino reported an invalid parameter"""
+
+    def __init__(self, msg, error_param=None):
+        Exception.__init__(self, msg)
+        self.error_param = error_param
 
 class InvalidResponse(Exception):
     """The response from the Arduino isn't valid."""
@@ -81,6 +92,7 @@ class ArduinoProxy(object):
     RISING = 3
     
     INVALID_CMD = "INVALID_CMD"
+    INVALID_PARAMETER = "INVALID_PARAMETER"
     
     def __init__(self, tty, speed=9600, wait_after_open=3, timeout=5, # pylint: disable=R0913
             call_connect=True):
@@ -144,6 +156,24 @@ class ArduinoProxy(object):
             response, (end-start))
         return response
     
+    def _check_response_for_errors(self, response):
+        splitted = [item for item in response.split() if item]
+        if splitted[0] == ArduinoProxy.INVALID_CMD:
+            if len(splitted) == 1:
+                logger.warn("Received ArduinoProxy.INVALID_CMD, but without error code")
+                raise(InvalidCommand("Arduino responded with INVALID_CMD"))
+            else:
+                raise(InvalidCommand("Arduino responded with INVALID_CMD. Error code: %s" % \
+                    splitted[1], error_code=splitted[1]))
+        
+        if splitted[0] == ArduinoProxy.INVALID_PARAMETER:
+            if len(splitted) == 1:
+                logger.warn("Received ArduinoProxy.INVALID_PARAMETER, but without error code")
+                raise(InvalidParameter("Arduino responded with INVALID_PARAMETER."))
+            else:
+                raise(InvalidParameter("Arduino responded with INVALID_PARAMETER." + \
+                    "The invalid parameter is %s" % splitted[1], error_param=splitted[1]))
+    
     def send_cmd(self, cmd, expected_response=None, timeout=None, response_transformer=None):
         """
         Sends a command to the arduino. The command is terminated with a 0x00.
@@ -159,6 +189,7 @@ class ArduinoProxy(object):
         Raises:
         - CommandTimeout: if a timeout is detected while reading response.
         - InvalidCommand: if the Arduino reported the sent command as invalid.
+        - InvalidParameter: if the Arduino reported that some parameter was invalid.
         - InvalidResponse: raised when 'expected_response is not None, an
             the response doesn't equals to 'expected_response'.
         """
@@ -170,8 +201,7 @@ class ArduinoProxy(object):
         
         response = self.get_next_response(timeout=timeout) # Raises CommandTimeout
         
-        if response == ArduinoProxy.INVALID_CMD:
-            raise(InvalidCommand("Arduino responded with INVALID_CMD"))
+        self._check_response_for_errors(response)
         
         transformed_response = None
         if response_transformer is not None: # must transform the response
@@ -248,7 +278,7 @@ class ArduinoProxy(object):
                 int pin = atoi(received_parameters[1]);
                 int mode = atoi(received_parameters[2]);
                 if(mode != INPUT && mode != OUTPUT) {
-                    send_invalid_parameter_response();
+                    send_invalid_parameter_response(1);
                     return;
                 }
                 // FIXME: validate pin
@@ -274,7 +304,7 @@ class ArduinoProxy(object):
                 int value = atoi(received_parameters[2]);
                 
                 if(value != HIGH && value != LOW) {
-                    send_invalid_parameter_response();
+                    send_invalid_parameter_response(1);
                     return;
                 }
                 
@@ -379,7 +409,7 @@ class ArduinoProxy(object):
                 int value = atoi(received_parameters[2]);
                 
                 if(value < 0 || value > 255) {
-                    send_invalid_parameter_response();
+                    send_invalid_parameter_response(1);
                     return;
                 }
                 
@@ -449,7 +479,7 @@ class ArduinoProxy(object):
                 int value = atoi(received_parameters[1]);
                 
                 if(value < 0) {
-                    send_invalid_parameter_response();
+                    send_invalid_parameter_response(0);
                     return;
                 }
                 
@@ -485,7 +515,7 @@ class ArduinoProxy(object):
                 int value = atoi(received_parameters[1]);
                 
                 if(value < 0) {
-                    send_invalid_parameter_response();
+                    send_invalid_parameter_response(0);
                     return;
                 }
                 

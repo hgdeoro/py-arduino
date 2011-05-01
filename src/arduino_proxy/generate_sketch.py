@@ -93,6 +93,7 @@ def main():
         'proxied_function_source': proxied_function_source.getvalue(), 
         'serial_speed': proxy.speed, 
         'INVALID_CMD': ArduinoProxy.INVALID_CMD, 
+        'INVALID_PARAMETER': ArduinoProxy.INVALID_PARAMETER,
     }
     
     logging.info("Generating C/PDE file...")

@@ -27,11 +27,6 @@ char* received_parameters[MAX_RECEIVED_PARAMETERS] = { 0 };
 
 #define TEMPORARY_ARRAY_SIZE 64
 
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Flag setted when a newline was found while reading from Serial.
-
-int new_line_found = 0;
-
 #define PIN_ONBOARD_LED 13  // DIGITAL
 #define PIN_START_BUTTON 12 // DIGITAL
 
@@ -65,13 +60,17 @@ int new_line_found = 0;
 	void send_int_response(int value) {
 		Serial.println(value, DEC);
 	}
-
-	void send_invalid_parameter_response() {
-		Serial.println("%(INVALID_CMD)s"); // {***PLACEHOLDER***}
+	
+	// param_num: which parameter is invalid. Starts with '0'
+	void send_invalid_parameter_response(int param_num) {
+		Serial.print("%(INVALID_PARAMETER)s "); // {***PLACEHOLDER***}
+		Serial.println(param_num, DEC);
 	}
 	
-	void send_invalid_cmd_response() {
-		Serial.println("%(INVALID_CMD)s"); // {***PLACEHOLDER***}
+	// error_code == 0 -> UNKNOWN ERROR CORE or WITHOUT ERROR CODE
+	void send_invalid_cmd_response(int error_code) {
+		Serial.print("%(INVALID_CMD)s "); // {***PLACEHOLDER***}
+		Serial.println(error_code, DEC);
 	}
 	
 	void send_ok_response() {
@@ -153,8 +152,8 @@ unsigned long pulseIn(uint8_t pin, uint8_t state, unsigned long timeout) { retur
 		return ret;
 	}
 	
-	void send_invalid_cmd_response() {
-		printf("INVALID FUNCTION: '%s'\n", received_parameters[0]);
+	void send_invalid_cmd_response(int error_code) {
+		printf("send_invalid_cmd_response(error_code=%d)\n", error_code);
 	}
 	
 	void wait_start() { }
@@ -169,11 +168,33 @@ unsigned long pulseIn(uint8_t pin, uint8_t state, unsigned long timeout) { retur
 	
 #endif
 
-void read_one_param(char* tmp_array) {
-	
-	int i;
-	for(i=0; i<TEMPORARY_ARRAY_SIZE; i++)
-		tmp_array[i] = 0x00; // reset
+// Define all the possible return values. This is used as a 'code' for
+// reporing errors to python.
+
+#define RETURN_OK												0
+#define READ_ONE_PARAM_NEW_LINE_FOUND							7
+#define READ_ONE_PARAM_EMPTY_RESPONSE 							1
+#define READ_ONE_PARAM_ERROR_PARAMETER_TOO_LARGE 				2
+#define READ_PARAMETERS_ERROR_TOO_MANY_PARAMETERS 				3
+#define UNEXPECTED_RESPONSE_FROM_READ_ONE_PARAM					4
+#define UNEXPECTED_RESPONSE_FROM_READ_PARAMETERS				5
+#define FUNCTION_NOT_FOUND										6
+
+//
+// Read one parameter from serial and store it in the 'tmp_array'.
+//
+// Parameters:
+// * tmp_array: where to store the chars read from serial.
+//
+// Returns:
+// * RETURN_OK a complete parameter was read.
+// * READ_ONE_PARAM_EMPTY_RESPONSE no parameter was read, because
+//		nothing was received when read() the serial connection.
+// * READ_ONE_PARAM_ERROR_PARAMETER_TOO_LARGE a parameter was read,
+//    	but larger than the buffer. (TEMPORARY_ARRAY_SIZE)
+//
+
+uint8_t read_one_param(char* tmp_array) {
 	
 	int incomingByte;
 	int pos = 0;
@@ -183,71 +204,122 @@ void read_one_param(char* tmp_array) {
 		if(incomingByte == -1) {
 			// no data
 			if(pos == 0 && received_parameters[0] == NULL) {
-				// wait 10ms only if no data was received
-				delay(10);
+				// return 0 and let Arduino run other tasks
+				// instead of waiting with delay().
+				return READ_ONE_PARAM_EMPTY_RESPONSE;
 			}
+			
+			// TODO: test this situation, sending 1 character at a time,
+			// and waiting between each character sent.
+			
 			continue;
 		}
 
-		// " " == 32
+		// " " == 32 -> got a space
 		if(incomingByte == 32) {
 			if(pos == 0) {
 				// Ignore leading white spaces
 				continue;
 			}
-			// got a space... return!
-			return;
+			// got a space! mark end of string and return
+			tmp_array[pos] = 0x00;
+			return RETURN_OK;
 		}
 		
-		// "\\n" == 10
+		// "\\n" == 10 -> we've reached end of the command
 		if(incomingByte == 10) {
-			new_line_found = 1;
-			return;
+			tmp_array[pos] = 0x00; // mark end of string
+			return READ_ONE_PARAM_NEW_LINE_FOUND;
 		}
 
 		tmp_array[pos++] = incomingByte;
 
 	} // while
 	
+	// The tmp_array is full. Some character don't fit-in it, and will
+	//  be lost!
+
 	// pos == (TEMPORARY_ARRAY_SIZE-1)
-	return;
+	tmp_array[pos] = 0x00; // mark end of string
 	
+	return READ_ONE_PARAM_ERROR_PARAMETER_TOO_LARGE;
 }
 
-void read_parameters() {
+//
+// Read parameters from serial and store them in received_parameters.
+//
+// Returns:
+// * RETURN_OK all the parameters were read.
+// * READ_ONE_PARAM_EMPTY_RESPONSE no parameter was read.
+// * READ_ONE_PARAM_ERROR_PARAMETER_TOO_LARGE: a parameter was larger
+//			than the permitted. (TEMPORARY_ARRAY_SIZE)
+// * READ_PARAMETERS_ERROR_TOO_MANY_PARAMETERS: found more parameters
+//			than the permitted. (MAX_RECEIVED_PARAMETERS)
+//
+
+uint8_t read_parameters() {
 	
 	static char tmp_array[TEMPORARY_ARRAY_SIZE];
 	
-	int i;
-	for(i=0; i<MAX_RECEIVED_PARAMETERS; i++) {
-		if(received_parameters[i] != NULL) {
-			free(received_parameters[i]); // free
-			received_parameters[i] = NULL; // reset
+	// Reset 'received_parameters', only if wasn't done earlier...
+	if(received_parameters[0] != NULL) {
+		int i;
+		for(i=0; i<MAX_RECEIVED_PARAMETERS; i++) {
+			if(received_parameters[i] != NULL) {
+				free(received_parameters[i]); // free
+				received_parameters[i] = NULL; // reset
+			} else {
+				// we can suppose that if this is NULL, the others will
+				// be NULL
+				break;
+			}
 		}
 	}
 	
 	int param_index = 0;
-	new_line_found = 0;
 	
-	for(param_index=0; param_index<MAX_RECEIVED_PARAMETERS && !new_line_found; param_index++) {
-		read_one_param(tmp_array);
+	for(param_index=0; param_index<MAX_RECEIVED_PARAMETERS;) {
 		
-		if(strlen(tmp_array) == 0 &&  new_line_found) {
-			return;
+		tmp_array[0] = 0x00;
+		uint8_t read_status = read_one_param(tmp_array);
+		
+		if(read_status == RETURN_OK || read_status == READ_ONE_PARAM_NEW_LINE_FOUND) {
+			
+			if(tmp_array[0] != 0x00) {
+				received_parameters[param_index] = (char*) malloc(strlen(tmp_array)+1);
+				strcpy(received_parameters[param_index++], &tmp_array[0]);
+			}
+
+			if(read_status == RETURN_OK) {
+				continue;
+			} else {
+				return RETURN_OK;
+			}
+			
+			
+		} else if(read_status == READ_ONE_PARAM_EMPTY_RESPONSE) {
+			if(param_index == 0) {
+				// nothing was read, and we are NOT in the middle of a command
+				return READ_ONE_PARAM_EMPTY_RESPONSE;
+			} else {
+				// we are in the middle of something... try again and again...
+				continue;
+			}
+			
+		} else if(read_status == READ_ONE_PARAM_ERROR_PARAMETER_TOO_LARGE) {
+			// the parameter is larger that the admited.
+			while(read_char() != 10); // 10 == '\n'
+			return READ_ONE_PARAM_ERROR_PARAMETER_TOO_LARGE;
+			
+		} else {
+			return UNEXPECTED_RESPONSE_FROM_READ_ONE_PARAM;
 		}
-		
-		received_parameters[param_index] = (char*) malloc(strlen(tmp_array)+1);
-		strcpy(received_parameters[param_index], &tmp_array[0]);
 	}
 	
-	if(new_line_found) {
-		return;
-	} else {
-		while(! new_line_found) {
-			read_one_param(tmp_array);
-		}
-	}
-	
+	// Al the 'received_parameters' were used!
+	while(read_char() != 10); // 10 == '\n'
+	return READ_PARAMETERS_ERROR_TOO_MANY_PARAMETERS;
+
 }
 
 proxied_function_ptr get_function_by_name(char* name) {
@@ -261,9 +333,10 @@ proxied_function_ptr get_function_by_name(char* name) {
 }
 
 void loop() {
-	read_parameters();
+	uint8_t ret = read_parameters();
 	
 	#ifdef PY_ARDUINO_PROXY_DEVEL
+	printf(" -> read_parameters(): %d\n", ret);
 	int i;
 	for(i=0; i<MAX_RECEIVED_PARAMETERS; i++) {
 		if(received_parameters[i] != NULL) {
@@ -272,12 +345,22 @@ void loop() {
 	}
 	#endif
 	
-	proxied_function_ptr function = get_function_by_name(received_parameters[0]);
-	if(function != NULL) {
-		(function)();
+	if(ret == RETURN_OK) {
+		proxied_function_ptr function = get_function_by_name(received_parameters[0]);
+		if(function != NULL) {
+			(function)();
+		} else {
+			send_invalid_cmd_response(FUNCTION_NOT_FOUND);
+		}
+	} else if(ret == READ_ONE_PARAM_EMPTY_RESPONSE) {
+		delay(10);
+	} else if(ret == READ_ONE_PARAM_ERROR_PARAMETER_TOO_LARGE
+		|| ret == READ_PARAMETERS_ERROR_TOO_MANY_PARAMETERS) {
+		send_invalid_cmd_response(ret);
 	} else {
-		send_invalid_cmd_response();
+		send_invalid_cmd_response(UNEXPECTED_RESPONSE_FROM_READ_PARAMETERS);
 	}
+	
 }
 
 void setup() {
