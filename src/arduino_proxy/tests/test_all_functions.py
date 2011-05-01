@@ -27,7 +27,7 @@ SRC_DIR = os.path.split(SRC_DIR)[0] # SRC_DIR/arduino_proxy
 SRC_DIR = os.path.split(SRC_DIR)[0] # SRC_DIR
 sys.path.append(os.path.abspath(SRC_DIR))
 
-from arduino_proxy import ArduinoProxy
+from arduino_proxy import ArduinoProxy, InvalidCommand, CommandTimeout
 from arduino_proxy.tests import default_main
 
 def main():
@@ -45,6 +45,54 @@ def main():
         print "delayMicroseconds() -> %s" % str(proxy.delayMicroseconds(1))
         print "millis() -> %s " % str(proxy.millis())
         print "micros() -> %s" % str(proxy.micros())
+        
+        #define RETURN_OK 0
+        #define READ_ONE_PARAM_NEW_LINE_FOUND 7
+        #define READ_ONE_PARAM_EMPTY_RESPONSE 1
+        #define READ_ONE_PARAM_ERROR_PARAMETER_TOO_LARGE 2
+        #define READ_PARAMETERS_ERROR_TOO_MANY_PARAMETERS 3
+        #define UNEXPECTED_RESPONSE_FROM_READ_ONE_PARAM 4
+        #define UNEXPECTED_RESPONSE_FROM_READ_PARAMETERS 5
+        #define FUNCTION_NOT_FOUND 6
+        
+        try:
+            print "Check for READ_ONE_PARAM_ERROR_PARAMETER_TOO_LARGE"
+            proxy.send_cmd("laaaarge_meeeethod_" * 10)
+            assert False, "The previous line should raise an exception!"
+        except InvalidCommand, e:
+            # READ_ONE_PARAM_ERROR_PARAMETER_TOO_LARGE == 2
+            print " +", e
+            assert e.error_code == "2"
+
+        try:
+            print "Check for FUNCTION_NOT_FOUND"
+            proxy.send_cmd("_nonexisting_method p1 p2 p3 p4 p5 p6 p7 p8 p9")
+            assert False, "The previous line should raise an exception!"
+        except InvalidCommand, e:
+            # FUNCTION_NOT_FOUND == 6
+            print " +", e
+            assert e.error_code == "6"
+        
+        try:
+            print "Check for READ_PARAMETERS_ERROR_TOO_MANY_PARAMETERS"
+            proxy.send_cmd("cmd p1 p2 p3 p4 p5 p6 p7 p8 p9 p10")
+            assert False, "The previous line should raise an exception!"
+        except InvalidCommand, e:
+            # READ_PARAMETERS_ERROR_TOO_MANY_PARAMETERS == 3
+            print " +", e
+            assert e.error_code == "3"
+        
+        # Default -> 5 seg.
+        print "delay(4500)"
+        proxy.delay(4500)
+        
+        print "delay(5500)"
+        try:
+            proxy.delay(5500)
+            assert False, "The previous line should raise an exception!"
+        except CommandTimeout, e:
+            print " +", e.__class__
+
     except KeyboardInterrupt:
         print ""
     except Exception:
