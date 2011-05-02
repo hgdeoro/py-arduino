@@ -83,9 +83,9 @@ def main():
         proxied_function_source.write("\n")
         proxied_function_source.write(function.arduino_code)
         proxied_function_source.write("\n")
-        proxied_function_names.write('"_%s", ' % function.__name__)
-        proxied_function_ptrs.write('_%s, ' % function.__name__)
-
+        proxied_function_names.write('"%s", ' % function.arduino_function_name)
+        proxied_function_ptrs.write('%s, ' % function.arduino_function_name)
+    
     placeholder_values = {
         'proxied_function_count': len(proxy_functions), 
         'proxied_function_names': proxied_function_names.getvalue(), 

@@ -32,7 +32,7 @@ char* received_parameters[MAX_RECEIVED_PARAMETERS] = { 0 };
 // received from Serial. This limit the max. length that a
 // parameter may have.
 
-#define TEMPORARY_ARRAY_SIZE 64
+#define TEMPORARY_ARRAY_SIZE 24
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Default pin for blinking and for using as 'start'.
@@ -68,7 +68,7 @@ uint8_t check_mark_interrupt_1() { return detected_interrupts & 0x02; }
 // >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
 	
 
-void _analogRead() {
+void _aRd() {
     int pin = atoi(received_parameters[1]);
     int value = analogRead(pin);
     send_int_response(value);
@@ -77,7 +77,7 @@ void _analogRead() {
         
 
 
-void _analogWrite() {
+void _aWrt() {
     int pin = atoi(received_parameters[1]);
     int value = atoi(received_parameters[2]);
     
@@ -92,13 +92,13 @@ void _analogWrite() {
         
 
 
-void _connect() {
+void _cnt() {
     Serial.println(received_parameters[1]);
 }
         
 
 
-void _delay() {
+void _dy() {
     int value = atoi(received_parameters[1]);
     
     if(value < 0) {
@@ -112,7 +112,7 @@ void _delay() {
         
 
 
-void _delayMicroseconds() {
+void _dMs() {
     int value = atoi(received_parameters[1]);
     
     if(value < 0) {
@@ -126,7 +126,7 @@ void _delayMicroseconds() {
         
 
 
-void _digitalRead() {
+void _dRd() {
     int pin = atoi(received_parameters[1]);
     int value = digitalRead(pin);
     send_int_response(value);
@@ -135,7 +135,7 @@ void _digitalRead() {
         
 
 
-void _digitalWrite() {
+void _dWrt() {
     int pin = atoi(received_parameters[1]);
     int value = atoi(received_parameters[2]);
     
@@ -150,7 +150,7 @@ void _digitalWrite() {
         
 
 
-void _getInterruptMark() {
+void _gIM() {
     int interrupt = atoi(received_parameters[1]);
     if (interrupt == 0) {
         if(check_mark_interrupt_0()) {
@@ -176,19 +176,19 @@ void _getInterruptMark() {
         
 
 
-void _micros() {
+void _mc() {
     Serial.println(micros());
 }
         
 
 
-void _millis() {
+void _ms() {
     Serial.println(millis());
 }
         
 
 
-void _pinMode() {
+void _pMd() {
     int pin = atoi(received_parameters[1]);
     int mode = atoi(received_parameters[2]);
     if(mode != INPUT && mode != OUTPUT) {
@@ -208,7 +208,7 @@ void _ping() {
         
 
 
-void _watchInterrupt() {
+void _wI() {
     int mode;
     if(received_parameters[2][0] == ATTACH_INTERRUPT_MODE_LOW) {
         mode = LOW;
@@ -242,9 +242,9 @@ void _watchInterrupt() {
 	#define PROXIED_FUNCTION_COUNT 13 // {***PLACEHOLDER***}
 	
 // >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
-	proxied_function_ptr function_ptr[PROXIED_FUNCTION_COUNT] = { _analogRead, _analogWrite, _connect, _delay, _delayMicroseconds, _digitalRead, _digitalWrite, _getInterruptMark, _micros, _millis, _pinMode, _ping, _watchInterrupt,  }; // {***PLACEHOLDER***}
+	proxied_function_ptr function_ptr[PROXIED_FUNCTION_COUNT] = { _aRd, _aWrt, _cnt, _dy, _dMs, _dRd, _dWrt, _gIM, _mc, _ms, _pMd, _ping, _wI,  }; // {***PLACEHOLDER***}
 // >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
-	char*               function_name[PROXIED_FUNCTION_COUNT] = { "_analogRead", "_analogWrite", "_connect", "_delay", "_delayMicroseconds", "_digitalRead", "_digitalWrite", "_getInterruptMark", "_micros", "_millis", "_pinMode", "_ping", "_watchInterrupt",  }; // {***PLACEHOLDER***}
+	char*               function_name[PROXIED_FUNCTION_COUNT] = { "_aRd", "_aWrt", "_cnt", "_dy", "_dMs", "_dRd", "_dWrt", "_gIM", "_mc", "_ms", "_pMd", "_ping", "_wI",  }; // {***PLACEHOLDER***}
 	
 	#define read_char() Serial.read()
 	

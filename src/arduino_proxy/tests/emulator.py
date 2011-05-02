@@ -61,27 +61,27 @@ class ArduinoEmulator(threading.Thread):
         splitted = cmd.split()
         if splitted[0] == '_ping':
             self.serial_connection.write("PING_OK\n")
-        elif splitted[0] == '_analogRead':
+        elif splitted[0] == '_aRd':
             value = random.randint(0, 1023)
             self.serial_connection.write("%d\n" % value)
-        elif splitted[0] == '_digitalRead':
+        elif splitted[0] == '_dRd':
             value = [ArduinoProxy.HIGH, ArduinoProxy.LOW][random.randint(0, 1)]
             self.serial_connection.write("%d\n" % value)
-        elif splitted[0] == '_digitalWrite':
+        elif splitted[0] == '_dWrt':
             self.serial_connection.write("DW_OK\n")
-        elif splitted[0] == '_analogWrite':
+        elif splitted[0] == '_aWrt':
             self.serial_connection.write("AW_OK\n")
-        elif splitted[0] == '_connect':
+        elif splitted[0] == '_cnt':
             self.serial_connection.write("%s\n" % splitted[1])
-        elif splitted[0] == '_pinMode':
+        elif splitted[0] == '_pMd':
             self.serial_connection.write("PM_OK\n")
-        elif splitted[0] == '_delay':
+        elif splitted[0] == '_dy':
             self.serial_connection.write("D_OK\n")
-        elif splitted[0] == '_delayMicroseconds':
+        elif splitted[0] == '_dMs':
             self.serial_connection.write("DMS_OK\n")
-        elif splitted[0] == '_millis':
+        elif splitted[0] == '_ms':
             self.serial_connection.write("%d\n" % random.randint(0, 999999))
-        elif splitted[0] == '_micros':
+        elif splitted[0] == '_mc':
             self.serial_connection.write("%d\n" % random.randint(0, 999999))
         else:
             self.serial_connection.write("%s 0\n" % ArduinoProxy.INVALID_CMD)
@@ -361,19 +361,19 @@ class TestInternalsOfArduinoProxy(unittest.TestCase): # pylint: disable=R0904
             raise(Exception("Exception while transforming"))
         
         # send_cmd(self, cmd, expected_response=None, timeout=None, response_transformer=None):
-        self.proxy.send_cmd("_millis", response_transformer=int)
-        self.proxy.send_cmd("_millis", response_transformer=valid_transformer1)
-        self.proxy.send_cmd("_millis", response_transformer=valid_transformer2,
+        self.proxy.send_cmd("_ms", response_transformer=int)
+        self.proxy.send_cmd("_ms", response_transformer=valid_transformer1)
+        self.proxy.send_cmd("_ms", response_transformer=valid_transformer2,
             expected_response="RESPONSE_FROM_TRANSFORMER")
         
-        self.assertRaises(InvalidResponse, self.proxy.send_cmd, "_millis",
+        self.assertRaises(InvalidResponse, self.proxy.send_cmd, "_ms",
             response_transformer=invalid_transformer1)
-        self.assertRaises(InvalidResponse, self.proxy.send_cmd, "_millis", 
+        self.assertRaises(InvalidResponse, self.proxy.send_cmd, "_ms", 
             response_transformer=invalid_transformer2)
-        self.assertRaises(InvalidResponse, self.proxy.send_cmd, "_millis", 
+        self.assertRaises(InvalidResponse, self.proxy.send_cmd, "_ms", 
             response_transformer=invalid_transformer3)
         
-        self.assertRaises(InvalidResponse, self.proxy.send_cmd, "_millis", expected_response="X")
+        self.assertRaises(InvalidResponse, self.proxy.send_cmd, "_ms", expected_response="X")
         
         self.assertRaises(InvalidCommand, self.proxy.send_cmd, "_INEXISTING_CMD")
     

@@ -21,6 +21,7 @@
 
 import logging
 import pprint
+import random
 import serial
 import time
 import uuid
@@ -280,13 +281,14 @@ class ArduinoProxy(object):
         # FIXME: add doc for parameters and exceptions
         if not type(pin) is int or not mode in [ArduinoProxy.INPUT, ArduinoProxy.OUTPUT]:
             raise(InvalidArgument())
-        cmd = "_pinMode %d %d" % (pin, mode)
+        cmd = "_pMd %d %d" % (pin, mode)
         
         return self.send_cmd(cmd, expected_response="PM_OK")
         # raises CommandTimeout,InvalidCommand,InvalidResponse
     
+    pinMode.arduino_function_name = '_pMd'
     pinMode.arduino_code = _unindent(12, """
-            void _pinMode() {
+            void _pMd() {
                 int pin = atoi(received_parameters[1]);
                 int mode = atoi(received_parameters[2]);
                 if(mode != INPUT && mode != OUTPUT) {
@@ -298,7 +300,7 @@ class ArduinoProxy(object):
                 send_char_array_response("PM_OK");
             }
         """)
-
+    
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
     
     def digitalWrite(self, pin, value): # pylint: disable=C0103
@@ -306,12 +308,13 @@ class ArduinoProxy(object):
         # FIXME: add doc for parameters and exceptions
         if not type(pin) is int or not value in [ArduinoProxy.LOW, ArduinoProxy.HIGH]:
             raise(InvalidArgument())
-        cmd = "_digitalWrite %d %d" % (pin, value)
+        cmd = "_dWrt %d %d" % (pin, value)
         return self.send_cmd(cmd, expected_response="DW_OK")
         # raises CommandTimeout,InvalidCommand,InvalidResponse
     
+    digitalWrite.arduino_function_name = '_dWrt'
     digitalWrite.arduino_code = _unindent(12, """
-            void _digitalWrite() {
+            void _dWrt() {
                 int pin = atoi(received_parameters[1]);
                 int value = atoi(received_parameters[2]);
                 
@@ -341,7 +344,7 @@ class ArduinoProxy(object):
         # FIXME: add doc for parameters and exceptions
         if not type(pin) is int:
             raise(InvalidArgument())
-        cmd = "_digitalRead %d" % (pin)
+        cmd = "_dRd %d" % (pin)
         response = self.send_cmd(cmd) # raises CommandTimeout,InvalidCommand
         
         try:
@@ -356,8 +359,9 @@ class ArduinoProxy(object):
         raise(InvalidResponse("The response isn't HIGH (%d) nor LOW (%d). Response: %s" % (
             ArduinoProxy.HIGH, ArduinoProxy.LOW, int_response)))
     
+    digitalRead.arduino_function_name = '_dRd'
     digitalRead.arduino_code = _unindent(12, """
-            void _digitalRead() {
+            void _dRd() {
                 int pin = atoi(received_parameters[1]);
                 int value = digitalRead(pin);
                 send_int_response(value);
@@ -382,7 +386,7 @@ class ArduinoProxy(object):
         # FIXME: add doc for parameters and exceptions
         if not type(pin) is int:
             raise(InvalidArgument())
-        cmd = "_analogRead %d" % (pin)
+        cmd = "_aRd %d" % (pin)
         response = self.send_cmd(cmd, response_transformer=int) # raises CommandTimeout,InvalidCommand
         
         if response >= 0 and response <= 1023:
@@ -391,8 +395,9 @@ class ArduinoProxy(object):
         raise(InvalidResponse("The response isn't in the valid range of 0-1023. " + \
             "Response: %d" % response))
     
+    analogRead.arduino_function_name = '_aRd'
     analogRead.arduino_code = _unindent(12, """
-            void _analogRead() {
+            void _aRd() {
                 int pin = atoi(received_parameters[1]);
                 int value = analogRead(pin);
                 send_int_response(value);
@@ -410,13 +415,14 @@ class ArduinoProxy(object):
         # FIXME: add doc for parameters and exceptions
         if not type(pin) is int or not type(value) is int or value < 0 or value > 255:
             raise(InvalidArgument())
-        cmd = "_analogWrite %d %d" % (pin, value)
+        cmd = "_aWrt %d %d" % (pin, value)
         
         return self.send_cmd(cmd, expected_response="AW_OK")
         # raises CommandTimeout,InvalidCommand,InvalidResponse
     
+    analogWrite.arduino_function_name = '_aWrt'
     analogWrite.arduino_code = _unindent(12, """
-            void _analogWrite() {
+            void _aWrt() {
                 int pin = atoi(received_parameters[1]);
                 int value = atoi(received_parameters[2]);
                 
@@ -438,6 +444,7 @@ class ArduinoProxy(object):
         return self.send_cmd(cmd, expected_response="PING_OK")
         # raises CommandTimeout,InvalidCommand,InvalidResponse
     
+    ping.arduino_function_name = '_ping'
     ping.arduino_code = _unindent(12, """
             void _ping() {
                 Serial.println("PING_OK");
@@ -448,19 +455,20 @@ class ArduinoProxy(object):
     
     def connect(self): # pylint: disable=C0103
         # FIXME: add doc
-        random_uuid = str(uuid.uuid4())
-        cmd = "_connect %s" % random_uuid
+        random_str = str(random.randint(0, 10000000))
+        cmd = "_cnt %s" % random_str
         response = self.send_cmd(cmd) # raises CommandTimeout,InvalidCommand
         
-        while response != random_uuid:
+        while response != random_str:
             logger.warn("connect(): Ignoring invalid response: %s", pprint.pformat(response))
             # Go for the uuid, or a timeout exception!
             response = self.get_next_response()
         
         return response
     
+    connect.arduino_function_name = '_cnt'
     connect.arduino_code = _unindent(12, """
-            void _connect() {
+            void _cnt() {
                 Serial.println(received_parameters[1]);
             }
         """)
@@ -481,13 +489,14 @@ class ArduinoProxy(object):
         if not value >= 0:
             raise(InvalidArgument("value must be greater or equals than 0"))
         
-        response = self.send_cmd("_delay %d" % value, expected_response="D_OK")
+        response = self.send_cmd("_dy %d" % value, expected_response="D_OK")
         # raises CommandTimeout,InvalidCommand,InvalidResponse
         
         return response
     
+    delay.arduino_function_name = '_dy'
     delay.arduino_code = _unindent(12, """
-            void _delay() {
+            void _dy() {
                 int value = atoi(received_parameters[1]);
                 
                 if(value < 0) {
@@ -519,11 +528,12 @@ class ArduinoProxy(object):
         if not value >= 0:
             raise(InvalidArgument("value must be greater or equals than 0"))
         
-        return self.send_cmd("_delayMicroseconds %d" % value, expected_response="DMS_OK")
+        return self.send_cmd("_dMs %d" % value, expected_response="DMS_OK")
         # raises CommandTimeout,InvalidCommand,InvalidResponse
     
+    delayMicroseconds.arduino_function_name = '_dMs'
     delayMicroseconds.arduino_code = _unindent(12, """
-            void _delayMicroseconds() {
+            void _dMs() {
                 int value = atoi(received_parameters[1]);
                 
                 if(value < 0) {
@@ -544,11 +554,12 @@ class ArduinoProxy(object):
         Returns the number of milliseconds since the Arduino board began running the current
         program. This number will overflow (go back to zero), after approximately 50 days.
         """
-        return self.send_cmd("_millis", response_transformer=int)
+        return self.send_cmd("_ms", response_transformer=int)
         # raises CommandTimeout,InvalidCommand,InvalidResponse
     
+    millis.arduino_function_name = '_ms'
     millis.arduino_code = _unindent(12, """
-            void _millis() {
+            void _ms() {
                 Serial.println(millis());
             }
         """)
@@ -565,11 +576,12 @@ class ArduinoProxy(object):
         boards (e.g. the LilyPad), this function has a resolution of eight microseconds.
         Note: there are 1,000 microseconds in a millisecond and 1,000,000 microseconds in a second.
         """
-        return self.send_cmd("_micros", response_transformer=int)
+        return self.send_cmd("_mc", response_transformer=int)
         # raises CommandTimeout,InvalidCommand,InvalidResponse
     
+    micros.arduino_function_name = '_mc'
     micros.arduino_code = _unindent(12, """
-            void _micros() {
+            void _mc() {
                 Serial.println(micros());
             }
         """)
@@ -594,11 +606,12 @@ class ArduinoProxy(object):
                 ArduinoProxy.ATTACH_INTERRUPT_MODE_FALLING]:
             raise(InvalidArgument("invalid mode: %s" % str(mode)))
         
-        return self.send_cmd("_watchInterrupt %d %s" % (interrupt, mode), expected_response="WI_OK")
+        return self.send_cmd("_wI %d %s" % (interrupt, mode), expected_response="WI_OK")
                                             # raises CommandTimeout,InvalidCommand,InvalidResponse
     
+    watchInterrupt.arduino_function_name = '_wI'
     watchInterrupt.arduino_code = _unindent(12, """
-            void _watchInterrupt() {
+            void _wI() {
                 int mode;
                 if(received_parameters[2][0] == ATTACH_INTERRUPT_MODE_LOW) {
                     mode = LOW;
@@ -637,14 +650,15 @@ class ArduinoProxy(object):
         if interrupt < 0 or interrupt > 1:
             raise(InvalidArgument("interrupt must be between 0 and 1"))
         
-        ret = self.send_cmd("_getInterruptMark %d" % interrupt,
+        ret = self.send_cmd("_gIM %d" % interrupt,
             expected_response=["GIM_ON", "GIM_OFF"])
             # raises CommandTimeout,InvalidCommand,InvalidResponse
         
         return bool(ret == "GIM_ON")
     
+    getInterruptMark.arduino_function_name = '_gIM'
     getInterruptMark.arduino_code = _unindent(12, """
-            void _getInterruptMark() {
+            void _gIM() {
                 int interrupt = atoi(received_parameters[1]);
                 if (interrupt == 0) {
                     if(check_mark_interrupt_0()) {
