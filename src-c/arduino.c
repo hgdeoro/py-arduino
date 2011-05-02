@@ -27,8 +27,33 @@ char* received_parameters[MAX_RECEIVED_PARAMETERS] = { 0 };
 
 #define TEMPORARY_ARRAY_SIZE 64
 
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Default pin for blinking and for using as 'start'.
+
 #define PIN_ONBOARD_LED 13  // DIGITAL
 #define PIN_START_BUTTON 12 // DIGITAL
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Interrupts
+
+#define ATTACH_INTERRUPT_MODE_LOW '%(ATTACH_INTERRUPT_MODE_LOW)s' // {***PLACEHOLDER***}
+#define ATTACH_INTERRUPT_MODE_CHANGE '%(ATTACH_INTERRUPT_MODE_CHANGE)s' // {***PLACEHOLDER***}
+#define ATTACH_INTERRUPT_MODE_RISING '%(ATTACH_INTERRUPT_MODE_RISING)s' // {***PLACEHOLDER***}
+#define ATTACH_INTERRUPT_MODE_FALLING '%(ATTACH_INTERRUPT_MODE_FALLING)s' // {***PLACEHOLDER***}
+
+volatile uint8_t detected_interrupts = 0x00;
+
+inline void set_mark_interrupt_0() { detected_interrupts = detected_interrupts | 0x01; }
+inline void set_mark_interrupt_1() { detected_interrupts = detected_interrupts | 0x02; }
+
+inline void clear_mark_interrupt_0() { detected_interrupts = detected_interrupts & (~0x01); }
+inline void clear_mark_interrupt_1() { detected_interrupts = detected_interrupts & (~0x02); }
+
+inline uint8_t check_mark_interrupt_0() { return detected_interrupts & 0x01; }
+inline uint8_t check_mark_interrupt_1() { return detected_interrupts & 0x02; }
+
+inline void interrupt_handler0() { set_mark_interrupt_0(); }
+inline void interrupt_handler1() { set_mark_interrupt_1(); }
 
 #ifndef PY_ARDUINO_PROXY_DEVEL
 	
@@ -40,7 +65,7 @@ char* received_parameters[MAX_RECEIVED_PARAMETERS] = { 0 };
 	proxied_function_ptr function_ptr[PROXIED_FUNCTION_COUNT] = { %(proxied_function_ptrs)s }; // {***PLACEHOLDER***}
 	char*               function_name[PROXIED_FUNCTION_COUNT] = { %(proxied_function_names)s }; // {***PLACEHOLDER***}
 	
-	# define read_char() Serial.read()
+	#define read_char() Serial.read()
 	
 	void setup_serial() {
 		Serial.begin(%(serial_speed)d); // {***PLACEHOLDER***}
@@ -61,7 +86,10 @@ char* received_parameters[MAX_RECEIVED_PARAMETERS] = { 0 };
 		Serial.println(value, DEC);
 	}
 	
-	// param_num: which parameter is invalid. Starts with '0'
+	// param_num: which parameter is invalid. Starts with '0'.
+	// received_parameters[1] -> '0'
+	// received_parameters[2] -> '1'
+	// received_parameters[3] -> '2'
 	void send_invalid_parameter_response(int param_num) {
 		Serial.print("%(INVALID_PARAMETER)s "); // {***PLACEHOLDER***}
 		Serial.println(param_num, DEC);
@@ -121,8 +149,8 @@ void delay(unsigned long a) { }
 void delayMicroseconds(unsigned int us) { }
 unsigned long pulseIn(uint8_t pin, uint8_t state, unsigned long timeout) { return 0; }
 
-// void attachInterrupt(uint8_t a, void (*)(void) b, int mode) { }
-// void detachInterrupt(uint8_t a) { }
+void attachInterrupt(uint8_t interruptNum, void (*userFunc)(void), int mode) { }
+void detachInterrupt(uint8_t interruptNum) { }
 
 #endif
 
@@ -360,7 +388,6 @@ void loop() {
 	} else {
 		send_invalid_cmd_response(UNEXPECTED_RESPONSE_FROM_READ_PARAMETERS);
 	}
-	
 }
 
 void setup() {
@@ -380,6 +407,30 @@ int main() {
 	loop();
 	loop();
 	loop();
+	
+	printf("\n");
+	printf("detected_interrupts: %d; check_mark_interrupt_0(): %d; check_mark_interrupt_1(): %d\n", detected_interrupts, check_mark_interrupt_0(), check_mark_interrupt_1());
+	
+	printf("\n");
+	set_mark_interrupt_0();
+	printf("set_mark_interrupt_0();\n");
+	printf("detected_interrupts: %d; check_mark_interrupt_0(): %d; check_mark_interrupt_1(): %d\n", detected_interrupts, check_mark_interrupt_0(), check_mark_interrupt_1());
+	
+	printf("\n");
+	set_mark_interrupt_1();
+	printf("set_mark_interrupt_1();\n");
+	printf("detected_interrupts: %d; check_mark_interrupt_0(): %d; check_mark_interrupt_1(): %d\n", detected_interrupts, check_mark_interrupt_0(), check_mark_interrupt_1());
+	
+	printf("\n");
+	clear_mark_interrupt_1();
+	printf("clear_mark_interrupt_1();\n");
+	printf("detected_interrupts: %d; check_mark_interrupt_0(): %d; check_mark_interrupt_1(): %d\n", detected_interrupts, check_mark_interrupt_0(), check_mark_interrupt_1());
+	
+	printf("\n");
+	clear_mark_interrupt_0();
+	printf("clear_mark_interrupt_0();\n");
+	printf("detected_interrupts: %d; check_mark_interrupt_0(): %d; check_mark_interrupt_1(): %d\n", detected_interrupts, check_mark_interrupt_0(), check_mark_interrupt_1());
+	
 	return 0;
 }
 

@@ -34,8 +34,37 @@ char* received_parameters[MAX_RECEIVED_PARAMETERS] = { 0 };
 
 #define TEMPORARY_ARRAY_SIZE 64
 
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Default pin for blinking and for using as 'start'.
+
 #define PIN_ONBOARD_LED 13  // DIGITAL
 #define PIN_START_BUTTON 12 // DIGITAL
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Interrupts
+
+// >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
+#define ATTACH_INTERRUPT_MODE_LOW 'L' // {***PLACEHOLDER***}
+// >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
+#define ATTACH_INTERRUPT_MODE_CHANGE 'C' // {***PLACEHOLDER***}
+// >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
+#define ATTACH_INTERRUPT_MODE_RISING 'R' // {***PLACEHOLDER***}
+// >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
+#define ATTACH_INTERRUPT_MODE_FALLING 'F' // {***PLACEHOLDER***}
+
+volatile uint8_t detected_interrupts = 0x00;
+
+inline void set_mark_interrupt_0() { detected_interrupts = detected_interrupts | 0x01; }
+inline void set_mark_interrupt_1() { detected_interrupts = detected_interrupts | 0x02; }
+
+inline void clear_mark_interrupt_0() { detected_interrupts = detected_interrupts & (~0x01); }
+inline void clear_mark_interrupt_1() { detected_interrupts = detected_interrupts & (~0x02); }
+
+inline uint8_t check_mark_interrupt_0() { return detected_interrupts & 0x01; }
+inline uint8_t check_mark_interrupt_1() { return detected_interrupts & 0x02; }
+
+inline void interrupt_handler0() { set_mark_interrupt_0(); }
+inline void interrupt_handler1() { set_mark_interrupt_1(); }
 
 #ifndef PY_ARDUINO_PROXY_DEVEL
 	
@@ -124,6 +153,32 @@ void _digitalWrite() {
         
 
 
+void _getInterruptMark() {
+    int interrupt = atoi(received_parameters[1]);
+    if (interrupt == 0) {
+        if(check_mark_interrupt_0()) {
+            clear_mark_interrupt_0();
+            send_char_array_response("GIM_ON");
+        } else {
+            send_char_array_response("GIM_OFF");
+        }
+        return;
+    } else if (interrupt == 1) {
+        if(check_mark_interrupt_1()) {
+            clear_mark_interrupt_1();
+            send_char_array_response("GIM_ON");
+        } else {
+            send_char_array_response("GIM_OFF");
+        }
+        return;
+    } else {
+        send_invalid_parameter_response(0);
+        return;
+    }
+}
+        
+
+
 void _micros() {
     Serial.println(micros());
 }
@@ -154,18 +209,47 @@ void _ping() {
     Serial.println("PING_OK");
 }
         
+
+
+void _watchInterrupt() {
+    int mode;
+    if(received_parameters[2][0] == ATTACH_INTERRUPT_MODE_LOW) {
+        mode = LOW;
+    } else if(received_parameters[2][0] == ATTACH_INTERRUPT_MODE_CHANGE) {
+        mode = CHANGE;
+    } else if(received_parameters[2][0] == ATTACH_INTERRUPT_MODE_RISING) {
+        mode = RISING;
+    } else if(received_parameters[2][0] == ATTACH_INTERRUPT_MODE_FALLING) {
+        mode = FALLING;
+    } else {
+        send_invalid_parameter_response(1);
+        return;
+    }
+    int interrupt = atoi(received_parameters[1]);
+    if (interrupt == 0) {
+        attachInterrupt(interrupt, interrupt_handler0, mode);
+        send_char_array_response("WI_OK");
+    } else if (interrupt == 1) {
+        attachInterrupt(interrupt, interrupt_handler1, mode);
+        send_char_array_response("WI_OK");
+    } else {
+        send_invalid_parameter_response(0);
+        return;
+    }
+}
+        
  // {***PLACEHOLDER***}
 	
 	// PROXIED_FUNCTION_COUNT: how many proxied functions we have
 // >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
-	#define PROXIED_FUNCTION_COUNT 11 // {***PLACEHOLDER***}
+	#define PROXIED_FUNCTION_COUNT 13 // {***PLACEHOLDER***}
 	
 // >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
-	proxied_function_ptr function_ptr[PROXIED_FUNCTION_COUNT] = { _analogRead, _analogWrite, _connect, _delay, _delayMicroseconds, _digitalRead, _digitalWrite, _micros, _millis, _pinMode, _ping,  }; // {***PLACEHOLDER***}
+	proxied_function_ptr function_ptr[PROXIED_FUNCTION_COUNT] = { _analogRead, _analogWrite, _connect, _delay, _delayMicroseconds, _digitalRead, _digitalWrite, _getInterruptMark, _micros, _millis, _pinMode, _ping, _watchInterrupt,  }; // {***PLACEHOLDER***}
 // >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
-	char*               function_name[PROXIED_FUNCTION_COUNT] = { "_analogRead", "_analogWrite", "_connect", "_delay", "_delayMicroseconds", "_digitalRead", "_digitalWrite", "_micros", "_millis", "_pinMode", "_ping",  }; // {***PLACEHOLDER***}
+	char*               function_name[PROXIED_FUNCTION_COUNT] = { "_analogRead", "_analogWrite", "_connect", "_delay", "_delayMicroseconds", "_digitalRead", "_digitalWrite", "_getInterruptMark", "_micros", "_millis", "_pinMode", "_ping", "_watchInterrupt",  }; // {***PLACEHOLDER***}
 	
-	# define read_char() Serial.read()
+	#define read_char() Serial.read()
 	
 	void setup_serial() {
 // >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
@@ -187,7 +271,10 @@ void _ping() {
 		Serial.println(value, DEC);
 	}
 	
-	// param_num: which parameter is invalid. Starts with '0'
+	// param_num: which parameter is invalid. Starts with '0'.
+	// received_parameters[1] -> '0'
+	// received_parameters[2] -> '1'
+	// received_parameters[3] -> '2'
 	void send_invalid_parameter_response(int param_num) {
 // >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
 		Serial.print("INVALID_PARAMETER "); // {***PLACEHOLDER***}
@@ -249,8 +336,8 @@ void delay(unsigned long a) { }
 void delayMicroseconds(unsigned int us) { }
 unsigned long pulseIn(uint8_t pin, uint8_t state, unsigned long timeout) { return 0; }
 
-// void attachInterrupt(uint8_t a, void (*)(void) b, int mode) { }
-// void detachInterrupt(uint8_t a) { }
+void attachInterrupt(uint8_t interruptNum, void (*userFunc)(void), int mode) { }
+void detachInterrupt(uint8_t interruptNum) { }
 
 #endif
 
@@ -488,7 +575,6 @@ void loop() {
 	} else {
 		send_invalid_cmd_response(UNEXPECTED_RESPONSE_FROM_READ_PARAMETERS);
 	}
-	
 }
 
 void setup() {
@@ -508,6 +594,30 @@ int main() {
 	loop();
 	loop();
 	loop();
+	
+	printf("\n");
+	printf("detected_interrupts: %d; check_mark_interrupt_0(): %d; check_mark_interrupt_1(): %d\n", detected_interrupts, check_mark_interrupt_0(), check_mark_interrupt_1());
+	
+	printf("\n");
+	set_mark_interrupt_0();
+	printf("set_mark_interrupt_0();\n");
+	printf("detected_interrupts: %d; check_mark_interrupt_0(): %d; check_mark_interrupt_1(): %d\n", detected_interrupts, check_mark_interrupt_0(), check_mark_interrupt_1());
+	
+	printf("\n");
+	set_mark_interrupt_1();
+	printf("set_mark_interrupt_1();\n");
+	printf("detected_interrupts: %d; check_mark_interrupt_0(): %d; check_mark_interrupt_1(): %d\n", detected_interrupts, check_mark_interrupt_0(), check_mark_interrupt_1());
+	
+	printf("\n");
+	clear_mark_interrupt_1();
+	printf("clear_mark_interrupt_1();\n");
+	printf("detected_interrupts: %d; check_mark_interrupt_0(): %d; check_mark_interrupt_1(): %d\n", detected_interrupts, check_mark_interrupt_0(), check_mark_interrupt_1());
+	
+	printf("\n");
+	clear_mark_interrupt_0();
+	printf("clear_mark_interrupt_0();\n");
+	printf("detected_interrupts: %d; check_mark_interrupt_0(): %d; check_mark_interrupt_1(): %d\n", detected_interrupts, check_mark_interrupt_0(), check_mark_interrupt_1());
+	
 	return 0;
 }
 

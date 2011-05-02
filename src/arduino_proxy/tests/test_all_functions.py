@@ -82,17 +82,54 @@ def main():
             print " +", e
             assert e.error_code == "3"
         
-        # Default -> 5 seg.
-        print "delay(4500)"
-        proxy.delay(4500)
+        proxy.setTimeout(1)
+        print "delay(500)"
+        proxy.delay(500)
         
-        print "delay(5500)"
+        print "delay(1500)"
         try:
-            proxy.delay(5500)
+            proxy.delay(1500)
             assert False, "The previous line should raise an exception!"
         except CommandTimeout, e:
             print " +", e.__class__
-
+        
+        print "Re-connecting after timeout. connect() -> %s" % str(proxy.connect())
+        
+        #
+        # Testing interrupt
+        #
+        
+        #    LOW to trigger the interrupt whenever the pin is low,
+        #    CHANGE to trigger the interrupt whenever the pin changes value
+        #    RISING to trigger when the pin goes from low to high,
+        #    FALLING for when the pin goes from high to low.
+        #
+        #    ATTACH_INTERRUPT_MODE_LOW = 'L'
+        #    ATTACH_INTERRUPT_MODE_CHANGE = 'C'
+        #    ATTACH_INTERRUPT_MODE_RISING = 'R'
+        #    ATTACH_INTERRUPT_MODE_FALLING = 'F'
+        
+        print "proxy.pinMode()"
+        proxy.pinMode(2, ArduinoProxy.INPUT)
+        proxy.pinMode(3, ArduinoProxy.INPUT)
+        proxy.delay(500)
+        
+        print "proxy.watchInterrupt(0)"
+        print " +", proxy.watchInterrupt(0, ArduinoProxy.ATTACH_INTERRUPT_MODE_LOW)
+        
+        print "proxy.watchInterrupt(1)"
+        print " +", proxy.watchInterrupt(1, ArduinoProxy.ATTACH_INTERRUPT_MODE_RISING)
+        
+        int0 = False
+        int1 = False
+        while int0 == False or int1 == False or True:
+            if proxy.getInterruptMark(0):
+                print " + INTERRUPT 0 has ocurred"
+                int0 = True
+            if proxy.getInterruptMark(1):
+                print " + INTERRUPT 1 has ocurred"
+                int1 = True
+    
     except KeyboardInterrupt:
         print ""
     except Exception:

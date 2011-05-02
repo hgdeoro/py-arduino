@@ -84,12 +84,10 @@ class ArduinoProxy(object):
     INPUT = 0x00
     OUTPUT = 0x01
     
-    #define CHANGE 1
-    #define FALLING 2
-    #define RISING 3
-    CHANGE = 1
-    FALLING = 2
-    RISING = 3
+    ATTACH_INTERRUPT_MODE_LOW = 'L'
+    ATTACH_INTERRUPT_MODE_CHANGE = 'C'
+    ATTACH_INTERRUPT_MODE_RISING = 'R'
+    ATTACH_INTERRUPT_MODE_FALLING = 'F'
     
     INVALID_CMD = "INVALID_CMD"
     INVALID_PARAMETER = "INVALID_PARAMETER"
@@ -114,6 +112,10 @@ class ArduinoProxy(object):
             if call_connect:
                 self.connect()
             logger.debug("Done.")
+    
+    def setTimeout(self, new_timeout):
+        self.timeout = new_timeout
+        self.serial_port.timeout = new_timeout
     
     def get_next_response(self, timeout=None):
         """
@@ -156,23 +158,29 @@ class ArduinoProxy(object):
             response, (end-start))
         return response
     
-    def _check_response_for_errors(self, response):
+    def _check_response_for_errors(self, response, cmd):
         splitted = [item for item in response.split() if item]
         if splitted[0] == ArduinoProxy.INVALID_CMD:
             if len(splitted) == 1:
-                logger.warn("Received ArduinoProxy.INVALID_CMD, but without error code")
-                raise(InvalidCommand("Arduino responded with INVALID_CMD"))
+                logger.warn("Received ArduinoProxy.INVALID_CMD, but without error code. " + \
+                    "The command was: %s" % pprint.pformat(cmd))
+                raise(InvalidCommand("Arduino responded with INVALID_CMD. " + \
+                    "The command was: %s" % pprint.pformat(cmd)))
             else:
-                raise(InvalidCommand("Arduino responded with INVALID_CMD. Error code: %s" % \
-                    splitted[1], error_code=splitted[1]))
+                raise(InvalidCommand("Arduino responded with INVALID_CMD. " + \
+                    "The command was: %s. Error code: %s" % (pprint.pformat(cmd), splitted[1]),
+                    error_code=splitted[1]))
         
         if splitted[0] == ArduinoProxy.INVALID_PARAMETER:
             if len(splitted) == 1:
-                logger.warn("Received ArduinoProxy.INVALID_PARAMETER, but without error code")
-                raise(InvalidParameter("Arduino responded with INVALID_PARAMETER."))
+                logger.warn("Received ArduinoProxy.INVALID_PARAMETER, but without error code. " + \
+                    "The command was: %s" % pprint.pformat(cmd))
+                raise(InvalidParameter("Arduino responded with INVALID_PARAMETER. " + \
+                    "The command was: %s" % pprint.pformat(cmd)))
             else:
                 raise(InvalidParameter("Arduino responded with INVALID_PARAMETER." + \
-                    "The invalid parameter is %s" % splitted[1], error_param=splitted[1]))
+                    "The command was: %s. The invalid parameter is %s" % (pprint.pformat(cmd),
+                    splitted[1]), error_param=splitted[1]))
     
     def send_cmd(self, cmd, expected_response=None, timeout=None, response_transformer=None):
         """
@@ -183,6 +191,7 @@ class ArduinoProxy(object):
         - cmd: the command to send (string)
         - expected_response: the response we expect from the Arduino. If response_transformer is
             not None, the response is first transformed, and then compared to 'expected_response'.
+            If expected_response is a list or tuple, check that the response is one of its items.
         - response_transformer: the method to call to transform. Must receive a string (the value
             recieved from the Arduino).
         
@@ -201,7 +210,7 @@ class ArduinoProxy(object):
         
         response = self.get_next_response(timeout=timeout) # Raises CommandTimeout
         
-        self._check_response_for_errors(response)
+        self._check_response_for_errors(response, cmd)
         
         transformed_response = None
         if response_transformer is not None: # must transform the response
@@ -213,15 +222,18 @@ class ArduinoProxy(object):
                     pprint.pformat(response))))
         
         if expected_response is not None: # must check the response
+            if type(expected_response) not in [list, tuple]:
+                # ensure expected_response is a list or tuple, so 'in' works
+                expected_response = [expected_response]
             if transformed_response is not None:
-                if transformed_response != expected_response:
+                if transformed_response not in expected_response:
                     raise(InvalidResponse(
                         "The response (after transforming) wasn't the expected. " + \
                         "Expected: '%s'. " % pprint.pformat(expected_response) + \
                         "Transformed response: %s. " % pprint.pformat(transformed_response) + \
                         "Original response: %s. " % pprint.pformat(response) \
                     ))
-            elif response != expected_response:
+            elif response not in expected_response:
                 raise(InvalidResponse(
                     "The response wasn't the expected. " + \
                     "Expected: %s. " % pprint.pformat(expected_response) + \
@@ -559,6 +571,101 @@ class ArduinoProxy(object):
     micros.arduino_code = _unindent(12, """
             void _micros() {
                 Serial.println(micros());
+            }
+        """)
+
+    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    
+    def watchInterrupt(self, interrupt, mode): # pylint: disable=C0103
+        """
+        Watch if an interrupt was occured.
+        
+        Parameters:
+        - interrupt: 0 or 1- TODO: Arduino Mega has more than 2 interrupts!
+        - mode: one of ATTACH_INTERRUPT_MODE_LOW,ATTACH_INTERRUPT_MODE_CHANGE,
+            ATTACH_INTERRUPT_MODE_RISING,ATTACH_INTERRUPT_MODE_FALLING
+        """
+        if not type(interrupt) is int:
+            raise(InvalidArgument("interrupt must be an integer"))
+        if interrupt < 0 or interrupt > 1:
+            raise(InvalidArgument("interrupt must be between 0 and 1"))
+        if not mode in [ArduinoProxy.ATTACH_INTERRUPT_MODE_LOW,
+                ArduinoProxy.ATTACH_INTERRUPT_MODE_CHANGE, ArduinoProxy.ATTACH_INTERRUPT_MODE_RISING,
+                ArduinoProxy.ATTACH_INTERRUPT_MODE_FALLING]:
+            raise(InvalidArgument("invalid mode: %s" % str(mode)))
+        
+        return self.send_cmd("_watchInterrupt %d %s" % (interrupt, mode), expected_response="WI_OK")
+                                            # raises CommandTimeout,InvalidCommand,InvalidResponse
+    
+    watchInterrupt.arduino_code = _unindent(12, """
+            void _watchInterrupt() {
+                int mode;
+                if(received_parameters[2][0] == ATTACH_INTERRUPT_MODE_LOW) {
+                    mode = LOW;
+                } else if(received_parameters[2][0] == ATTACH_INTERRUPT_MODE_CHANGE) {
+                    mode = CHANGE;
+                } else if(received_parameters[2][0] == ATTACH_INTERRUPT_MODE_RISING) {
+                    mode = RISING;
+                } else if(received_parameters[2][0] == ATTACH_INTERRUPT_MODE_FALLING) {
+                    mode = FALLING;
+                } else {
+                    send_invalid_parameter_response(1);
+                    return;
+                }
+                int interrupt = atoi(received_parameters[1]);
+                if (interrupt == 0) {
+                    attachInterrupt(interrupt, interrupt_handler0, mode);
+                    send_char_array_response("WI_OK");
+                } else if (interrupt == 1) {
+                    attachInterrupt(interrupt, interrupt_handler1, mode);
+                    send_char_array_response("WI_OK");
+                } else {
+                    send_invalid_parameter_response(0);
+                    return;
+                }
+            }
+        """)
+
+    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    
+    def getInterruptMark(self, interrupt): # pylint: disable=C0103
+        """
+        Check if an interrupt was detected.
+        """
+        if not type(interrupt) is int:
+            raise(InvalidArgument("interrupt must be an integer"))
+        if interrupt < 0 or interrupt > 1:
+            raise(InvalidArgument("interrupt must be between 0 and 1"))
+        
+        ret = self.send_cmd("_getInterruptMark %d" % interrupt,
+            expected_response=["GIM_ON", "GIM_OFF"])
+            # raises CommandTimeout,InvalidCommand,InvalidResponse
+        
+        return bool(ret == "GIM_ON")
+    
+    getInterruptMark.arduino_code = _unindent(12, """
+            void _getInterruptMark() {
+                int interrupt = atoi(received_parameters[1]);
+                if (interrupt == 0) {
+                    if(check_mark_interrupt_0()) {
+                        clear_mark_interrupt_0();
+                        send_char_array_response("GIM_ON");
+                    } else {
+                        send_char_array_response("GIM_OFF");
+                    }
+                    return;
+                } else if (interrupt == 1) {
+                    if(check_mark_interrupt_1()) {
+                        clear_mark_interrupt_1();
+                        send_char_array_response("GIM_ON");
+                    } else {
+                        send_char_array_response("GIM_OFF");
+                    }
+                    return;
+                } else {
+                    send_invalid_parameter_response(0);
+                    return;
+                }
             }
         """)
 

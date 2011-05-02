@@ -94,6 +94,10 @@ def main():
         'serial_speed': proxy.speed, 
         'INVALID_CMD': ArduinoProxy.INVALID_CMD, 
         'INVALID_PARAMETER': ArduinoProxy.INVALID_PARAMETER,
+        'ATTACH_INTERRUPT_MODE_LOW': ArduinoProxy.ATTACH_INTERRUPT_MODE_LOW, 
+        'ATTACH_INTERRUPT_MODE_CHANGE': ArduinoProxy.ATTACH_INTERRUPT_MODE_CHANGE, 
+        'ATTACH_INTERRUPT_MODE_RISING': ArduinoProxy.ATTACH_INTERRUPT_MODE_RISING, 
+        'ATTACH_INTERRUPT_MODE_FALLING': ArduinoProxy.ATTACH_INTERRUPT_MODE_FALLING, 
     }
     
     logging.info("Generating C/PDE file...")
@@ -104,8 +108,14 @@ def main():
                 splitted[-1] == '{***PLACEHOLDER***}':
             output.write('// >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<\n')
             try:
-                output.write(line % placeholder_values)
+                modified_line = line % placeholder_values
+                output.write(modified_line)
                 logging.info(" + PLACEHOLDER found. Line: %s", line)
+                if modified_line == line:
+                    logging.error(" + PLACEHOLDER found, but no change was found in the line.")
+                    logging.error("    - Original line: %s" % line)
+                    logging.error("    - Modified line: %s" % modified_line)
+                    assert False
             except TypeError:
                 print "> "
                 print "> Error while trying to replace values in line with PLACEHOLDER"
