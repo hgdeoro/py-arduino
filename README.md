@@ -12,6 +12,8 @@ Python application to communicate with Arduinos. The current version let you:
 * generate PWM output with analogWrite()
 * get the values returned by millis() and micros()
 * execute delay() and delayMicroseconds()
+* enable and disable DEBUG.
+* watchInterrupt() and getInterruptMark()
 
 And now is very easy add your custom methods... See at the end of [proxy.py](https://github.com/hgdeoro/py-arduino-proxy/blob/master/src/arduino_proxy/proxy.py)
 for further information.
