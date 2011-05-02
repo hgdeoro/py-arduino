@@ -54,17 +54,14 @@ char* received_parameters[MAX_RECEIVED_PARAMETERS] = { 0 };
 
 volatile uint8_t detected_interrupts = 0x00;
 
-inline void set_mark_interrupt_0() { detected_interrupts = detected_interrupts | 0x01; }
-inline void set_mark_interrupt_1() { detected_interrupts = detected_interrupts | 0x02; }
+void set_mark_interrupt_0() { detected_interrupts = detected_interrupts | 0x01; }
+void set_mark_interrupt_1() { detected_interrupts = detected_interrupts | 0x02; }
 
-inline void clear_mark_interrupt_0() { detected_interrupts = detected_interrupts & (~0x01); }
-inline void clear_mark_interrupt_1() { detected_interrupts = detected_interrupts & (~0x02); }
+void clear_mark_interrupt_0() { detected_interrupts = detected_interrupts & (~0x01); }
+void clear_mark_interrupt_1() { detected_interrupts = detected_interrupts & (~0x02); }
 
-inline uint8_t check_mark_interrupt_0() { return detected_interrupts & 0x01; }
-inline uint8_t check_mark_interrupt_1() { return detected_interrupts & 0x02; }
-
-inline void interrupt_handler0() { set_mark_interrupt_0(); }
-inline void interrupt_handler1() { set_mark_interrupt_1(); }
+uint8_t check_mark_interrupt_0() { return detected_interrupts & 0x01; }
+uint8_t check_mark_interrupt_1() { return detected_interrupts & 0x02; }
 
 #ifndef PY_ARDUINO_PROXY_DEVEL
 	
@@ -227,10 +224,10 @@ void _watchInterrupt() {
     }
     int interrupt = atoi(received_parameters[1]);
     if (interrupt == 0) {
-        attachInterrupt(interrupt, interrupt_handler0, mode);
+        attachInterrupt(interrupt, set_mark_interrupt_0, mode);
         send_char_array_response("WI_OK");
     } else if (interrupt == 1) {
-        attachInterrupt(interrupt, interrupt_handler1, mode);
+        attachInterrupt(interrupt, set_mark_interrupt_1, mode);
         send_char_array_response("WI_OK");
     } else {
         send_invalid_parameter_response(0);

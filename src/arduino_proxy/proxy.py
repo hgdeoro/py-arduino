@@ -614,10 +614,10 @@ class ArduinoProxy(object):
                 }
                 int interrupt = atoi(received_parameters[1]);
                 if (interrupt == 0) {
-                    attachInterrupt(interrupt, interrupt_handler0, mode);
+                    attachInterrupt(interrupt, set_mark_interrupt_0, mode);
                     send_char_array_response("WI_OK");
                 } else if (interrupt == 1) {
-                    attachInterrupt(interrupt, interrupt_handler1, mode);
+                    attachInterrupt(interrupt, set_mark_interrupt_1, mode);
                     send_char_array_response("WI_OK");
                 } else {
                     send_invalid_parameter_response(0);
