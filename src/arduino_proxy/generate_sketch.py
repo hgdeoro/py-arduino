@@ -72,6 +72,11 @@ def main():
     proxy = ArduinoProxy('')
     proxy_functions = proxy.get_proxy_functions()
     
+    if len(proxy_functions) != len(set([function.arduino_function_name for function in
+            proxy_functions])):
+        raise(Exception("There are duplicates arduino function names (that's defined " + \
+            "function.arduino_function_name = 'something')"))
+    
     logging.info("Proxy functions:")
     for function in proxy_functions:
         logging.info(" + %s()", function.__name__)
