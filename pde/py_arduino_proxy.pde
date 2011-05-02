@@ -63,6 +63,8 @@ void clear_mark_interrupt_1() { detected_interrupts = detected_interrupts & (~0x
 uint8_t check_mark_interrupt_0() { return detected_interrupts & 0x01; }
 uint8_t check_mark_interrupt_1() { return detected_interrupts & 0x02; }
 
+uint8_t debug_enabled = 0;
+
 #ifndef PY_ARDUINO_PROXY_DEVEL
 	
 // >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
@@ -93,7 +95,7 @@ void _aWrt() {
 
 
 void _cnt() {
-    Serial.println(received_parameters[1]);
+    send_char_array_response(received_parameters[1]);
 }
         
 
@@ -150,6 +152,20 @@ void _dWrt() {
         
 
 
+void _dD() {
+    debug_enabled = 0;
+    send_char_array_response("DIS");
+}
+        
+
+
+void _eD() {
+    debug_enabled = 1;
+    send_char_array_response("ENA");
+}
+        
+
+
 void _gIM() {
     int interrupt = atoi(received_parameters[1]);
     if (interrupt == 0) {
@@ -177,12 +193,14 @@ void _gIM() {
 
 
 void _mc() {
+    send_debug();
     Serial.println(micros());
 }
         
 
 
 void _ms() {
+    send_debug();
     Serial.println(millis());
 }
         
@@ -203,7 +221,7 @@ void _pMd() {
 
 
 void _ping() {
-    Serial.println("PING_OK");
+    send_char_array_response("PING_OK");
 }
         
 
@@ -239,12 +257,12 @@ void _wI() {
 	
 	// PROXIED_FUNCTION_COUNT: how many proxied functions we have
 // >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
-	#define PROXIED_FUNCTION_COUNT 13 // {***PLACEHOLDER***}
+	#define PROXIED_FUNCTION_COUNT 15 // {***PLACEHOLDER***}
 	
 // >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
-	proxied_function_ptr function_ptr[PROXIED_FUNCTION_COUNT] = { _aRd, _aWrt, _cnt, _dy, _dMs, _dRd, _dWrt, _gIM, _mc, _ms, _pMd, _ping, _wI,  }; // {***PLACEHOLDER***}
+	proxied_function_ptr function_ptr[PROXIED_FUNCTION_COUNT] = { _aRd, _aWrt, _cnt, _dy, _dMs, _dRd, _dWrt, _dD, _eD, _gIM, _mc, _ms, _pMd, _ping, _wI,  }; // {***PLACEHOLDER***}
 // >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
-	char*               function_name[PROXIED_FUNCTION_COUNT] = { "_aRd", "_aWrt", "_cnt", "_dy", "_dMs", "_dRd", "_dWrt", "_gIM", "_mc", "_ms", "_pMd", "_ping", "_wI",  }; // {***PLACEHOLDER***}
+	char*               function_name[PROXIED_FUNCTION_COUNT] = { "_aRd", "_aWrt", "_cnt", "_dy", "_dMs", "_dRd", "_dWrt", "_dD", "_eD", "_gIM", "_mc", "_ms", "_pMd", "_ping", "_wI",  }; // {***PLACEHOLDER***}
 	
 	#define read_char() Serial.read()
 	
@@ -293,6 +311,21 @@ void _wI() {
 		Serial.println(response);
 	}
 	
+	void send_debug() {
+		if(! debug_enabled) return;
+		int i;
+		for(i=0; i<MAX_RECEIVED_PARAMETERS; i++) {
+					Serial.print("> received_parameters[");
+					Serial.print(i);
+					Serial.print("] -> ");
+			if(received_parameters[i] != NULL) {
+						Serial.println(received_parameters[i]);
+			} else {
+						Serial.println("null");
+					}
+		}
+	}
+	
 #endif
 
 #ifdef PY_ARDUINO_PROXY_DEVEL // Taken from : wiring.h - Partial implementation of the Wiring API for the ATmega8. Part of Arduino - http://www.arduino.cc/
@@ -339,7 +372,9 @@ void detachInterrupt(uint8_t interruptNum) { }
 #endif
 
 #ifdef PY_ARDUINO_PROXY_DEVEL
-
+	
+	void send_debug() { }
+	
 	void _ping() {
 		printf("ping()\n");
 	}
@@ -558,6 +593,7 @@ void loop() {
 	#endif
 	
 	if(ret == RETURN_OK) {
+		send_debug();
 		proxied_function_ptr function = get_function_by_name(received_parameters[0]);
 		if(function != NULL) {
 			(function)();
@@ -568,8 +604,10 @@ void loop() {
 		delay(10);
 	} else if(ret == READ_ONE_PARAM_ERROR_PARAMETER_TOO_LARGE
 		|| ret == READ_PARAMETERS_ERROR_TOO_MANY_PARAMETERS) {
+		send_debug();
 		send_invalid_cmd_response(ret);
 	} else {
+		send_debug();
 		send_invalid_cmd_response(UNEXPECTED_RESPONSE_FROM_READ_PARAMETERS);
 	}
 }

@@ -55,7 +55,10 @@ def default_main(optparse_usage="usage: %prog [options] serial_device",
     parser = optparse.OptionParser(usage=optparse_usage)
     parser.add_option("--debug",
         action="store_true", dest="debug", default=False,
-        help="Show debug messages.")
+        help="Configure logging to show debug messages.")
+    parser.add_option("--info",
+        action="store_true", dest="info", default=False,
+        help="Configure logging to show info messages.")
     parser.add_option("--quiet",
         action="store_true", dest="quiet", default=False,
         help="Try to be quiet.")
@@ -79,6 +82,8 @@ def default_main(optparse_usage="usage: %prog [options] serial_device",
     
     if options.debug:
         logging.basicConfig(level=logging.DEBUG)
+    elif options.info:
+        logging.basicConfig(level=logging.INFO)
     else:
         logging.basicConfig(level=logging.ERROR)
     

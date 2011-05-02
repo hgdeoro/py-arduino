@@ -209,7 +209,12 @@ class ArduinoProxy(object):
         self.serial_port.write("\n")
         self.serial_port.flush()
         
-        response = self.get_next_response(timeout=timeout) # Raises CommandTimeout
+        while True:
+            response = self.get_next_response(timeout=timeout) # Raises CommandTimeout
+            if response.startswith('> '):
+                logger.info("[DEBUG-TEXT-RECEIVED] %s", pprint.pformat(response))
+            else:
+                break
         
         self._check_response_for_errors(response, cmd)
         
@@ -447,7 +452,7 @@ class ArduinoProxy(object):
     ping.arduino_function_name = '_ping'
     ping.arduino_code = _unindent(12, """
             void _ping() {
-                Serial.println("PING_OK");
+                send_char_array_response("PING_OK");
             }
         """)
     
@@ -469,7 +474,7 @@ class ArduinoProxy(object):
     connect.arduino_function_name = '_cnt'
     connect.arduino_code = _unindent(12, """
             void _cnt() {
-                Serial.println(received_parameters[1]);
+                send_char_array_response(received_parameters[1]);
             }
         """)
 
@@ -560,6 +565,7 @@ class ArduinoProxy(object):
     millis.arduino_function_name = '_ms'
     millis.arduino_code = _unindent(12, """
             void _ms() {
+                send_debug();
                 Serial.println(millis());
             }
         """)
@@ -582,6 +588,7 @@ class ArduinoProxy(object):
     micros.arduino_function_name = '_mc'
     micros.arduino_code = _unindent(12, """
             void _mc() {
+                send_debug();
                 Serial.println(micros());
             }
         """)
@@ -680,6 +687,40 @@ class ArduinoProxy(object):
                     send_invalid_parameter_response(0);
                     return;
                 }
+            }
+        """)
+
+    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    
+    def enableDebug(self): # pylint: disable=C0103
+        """
+        Enable transmision of debug messages from the Arduino.
+        """
+        return self.send_cmd("_eD", "ENA")
+            # raises CommandTimeout,InvalidCommand,InvalidResponse
+    
+    enableDebug.arduino_function_name = '_eD'
+    enableDebug.arduino_code = _unindent(12, """
+            void _eD() {
+                debug_enabled = 1;
+                send_char_array_response("ENA");
+            }
+        """)
+
+    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    
+    def disableDebug(self): # pylint: disable=C0103
+        """
+        Disable transmision of debug messages from the Arduino.
+        """
+        return self.send_cmd("_dD", "DIS")
+            # raises CommandTimeout,InvalidCommand,InvalidResponse
+    
+    disableDebug.arduino_function_name = '_dD'
+    disableDebug.arduino_code = _unindent(12, """
+            void _dD() {
+                debug_enabled = 0;
+                send_char_array_response("DIS");
             }
         """)
 

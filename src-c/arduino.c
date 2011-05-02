@@ -52,6 +52,8 @@ void clear_mark_interrupt_1() { detected_interrupts = detected_interrupts & (~0x
 uint8_t check_mark_interrupt_0() { return detected_interrupts & 0x01; }
 uint8_t check_mark_interrupt_1() { return detected_interrupts & 0x02; }
 
+uint8_t debug_enabled = 0;
+
 #ifndef PY_ARDUINO_PROXY_DEVEL
 	
 	%(proxied_function_source)s // {***PLACEHOLDER***}
@@ -106,6 +108,21 @@ uint8_t check_mark_interrupt_1() { return detected_interrupts & 0x02; }
 		Serial.println(response);
 	}
 	
+	void send_debug() {
+		if(! debug_enabled) return;
+		int i;
+		for(i=0; i<MAX_RECEIVED_PARAMETERS; i++) {
+					Serial.print("> received_parameters[");
+					Serial.print(i);
+					Serial.print("] -> ");
+			if(received_parameters[i] != NULL) {
+						Serial.println(received_parameters[i]);
+			} else {
+						Serial.println("null");
+					}
+		}
+	}
+	
 #endif
 
 #ifdef PY_ARDUINO_PROXY_DEVEL // Taken from : wiring.h - Partial implementation of the Wiring API for the ATmega8. Part of Arduino - http://www.arduino.cc/
@@ -152,7 +169,9 @@ void detachInterrupt(uint8_t interruptNum) { }
 #endif
 
 #ifdef PY_ARDUINO_PROXY_DEVEL
-
+	
+	void send_debug() { }
+	
 	void _ping() {
 		printf("ping()\n");
 	}
@@ -371,6 +390,7 @@ void loop() {
 	#endif
 	
 	if(ret == RETURN_OK) {
+		send_debug();
 		proxied_function_ptr function = get_function_by_name(received_parameters[0]);
 		if(function != NULL) {
 			(function)();
@@ -381,8 +401,10 @@ void loop() {
 		delay(10);
 	} else if(ret == READ_ONE_PARAM_ERROR_PARAMETER_TOO_LARGE
 		|| ret == READ_PARAMETERS_ERROR_TOO_MANY_PARAMETERS) {
+		send_debug();
 		send_invalid_cmd_response(ret);
 	} else {
+		send_debug();
 		send_invalid_cmd_response(UNEXPECTED_RESPONSE_FROM_READ_PARAMETERS);
 	}
 }

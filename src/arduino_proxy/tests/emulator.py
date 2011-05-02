@@ -83,6 +83,10 @@ class ArduinoEmulator(threading.Thread):
             self.serial_connection.write("%d\n" % random.randint(0, 999999))
         elif splitted[0] == '_mc':
             self.serial_connection.write("%d\n" % random.randint(0, 999999))
+        elif splitted[0] == '_eD':
+            self.serial_connection.write("ENA\n")
+        elif splitted[0] == '_dD':
+            self.serial_connection.write("DIS\n")
         else:
             self.serial_connection.write("%s 0\n" % ArduinoProxy.INVALID_CMD)
             logger.error("run_cmd() - INVALID COMMAND: %s", pprint.pformat(cmd))
