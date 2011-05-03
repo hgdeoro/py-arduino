@@ -65,6 +65,10 @@ def default_main(optparse_usage="usage: %prog [options] serial_device",
     parser.add_option("--initial-wait",
         action="store", dest="initial_wait", default=None,
         help="How many seconds wait before conect (workaround for auto-reset on connect bug).")
+    parser.add_option("--dont-call-connect",
+        action="store_true", dest="dont_call_connect", default=False,
+        help="Don't call connect on startup (the default is " + \
+            "to call connect automatically at startup).")
     
     if not add_options_callback is None:
         add_options_callback(parser)
@@ -88,16 +92,18 @@ def default_main(optparse_usage="usage: %prog [options] serial_device",
         logging.basicConfig(level=logging.ERROR)
     
     if options.initial_wait == 0:
-        proxy = ArduinoProxy(args[0], 9600, wait_after_open=0)
+        proxy = ArduinoProxy(args[0], 9600, wait_after_open=0,
+            call_connect=not(options.dont_call_connect))
     else:
         if options.initial_wait is None:
             if not quiet:
                 print "Warning: waiting some seconds to let the Arduino reset..."
-            proxy = ArduinoProxy(args[0], 9600)
+            proxy = ArduinoProxy(args[0], 9600, call_connect=not(options.dont_call_connect))
         else:
             if not quiet:
                 print "Warning: waiting %d seconds to let the Arduino reset..." % \
                     int(options.initial_wait)
-            proxy = ArduinoProxy(args[0], 9600, wait_after_open=int(options.initial_wait))
+            proxy = ArduinoProxy(args[0], 9600, wait_after_open=int(options.initial_wait),
+                call_connect=not(options.dont_call_connect))
 
     return options, args, proxy
