@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
+import logging
 import os
+import re
 import sys
 
 from PyQt4 import QtCore, QtGui
@@ -15,7 +17,23 @@ from arduino_proxy import ArduinoProxy
 from arduino_proxy.ui.main_ui import *
 from arduino_proxy.tests import default_main
 
+RE_PINMODE_BUTTON = re.compile(r'^pinMode(\d{1,2})$')
+RE_PIN_ENABLE_CHECKBOX = re.compile(r'^pinEnabled(\d{1,2})$')
+
+logger = logging.getLogger(__name__)
+
 class Subclass(Ui_MainWindow):
+    
+    def _easy_connect(self, pattern, signal_str, receiver_function):
+        """
+        Connect attributes of 'self' that match the given pattern to the 'receiver_function'.
+        """
+        for an_attr in [ getattr(self, x) for x in dir(self) if pattern.match(x) ]:
+            logger.info("connect SIGNAL('%s') %s -> %s()", signal_str, an_attr.objectName(),
+                receiver_function.__name__)
+            logger.info("connect SIGNAL('clicked()') %s -> pinModeClicked()", an_attr.objectName())
+            self.qMainWindow.connect(an_attr,
+                QtCore.SIGNAL('clicked()'), self.pinModeClicked)
     
     def __init__(self, qMainWindow, options, args, proxy):
         self.qMainWindow = qMainWindow
@@ -24,11 +42,12 @@ class Subclass(Ui_MainWindow):
         self.proxy = proxy
         Ui_MainWindow.setupUi(self, self.qMainWindow)
         
-        for pin_mode_attr in [ self.pinMode13, self.pinMode12,
-                self.pinMode11, self.pinMode10, self.pinMode9,
-                self.pinMode8]:
-            self.qMainWindow.connect(pin_mode_attr,
-                QtCore.SIGNAL('clicked()'), self.pinModeClicked)
+        # -> pinModeClicked()
+        self._easy_connect(RE_PINMODE_BUTTON, 'clicked()', self.pinModeClicked)
+
+        # -> pinEnabledDisabled()
+        self._easy_connect(RE_PIN_ENABLE_CHECKBOX, 'stateChanged(int)',
+            self.pinEnabledDisabled)
         
         #self.led13.setPixmap(QtGui.QPixmap(":/images/led-off.png"))
         #self.qMainWindow.connect(self.led13,
@@ -39,10 +58,18 @@ class Subclass(Ui_MainWindow):
     
     def pinModeClicked(self):
         sender = self.qMainWindow.sender()
+        logger.info("pinModeClicked() - sender: %s", sender.objectName())
         if sender.text() == 'I':
             sender.setText('O')
         else:
             sender.setText('I')
+    
+    def pinEnabledDisabled(self):
+        sender = self.qMainWindow.sender()
+        logger.info("pinEnabledDisabled() - sender: %s - state: %s", sender.objectName(),
+            str(sender.checkState()))
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 def default_args_validator(parser, options, args): # pylint: disable=W0613
     if len(args) <1:
