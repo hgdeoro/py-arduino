@@ -12,7 +12,7 @@ Python application to communicate with Arduinos. The current version let you:
 * generate PWM output with analogWrite()
 * get the values returned by millis() and micros()
 * execute delay() and delayMicroseconds()
-* enable and disable DEBUG.
+* enable and disable DEBUG
 * watchInterrupt() and getInterruptMark()
 
 And now is very easy add your custom methods... See at the end of [proxy.py](https://github.com/hgdeoro/py-arduino-proxy/blob/master/src/arduino_proxy/proxy.py)
@@ -75,6 +75,28 @@ Read the digital port 0, from the Arduino connected in /dev/ttyACM0:
 	HIGH
 	horacio@eeepc:~$ /usr/local/py-arduino-proxy/src/arduino_proxy/tests/digital_read.py --numerical /dev/ttyACM0 0
 	1
+
+Example usage: watching for interrupts
+--------------------------------------
+
+Using watchInterrupt(), the Arduino starts to keep track when an external interrupt occurs. You can check if an interrupt
+has ocurred using getInterruptMark(). Here is an example.
+    
+    from arduino_proxy import ArduinoProxy
+    
+    proxy = ArduinoProxy('/dev/ttyACM0', 9600)
+    proxy.pinMode(2, ArduinoProxy.INPUT)
+    proxy.digitalWrite(2, ArduinoProxy.HIGH) # INT_0 -> pullup resistor
+    proxy.watchInterrupt(0, ArduinoProxy.ATTACH_INTERRUPT_MODE_LOW)
+    while True:
+        if proxy.getInterruptMark(0):
+            print "INTERRUPT 0 has ocurred"
+
+You can test this with the folowing circuit:
+
+![Interrupt circuit](https://github.com/hgdeoro/py-arduino-proxy/raw/master/examples/interrupts_bb.png "Interrupt circuit")
+
+A full working example is [here](https://github.com/hgdeoro/py-arduino-proxy/tree/master/src/arduino_proxy/tests/test_interrupt_0.py).
 
 Install: python application
 ---------------------------
