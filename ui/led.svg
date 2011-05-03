@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="744.09448819"
+   height="1052.3622047"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48.0 r9654"
+   sodipodi:docname="led.svg">
+  <defs
+     id="defs4">
+    <marker
+       inkscape:stockid="Arrow1Send"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="Arrow1Send"
+       style="overflow:visible;">
+      <path
+         id="path4104"
+         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1.0pt;marker-start:none;"
+         transform="scale(0.2) rotate(180) translate(6,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Mend"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="Arrow1Mend"
+       style="overflow:visible;">
+      <path
+         id="path4098"
+         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1.0pt;marker-start:none;"
+         transform="scale(0.4) rotate(180) translate(10,0)" />
+    </marker>
+    <inkscape:perspective
+       id="perspective40"
+       inkscape:persp3d-origin="218 : 329 : 1"
+       inkscape:vp_z="436 : 493.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 493.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.98994949"
+     inkscape:cx="79.243321"
+     inkscape:cy="641.35827"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     showguides="true"
+     inkscape:guide-bbox="true"
+     inkscape:window-width="1366"
+     inkscape:window-height="695"
+     inkscape:window-x="0"
+     inkscape:window-y="24"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       ry="5.5558391"
+       y="414.17307"
+       x="76.599403"
+       height="149.73523"
+       width="149.73523"
+       id="rect3800"
+       style="color:#000000;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#cccccc;stroke-width:1.04188144;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       inkscape:export-filename="/home/horacio/Desktop/led-on.png"
+       inkscape:export-xdpi="11.94"
+       inkscape:export-ydpi="11.94" />
+    <rect
+       style="color:#000000;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#cccccc;stroke-width:1.04188144000000005;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="rect3018"
+       width="149.73523"
+       height="149.73523"
+       x="72.614655"
+       y="238.06288"
+       ry="5.5558391"
+       inkscape:export-filename="/home/horacio/Desktop/led-off.png"
+       inkscape:export-xdpi="11.94"
+       inkscape:export-ydpi="11.94" />
+    <g
+       id="g5356"
+       transform="translate(10.339409,22.612636)"
+       inkscape:export-filename="/home/horacio/Desktop/led-off.png"
+       inkscape:export-xdpi="11.94"
+       inkscape:export-ydpi="11.94">
+      <path
+         inkscape:connector-curvature="0"
+         id="path3862"
+         d="m 103.57143,352.36218 0,-100 67.14286,50 z"
+         style="fill:none;stroke:#cccccc;stroke-width:8;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path3864"
+         d="m 103.57143,302.36218 -33.11329,0"
+         style="fill:none;stroke:#cccccc;stroke-width:8;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path3866"
+         d="m 170.71429,252.36218 0,100"
+         style="fill:none;stroke:#cccccc;stroke-width:8;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path3864-4"
+         d="m 203.82758,302.36218 -33.11329,0"
+         style="fill:none;stroke:#cccccc;stroke-width:8;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <g
+         style="stroke:#cccccc;stroke-width:5;stroke-miterlimit:4;stroke-dasharray:none"
+         transform="matrix(0.70710677,0.70710677,-0.70710677,0.70710677,260.55948,42.553242)"
+         id="g5346">
+        <path
+           style="fill:none;stroke:#cccccc;stroke-width:5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+           d="m 33.396169,227.13068 7.83068,-7.83068 7.830683,7.83068"
+           id="path5342"
+           inkscape:connector-curvature="0" />
+        <path
+           style="fill:none;stroke:#cccccc;stroke-width:5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+           d="m 41.226851,219.49141 0,25.63262"
+           id="path5344"
+           inkscape:connector-curvature="0" />
+      </g>
+      <g
+         style="stroke:#cccccc;stroke-width:5;stroke-miterlimit:4;stroke-dasharray:none"
+         id="g5350"
+         transform="matrix(0.70710677,0.70710677,-0.70710677,0.70710677,278.41662,55.856813)">
+        <path
+           inkscape:connector-curvature="0"
+           id="path5352"
+           d="m 33.396169,227.13068 7.83068,-7.83068 7.830683,7.83068"
+           style="fill:none;stroke:#cccccc;stroke-width:5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+        <path
+           inkscape:connector-curvature="0"
+           id="path5354"
+           d="m 41.226851,219.49141 0,25.63262"
+           style="fill:none;stroke:#cccccc;stroke-width:5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      </g>
+    </g>
+    <path
+       inkscape:connector-curvature="0"
+       id="path5370"
+       d="m 339.94713,371.55508 0,-100 67.14286,50 z"
+       style="fill:none;stroke:#00ff00;stroke-width:8;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path5372"
+       d="m 339.94713,321.55508 -33.11329,0"
+       style="fill:none;stroke:#00ff00;stroke-width:8;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path5374"
+       d="m 407.08999,271.55508 0,100"
+       style="fill:none;stroke:#00ff00;stroke-width:8;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path5376"
+       d="m 440.20328,321.55508 -33.11329,0"
+       style="fill:none;stroke:#00ff00;stroke-width:8;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <g
+       style="stroke:#00ff00;stroke-width:5;stroke-miterlimit:4;stroke-dasharray:none"
+       transform="matrix(0.70710677,0.70710677,-0.70710677,0.70710677,496.93518,61.74614)"
+       id="g5378">
+      <path
+         style="fill:none;stroke:#00ff00;stroke-width:5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         d="m 33.396169,227.13068 7.83068,-7.83068 7.830683,7.83068"
+         id="path5380"
+         inkscape:connector-curvature="0" />
+      <path
+         style="fill:none;stroke:#00ff00;stroke-width:5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         d="m 41.226851,219.49141 0,25.63262"
+         id="path5382"
+         inkscape:connector-curvature="0" />
+    </g>
+    <g
+       style="stroke:#00ff00;stroke-width:5;stroke-miterlimit:4;stroke-dasharray:none"
+       id="g5384"
+       transform="matrix(0.70710677,0.70710677,-0.70710677,0.70710677,514.79232,75.049711)">
+      <path
+         inkscape:connector-curvature="0"
+         id="path5386"
+         d="m 33.396169,227.13068 7.83068,-7.83068 7.830683,7.83068"
+         style="fill:none;stroke:#00ff00;stroke-width:5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path5388"
+         d="m 41.226851,219.49141 0,25.63262"
+         style="fill:none;stroke:#00ff00;stroke-width:5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    </g>
+    <g
+       id="g3802"
+       transform="translate(-102.05155,13.101347)"
+       inkscape:export-filename="/home/horacio/Desktop/led-on.png"
+       inkscape:export-xdpi="11.94"
+       inkscape:export-ydpi="11.94">
+      <path
+         inkscape:export-ydpi="13.5"
+         inkscape:export-xdpi="13.5"
+         inkscape:export-filename="/home/horacio/Desktop/led-on.png"
+         inkscape:connector-curvature="0"
+         id="path5400"
+         d="m 219.94713,537.98365 0,-100 67.14286,50 z"
+         style="fill:#00ff00;stroke:#00ff00;stroke-width:8;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <path
+         inkscape:export-ydpi="13.5"
+         inkscape:export-xdpi="13.5"
+         inkscape:export-filename="/home/horacio/Desktop/led-on.png"
+         inkscape:connector-curvature="0"
+         id="path5402"
+         d="m 219.94713,487.98365 -33.11329,0"
+         style="fill:#00ff00;stroke:#00ff00;stroke-width:8;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <path
+         inkscape:export-ydpi="13.5"
+         inkscape:export-xdpi="13.5"
+         inkscape:export-filename="/home/horacio/Desktop/led-on.png"
+         inkscape:connector-curvature="0"
+         id="path5404"
+         d="m 287.08999,437.98365 0,100"
+         style="fill:#00ff00;stroke:#00ff00;stroke-width:8;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <path
+         inkscape:export-ydpi="13.5"
+         inkscape:export-xdpi="13.5"
+         inkscape:export-filename="/home/horacio/Desktop/led-on.png"
+         inkscape:connector-curvature="0"
+         id="path5406"
+         d="m 320.20328,487.98365 -33.11329,0"
+         style="fill:#00ff00;stroke:#00ff00;stroke-width:8;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <g
+         inkscape:export-ydpi="13.5"
+         inkscape:export-xdpi="13.5"
+         inkscape:export-filename="/home/horacio/Desktop/led-on.png"
+         style="fill:#00ff00;stroke:#00ff00;stroke-width:5;stroke-miterlimit:4;stroke-dasharray:none"
+         transform="matrix(0.70710677,0.70710677,-0.70710677,0.70710677,376.93518,228.17471)"
+         id="g5408">
+        <path
+           style="fill:#00ff00;stroke:#00ff00;stroke-width:5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+           d="m 33.396169,227.13068 7.83068,-7.83068 7.830683,7.83068"
+           id="path5410"
+           inkscape:connector-curvature="0" />
+        <path
+           style="fill:#00ff00;stroke:#00ff00;stroke-width:5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+           d="m 41.226851,219.49141 0,25.63262"
+           id="path5412"
+           inkscape:connector-curvature="0" />
+      </g>
+      <g
+         inkscape:export-ydpi="13.5"
+         inkscape:export-xdpi="13.5"
+         inkscape:export-filename="/home/horacio/Desktop/led-on.png"
+         style="fill:#00ff00;stroke:#00ff00;stroke-width:5;stroke-miterlimit:4;stroke-dasharray:none"
+         id="g5414"
+         transform="matrix(0.70710677,0.70710677,-0.70710677,0.70710677,394.79232,241.47828)">
+        <path
+           inkscape:connector-curvature="0"
+           id="path5416"
+           d="m 33.396169,227.13068 7.83068,-7.83068 7.830683,7.83068"
+           style="fill:#00ff00;stroke:#00ff00;stroke-width:5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+        <path
+           inkscape:connector-curvature="0"
+           id="path5418"
+           d="m 41.226851,219.49141 0,25.63262"
+           style="fill:#00ff00;stroke:#00ff00;stroke-width:5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      </g>
+    </g>
+  </g>
+</svg>
