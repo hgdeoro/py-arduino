@@ -45,30 +45,33 @@ def _unindent(spaces, the_string):
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-class InvalidCommand(Exception):
+class ArduinoProxyException(Exception):
+    """Base exception"""
+
+class InvalidCommand(ArduinoProxyException):
     """The Arduino reported an error in the command"""
     
     def __init__(self, msg, error_code=None):
-        Exception.__init__(self, msg)
+        ArduinoProxyException.__init__(self, msg)
         self.error_code = error_code
 
-class InvalidParameter(Exception):
+class InvalidParameter(ArduinoProxyException):
     """The Arduino reported an invalid parameter"""
 
     def __init__(self, msg, error_param=None):
-        Exception.__init__(self, msg)
+        ArduinoProxyException.__init__(self, msg)
         self.error_param = error_param
 
-class InvalidResponse(Exception):
+class InvalidResponse(ArduinoProxyException):
     """The response from the Arduino isn't valid."""
 
-class EmptyResponse(Exception):
+class EmptyResponse(ArduinoProxyException):
     """The response from the Arduino was empty."""
 
-class CommandTimeout(Exception):
+class CommandTimeout(ArduinoProxyException):
     """Timeout detected while waiting for Arduino's response."""
 
-class InvalidArgument(Exception):
+class InvalidArgument(ArduinoProxyException):
     """A method was called with invalid argument type or values."""
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -651,6 +654,8 @@ class ArduinoProxy(object):
     def getInterruptMark(self, interrupt): # pylint: disable=C0103
         """
         Check if an interrupt was detected.
+        Returns:
+        - True: if an interrupt was detected. False otherwise.
         """
         if not type(interrupt) is int:
             raise(InvalidArgument("interrupt must be an integer"))
