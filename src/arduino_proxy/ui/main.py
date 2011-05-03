@@ -154,10 +154,12 @@ class Subclass(Ui_MainWindow):
     
     def _get_enabled_pins(self):
         """
-        Return list of instances of checkboxes associated to enabled pins.
+        Return a list enabled pins.
+        Each element is an integer.
         """
-        return [ an_attr for an_attr in self._get_attributes(RE_PIN_ENABLE_CHECKBOX)
-            if bool(an_attr.checkState()) ]
+        return [ self._get_pin(RE_PIN_ENABLE_CHECKBOX, an_attr)
+            for an_attr in self._get_attributes(RE_PIN_ENABLE_CHECKBOX)
+                if bool(an_attr.checkState()) ]
     
     def _update_one_pin(self, pin, log):
         if getattr(self, 'pinMode%d' % pin).text() == 'I': # >>> INPUT
@@ -170,8 +172,7 @@ class Subclass(Ui_MainWindow):
         try:
             ret = self.proxy.connect()
             log.write("connect(): %s" % ret)
-            for an_attr in self._get_enabled_pins():
-                    pin = self._get_pin(RE_PIN_ENABLE_CHECKBOX, an_attr)
+            for pin in self._get_enabled_pins():
                     self._update_one_pin(pin, log)
             self.statusbar.showMessage(log.getvalue())
         except:
