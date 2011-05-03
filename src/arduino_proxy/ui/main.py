@@ -1,10 +1,17 @@
 #!/usr/bin/env python
 
+import os
 import sys
 
 from PyQt4 import QtCore, QtGui
 
-from main_ui import *
+# Setup PYTHONPATH
+SRC_DIR = os.path.split(os.path.realpath(__file__))[0] # SRC_DIR/arduino_proxy/tests
+SRC_DIR = os.path.split(SRC_DIR)[0] # SRC_DIR/arduino_proxy
+SRC_DIR = os.path.split(SRC_DIR)[0] # SRC_DIR
+sys.path.append(os.path.abspath(SRC_DIR))
+
+from arduino_proxy.ui.main_ui import *
 
 class Subclass(Ui_MainWindow):
 	
