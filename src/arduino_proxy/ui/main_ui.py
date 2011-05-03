@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/Main.ui'
 #
-# Created: Tue May  3 15:51:58 2011
+# Created: Tue May  3 19:03:40 2011
 #      by: PyQt4 UI code generator 4.7.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -71,11 +71,11 @@ class Ui_MainWindow(object):
         self.pinMode8 = QtGui.QPushButton(self.frame)
         self.pinMode8.setGeometry(QtCore.QRect(400, 90, 16, 27))
         self.pinMode8.setObjectName("pinMode8")
-        self.pinVlue11 = QtGui.QSlider(self.frame)
-        self.pinVlue11.setGeometry(QtCore.QRect(280, 180, 29, 91))
-        self.pinVlue11.setMaximum(1023)
-        self.pinVlue11.setOrientation(QtCore.Qt.Vertical)
-        self.pinVlue11.setObjectName("pinVlue11")
+        self.pinValue11 = QtGui.QSlider(self.frame)
+        self.pinValue11.setGeometry(QtCore.QRect(280, 180, 29, 91))
+        self.pinValue11.setMaximum(1023)
+        self.pinValue11.setOrientation(QtCore.Qt.Vertical)
+        self.pinValue11.setObjectName("pinValue11")
         self.pinValue10 = QtGui.QSlider(self.frame)
         self.pinValue10.setGeometry(QtCore.QRect(320, 180, 29, 91))
         self.pinValue10.setMaximum(1023)
@@ -301,7 +301,7 @@ class Ui_MainWindow(object):
         MainWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(MainWindow)
-        QtCore.QObject.connect(self.pinVlue11, QtCore.SIGNAL("valueChanged(int)"), self.lcdPWM11.display)
+        QtCore.QObject.connect(self.pinValue11, QtCore.SIGNAL("valueChanged(int)"), self.lcdPWM11.display)
         QtCore.QObject.connect(self.pinValue10, QtCore.SIGNAL("valueChanged(int)"), self.lcdPWM10.display)
         QtCore.QObject.connect(self.pinValue9, QtCore.SIGNAL("valueChanged(int)"), self.lcdPWM9.display)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -326,7 +326,7 @@ class Ui_MainWindow(object):
         self.pinMode9.setText(QtGui.QApplication.translate("MainWindow", "I", None, QtGui.QApplication.UnicodeUTF8))
         self.pinMode8.setToolTip(QtGui.QApplication.translate("MainWindow", "Input / Output", None, QtGui.QApplication.UnicodeUTF8))
         self.pinMode8.setText(QtGui.QApplication.translate("MainWindow", "I", None, QtGui.QApplication.UnicodeUTF8))
-        self.pinVlue11.setToolTip(QtGui.QApplication.translate("MainWindow", "PWM Output", None, QtGui.QApplication.UnicodeUTF8))
+        self.pinValue11.setToolTip(QtGui.QApplication.translate("MainWindow", "PWM Output", None, QtGui.QApplication.UnicodeUTF8))
         self.pinValue10.setToolTip(QtGui.QApplication.translate("MainWindow", "PWM Output", None, QtGui.QApplication.UnicodeUTF8))
         self.pinValue9.setToolTip(QtGui.QApplication.translate("MainWindow", "PWM Output", None, QtGui.QApplication.UnicodeUTF8))
         self.label13.setText(QtGui.QApplication.translate("MainWindow", "13", None, QtGui.QApplication.UnicodeUTF8))

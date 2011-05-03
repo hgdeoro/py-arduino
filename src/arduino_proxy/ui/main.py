@@ -20,6 +20,11 @@ from arduino_proxy.tests import default_main
 RE_PINMODE_BUTTON = re.compile(r'^pinMode(\d{1,2})$')
 RE_PIN_ENABLE_CHECKBOX = re.compile(r'^pinEnabled(\d{1,2})$')
 
+RE_DIGITAL_WRITE_LOW = re.compile(r'^dw(\d{1,2})_l$')
+RE_DIGITAL_WRITE_HIGH = re.compile(r'^dw(\d{1,2})_h$')
+
+RE_SLIDER_ANALOG_WRITE = re.compile(r'^pinValue(\d{1,2})$')
+
 logger = logging.getLogger(__name__)
 
 class Subclass(Ui_MainWindow):
@@ -28,12 +33,15 @@ class Subclass(Ui_MainWindow):
         """
         Connect attributes of 'self' that match the given pattern to the 'receiver_function'.
         """
-        for an_attr in [ getattr(self, x) for x in dir(self) if pattern.match(x) ]:
+        attr_list = [ getattr(self, x) for x in dir(self) if pattern.match(x) ]
+        if not attr_list:
+            logger.warn("No attribute found! pattern: %s - SIGNAL('%s') -> %s()",
+                pattern, signal_str, receiver_function.__name__)
+        for an_attr in attr_list:
             logger.info("connect SIGNAL('%s') %s -> %s()", signal_str, an_attr.objectName(),
                 receiver_function.__name__)
-            logger.info("connect SIGNAL('clicked()') %s -> pinModeClicked()", an_attr.objectName())
             self.qMainWindow.connect(an_attr,
-                QtCore.SIGNAL('clicked()'), self.pinModeClicked)
+                QtCore.SIGNAL(signal_str), receiver_function)
     
     def __init__(self, qMainWindow, options, args, proxy):
         self.qMainWindow = qMainWindow
@@ -46,8 +54,16 @@ class Subclass(Ui_MainWindow):
         self._easy_connect(RE_PINMODE_BUTTON, 'clicked()', self.pinModeClicked)
 
         # -> pinEnabledDisabled()
-        self._easy_connect(RE_PIN_ENABLE_CHECKBOX, 'stateChanged(int)',
-            self.pinEnabledDisabled)
+        self._easy_connect(RE_PIN_ENABLE_CHECKBOX, 'stateChanged(int)', self.pinEnabledDisabled)
+        
+        # -> digitalWriteLow()
+        self._easy_connect(RE_DIGITAL_WRITE_LOW, 'clicked()', self.digitalWriteLow)
+        
+        # -> digitalWriteHigh()
+        self._easy_connect(RE_DIGITAL_WRITE_HIGH, 'clicked()', self.digitalWriteHigh)
+        
+        # -> analogWriteValueChanged()
+        self._easy_connect(RE_SLIDER_ANALOG_WRITE, 'valueChanged(int)', self.analogWriteValueChanged)
         
         #self.led13.setPixmap(QtGui.QPixmap(":/images/led-off.png"))
         #self.qMainWindow.connect(self.led13,
@@ -68,6 +84,19 @@ class Subclass(Ui_MainWindow):
         sender = self.qMainWindow.sender()
         logger.info("pinEnabledDisabled() - sender: %s - state: %s", sender.objectName(),
             str(sender.checkState()))
+
+    def digitalWriteLow(self):
+        sender = self.qMainWindow.sender()
+        logger.info("digitalWriteLow() - sender: %s", sender.objectName())
+
+    def digitalWriteHigh(self):
+        sender = self.qMainWindow.sender()
+        logger.info("digitalWriteHigh() - sender: %s", sender.objectName())
+
+    def analogWriteValueChanged(self):
+        sender = self.qMainWindow.sender()
+        logger.info("analogWriteValueChanged() - sender: %s - value: %s", sender.objectName(),
+            str(sender.value()))
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
