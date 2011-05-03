@@ -72,9 +72,15 @@ class Subclass(Ui_MainWindow):
     #def setPixmap123(self):
     #    self.led13.setPixmap(QtGui.QPixmap(":/images/led-on.png"))
     
+    def _get_pin(self, patter, sender):
+        m = patter.match(sender.objectName())
+        assert m is not None
+        return int(m.group(1))
+    
     def pinModeClicked(self):
         sender = self.qMainWindow.sender()
-        logger.info("pinModeClicked() - sender: %s", sender.objectName())
+        pin = self._get_pin(RE_PINMODE_BUTTON, sender)
+        logger.info("[%02d] pinModeClicked() - sender: %s", pin, sender.objectName())
         if sender.text() == 'I':
             sender.setText('O')
         else:
@@ -82,21 +88,25 @@ class Subclass(Ui_MainWindow):
     
     def pinEnabledDisabled(self):
         sender = self.qMainWindow.sender()
-        logger.info("pinEnabledDisabled() - sender: %s - state: %s", sender.objectName(),
-            str(sender.checkState()))
+        pin = self._get_pin(RE_PIN_ENABLE_CHECKBOX, sender)
+        logger.info("[%02d] pinEnabledDisabled() - sender: %s - state: %s", pin,
+            sender.objectName(), str(sender.checkState()))
 
     def digitalWriteLow(self):
         sender = self.qMainWindow.sender()
-        logger.info("digitalWriteLow() - sender: %s", sender.objectName())
+        pin = self._get_pin(RE_DIGITAL_WRITE_LOW, sender)
+        logger.info("[%02d] digitalWriteLow() - sender: %s", pin, sender.objectName())
 
     def digitalWriteHigh(self):
         sender = self.qMainWindow.sender()
-        logger.info("digitalWriteHigh() - sender: %s", sender.objectName())
+        pin = self._get_pin(RE_DIGITAL_WRITE_HIGH, sender)
+        logger.info("[%02d] digitalWriteHigh() - sender: %s", pin, sender.objectName())
 
     def analogWriteValueChanged(self):
         sender = self.qMainWindow.sender()
-        logger.info("analogWriteValueChanged() - sender: %s - value: %s", sender.objectName(),
-            str(sender.value()))
+        pin = self._get_pin(RE_SLIDER_ANALOG_WRITE, sender)
+        logger.info("[%02d] analogWriteValueChanged() - sender: %s - value: %s", pin,
+            sender.objectName(), str(sender.value()))
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
