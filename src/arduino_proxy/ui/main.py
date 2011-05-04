@@ -241,7 +241,7 @@ class ArduinoProxyMainWindow(Ui_MainWindow):
         
         try:
             self.proxy.analogWrite(pin, sender.value())
-            if sender.value() >= 512:
+            if sender.value() >= 1:
                 self._led_on(pin)
             else:
                 self._led_off(pin)
