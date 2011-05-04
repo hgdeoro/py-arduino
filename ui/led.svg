@@ -59,8 +59,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.98994949"
-     inkscape:cx="79.243321"
-     inkscape:cy="641.35827"
+     inkscape:cx="302.7758"
+     inkscape:cy="548.17665"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -291,5 +291,88 @@
            style="fill:#00ff00;stroke:#00ff00;stroke-width:5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
       </g>
     </g>
+    <rect
+       inkscape:export-ydpi="11.94"
+       inkscape:export-xdpi="11.94"
+       inkscape:export-filename="/home/horacio/Desktop/led-unknown.png"
+       ry="5.5558391"
+       y="439.08325"
+       x="291.81775"
+       height="149.73523"
+       width="149.73523"
+       id="rect3045"
+       style="color:#000000;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#cccccc;stroke-width:1.04188144;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+    <g
+       inkscape:export-ydpi="11.94"
+       inkscape:export-xdpi="11.94"
+       inkscape:export-filename="/home/horacio/Desktop/led-unknown.png"
+       transform="translate(229.54251,223.63299)"
+       id="g3047">
+      <path
+         style="fill:none;stroke:#cccccc;stroke-width:8;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         d="m 103.57143,352.36218 0,-100 67.14286,50 z"
+         id="path3049"
+         inkscape:connector-curvature="0" />
+      <path
+         style="fill:none;stroke:#cccccc;stroke-width:8;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         d="m 103.57143,302.36218 -33.11329,0"
+         id="path3051"
+         inkscape:connector-curvature="0" />
+      <path
+         style="fill:none;stroke:#cccccc;stroke-width:8;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         d="m 170.71429,252.36218 0,100"
+         id="path3053"
+         inkscape:connector-curvature="0" />
+      <path
+         style="fill:none;stroke:#cccccc;stroke-width:8;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         d="m 203.82758,302.36218 -33.11329,0"
+         id="path3055"
+         inkscape:connector-curvature="0" />
+      <g
+         id="g3057"
+         transform="matrix(0.70710677,0.70710677,-0.70710677,0.70710677,260.55948,42.553242)"
+         style="stroke:#cccccc;stroke-width:5;stroke-miterlimit:4;stroke-dasharray:none">
+        <path
+           inkscape:connector-curvature="0"
+           id="path3059"
+           d="m 33.396169,227.13068 7.83068,-7.83068 7.830683,7.83068"
+           style="fill:none;stroke:#cccccc;stroke-width:5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+        <path
+           inkscape:connector-curvature="0"
+           id="path3061"
+           d="m 41.226851,219.49141 0,25.63262"
+           style="fill:none;stroke:#cccccc;stroke-width:5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      </g>
+      <g
+         transform="matrix(0.70710677,0.70710677,-0.70710677,0.70710677,278.41662,55.856813)"
+         id="g3063"
+         style="stroke:#cccccc;stroke-width:5;stroke-miterlimit:4;stroke-dasharray:none">
+        <path
+           style="fill:none;stroke:#cccccc;stroke-width:5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+           d="m 33.396169,227.13068 7.83068,-7.83068 7.830683,7.83068"
+           id="path3065"
+           inkscape:connector-curvature="0" />
+        <path
+           style="fill:none;stroke:#cccccc;stroke-width:5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+           d="m 41.226851,219.49141 0,25.63262"
+           id="path3067"
+           inkscape:connector-curvature="0" />
+      </g>
+    </g>
+    <text
+       xml:space="preserve"
+       style="font-size:168.99552916999999752px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#cccccc;fill-opacity:1;stroke:#000000;font-family:Oldania ADF Std;-inkscape-font-specification:Oldania ADF Std;stroke-opacity:1;stroke-width:10;stroke-miterlimit:4;stroke-dasharray:none"
+       x="328.66138"
+       y="572.76129"
+       id="text3069"
+       sodipodi:linespacing="125%"
+       inkscape:export-filename="/home/horacio/Desktop/led-unknown.png"
+       inkscape:export-xdpi="11.94"
+       inkscape:export-ydpi="11.94"><tspan
+         sodipodi:role="line"
+         id="tspan3071"
+         x="328.66138"
+         y="572.76129"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Ubuntu;-inkscape-font-specification:Ubuntu Bold;stroke:#000000;stroke-opacity:1;stroke-width:10;stroke-miterlimit:4;stroke-dasharray:none;fill:#cccccc;fill-opacity:1">?</tspan></text>
   </g>
 </svg>

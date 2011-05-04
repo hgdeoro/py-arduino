@@ -1,6 +1,7 @@
 <RCC>
   <qresource prefix="images">
     <file>Arduino-Uno.png</file>
+    <file>led-unknown.png</file>
     <file>led-on.png</file>
     <file>led-off.png</file>
   </qresource>
