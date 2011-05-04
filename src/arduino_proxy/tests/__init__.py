@@ -100,10 +100,10 @@ def default_main(optparse_usage="usage: %prog [options] serial_device",
                 print "Warning: waiting some seconds to let the Arduino reset..."
             proxy = ArduinoProxy(args[0], 9600, call_connect=not(options.dont_call_connect))
         else:
-            if not quiet:
-                print "Warning: waiting %d seconds to let the Arduino reset..." % \
-                    int(options.initial_wait)
-            proxy = ArduinoProxy(args[0], 9600, wait_after_open=int(options.initial_wait),
+            initial_wait = int(options.initial_wait)
+            if not quiet and initial_wait > 0:
+                print "Warning: waiting %d seconds to let the Arduino reset..." % initial_wait
+            proxy = ArduinoProxy(args[0], 9600, wait_after_open=initial_wait,
                 call_connect=not(options.dont_call_connect))
 
     return options, args, proxy
