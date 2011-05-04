@@ -309,7 +309,26 @@ def default_args_validator(parser, options, args): # pylint: disable=W0613
         parser.error("You should specify the serial device.")
 
 def main():
-    options, args, proxy = default_main(args_validator=default_args_validator)
+    options, args, proxy = (None, None, None, )
+    
+    ## Check the connection.
+    try:
+        options, args, proxy = default_main(args_validator=default_args_validator)
+        proxy.connect()
+        logging.info("connect() OK")
+    except:
+        print ""
+        print "**~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+        print "** "
+        print "** The connection to Arduino isn't working as expected."
+        print "** This version of Py-Arduino-Proxy requires a working"
+        print "**   connection to the Arduino. This will be fixed"
+        print "**   in future version!"
+        print "** "
+        print "**~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+        print ""
+        raise
+    
     app = QtGui.QApplication(args[1:])
     q_main_window = QtGui.QMainWindow()
     window = ArduinoProxyMainWindow(q_main_window, options, args, proxy) # pylint: disable=W0612
