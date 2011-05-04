@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/Main.ui'
 #
-# Created: Tue May  3 20:13:55 2011
+# Created: Tue May  3 21:03:37 2011
 #      by: PyQt4 UI code generator 4.7.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -294,6 +294,9 @@ class Ui_MainWindow(object):
         self.pushButtonUpdate = QtGui.QPushButton(self.centralwidget)
         self.pushButtonUpdate.setGeometry(QtCore.QRect(20, 490, 85, 27))
         self.pushButtonUpdate.setObjectName("pushButtonUpdate")
+        self.checkboxAutoUpdate = QtGui.QCheckBox(self.centralwidget)
+        self.checkboxAutoUpdate.setGeometry(QtCore.QRect(120, 490, 141, 21))
+        self.checkboxAutoUpdate.setObjectName("checkboxAutoUpdate")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 754, 21))
@@ -368,5 +371,6 @@ class Ui_MainWindow(object):
         self.dw8_h.setToolTip(QtGui.QApplication.translate("MainWindow", "digitalWrite(HIGH)", None, QtGui.QApplication.UnicodeUTF8))
         self.dw8_h.setText(QtGui.QApplication.translate("MainWindow", "H", None, QtGui.QApplication.UnicodeUTF8))
         self.pushButtonUpdate.setText(QtGui.QApplication.translate("MainWindow", "Update", None, QtGui.QApplication.UnicodeUTF8))
+        self.checkboxAutoUpdate.setText(QtGui.QApplication.translate("MainWindow", "Auto update", None, QtGui.QApplication.UnicodeUTF8))
 
 import resources_rc

@@ -945,6 +945,19 @@ background: none;
      <string>Update</string>
     </property>
    </widget>
+   <widget class="QCheckBox" name="checkboxAutoUpdate">
+    <property name="geometry">
+     <rect>
+      <x>120</x>
+      <y>490</y>
+      <width>141</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Auto update</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">

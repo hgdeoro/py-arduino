@@ -31,10 +31,13 @@ RE_DIGITAL_WRITE_HIGH = re.compile(r'^dw(\d{1,2})_h$')
 
 RE_SLIDER_ANALOG_WRITE = re.compile(r'^pinValue(\d{1,2})$')
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__) # pylint: disable=C0103
 
-class Subclass(Ui_MainWindow):
+class ArduinoProxyMainWindow(Ui_MainWindow):
     
+    LED_ON_PIXMAP = None
+    LED_OFF_PIXMAP = None
+
     def _get_attributes(self, pattern):
         return [ getattr(self, x) for x in dir(self) if pattern.match(x) ]
     
@@ -49,19 +52,27 @@ class Subclass(Ui_MainWindow):
         for an_attr in attr_list:
             logger.info("connect SIGNAL('%s') %s -> %s()", signal_str, an_attr.objectName(),
                 receiver_function.__name__)
-            self.qMainWindow.connect(an_attr,
+            self.q_main_window.connect(an_attr,
                 QtCore.SIGNAL(signal_str), receiver_function)
     
-    def __init__(self, qMainWindow, options, args, proxy):
-        self.qMainWindow = qMainWindow
+    def __init__(self, q_main_window, options, args, proxy):
+        self.q_main_window = q_main_window
         self.options = options
         self.args = args
         self.proxy = proxy
-        Ui_MainWindow.setupUi(self, self.qMainWindow)
+        self.update_timer = QtCore.QTimer()
+        
+        Ui_MainWindow.setupUi(self, self.q_main_window)
         
         # -> update_arduino_values()
-        self.qMainWindow.connect(self.pushButtonUpdate, QtCore.SIGNAL('clicked()'),
+        self.q_main_window.connect(self.pushButtonUpdate, QtCore.SIGNAL('clicked()'),
             self.update_arduino_values)
+        self.q_main_window.connect(self.update_timer, QtCore.SIGNAL('timeout()'),
+            self.update_arduino_values)
+        
+        # -> checkbox_auto_update_toggle()
+        self.q_main_window.connect(self.checkboxAutoUpdate, QtCore.SIGNAL('stateChanged(int)'),
+            self.checkbox_auto_update_toggle)
         
         # -> pinModeClicked()
         self._easy_connect(RE_PINMODE_BUTTON, 'clicked()', self.pinModeClicked)
@@ -76,14 +87,11 @@ class Subclass(Ui_MainWindow):
         self._easy_connect(RE_DIGITAL_WRITE_HIGH, 'clicked()', self.digitalWriteHigh)
         
         # -> analogWriteValueChanged()
-        self._easy_connect(RE_SLIDER_ANALOG_WRITE, 'valueChanged(int)', self.analogWriteValueChanged)
+        self._easy_connect(RE_SLIDER_ANALOG_WRITE, 'valueChanged(int)',
+            self.analogWriteValueChanged)
         
-        #self.led13.setPixmap(QtGui.QPixmap(":/images/led-off.png"))
-        #self.qMainWindow.connect(self.led13,
-        #    QtCore.SIGNAL('clicked()'), self.setPixmap123)
-    
-    #def setPixmap123(self):
-    #    self.led13.setPixmap(QtGui.QPixmap(":/images/led-on.png"))
+        ArduinoProxyMainWindow.LED_ON_PIXMAP = QtGui.QPixmap(":/images/led-on.png")
+        ArduinoProxyMainWindow.LED_OFF_PIXMAP = QtGui.QPixmap(":/images/led-off.png")
     
     def _get_pin(self, patter, sender):
         m = patter.match(sender.objectName())
@@ -91,7 +99,7 @@ class Subclass(Ui_MainWindow):
         return int(m.group(1))
     
     def pinModeClicked(self):
-        sender = self.qMainWindow.sender()
+        sender = self.q_main_window.sender()
         pin = self._get_pin(RE_PINMODE_BUTTON, sender)
         logger.info("[%02d] pinModeClicked() - sender: %s", pin, sender.objectName())
         if sender.text() == 'I':
@@ -100,7 +108,7 @@ class Subclass(Ui_MainWindow):
             sender.setText('I')
     
     def pinEnabledDisabled(self):
-        sender = self.qMainWindow.sender()
+        sender = self.q_main_window.sender()
         pin = self._get_pin(RE_PIN_ENABLE_CHECKBOX, sender)
         logger.info("[%02d] pinEnabledDisabled() - sender: %s - state: %s", pin,
             sender.objectName(), str(bool(sender.checkState())))
@@ -130,17 +138,17 @@ class Subclass(Ui_MainWindow):
                 attr.setEnabled(True)
     
     def digitalWriteLow(self):
-        sender = self.qMainWindow.sender()
+        sender = self.q_main_window.sender()
         pin = self._get_pin(RE_DIGITAL_WRITE_LOW, sender)
         logger.info("[%02d] digitalWriteLow() - sender: %s", pin, sender.objectName())
 
     def digitalWriteHigh(self):
-        sender = self.qMainWindow.sender()
+        sender = self.q_main_window.sender()
         pin = self._get_pin(RE_DIGITAL_WRITE_HIGH, sender)
         logger.info("[%02d] digitalWriteHigh() - sender: %s", pin, sender.objectName())
 
     def analogWriteValueChanged(self):
-        sender = self.qMainWindow.sender()
+        sender = self.q_main_window.sender()
         pin = self._get_pin(RE_SLIDER_ANALOG_WRITE, sender)
         logger.info("[%02d] analogWriteValueChanged() - sender: %s - value: %s", pin,
             sender.objectName(), str(sender.value()))
@@ -148,9 +156,9 @@ class Subclass(Ui_MainWindow):
     def _set_led_from_value(self, pin, value):
         assert value in [ArduinoProxy.HIGH, ArduinoProxy.LOW]
         if value == ArduinoProxy.HIGH:
-            getattr(self, "led%d" % pin).setPixmap(QtGui.QPixmap(":/images/led-on.png"))
+            getattr(self, "led%d" % pin).setPixmap(ArduinoProxyMainWindow.LED_ON_PIXMAP)
         else:
-            getattr(self, "led%d" % pin).setPixmap(QtGui.QPixmap(":/images/led-off.png"))
+            getattr(self, "led%d" % pin).setPixmap(ArduinoProxyMainWindow.LED_OFF_PIXMAP)
     
     def _get_enabled_pins(self):
         """
@@ -173,11 +181,20 @@ class Subclass(Ui_MainWindow):
             ret = self.proxy.connect()
             log.write("connect(): %s" % ret)
             for pin in self._get_enabled_pins():
-                    self._update_one_pin(pin, log)
+                self._update_one_pin(pin, log)
             self.statusbar.showMessage(log.getvalue())
         except:
             traceback.print_exc()
             self.statusbar.showMessage("EXCEPTION DETECTED. More info: %s" % log.getvalue())
+    
+    def checkbox_auto_update_toggle(self):
+        enabled = bool(self.checkboxAutoUpdate.checkState())
+        if enabled:
+            self.pushButtonUpdate.setEnabled(False)
+            self.update_timer.start(50)
+        else:
+            self.update_timer.stop()
+            self.pushButtonUpdate.setEnabled(True)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -188,9 +205,9 @@ def default_args_validator(parser, options, args): # pylint: disable=W0613
 def main():
     options, args, proxy = default_main(args_validator=default_args_validator)
     app = QtGui.QApplication(args[1:])
-    MainWindow = QtGui.QMainWindow()
-    ui = Subclass(MainWindow, options, args, proxy)
-    MainWindow.show()
+    q_main_window = QtGui.QMainWindow()
+    window = ArduinoProxyMainWindow(q_main_window, options, args, proxy) # pylint: disable=W0612
+    q_main_window.show()
     sys.exit(app.exec_())
     
 if __name__ == '__main__':
