@@ -4,7 +4,6 @@ import logging
 import os
 import re
 import sys
-import traceback
 
 try:
     from cStringIO import StringIO
@@ -43,6 +42,7 @@ class ArduinoProxyMainWindow(Ui_MainWindow):
     LED_UNKNOWN_PIXMAP = None
 
     def __init__(self, q_main_window, options, args, proxy):
+        Ui_MainWindow.__init__(self)
         self.q_main_window = q_main_window
         self.options = options
         self.args = args
@@ -84,6 +84,13 @@ class ArduinoProxyMainWindow(Ui_MainWindow):
         for led in self._get_attributes(RE_LED_LABEL):
             pin = self._get_pin(RE_LED_LABEL, led)
             self._led_unknown(pin)
+        
+        # self.proxy.enableDebug()
+    
+    def _show_error(self, message):
+        """Logs an error to 'logger' and display it in the status bar."""
+        logger.error(message)
+        self.statusbar.showMessage(message)
     
     def _get_attributes(self, pattern):
         """Get a list of attributes that matches the pattern"""
@@ -103,7 +110,7 @@ class ArduinoProxyMainWindow(Ui_MainWindow):
             self.q_main_window.connect(an_attr,
                 QtCore.SIGNAL(signal_str), receiver_function)
     
-    def _get_pin(self, patter, sender):
+    def _get_pin(self, patter, sender): # pylint: disable=R0201
         """Returns the pin at which the 'sender' is associated."""
         m = patter.match(sender.objectName())
         assert m is not None
@@ -111,7 +118,11 @@ class ArduinoProxyMainWindow(Ui_MainWindow):
     
     def pinModeClicked(self):
         sender = self.q_main_window.sender()
+        assert sender is not None
+        
         pin = self._get_pin(RE_PINMODE_BUTTON, sender)
+        assert pin is not None
+        
         logger.info("[%02d] pinModeClicked() - sender: %s", pin, sender.objectName())
         if sender.text() == 'I':
             try:
@@ -119,18 +130,25 @@ class ArduinoProxyMainWindow(Ui_MainWindow):
                 sender.setText('O')
             except:
                 # FIXME: log and show error
-                pass
+                logging.exception("Exception detected in pinModeClicked()")
+                self.statusbar.showMessage("Exception detected in pinModeClicked()")
         else:
+            assert sender.text() == 'O'
             try:
                 sender.setText('I')
                 self.proxy.pinMode(pin, ArduinoProxy.INPUT)
             except:
                 # FIXME: log and show error
-                pass
+                logging.exception("Exception detected in pinModeClicked()")
+                self.statusbar.showMessage("Exception detected in pinModeClicked()")
     
     def pinEnabledDisabled(self):
         sender = self.q_main_window.sender()
+        assert sender is not None
+        
         pin = self._get_pin(RE_PIN_ENABLE_CHECKBOX, sender)
+        assert pin is not None
+        
         logger.info("[%02d] pinEnabledDisabled() - sender: %s - state: %s", pin,
             sender.objectName(), str(bool(sender.checkState())))
         
@@ -161,32 +179,76 @@ class ArduinoProxyMainWindow(Ui_MainWindow):
     
     def digitalWriteLow(self):
         sender = self.q_main_window.sender()
+        assert sender is not None
+        
         pin = self._get_pin(RE_DIGITAL_WRITE_LOW_BUTTON, sender)
+        assert pin is not None
+        
         logger.info("[%02d] digitalWriteLow() - sender: %s", pin, sender.objectName())
+        
+        if getattr(self, 'pinMode%d' % pin).text() != 'O':
+            self._show_error("digitalWriteLow() on pin %d, but pinMode isn't OUTPUT" % pin)
+            return
+        
+        # TODO: check if pin is enabled
+        
         try:
             self.proxy.digitalWrite(pin, ArduinoProxy.LOW)
             self._led_off(pin)
         except:
             # FIXME: log and show error
-            pass
+            logging.exception("Exception detected in digitalWriteLow()")
+            self.statusbar.showMessage("Exception detected in digitalWriteLow()")
     
     def digitalWriteHigh(self):
         sender = self.q_main_window.sender()
+        assert sender is not None
+        
         pin = self._get_pin(RE_DIGITAL_WRITE_HIGH_BUTTON, sender)
+        assert pin is not None
+        
         logger.info("[%02d] digitalWriteHigh() - sender: %s", pin, sender.objectName())
+        
+        if getattr(self, 'pinMode%d' % pin).text() != 'O':
+            self._show_error("digitalWriteHigh() on pin %d, but pinMode isn't OUTPUT" % pin)
+            return
+        
+        # TODO: check if pin is enabled
+        
         try:
             self.proxy.digitalWrite(pin, ArduinoProxy.HIGH)
             self._led_on(pin)
         except:
             # FIXME: log and show error
-            pass
+            logging.exception("Exception detected in digitalWriteHigh()")
+            self.statusbar.showMessage("Exception detected in digitalWriteHigh()")
     
     def analogWriteValueChanged(self):
         sender = self.q_main_window.sender()
+        assert sender is not None
+        
         pin = self._get_pin(RE_ANALOG_WRITE_SLIDER, sender)
+        assert pin is not None
+        
         logger.info("[%02d] analogWriteValueChanged() - sender: %s - value: %s", pin,
             sender.objectName(), str(sender.value()))
-        # FIXME: implement!
+        
+        if getattr(self, 'pinMode%d' % pin).text() != 'O':
+            self._show_error("analogWriteValueChanged() on pin %d, but pinMode isn't OUTPUT" % pin)
+            return
+        
+        # FIXME: check that PIN has PWM support
+        
+        try:
+            self.proxy.analogWrite(pin, sender.value())
+            if sender.value() >= 512:
+                self._led_on(pin)
+            else:
+                self._led_off(pin)
+        except:
+            # FIXME: log and show error
+            logging.exception("Exception detected in analogWriteValueChanged()")
+            self.statusbar.showMessage("Exception detected in analogWriteValueChanged()")
     
     def _led_on(self, pin):
         getattr(self, "led%d" % pin).setPixmap(ArduinoProxyMainWindow.LED_ON_PIXMAP)
@@ -227,7 +289,7 @@ class ArduinoProxyMainWindow(Ui_MainWindow):
                 self._update_one_pin(pin, log)
             self.statusbar.showMessage(log.getvalue())
         except:
-            traceback.print_exc()
+            logging.exception("Exception detected in update_arduino_values()")
             self.statusbar.showMessage("EXCEPTION DETECTED. More info: %s" % log.getvalue())
     
     def checkbox_auto_update_toggle(self):
