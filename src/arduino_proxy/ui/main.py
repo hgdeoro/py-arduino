@@ -27,6 +27,7 @@ logger = logging.getLogger(__name__) # pylint: disable=C0103
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+RE_LED_LABEL = re.compile(r'^led(\d{1,2})$')
 RE_PINMODE_BUTTON = re.compile(r'^pinMode(\d{1,2})$')
 RE_PIN_ENABLE_CHECKBOX = re.compile(r'^pinEnabled(\d{1,2})$')
 
@@ -39,6 +40,7 @@ class ArduinoProxyMainWindow(Ui_MainWindow):
     
     LED_ON_PIXMAP = None
     LED_OFF_PIXMAP = None
+    LED_UNKNOWN_PIXMAP = None
 
     def __init__(self, q_main_window, options, args, proxy):
         self.q_main_window = q_main_window
@@ -77,6 +79,11 @@ class ArduinoProxyMainWindow(Ui_MainWindow):
         
         ArduinoProxyMainWindow.LED_ON_PIXMAP = QtGui.QPixmap(":/images/led-on.png")
         ArduinoProxyMainWindow.LED_OFF_PIXMAP = QtGui.QPixmap(":/images/led-off.png")
+        ArduinoProxyMainWindow.LED_UNKNOWN_PIXMAP = QtGui.QPixmap(":/images/led-unknown.png")
+        
+        for led in self._get_attributes(RE_LED_LABEL):
+            pin = self._get_pin(RE_LED_LABEL, led)
+            self._led_unknown(pin)
     
     def _get_attributes(self, pattern):
         """Get a list of attributes that matches the pattern"""
@@ -148,6 +155,7 @@ class ArduinoProxyMainWindow(Ui_MainWindow):
             getattr(self, 'pinMode%d' % pin).setEnabled(True)
             getattr(self, 'dw%d_l' % pin).setEnabled(True)
             getattr(self, 'dw%d_h' % pin).setEnabled(True)
+            self._led_unknown(pin)
             if attr:
                 attr.setEnabled(True)
     
@@ -185,6 +193,9 @@ class ArduinoProxyMainWindow(Ui_MainWindow):
     
     def _led_off(self, pin):
         getattr(self, "led%d" % pin).setPixmap(ArduinoProxyMainWindow.LED_OFF_PIXMAP)
+    
+    def _led_unknown(self, pin):
+        getattr(self, "led%d" % pin).setPixmap(ArduinoProxyMainWindow.LED_UNKNOWN_PIXMAP)
     
     def _get_enabled_pins(self):
         """
