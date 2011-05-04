@@ -23,38 +23,23 @@ from arduino_proxy import ArduinoProxy
 from arduino_proxy.ui.main_ui import *
 from arduino_proxy.tests import default_main
 
+logger = logging.getLogger(__name__) # pylint: disable=C0103
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 RE_PINMODE_BUTTON = re.compile(r'^pinMode(\d{1,2})$')
 RE_PIN_ENABLE_CHECKBOX = re.compile(r'^pinEnabled(\d{1,2})$')
 
-RE_DIGITAL_WRITE_LOW = re.compile(r'^dw(\d{1,2})_l$')
-RE_DIGITAL_WRITE_HIGH = re.compile(r'^dw(\d{1,2})_h$')
+RE_DIGITAL_WRITE_LOW_BUTTON = re.compile(r'^dw(\d{1,2})_l$')
+RE_DIGITAL_WRITE_HIGH_BUTTON = re.compile(r'^dw(\d{1,2})_h$')
 
-RE_SLIDER_ANALOG_WRITE = re.compile(r'^pinValue(\d{1,2})$')
-
-logger = logging.getLogger(__name__) # pylint: disable=C0103
+RE_ANALOG_WRITE_SLIDER = re.compile(r'^pinValue(\d{1,2})$')
 
 class ArduinoProxyMainWindow(Ui_MainWindow):
     
     LED_ON_PIXMAP = None
     LED_OFF_PIXMAP = None
 
-    def _get_attributes(self, pattern):
-        return [ getattr(self, x) for x in dir(self) if pattern.match(x) ]
-    
-    def _easy_connect(self, pattern, signal_str, receiver_function):
-        """
-        Connect attributes of 'self' that match the given pattern to the 'receiver_function'.
-        """
-        attr_list = self._get_attributes(pattern)
-        if not attr_list:
-            logger.warn("No attribute found! pattern: %s - SIGNAL('%s') -> %s()",
-                pattern, signal_str, receiver_function.__name__)
-        for an_attr in attr_list:
-            logger.info("connect SIGNAL('%s') %s -> %s()", signal_str, an_attr.objectName(),
-                receiver_function.__name__)
-            self.q_main_window.connect(an_attr,
-                QtCore.SIGNAL(signal_str), receiver_function)
-    
     def __init__(self, q_main_window, options, args, proxy):
         self.q_main_window = q_main_window
         self.options = options
@@ -81,19 +66,38 @@ class ArduinoProxyMainWindow(Ui_MainWindow):
         self._easy_connect(RE_PIN_ENABLE_CHECKBOX, 'stateChanged(int)', self.pinEnabledDisabled)
         
         # -> digitalWriteLow()
-        self._easy_connect(RE_DIGITAL_WRITE_LOW, 'clicked()', self.digitalWriteLow)
+        self._easy_connect(RE_DIGITAL_WRITE_LOW_BUTTON, 'clicked()', self.digitalWriteLow)
         
         # -> digitalWriteHigh()
-        self._easy_connect(RE_DIGITAL_WRITE_HIGH, 'clicked()', self.digitalWriteHigh)
+        self._easy_connect(RE_DIGITAL_WRITE_HIGH_BUTTON, 'clicked()', self.digitalWriteHigh)
         
         # -> analogWriteValueChanged()
-        self._easy_connect(RE_SLIDER_ANALOG_WRITE, 'valueChanged(int)',
+        self._easy_connect(RE_ANALOG_WRITE_SLIDER, 'valueChanged(int)',
             self.analogWriteValueChanged)
         
         ArduinoProxyMainWindow.LED_ON_PIXMAP = QtGui.QPixmap(":/images/led-on.png")
         ArduinoProxyMainWindow.LED_OFF_PIXMAP = QtGui.QPixmap(":/images/led-off.png")
     
+    def _get_attributes(self, pattern):
+        """Get a list of attributes that matches the pattern"""
+        return [ getattr(self, x) for x in dir(self) if pattern.match(x) ]
+    
+    def _easy_connect(self, pattern, signal_str, receiver_function):
+        """
+        Connect attributes of 'self' that match the given pattern to the 'receiver_function'.
+        """
+        attr_list = self._get_attributes(pattern)
+        if not attr_list:
+            logger.warn("No attribute found! pattern: %s - SIGNAL('%s') -> %s()",
+                pattern, signal_str, receiver_function.__name__)
+        for an_attr in attr_list:
+            logger.info("connect SIGNAL('%s') %s -> %s()", signal_str, an_attr.objectName(),
+                receiver_function.__name__)
+            self.q_main_window.connect(an_attr,
+                QtCore.SIGNAL(signal_str), receiver_function)
+    
     def _get_pin(self, patter, sender):
+        """Returns the pin at which the 'sender' is associated."""
         m = patter.match(sender.objectName())
         assert m is not None
         return int(m.group(1))
@@ -103,9 +107,19 @@ class ArduinoProxyMainWindow(Ui_MainWindow):
         pin = self._get_pin(RE_PINMODE_BUTTON, sender)
         logger.info("[%02d] pinModeClicked() - sender: %s", pin, sender.objectName())
         if sender.text() == 'I':
-            sender.setText('O')
+            try:
+                self.proxy.pinMode(pin, ArduinoProxy.OUTPUT)
+                sender.setText('O')
+            except:
+                # FIXME: log and show error
+                pass
         else:
-            sender.setText('I')
+            try:
+                sender.setText('I')
+                self.proxy.pinMode(pin, ArduinoProxy.INPUT)
+            except:
+                # FIXME: log and show error
+                pass
     
     def pinEnabledDisabled(self):
         sender = self.q_main_window.sender()
@@ -139,26 +153,38 @@ class ArduinoProxyMainWindow(Ui_MainWindow):
     
     def digitalWriteLow(self):
         sender = self.q_main_window.sender()
-        pin = self._get_pin(RE_DIGITAL_WRITE_LOW, sender)
+        pin = self._get_pin(RE_DIGITAL_WRITE_LOW_BUTTON, sender)
         logger.info("[%02d] digitalWriteLow() - sender: %s", pin, sender.objectName())
-
+        try:
+            self.proxy.digitalWrite(pin, ArduinoProxy.LOW)
+            self._led_off(pin)
+        except:
+            # FIXME: log and show error
+            pass
+    
     def digitalWriteHigh(self):
         sender = self.q_main_window.sender()
-        pin = self._get_pin(RE_DIGITAL_WRITE_HIGH, sender)
+        pin = self._get_pin(RE_DIGITAL_WRITE_HIGH_BUTTON, sender)
         logger.info("[%02d] digitalWriteHigh() - sender: %s", pin, sender.objectName())
-
+        try:
+            self.proxy.digitalWrite(pin, ArduinoProxy.HIGH)
+            self._led_on(pin)
+        except:
+            # FIXME: log and show error
+            pass
+    
     def analogWriteValueChanged(self):
         sender = self.q_main_window.sender()
-        pin = self._get_pin(RE_SLIDER_ANALOG_WRITE, sender)
+        pin = self._get_pin(RE_ANALOG_WRITE_SLIDER, sender)
         logger.info("[%02d] analogWriteValueChanged() - sender: %s - value: %s", pin,
             sender.objectName(), str(sender.value()))
+        # FIXME: implement!
     
-    def _set_led_from_value(self, pin, value):
-        assert value in [ArduinoProxy.HIGH, ArduinoProxy.LOW]
-        if value == ArduinoProxy.HIGH:
-            getattr(self, "led%d" % pin).setPixmap(ArduinoProxyMainWindow.LED_ON_PIXMAP)
-        else:
-            getattr(self, "led%d" % pin).setPixmap(ArduinoProxyMainWindow.LED_OFF_PIXMAP)
+    def _led_on(self, pin):
+        getattr(self, "led%d" % pin).setPixmap(ArduinoProxyMainWindow.LED_ON_PIXMAP)
+    
+    def _led_off(self, pin):
+        getattr(self, "led%d" % pin).setPixmap(ArduinoProxyMainWindow.LED_OFF_PIXMAP)
     
     def _get_enabled_pins(self):
         """
@@ -170,10 +196,16 @@ class ArduinoProxyMainWindow(Ui_MainWindow):
                 if bool(an_attr.checkState()) ]
     
     def _update_one_pin(self, pin, log):
+        # TODO: double check: if this pin is enabled
         if getattr(self, 'pinMode%d' % pin).text() == 'I': # >>> INPUT
             value = self.proxy.digitalRead(pin)
-            self._set_led_from_value(pin, value)
+            assert value in [ArduinoProxy.HIGH, ArduinoProxy.LOW]
+            ## self._set_led_from_value(pin, value)
             log.write(" - pin[%d] -> %s" % (pin, str(value)))
+            if value == ArduinoProxy.HIGH:
+                self._led_on(pin)
+            else:
+                self._led_off(pin)
     
     def update_arduino_values(self):
         log = StringIO()
@@ -188,6 +220,7 @@ class ArduinoProxyMainWindow(Ui_MainWindow):
             self.statusbar.showMessage("EXCEPTION DETECTED. More info: %s" % log.getvalue())
     
     def checkbox_auto_update_toggle(self):
+        """Toggle auto-update."""
         enabled = bool(self.checkboxAutoUpdate.checkState())
         if enabled:
             self.pushButtonUpdate.setEnabled(False)
