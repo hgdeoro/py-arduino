@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/Main.ui'
 #
-# Created: Tue May  3 21:03:37 2011
+# Created: Tue May  3 22:35:48 2011
 #      by: PyQt4 UI code generator 4.7.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -73,17 +73,17 @@ class Ui_MainWindow(object):
         self.pinMode8.setObjectName("pinMode8")
         self.pinValue11 = QtGui.QSlider(self.frame)
         self.pinValue11.setGeometry(QtCore.QRect(280, 180, 29, 91))
-        self.pinValue11.setMaximum(1023)
+        self.pinValue11.setMaximum(255)
         self.pinValue11.setOrientation(QtCore.Qt.Vertical)
         self.pinValue11.setObjectName("pinValue11")
         self.pinValue10 = QtGui.QSlider(self.frame)
         self.pinValue10.setGeometry(QtCore.QRect(320, 180, 29, 91))
-        self.pinValue10.setMaximum(1023)
+        self.pinValue10.setMaximum(255)
         self.pinValue10.setOrientation(QtCore.Qt.Vertical)
         self.pinValue10.setObjectName("pinValue10")
         self.pinValue9 = QtGui.QSlider(self.frame)
         self.pinValue9.setGeometry(QtCore.QRect(360, 180, 29, 91))
-        self.pinValue9.setMaximum(1023)
+        self.pinValue9.setMaximum(255)
         self.pinValue9.setOrientation(QtCore.Qt.Vertical)
         self.pinValue9.setObjectName("pinValue9")
         self.label13 = QtGui.QLabel(self.frame)

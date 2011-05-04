@@ -255,7 +255,7 @@ background-repeat: none;
       <string>PWM Output</string>
      </property>
      <property name="maximum">
-      <number>1023</number>
+      <number>255</number>
      </property>
      <property name="orientation">
       <enum>Qt::Vertical</enum>
@@ -274,7 +274,7 @@ background-repeat: none;
       <string>PWM Output</string>
      </property>
      <property name="maximum">
-      <number>1023</number>
+      <number>255</number>
      </property>
      <property name="orientation">
       <enum>Qt::Vertical</enum>
@@ -293,7 +293,7 @@ background-repeat: none;
       <string>PWM Output</string>
      </property>
      <property name="maximum">
-      <number>1023</number>
+      <number>255</number>
      </property>
      <property name="orientation">
       <enum>Qt::Vertical</enum>
