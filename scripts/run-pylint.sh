@@ -3,7 +3,7 @@
 # C0111: Missing docstring
 # R0801: Similar lines in 2 files
 
-BASEDIR=`dirname $0`
+BASEDIR="`dirname $0`/.."
 
 export PYTHONPATH=$BASEDIR/src
 # export PYTHONPATH=src

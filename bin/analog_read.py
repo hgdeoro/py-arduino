@@ -22,9 +22,9 @@ import os
 import sys
 
 # Setup PYTHONPATH
-SRC_DIR = os.path.split(os.path.realpath(__file__))[0] # SRC_DIR/arduino_proxy/tests
-SRC_DIR = os.path.split(SRC_DIR)[0] # SRC_DIR/arduino_proxy
-SRC_DIR = os.path.split(SRC_DIR)[0] # SRC_DIR
+SRC_DIR = os.path.split(os.path.realpath(__file__))[0] # SRC_DIR=BIN_DIR
+SRC_DIR = os.path.split(SRC_DIR)[0] # SRC_DIR=SRC_DIR/../
+SRC_DIR = os.path.join(SRC_DIR, 'src') # SRC_DIR
 sys.path.append(os.path.abspath(SRC_DIR))
 
 from arduino_proxy.tests import default_main

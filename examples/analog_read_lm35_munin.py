@@ -21,7 +21,7 @@
 #
 # To test this script, from the base directory of the project, run something like:
 #
-# env TTY_DEVICE=/dev/ttyACM0 ANALOG_PORT=0 src/arduino_proxy/tests/analog_read_lm35_munin.py
+# env TTY_DEVICE=/dev/ttyACM0 ANALOG_PORT=0 examples/analog_read_lm35_munin.py
 #
 #
 
@@ -29,9 +29,9 @@ import os
 import sys
 
 # Setup PYTHONPATH
-SRC_DIR = os.path.split(os.path.realpath(__file__))[0] # SRC_DIR/arduino_proxy/tests
-SRC_DIR = os.path.split(SRC_DIR)[0] # SRC_DIR/arduino_proxy
-SRC_DIR = os.path.split(SRC_DIR)[0] # SRC_DIR
+SRC_DIR = os.path.split(os.path.realpath(__file__))[0] # SRC_DIR=EXAMPLE_DIR
+SRC_DIR = os.path.split(SRC_DIR)[0] # SRC_DIR=SRC_DIR/../
+SRC_DIR = os.path.join(SRC_DIR, 'src') # SRC_DIR
 sys.path.append(os.path.abspath(SRC_DIR))
 
 from arduino_proxy import ArduinoProxy
