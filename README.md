@@ -18,13 +18,27 @@ Python application to communicate with Arduinos. The current version let you:
 And now is very easy add your custom methods... See at the end of [proxy.py](https://github.com/hgdeoro/py-arduino-proxy/blob/master/src/arduino_proxy/proxy.py)
 for further information.
 
+In the 'bin' directory you'll find scripts to call the basic functions from shell scripts:
+
+* analog_read.py
+* analog_write_pwm.py
+* digital_read.py
+* ping.py
+
+Additional examples are in the 'examples' directory:
+
+* analog_read_lm35_munin.py
+* analog_read_lm35.py
+* analog_write_pwm_blink.py
+* digital_write_blink_led.py
+
 Example usage: ping
 -------------------
 
 Once the application is installed (see 'Install' below), you'll be able to
 run shell scripts to communicate with Arduino:
 
-    horacio@eeepc:~$ /usr/local/py-arduino-proxy/src/arduino_proxy/tests/ping.py /dev/ttyACM0 
+    horacio@eeepc:~$ /usr/local/py-arduino-proxy/bin/ping.py /dev/ttyACM0 
     Warning: waiting some seconds to let the Arduino reset...
     Ping sent... OK - Time=21.800 ms
     Ping sent... OK - Time=22.630 ms
@@ -44,7 +58,7 @@ Example usage: reading temperature (in Celsius)
 Once the application is installed (see 'Install' below), you'll be able to
 check the temperature reported by a LM35 running:
 
-    horacio@eeepc:~$ /usr/local/py-arduino-proxy/src/arduino_proxy/tests/analog_read_lm35.py /dev/ttyACM0 0
+    horacio@eeepc:~$ /usr/local/py-arduino-proxy/examples/analog_read_lm35.py /dev/ttyACM0 0
     13.67
     horacio@eeepc:~$ 
 
@@ -66,14 +80,14 @@ Example: accessing Arduino from the shell
 
 Read the analog port 0, from the Arduino connected in /dev/ttyACM0:
 
-	horacio@eeepc:~$ /usr/local/py-arduino-proxy/src/arduino_proxy/tests/analog_read.py /dev/ttyACM0 0
+	horacio@eeepc:~$ /usr/local/py-arduino-proxy/bin/analog_read.py /dev/ttyACM0 0
 	18
 
 Read the digital port 0, from the Arduino connected in /dev/ttyACM0:
 
-	horacio@eeepc:~$ /usr/local/py-arduino-proxy/src/arduino_proxy/tests/digital_read.py /dev/ttyACM0 0 
+	horacio@eeepc:~$ /usr/local/py-arduino-proxy/bin/digital_read.py /dev/ttyACM0 0 
 	HIGH
-	horacio@eeepc:~$ /usr/local/py-arduino-proxy/src/arduino_proxy/tests/digital_read.py --numerical /dev/ttyACM0 0
+	horacio@eeepc:~$ /usr/local/py-arduino-proxy/bin/digital_read.py --numerical /dev/ttyACM0 0
 	1
 
 Example usage: watching for interrupts
@@ -101,10 +115,15 @@ A full working example is [here](https://github.com/hgdeoro/py-arduino-proxy/tre
 Install: python application
 ---------------------------
 
-You can install into /usr/local with 2 commands:
+You can install Py-Arduino-Proxy into /usr/local with 2 commands:
 
     $ cd /usr/local
     $ sudo git clone git://github.com/hgdeoro/py-arduino-proxy.git
+
+Or you could install in it your home directory:
+
+    $ cd ~
+    $ git clone git://github.com/hgdeoro/py-arduino-proxy.git
 
 Install: upload sketch
 ----------------------
@@ -156,4 +175,3 @@ Py-Arduino-Proxy is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License version 2 for more details.
-
