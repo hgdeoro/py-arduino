@@ -28,7 +28,7 @@ SRC_DIR = os.path.split(SRC_DIR)[0] # SRC_DIR
 sys.path.append(os.path.abspath(SRC_DIR))
 
 from arduino_proxy import ArduinoProxy, InvalidCommand, CommandTimeout
-from arduino_proxy.tests import default_main
+from arduino_proxy.main_utils import default_main
 
 def main():
     options, args, proxy = default_main()

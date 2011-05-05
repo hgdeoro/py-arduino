@@ -1,6 +1,6 @@
 *.pyc
-src/PyArduinoProxy.e4p
-src/.eric4project
+PyArduinoProxy.e4p
+.eric4project
 README.html
 src-c/arduino
 src-c/arduino.o

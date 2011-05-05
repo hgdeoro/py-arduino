@@ -29,7 +29,7 @@ SRC_DIR = os.path.join(SRC_DIR, 'src') # SRC_DIR
 sys.path.append(os.path.abspath(SRC_DIR))
 
 from arduino_proxy import ArduinoProxy
-from arduino_proxy.tests import default_main
+from arduino_proxy.main_utils import default_main
 
 def args_validator(parser, options, args): # pylint: disable=W0613
     if len(args) != 2:
