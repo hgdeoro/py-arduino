@@ -57,7 +57,7 @@ def add_options_callback(parser):
         help="Prints 1 or 0 instead of 'HIGH' and 'LOW'.")
 
 def main(callback):
-    options, args, proxy = default_main(quiet=True, optparse_usage=\
+    options, args, proxy = default_main(optparse_usage=\
         "usage: %prog [options] serial_device digital_port", args_validator=args_validator,
         add_options_callback=add_options_callback)
     

@@ -42,7 +42,7 @@ def add_options_callback(parser):
         help="Keep reading and printing the values.")
 
 def main(callback):
-    options, args, proxy = default_main(quiet=True, optparse_usage=\
+    options, args, proxy = default_main(optparse_usage=\
         "usage: %prog [options] serial_device analog_port", args_validator=args_validator,
         add_options_callback=add_options_callback)
     

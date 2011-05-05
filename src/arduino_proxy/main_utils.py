@@ -37,7 +37,7 @@ def default_args_validator(parser, options, args): # pylint: disable=W0613
         parser.error("you specified more than one argument, and only one is spected")
 
 def default_main(optparse_usage="usage: %prog [options] serial_device", 
-        add_options_callback=None, args_validator=default_args_validator, quiet=False):
+        add_options_callback=None, args_validator=default_args_validator):
     """
     Utility method to help creation of programs around ArduinoProxy. This method configures logging
     and initial wait, and creates the ArduinoProxy instance.
@@ -46,8 +46,6 @@ def default_main(optparse_usage="usage: %prog [options] serial_device",
         - add_options_callback: callback method to let the user of 'main_utils()' add options.
             This method is called, and the 'parser' instance is passed as parameter.
         - args_validator: method that validates the args.
-        - quiet: try to be quiet. If True, doesn't show the "let the Arduino reset" message. This
-            is also setted as True if --quiet is specified.
     
     Returns:
         - options, args, proxy
@@ -59,9 +57,6 @@ def default_main(optparse_usage="usage: %prog [options] serial_device",
     parser.add_option("--info",
         action="store_true", dest="info", default=False,
         help="Configure logging to show info messages.")
-    parser.add_option("--quiet",
-        action="store_true", dest="quiet", default=False,
-        help="Try to be quiet.")
     parser.add_option("--initial-wait",
         action="store", dest="initial_wait", default=None,
         help="How many seconds wait before conect (workaround for auto-reset on connect bug).")
@@ -82,8 +77,6 @@ def default_main(optparse_usage="usage: %prog [options] serial_device",
     if args_validator:
         args_validator(parser, options, args)
     
-    quiet = (quiet or options.quiet)
-    
     if options.debug:
         logging.basicConfig(level=logging.DEBUG)
     elif options.info:
@@ -96,13 +89,12 @@ def default_main(optparse_usage="usage: %prog [options] serial_device",
             call_connect=not(options.dont_call_connect))
     else:
         if options.initial_wait is None:
-            if not quiet:
-                print "Warning: waiting some seconds to let the Arduino reset..."
+            logging.info("Waiting some seconds to let the Arduino reset...")
             proxy = ArduinoProxy(args[0], 9600, call_connect=not(options.dont_call_connect))
         else:
             initial_wait = int(options.initial_wait)
-            if not quiet and initial_wait > 0:
-                print "Warning: waiting %d seconds to let the Arduino reset..." % initial_wait
+            if initial_wait > 0:
+                logging.info("Waiting %d seconds to let the Arduino reset...", initial_wait)
             proxy = ArduinoProxy(args[0], 9600, wait_after_open=initial_wait,
                 call_connect=not(options.dont_call_connect))
 
