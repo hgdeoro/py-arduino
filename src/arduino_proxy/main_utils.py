@@ -54,6 +54,9 @@ def default_main(optparse_usage="usage: %prog [options] serial_device",
     parser.add_option("--debug",
         action="store_true", dest="debug", default=False,
         help="Configure logging to show debug messages.")
+    parser.add_option("--arduino-debug",
+        action="store_true", dest="arduino_debug", default=False,
+        help="Configure the proxy to debug all the comunication with Arduino (implies --info).")
     parser.add_option("--info",
         action="store_true", dest="info", default=False,
         help="Configure logging to show info messages.")
@@ -79,7 +82,7 @@ def default_main(optparse_usage="usage: %prog [options] serial_device",
     
     if options.debug:
         logging.basicConfig(level=logging.DEBUG)
-    elif options.info:
+    elif options.info or options.arduino_debug:
         logging.basicConfig(level=logging.INFO)
     else:
         logging.basicConfig(level=logging.ERROR)
@@ -97,5 +100,8 @@ def default_main(optparse_usage="usage: %prog [options] serial_device",
                 logging.info("Waiting %d seconds to let the Arduino reset...", initial_wait)
             proxy = ArduinoProxy(args[0], 9600, wait_after_open=initial_wait,
                 call_connect=not(options.dont_call_connect))
-
+    
+    if options.arduino_debug:
+        proxy.enableDebug()
+    
     return options, args, proxy
