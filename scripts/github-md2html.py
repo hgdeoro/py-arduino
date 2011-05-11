@@ -19,6 +19,7 @@ class H(BaseHTTPServer.BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write("""<html><head>
                 <link href="bundle_github.css" media="screen"  rel="stylesheet" type="text/css" />
+                <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
                 </head><body class="logged_in page-blob  linux env-production">
                 <div class="subnavd" id="main"> 
                 <div class="site"> 
@@ -31,7 +32,9 @@ class H(BaseHTTPServer.BaseHTTPRequestHandler):
                 <div class="wikistyle"> 
             """)
             
-            self.wfile.write(html)
+            html_string = html.encode('utf-8')
+            html_string = str(html_string)
+            self.wfile.write(html_string)
             
             self.wfile.write("""
                 </div>
