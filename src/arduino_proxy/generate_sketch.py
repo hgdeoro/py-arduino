@@ -150,5 +150,6 @@ def main():
     logging.info("Done!")
     
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.INFO)
+    FORMAT = '[%(levelname)-7s] %(message)s'
+    logging.basicConfig(level=logging.INFO, format=FORMAT)
     main()
