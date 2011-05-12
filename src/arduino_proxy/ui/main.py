@@ -20,7 +20,7 @@ sys.path.append(os.path.abspath(SRC_DIR))
 
 from arduino_proxy import ArduinoProxy
 from arduino_proxy.ui.main_ui import *
-from arduino_proxy.tests import default_main
+from arduino_proxy.main_utils import default_main
 
 logger = logging.getLogger(__name__) # pylint: disable=C0103
 
@@ -321,7 +321,7 @@ def main():
         print "**~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
         print "** "
         print "** The connection to Arduino isn't working as expected."
-        print "** This version of Py-Arduino-Proxy requires a working"
+        print "** This version of 'Py-Arduino-Proxy UI' requires a working"
         print "**   connection to the Arduino. This will be fixed"
         print "**   in future version!"
         print "** "
