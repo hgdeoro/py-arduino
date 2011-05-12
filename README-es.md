@@ -1,22 +1,106 @@
 Py-Arduino-Proxy
 ================
 
-Python application to communicate with Arduinos. The current version let you:
+Aplicación Python para comunicarse con Arduinos. 
 
-* check communication with Arduino (ping)
-* validate the connection, removing any pre-existing data in the serial buffer
-* set pinMode()
-* read digital values (LOW, HIGIH) with digitalRead()
-* write digital values (LOW, HIGIH) with digitalWrite()
-* read analog values with analogRead()
-* generate PWM output with analogWrite()
-* get the values returned by millis() and micros()
-* execute delay() and delayMicroseconds()
-* enable and disable DEBUG
-* watchInterrupt() and getInterruptMark()
+Cómo funciona
+-------------
+
+Primero establecemos conexion hacia el Arduino.
+
+![Connect](/hgdeoro/py-arduino-proxy/raw/master/examples/arduino-proxy-connect.png "Connect")
+
+Una vez conectados, podemos ejecutar los métodos en la instancia de ArduinoProxy. Por ejemplo, para leer un pin digital:
+
+![Digital Read](/hgdeoro/py-arduino-proxy/raw/master/examples/arduino-proxy-digital-read.png "Digital Read")
+
+Para establecer HIGH como salida de un pin digital:
+
+![Digital Write](/hgdeoro/py-arduino-proxy/raw/master/examples/arduino-proxy-digital-write.png "Digital Write")
+
+Pros y contras
+--------------
+
+* PRO: muy facil de extender: es muy fácil crear un nuevo método en la
+	clase ArduinoProxy (Python) y asociar dicho método a una función
+	de Arduino.
+
+* CONTRA: actualmente tiene problemas al trabajar con interrupciones, ya que
+	se pueden perder caracteres si se produce una interrupcion mientras
+	se esta leyendo usando Serial.read(). Esto puede solucionarse en proximas
+	versiones de Py-Arduino-Proxy.
+
+Métodos implementados
+---------------------
+
+Actualmente están implementados los métodos básicos de Arduino. Por lo
+tanto, las siguientes acciones se pueden realizar desde Python:
+
+* chequear la comunicación con Arduino (ping)
+* revalidar la conexión, removiendo cualquier informacióin pre-existente que pueda existir en el buffer.
+* pinMode()
+* digitalRead()
+* digitalWrite()
+* analogRead()
+* analogWrite()
+* obtener el valor retornados por millis() y micros()
+* ejecutar delay() y delayMicroseconds()
+* watchInterrupt() y getInterruptMark() para trabajar con interrupciones
+
+Instalación
+===========
+
+Paso 1: Bajar el código del proyecto usando Git
+-----------------------------------------------
+
+    $ cd ~
+    $ git clone git://github.com/hgdeoro/py-arduino-proxy.git
+
+Paso 2: Compilar el sketch y subirlo al Arduino
+-----------------------------------------------
+
+El sketch estará ubicado en ~/py-arduino-proxy/pde/py_arduino_proxy/py_arduino_proxy.pde
+Sólo hace falta abrirlo con el IDE de Arduino, compilarlo y subirlo.
+
+Primeras pruebas
+----------------
+
+Para comprobar que todos los pasos se realizaron con éxito, se puede usar el script ping.py, que se ejecutará
+indefinidamente hasta presionar Ctrl+C:
+
+	$ ~/py-arduino-proxy/bin/ping.py /dev/ttyACM0 
+	Ping sent... OK - Time=19.834 ms
+	Ping sent... OK - Time=18.816 ms
+	Ping sent... OK - Time=18.772 ms
+	Ping sent... OK - Time=18.940 ms
+	Ping sent... OK - Time=28.531 ms
+	Ping sent... OK - Time=19.002 ms
+	Ping sent... OK - Time=18.784 ms
+	^C
+
+Licencia y copyright
+====================
+
+Py-Arduino-Proxy - Access your Arduino from Python
+Copyright (C) 2011 - Horacio Guillermo de Oro <hgdeoro@gmail.com>
+
+Py-Arduino-Proxy is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation version 2.
+
+Py-Arduino-Proxy is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License version 2 for more details.
+
+TODO: mover esto a otra pagina
+------------------------------
 
 And now is very easy add your custom methods... See at the end of [proxy.py](https://github.com/hgdeoro/py-arduino-proxy/blob/master/src/arduino_proxy/proxy.py)
 for further information.
+
+TODO: mover esto a otra pagina
+------------------------------
 
 In the 'bin' directory you'll find scripts to call the basic functions from shell scripts:
 
@@ -25,12 +109,18 @@ In the 'bin' directory you'll find scripts to call the basic functions from shel
 * digital_read.py
 * ping.py
 
+TODO: mover esto a otra pagina
+------------------------------
+
 Additional examples are in the 'examples' directory:
 
 * analog_read_lm35_munin.py
 * analog_read_lm35.py
 * analog_write_pwm_blink.py
 * digital_write_blink_led.py
+
+TODO: mover esto a otra pagina
+------------------------------
 
 Example usage: ping
 -------------------
@@ -52,6 +142,9 @@ run shell scripts to communicate with Arduino:
     ^C
     horacio@eeepc:~$ 
 
+TODO: mover esto a otra pagina
+------------------------------
+
 Example usage: reading temperature (in Celsius)
 -----------------------------------------------
 
@@ -68,12 +161,18 @@ Here is a diagram that I've used to connect the LM35 to the Arduino:
 
 That's taken from [http://forum.drbit.nl/viewtopic.php?id=36](http://forum.drbit.nl/viewtopic.php?id=36).
 
+TODO: mover esto a otra pagina
+------------------------------
+
 Example: charting values with Munin
 -----------------------------------
 
 Here is a chart generated with Munin:
 
 ![Munin Chart](https://github.com/hgdeoro/py-arduino-proxy/raw/master/examples/munin-temperature-at-sunlight.png "Munin Chart").
+
+TODO: mover esto a otra pagina
+------------------------------
 
 Example: accessing Arduino from the shell
 -----------------------------------------
@@ -89,6 +188,9 @@ Read the digital port 0, from the Arduino connected in /dev/ttyACM0:
 	HIGH
 	horacio@eeepc:~$ /usr/local/py-arduino-proxy/bin/digital_read.py --numerical /dev/ttyACM0 0
 	1
+
+TODO: mover esto a otra pagina
+------------------------------
 
 Example usage: watching for interrupts
 --------------------------------------
@@ -111,26 +213,6 @@ You can test this with the folowing circuit:
 ![Interrupt circuit](https://github.com/hgdeoro/py-arduino-proxy/raw/master/examples/interrupts_bb.png "Interrupt circuit")
 
 A full working example is [here](https://github.com/hgdeoro/py-arduino-proxy/tree/master/src/arduino_proxy/tests/test_interrupt_0.py).
-
-Install: python application
----------------------------
-
-You can install Py-Arduino-Proxy into /usr/local with 2 commands:
-
-    $ cd /usr/local
-    $ sudo git clone git://github.com/hgdeoro/py-arduino-proxy.git
-
-Or you could install in it your home directory:
-
-    $ cd ~
-    $ git clone git://github.com/hgdeoro/py-arduino-proxy.git
-
-Install: upload sketch
-----------------------
-
-Open the sketch with Arduino (the file will be located at /usr/local/py-arduino-proxy/pde/py-arduino-proxy.pde),
-compile and upload it. You'll need to put a 10k resistor joining Ground to PIN 12 (see image below: 'Workaround for Ubuntu').
-You can see the sketch online [here](https://github.com/hgdeoro/py-arduino-proxy/blob/master/pde/py-arduino-proxy.pde).
 
 Workaround for Ubuntu
 ---------------------
@@ -160,18 +242,3 @@ The next time you need to upload a new program, remove the resistor, and you won
 since the real program in 'loop()' won't be sending data using the serial port.
 
 ![Workaround for Ubuntu](https://github.com/hgdeoro/py-arduino-proxy/raw/master/examples/ubuntu-workaround_bb.png "Workaround for Ubuntu")
-
-License and copyright
-=====================
-
-Py-Arduino-Proxy - Access your Arduino from Python
-Copyright (C) 2011 - Horacio Guillermo de Oro <hgdeoro@gmail.com>
-
-Py-Arduino-Proxy is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation version 2.
-
-Py-Arduino-Proxy is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License version 2 for more details.
