@@ -73,7 +73,7 @@ uint8_t debug_enabled = 0;
 	void wait_start() {
 		digitalWrite(PIN_START_BUTTON, HIGH); // turn on pullup resistors
 		int state = HIGH;
-		while(digitalRead(PIN_START_BUTTON) == HIGH) {
+		while(digitalRead(PIN_START_BUTTON) == LOW) {
 			digitalWrite(PIN_ONBOARD_LED, state); // turn the onboard led ON/OFF
 			state = !state;
 			delay(100);
@@ -412,7 +412,13 @@ void loop() {
 void setup() {
 	// Pin 13 has an LED connected on most Arduino boards.
 	pinMode(PIN_ONBOARD_LED, OUTPUT);
-	pinMode(PIN_START_BUTTON, INPUT);
+	
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	// From Arduino's docs: Arduino (Atmega) pins default to inputs,
+	// so they don't need to be explicitly declared as inputs with pinMode(). 
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	
+	// pinMode(PIN_START_BUTTON, INPUT);
 
 	wait_start();
 
