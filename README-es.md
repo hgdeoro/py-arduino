@@ -36,15 +36,15 @@ Métodos implementados
 Actualmente están implementados los métodos básicos de Arduino. Por lo
 tanto, las siguientes acciones se pueden realizar desde Python:
 
-* chequear la comunicación con Arduino (ping)
-* revalidar la conexión, removiendo cualquier informacióin pre-existente que pueda existir en el buffer.
+* Chequear la comunicación con Arduino (ping)
+* Revalidar la conexión, removiendo cualquier informacióin pre-existente que pueda existir en el buffer.
 * pinMode()
 * digitalRead()
 * digitalWrite()
 * analogRead()
 * analogWrite()
-* obtener el valor retornados por millis() y micros()
-* ejecutar delay() y delayMicroseconds()
+* Obtener el valor retornados por millis() y micros()
+* Ejecutar delay() y delayMicroseconds()
 * watchInterrupt() y getInterruptMark() para trabajar con interrupciones
 
 Instalación
@@ -60,6 +60,7 @@ Paso 2: Compilar el sketch y subirlo al Arduino
 -----------------------------------------------
 
 El sketch estará ubicado en ~/py-arduino-proxy/pde/py_arduino_proxy/py_arduino_proxy.pde
+
 Sólo hace falta abrirlo con el IDE de Arduino, compilarlo y subirlo.
 
 Primeras pruebas
