@@ -23,6 +23,8 @@ Pros and cons
 
 * PRO: very easy to extend: it is very easy to create a new method in ArduinoProxy class (Python) and attach this method to a Arduino function. 
 
+* PRO: testing utilities and the ability to see DEBUG messages facilitate the location of problems and subsequent solutions.
+
 * CONS: currently has problems working with interruptions, since characters may be lost if an interruption occurs while 
 reading the serial with Serial.read(). This can be fixed in next versions of Py-Arduino-Proxy. 
 

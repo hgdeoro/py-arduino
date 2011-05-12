@@ -25,6 +25,8 @@ Pros y contras
 	clase ArduinoProxy (Python) y asociar dicho método a una función
 	de Arduino.
 
+* PRO: utilidades de testing y la posibilidad de ver mensajes de DEBUG facilitan la ubicación de problemas y su posterior solución.
+
 * CONTRA: actualmente tiene problemas al trabajar con interrupciones, ya que
 	se pueden perder caracteres si se produce una interrupcion mientras
 	se esta leyendo usando Serial.read(). Esto puede solucionarse en proximas
