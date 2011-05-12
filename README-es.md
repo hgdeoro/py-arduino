@@ -1,7 +1,7 @@
 Py-Arduino-Proxy
 ================
 
-Aplicación Python para comunicarse con Arduinos. 
+Aplicación Python para comunicarse con Arduinos. [English version.](/hgdeoro/py-arduino-proxy/blob/master/README.md "English version")
 
 Cómo funciona
 -------------

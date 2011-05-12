@@ -1,7 +1,7 @@
 Py-Arduino-Proxy
 ================
 
-Python application to communicate with Arduinos.
+Python application to communicate with Arduinos. [Versión en español.](/hgdeoro/py-arduino-proxy/blob/master/README-es.md "Versión en español")
 
 How it works 
 ------------- 
@@ -56,7 +56,7 @@ Step 1: Download the project code using Git
 Step 2: Compile and upload the Arduino sketch
 ---------------------------------------------
 
-The sketch will be located in ~ / py-arduino-proxy/pde/py_arduino_proxy/py_arduino_proxy.pde
+The sketch will be located in ~/py-arduino-proxy/pde/py_arduino_proxy/py_arduino_proxy.pde
 
 You only need to open it with the Arduino IDE, compile and upload. 
 
