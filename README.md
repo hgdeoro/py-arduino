@@ -76,8 +76,8 @@ indefinitely until you press Ctrl+C:
 	Ping sent... OK - Time=18.784 ms
 	^C
 
-Licencia y copyright
-====================
+License y copyright
+===================
 
 Py-Arduino-Proxy - Access your Arduino from Python
 Copyright (C) 2011 - Horacio Guillermo de Oro <hgdeoro@gmail.com>
