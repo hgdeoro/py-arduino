@@ -3,5 +3,6 @@
 BASEDIR="`dirname $0`/.."
 
 export PYTHONPATH=$BASEDIR/src
+export BASEDIR
 
-python src/arduino_proxy/generate_sketch.py $*
+python $BASEDIR/src/arduino_proxy/generate_sketch.py $*

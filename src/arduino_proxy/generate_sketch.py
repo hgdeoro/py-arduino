@@ -36,10 +36,14 @@ from arduino_proxy.proxy import ArduinoProxy, _unindent
 
 def main():
     
-    if len(sys.argv) != 2:
-        raise(Exception("Must specify output directory!"))
+    if len(sys.argv) == 1:
+        basedir = os.environ['BASEDIR']
+        output_dir = os.path.join(basedir, 'pde', 'py_arduino_proxy')
+        output_dir = os.path.abspath(output_dir)
+        logging.warn("Using default output directory: %s" % output_dir)
+    else:
+        output_dir = sys.argv[1]
     
-    output_dir = sys.argv[1]
     if not os.path.isdir(output_dir):
         raise(Exception("Output path isn't a directory! Path: %s" % output_dir))
     
