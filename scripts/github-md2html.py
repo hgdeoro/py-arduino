@@ -4,14 +4,15 @@
 import BaseHTTPServer
 import codecs
 import markdown
-import sys
+import SimpleHTTPServer
 
-class H(BaseHTTPServer.BaseHTTPRequestHandler):
+class H(SimpleHTTPServer.SimpleHTTPRequestHandler):
     
     def do_GET(self):
         print self.path
-        if self.path == '/':
-            input_file = codecs.open(sys.argv[1], mode="r", encoding="utf8")
+        if self.path.endswith('.md'):
+            fs_path = self.path[1:]
+            input_file = codecs.open(fs_path, mode="r", encoding="utf8")
             mdtext = input_file.read()
             input_file.close()
             
@@ -3352,10 +3353,12 @@ input.tree-finder-input{border:0;outline:none;font-size:100%;}
 .wikistyle .align-center{display:block;text-align:center;}
 .wikistyle .align-right{display:block;text-align:right;}
 """)
+        else:
+            SimpleHTTPServer.SimpleHTTPRequestHandler.do_GET(self)
 
 def main():
     httpd = BaseHTTPServer.HTTPServer(('', 8055), H)
-    print "Serving %s - Listeting on http://localhost:8055/" % sys.argv[1]
+    print "Listeting on http://localhost:8055/"
     httpd.serve_forever()
 
 if __name__ == '__main__':
