@@ -12,6 +12,10 @@
 
 #include "py_arduino_proxy.h"
 
+#ifdef PY_ARDUINO_PROXY_LCD_SUPPORT
+#include <LiquidCrystal.h>
+#endif
+
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // If PY_ARDUINO_PROXY_DEVEL is defined, the generated code
 // is targeted to test and develop the sketch in a PC,
@@ -64,6 +68,13 @@ uint8_t check_mark_interrupt_0() { return detected_interrupts & 0x01; }
 uint8_t check_mark_interrupt_1() { return detected_interrupts & 0x02; }
 
 uint8_t debug_enabled = 0;
+
+#ifdef PY_ARDUINO_PROXY_LCD_SUPPORT
+LiquidCrystal lcd = LiquidCrystal(PY_ARDUINO_PROXY_LCD_SUPPORT_rs,
+	PY_ARDUINO_PROXY_LCD_SUPPORT_enable, PY_ARDUINO_PROXY_LCD_SUPPORT_d4,
+	PY_ARDUINO_PROXY_LCD_SUPPORT_d5, PY_ARDUINO_PROXY_LCD_SUPPORT_d6,
+	PY_ARDUINO_PROXY_LCD_SUPPORT_d7);
+#endif
 
 #ifndef PY_ARDUINO_PROXY_DEVEL
 	
@@ -597,8 +608,30 @@ void loop() {
 		proxied_function_ptr function = get_function_by_name(received_parameters[0]);
 		if(function != NULL) {
 			(function)();
+			
+			#ifdef PY_ARDUINO_PROXY_LCD_SUPPORT
+				lcd.clear(); // lcd.setCursor(0, 0); // column, line
+				lcd.print(received_parameters[0]);
+				
+				lcd.setCursor(0, 1); // column, line
+				int i;
+				for(i=1; i<MAX_RECEIVED_PARAMETERS; i++) {
+					if(received_parameters[i] != NULL) {
+						lcd.print(received_parameters[i]);
+						lcd.print(" ");
+					}
+				}
+			#endif
+			
 		} else {
 			send_invalid_cmd_response(FUNCTION_NOT_FOUND);
+			
+			#ifdef PY_ARDUINO_PROXY_LCD_SUPPORT
+				lcd.clear(); // lcd.setCursor(0, 0); // column, line
+				lcd.print(received_parameters[0]);
+				lcd.setCursor(0, 1); // column, line
+				lcd.print("ERR:invalid cmd");
+			#endif
 		}
 	} else if(ret == READ_ONE_PARAM_EMPTY_RESPONSE) {
 		delay(10);
@@ -606,9 +639,26 @@ void loop() {
 		|| ret == READ_PARAMETERS_ERROR_TOO_MANY_PARAMETERS) {
 		send_debug();
 		send_invalid_cmd_response(ret);
+		
+		#ifdef PY_ARDUINO_PROXY_LCD_SUPPORT
+			lcd.clear(); // lcd.setCursor(0, 0); // column, line
+			lcd.print(received_parameters[0]);
+			lcd.setCursor(0, 1); // column, line
+			if(ret == READ_ONE_PARAM_ERROR_PARAMETER_TOO_LARGE)
+				lcd.print("ERR:param large");
+			else
+				lcd.print("ERR:many params");
+		#endif
+		
 	} else {
 		send_debug();
 		send_invalid_cmd_response(UNEXPECTED_RESPONSE_FROM_READ_PARAMETERS);
+		#ifdef PY_ARDUINO_PROXY_LCD_SUPPORT
+			lcd.clear(); // lcd.setCursor(0, 0); // column, line
+			lcd.print(received_parameters[0]);
+			lcd.setCursor(0, 1); // column, line
+			lcd.print("ERR:unexp resp");
+		#endif
 	}
 }
 
@@ -626,6 +676,14 @@ void setup() {
 	wait_start();
 
 	setup_serial();
+	
+	#ifdef PY_ARDUINO_PROXY_LCD_SUPPORT
+	lcd.begin(16, 2);
+	lcd.clear();
+	lcd.print("Py-Arduino-Proxy");
+	lcd.setCursor(0, 1); // column, line
+	lcd.print("READY!");
+	#endif
 }
 
 #ifdef PY_ARDUINO_PROXY_DEVEL
