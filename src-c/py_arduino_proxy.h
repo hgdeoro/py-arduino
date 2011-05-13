@@ -15,6 +15,9 @@ typedef void (* proxied_function_ptr) ();
 
 //#define PY_ARDUINO_PROXY_LCD_SUPPORT
 
+#define PY_ARDUINO_PROXY_LCD_SUPPORT_COLS  16
+#define PY_ARDUINO_PROXY_LCD_SUPPORT_ROWS   2
+
 #define PY_ARDUINO_PROXY_LCD_SUPPORT_rs     7
 #define PY_ARDUINO_PROXY_LCD_SUPPORT_enable 6
 #define PY_ARDUINO_PROXY_LCD_SUPPORT_d4     5

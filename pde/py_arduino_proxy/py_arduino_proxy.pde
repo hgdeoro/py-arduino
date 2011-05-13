@@ -678,7 +678,8 @@ void setup() {
 	setup_serial();
 	
 	#ifdef PY_ARDUINO_PROXY_LCD_SUPPORT
-	lcd.begin(16, 2);
+	lcd.begin(PY_ARDUINO_PROXY_LCD_SUPPORT_COLS,
+		PY_ARDUINO_PROXY_LCD_SUPPORT_ROWS);
 	lcd.clear();
 	lcd.print("Py-Arduino-Proxy");
 	lcd.setCursor(0, 1); // column, line
