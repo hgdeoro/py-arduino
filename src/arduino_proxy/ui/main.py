@@ -250,7 +250,8 @@ class ArduinoProxyMainWindow(Ui_MainWindow):
             sender.objectName(), str(sender.value()))
         
         if getattr(self, 'pinMode%d' % pin).text() != 'O':
-            self._show_error("analogWriteValueChanged() on pin %d, but pinMode isn't OUTPUT" % pin)
+            self.statusbar.showMessage("Ignoring analogWriteValueChanged() on " + \
+                "pin %d, because pinMode isn't OUTPUT" % pin)
             return
         
         # FIXME: check that PIN has PWM support
