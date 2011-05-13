@@ -725,7 +725,7 @@ background: none;
       <string>L</string>
      </property>
     </widget>
-    <widget class="QLabel" name="label_enabled">
+    <widget class="QLabel" name="label_read_pin">
      <property name="geometry">
       <rect>
        <x>60</x>
@@ -741,7 +741,7 @@ background: none;
       </font>
      </property>
      <property name="text">
-      <string>Enabled</string>
+      <string>Read pin</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -932,7 +932,7 @@ background: none;
      </property>
     </widget>
    </widget>
-   <widget class="QPushButton" name="pushButtonUpdate">
+   <widget class="QPushButton" name="pushButtonReadPin">
     <property name="geometry">
      <rect>
       <x>20</x>
@@ -942,10 +942,10 @@ background: none;
      </rect>
     </property>
     <property name="text">
-     <string>Update</string>
+     <string>Read PINs</string>
     </property>
    </widget>
-   <widget class="QCheckBox" name="checkboxAutoUpdate">
+   <widget class="QCheckBox" name="checkboxAutoReadPins">
     <property name="geometry">
      <rect>
       <x>120</x>
@@ -955,7 +955,7 @@ background: none;
      </rect>
     </property>
     <property name="text">
-     <string>Auto update</string>
+     <string>Continuously read PINs</string>
     </property>
    </widget>
   </widget>

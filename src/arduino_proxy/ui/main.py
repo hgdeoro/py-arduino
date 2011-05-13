@@ -52,13 +52,13 @@ class ArduinoProxyMainWindow(Ui_MainWindow):
         Ui_MainWindow.setupUi(self, self.q_main_window)
         
         # -> update_arduino_values()
-        self.q_main_window.connect(self.pushButtonUpdate, QtCore.SIGNAL('clicked()'),
+        self.q_main_window.connect(self.pushButtonReadPin, QtCore.SIGNAL('clicked()'),
             self.update_arduino_values)
         self.q_main_window.connect(self.update_timer, QtCore.SIGNAL('timeout()'),
             self.update_arduino_values)
         
         # -> checkbox_auto_update_toggle()
-        self.q_main_window.connect(self.checkboxAutoUpdate, QtCore.SIGNAL('stateChanged(int)'),
+        self.q_main_window.connect(self.checkboxAutoReadPins, QtCore.SIGNAL('stateChanged(int)'),
             self.checkbox_auto_update_toggle)
         
         # -> pinModeClicked()
@@ -294,13 +294,13 @@ class ArduinoProxyMainWindow(Ui_MainWindow):
     
     def checkbox_auto_update_toggle(self):
         """Toggle auto-update."""
-        enabled = bool(self.checkboxAutoUpdate.checkState())
+        enabled = bool(self.checkboxAutoReadPins.checkState())
         if enabled:
-            self.pushButtonUpdate.setEnabled(False)
+            self.pushButtonReadPin.setEnabled(False)
             self.update_timer.start(50)
         else:
             self.update_timer.stop()
-            self.pushButtonUpdate.setEnabled(True)
+            self.pushButtonReadPin.setEnabled(True)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
