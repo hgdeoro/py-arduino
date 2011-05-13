@@ -27,13 +27,17 @@ logger = logging.getLogger(__name__) # pylint: disable=C0103
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 RE_LED_LABEL = re.compile(r'^led(\d{1,2})$')
+
 RE_PINMODE_BUTTON = re.compile(r'^pinMode(\d{1,2})$')
+
 RE_PIN_ENABLE_CHECKBOX = re.compile(r'^pinEnabled(\d{1,2})$')
 
 RE_DIGITAL_WRITE_LOW_BUTTON = re.compile(r'^dw(\d{1,2})_l$')
 RE_DIGITAL_WRITE_HIGH_BUTTON = re.compile(r'^dw(\d{1,2})_h$')
 
 RE_ANALOG_WRITE_SLIDER = re.compile(r'^pinValue(\d{1,2})$')
+ANALOG_WRITE_SLIDER_NAME_GENERATOR = "pinValue%(pin)d"
+# ANALOG_WRITE_SLIDER_NAME_GENERATOR -> usefull when the controls are available for some PINs
 
 class ArduinoProxyMainWindow(Ui_MainWindow):
     
@@ -193,6 +197,11 @@ class ArduinoProxyMainWindow(Ui_MainWindow):
         
         # TODO: check if pin is enabled
         
+        slider_name = ANALOG_WRITE_SLIDER_NAME_GENERATOR % { 'pin': pin, }
+        slider_object = getattr(self, slider_name, None)
+        if slider_object is not None:
+            slider_object.setValue(0)
+        
         try:
             self.proxy.digitalWrite(pin, ArduinoProxy.LOW)
             self._led_off(pin)
@@ -216,6 +225,11 @@ class ArduinoProxyMainWindow(Ui_MainWindow):
         #    return
     
         # TODO: check if pin is enabled
+        
+        slider_name = ANALOG_WRITE_SLIDER_NAME_GENERATOR % { 'pin': pin, }
+        slider_object = getattr(self, slider_name, None)
+        if slider_object is not None:
+            slider_object.setValue(255)
         
         try:
             self.proxy.digitalWrite(pin, ArduinoProxy.HIGH)
