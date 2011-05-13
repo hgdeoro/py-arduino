@@ -186,9 +186,10 @@ class ArduinoProxyMainWindow(Ui_MainWindow):
         
         logger.info("[%02d] digitalWriteLow() - sender: %s", pin, sender.objectName())
         
-        if getattr(self, 'pinMode%d' % pin).text() != 'O':
-            self._show_error("digitalWriteLow() on pin %d, but pinMode isn't OUTPUT" % pin)
-            return
+        # ALLOW write on INPUT pins: this deactivates Arduino's pullup resistors
+        #if getattr(self, 'pinMode%d' % pin).text() != 'O':
+        #    self._show_error("digitalWriteLow() on pin %d, but pinMode isn't OUTPUT" % pin)
+        #    return
         
         # TODO: check if pin is enabled
         
@@ -209,10 +210,11 @@ class ArduinoProxyMainWindow(Ui_MainWindow):
         
         logger.info("[%02d] digitalWriteHigh() - sender: %s", pin, sender.objectName())
         
-        if getattr(self, 'pinMode%d' % pin).text() != 'O':
-            self._show_error("digitalWriteHigh() on pin %d, but pinMode isn't OUTPUT" % pin)
-            return
-        
+        # ALLOW write on INPUT pins: this activates Arduino's pullup resistors
+        #if getattr(self, 'pinMode%d' % pin).text() != 'O':
+        #    self._show_error("digitalWriteHigh() on pin %d, but pinMode isn't OUTPUT" % pin)
+        #    return
+    
         # TODO: check if pin is enabled
         
         try:
