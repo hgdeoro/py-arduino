@@ -19,6 +19,7 @@
 ##-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 import logging
+import optparse
 import os
 import os.path
 import shutil
@@ -36,13 +37,26 @@ from arduino_proxy.proxy import ArduinoProxy, _unindent
 
 def main():
     
-    if len(sys.argv) == 1:
+    parser = optparse.OptionParser()
+    parser.add_option("--lcd",
+        action="store_true", dest="lcd", default=False,
+        help="Generate sketch with support for LCD.")
+    parser.add_option("--disable-debug-to-lcd",
+        action="store_true", dest="disable_debug_to_lcd", default=False,
+        help="Remove support for sending debug message to LCD. This'll shrink the sketch size.")
+    parser.add_option("--output-dir",
+        action="store", dest="output_dir", default="", 
+        help="Output directory for genereated sketch. Default: 'pde' directory.")
+    
+    (options, args) = parser.parse_args()
+    
+    if options.output_dir:
+        output_dir = options.output_dir
+    else:
         basedir = os.environ['BASEDIR']
         output_dir = os.path.join(basedir, 'pde', 'py_arduino_proxy')
         output_dir = os.path.abspath(output_dir)
         logging.warn("Using default output directory: %s" % output_dir)
-    else:
-        output_dir = sys.argv[1]
     
     if not os.path.isdir(output_dir):
         raise(Exception("Output path isn't a directory! Path: %s" % output_dir))
@@ -103,11 +117,18 @@ def main():
         'serial_speed': proxy.speed, 
         'INVALID_CMD': ArduinoProxy.INVALID_CMD, 
         'INVALID_PARAMETER': ArduinoProxy.INVALID_PARAMETER,
+        'UNSUPPORTED_CMD': ArduinoProxy.UNSUPPORTED_CMD,
         'ATTACH_INTERRUPT_MODE_LOW': ArduinoProxy.ATTACH_INTERRUPT_MODE_LOW, 
         'ATTACH_INTERRUPT_MODE_CHANGE': ArduinoProxy.ATTACH_INTERRUPT_MODE_CHANGE, 
         'ATTACH_INTERRUPT_MODE_RISING': ArduinoProxy.ATTACH_INTERRUPT_MODE_RISING, 
         'ATTACH_INTERRUPT_MODE_FALLING': ArduinoProxy.ATTACH_INTERRUPT_MODE_FALLING, 
+        'PY_ARDUINO_PROXY_LCD_SUPPORT': 0, 
+        'PY_ARDUINO_PROXY_DEBUG_TO_LCD': 0, 
     }
+    if options.lcd:
+        placeholder_values['PY_ARDUINO_PROXY_LCD_SUPPORT'] = 1
+        if not options.disable_debug_to_lcd:
+            placeholder_values['PY_ARDUINO_PROXY_DEBUG_TO_LCD'] = 1
     
     logging.info("Generating C/PDE file...")
     for line in c_file_lines:

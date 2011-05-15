@@ -74,6 +74,13 @@ class CommandTimeout(ArduinoProxyException):
 class InvalidArgument(ArduinoProxyException):
     """A method was called with invalid argument type or values."""
 
+class UnsupportedCommand(ArduinoProxyException):
+    """There is no support for the given command in the Arduino."""
+
+    def __init__(self, msg, error_param=None):
+        ArduinoProxyException.__init__(self, msg)
+        self.error_param = error_param
+
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 class ArduinoProxy(object):
@@ -95,6 +102,7 @@ class ArduinoProxy(object):
     
     INVALID_CMD = "INVALID_CMD"
     INVALID_PARAMETER = "INVALID_PARAMETER"
+    UNSUPPORTED_CMD = "UNSUPPORTED_CMD"
     
     def __init__(self, tty, speed=9600, wait_after_open=3, timeout=5, # pylint: disable=R0913
             call_connect=True):
@@ -185,6 +193,10 @@ class ArduinoProxy(object):
                 raise(InvalidParameter("Arduino responded with INVALID_PARAMETER." + \
                     "The command was: %s. The invalid parameter is %s" % (pprint.pformat(cmd),
                     splitted[1]), error_param=splitted[1]))
+        
+        if splitted[0] == ArduinoProxy.UNSUPPORTED_CMD:
+            raise(UnsupportedCommand("Arduino responded with UNSUPPORTED_CMD." + \
+                "The unsupported command is: %s" % splitted[1], error_param=splitted[1]))
     
     def send_cmd(self, cmd, expected_response=None, timeout=None, response_transformer=None):
         """
@@ -714,6 +726,27 @@ class ArduinoProxy(object):
 
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
     
+    def enableDebugToLcd(self): # pylint: disable=C0103
+        """
+        Enable transmision of debug messages from the Arduino, and show info in the LCD.
+        """
+        return self.send_cmd("_eDL", "ENA")
+            # raises CommandTimeout,InvalidCommand,InvalidResponse
+    
+    enableDebugToLcd.arduino_function_name = '_eDL'
+    enableDebugToLcd.arduino_code = _unindent(12, """
+            void _eDL() {
+                #if PY_ARDUINO_PROXY_LCD_SUPPORT == 1
+                    debug_enabled = 2;
+                    send_char_array_response("ENA");
+                #else
+                    send_unsupported_cmd_response();
+                #endif
+            }
+        """)
+    
+    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    
     def disableDebug(self): # pylint: disable=C0103
         """
         Disable transmision of debug messages from the Arduino.
@@ -726,6 +759,30 @@ class ArduinoProxy(object):
             void _dD() {
                 debug_enabled = 0;
                 send_char_array_response("DIS");
+            }
+        """)
+
+    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    
+    def lcdWrite(self, message, col, row): # pylint: disable=C0103
+        """
+        Write a message to the LCD.
+        """
+        return self.send_cmd("_lcdW %s %d %d" % (message.replace(' ', '_'), col, row), "LWOK")
+            # raises CommandTimeout,InvalidCommand,InvalidResponse
+    
+    lcdWrite.arduino_function_name = '_lcdW'
+    lcdWrite.arduino_code = _unindent(12, """
+            void _lcdW() {
+                #if PY_ARDUINO_PROXY_LCD_SUPPORT == 1
+                    int col = atoi(received_parameters[2]);
+                    int row = atoi(received_parameters[3]);
+                    lcd.setCursor(col, row);
+                    lcd.print(received_parameters[1]);
+                    send_char_array_response("LWOK");
+                #else
+                    send_unsupported_cmd_response();
+                #endif
             }
         """)
 

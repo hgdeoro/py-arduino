@@ -12,7 +12,12 @@
 
 #include "py_arduino_proxy.h"
 
-#ifdef PY_ARDUINO_PROXY_LCD_SUPPORT
+// >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
+#define PY_ARDUINO_PROXY_LCD_SUPPORT 0 // {***PLACEHOLDER***}
+// >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
+#define PY_ARDUINO_PROXY_DEBUG_TO_LCD 0 // {***PLACEHOLDER***}
+
+#if PY_ARDUINO_PROXY_LCD_SUPPORT == 1
 #include <LiquidCrystal.h>
 #endif
 
@@ -69,7 +74,7 @@ uint8_t check_mark_interrupt_1() { return detected_interrupts & 0x02; }
 
 uint8_t debug_enabled = 0;
 
-#ifdef PY_ARDUINO_PROXY_LCD_SUPPORT
+#if PY_ARDUINO_PROXY_LCD_SUPPORT == 1
 LiquidCrystal lcd = LiquidCrystal(PY_ARDUINO_PROXY_LCD_SUPPORT_rs,
 	PY_ARDUINO_PROXY_LCD_SUPPORT_enable, PY_ARDUINO_PROXY_LCD_SUPPORT_d4,
 	PY_ARDUINO_PROXY_LCD_SUPPORT_d5, PY_ARDUINO_PROXY_LCD_SUPPORT_d6,
@@ -177,6 +182,17 @@ void _eD() {
         
 
 
+void _eDL() {
+    #if PY_ARDUINO_PROXY_LCD_SUPPORT == 1
+        debug_enabled = 2;
+        send_char_array_response("ENA");
+    #else
+        send_unsupported_cmd_response();
+    #endif
+}
+        
+
+
 void _gIM() {
     int interrupt = atoi(received_parameters[1]);
     if (interrupt == 0) {
@@ -199,6 +215,20 @@ void _gIM() {
         send_invalid_parameter_response(0);
         return;
     }
+}
+        
+
+
+void _lcdW() {
+    #if PY_ARDUINO_PROXY_LCD_SUPPORT == 1
+        int col = atoi(received_parameters[2]);
+        int row = atoi(received_parameters[3]);
+        lcd.setCursor(col, row);
+        lcd.print(received_parameters[1]);
+        send_char_array_response("LWOK");
+    #else
+        send_unsupported_cmd_response();
+    #endif
 }
         
 
@@ -268,12 +298,12 @@ void _wI() {
 	
 	// PROXIED_FUNCTION_COUNT: how many proxied functions we have
 // >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
-	#define PROXIED_FUNCTION_COUNT 15 // {***PLACEHOLDER***}
+	#define PROXIED_FUNCTION_COUNT 17 // {***PLACEHOLDER***}
 	
 // >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
-	proxied_function_ptr function_ptr[PROXIED_FUNCTION_COUNT] = { _aRd, _aWrt, _cnt, _dy, _dMs, _dRd, _dWrt, _dD, _eD, _gIM, _mc, _ms, _pMd, _ping, _wI,  }; // {***PLACEHOLDER***}
+	proxied_function_ptr function_ptr[PROXIED_FUNCTION_COUNT] = { _aRd, _aWrt, _cnt, _dy, _dMs, _dRd, _dWrt, _dD, _eD, _eDL, _gIM, _lcdW, _mc, _ms, _pMd, _ping, _wI,  }; // {***PLACEHOLDER***}
 // >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
-	char*               function_name[PROXIED_FUNCTION_COUNT] = { "_aRd", "_aWrt", "_cnt", "_dy", "_dMs", "_dRd", "_dWrt", "_dD", "_eD", "_gIM", "_mc", "_ms", "_pMd", "_ping", "_wI",  }; // {***PLACEHOLDER***}
+	char*               function_name[PROXIED_FUNCTION_COUNT] = { "_aRd", "_aWrt", "_cnt", "_dy", "_dMs", "_dRd", "_dWrt", "_dD", "_eD", "_eDL", "_gIM", "_lcdW", "_mc", "_ms", "_pMd", "_ping", "_wI",  }; // {***PLACEHOLDER***}
 	
 	#define read_char() Serial.read()
 	
@@ -313,6 +343,16 @@ void _wI() {
 		Serial.print("INVALID_CMD "); // {***PLACEHOLDER***}
 		Serial.println(error_code, DEC);
 	}
+
+	// Inform that the command is not supported.
+	// This is used in LCD commands, to report that the command existed,
+	// but it's unsupported because the sktech was generated with NO
+	// support for LCDs.
+	void send_unsupported_cmd_response() {
+// >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
+		Serial.print("UNSUPPORTED_CMD "); // {***PLACEHOLDER***}
+		Serial.println(received_parameters[0]); // The command
+	}
 	
 	void send_ok_response() {
 		Serial.println("OK");
@@ -323,7 +363,7 @@ void _wI() {
 	}
 	
 	void send_debug() {
-		if(! debug_enabled) return;
+		if(debug_enabled == 0) return;
 		int i;
 		for(i=0; i<MAX_RECEIVED_PARAMETERS; i++) {
 					Serial.print("> received_parameters[");
@@ -607,9 +647,8 @@ void loop() {
 		send_debug();
 		proxied_function_ptr function = get_function_by_name(received_parameters[0]);
 		if(function != NULL) {
-			(function)();
-			
-			#ifdef PY_ARDUINO_PROXY_LCD_SUPPORT
+			#if PY_ARDUINO_PROXY_DEBUG_TO_LCD == 1
+			if(debug_enabled == 2) {
 				lcd.clear(); // lcd.setCursor(0, 0); // column, line
 				lcd.print(received_parameters[0]);
 				
@@ -621,16 +660,21 @@ void loop() {
 						lcd.print(" ");
 					}
 				}
+			}
 			#endif
+			
+			(function)();
 			
 		} else {
 			send_invalid_cmd_response(FUNCTION_NOT_FOUND);
 			
-			#ifdef PY_ARDUINO_PROXY_LCD_SUPPORT
+			#if PY_ARDUINO_PROXY_DEBUG_TO_LCD == 1
+			if(debug_enabled == 2) {
 				lcd.clear(); // lcd.setCursor(0, 0); // column, line
 				lcd.print(received_parameters[0]);
 				lcd.setCursor(0, 1); // column, line
 				lcd.print("ERR:invalid cmd");
+			}
 			#endif
 		}
 	} else if(ret == READ_ONE_PARAM_EMPTY_RESPONSE) {
@@ -640,7 +684,8 @@ void loop() {
 		send_debug();
 		send_invalid_cmd_response(ret);
 		
-		#ifdef PY_ARDUINO_PROXY_LCD_SUPPORT
+		#if PY_ARDUINO_PROXY_DEBUG_TO_LCD == 1
+		if(debug_enabled == 2) {
 			lcd.clear(); // lcd.setCursor(0, 0); // column, line
 			lcd.print(received_parameters[0]);
 			lcd.setCursor(0, 1); // column, line
@@ -648,16 +693,19 @@ void loop() {
 				lcd.print("ERR:param large");
 			else
 				lcd.print("ERR:many params");
+		}
 		#endif
 		
 	} else {
 		send_debug();
 		send_invalid_cmd_response(UNEXPECTED_RESPONSE_FROM_READ_PARAMETERS);
-		#ifdef PY_ARDUINO_PROXY_LCD_SUPPORT
+		#if PY_ARDUINO_PROXY_DEBUG_TO_LCD == 1
+		if(debug_enabled == 2) {
 			lcd.clear(); // lcd.setCursor(0, 0); // column, line
 			lcd.print(received_parameters[0]);
 			lcd.setCursor(0, 1); // column, line
 			lcd.print("ERR:unexp resp");
+		}
 		#endif
 	}
 }
@@ -677,7 +725,7 @@ void setup() {
 
 	setup_serial();
 	
-	#ifdef PY_ARDUINO_PROXY_LCD_SUPPORT
+	#if PY_ARDUINO_PROXY_LCD_SUPPORT == 1
 	lcd.begin(PY_ARDUINO_PROXY_LCD_SUPPORT_COLS,
 		PY_ARDUINO_PROXY_LCD_SUPPORT_ROWS);
 	lcd.clear();

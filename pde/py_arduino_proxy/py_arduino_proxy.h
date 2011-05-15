@@ -11,9 +11,10 @@ extern "C" {
 typedef void (* proxied_function_ptr) ();
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Define PY_ARDUINO_PROXY_LCD_SUPPORT to support LCD
+// Configuration of LCD
 
-//#define PY_ARDUINO_PROXY_LCD_SUPPORT
+// PY_ARDUINO_PROXY_LCD_SUPPORT will be defined automatically in the .pde file
+// if 'generate-pde.sh' is called with the '--lcd' argument.
 
 #define PY_ARDUINO_PROXY_LCD_SUPPORT_COLS  16
 #define PY_ARDUINO_PROXY_LCD_SUPPORT_ROWS   2
