@@ -789,43 +789,41 @@ class ArduinoProxy(object):
 ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 ## EXAMPLE CODE FOR NEW FUNCTIONS
 ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-## Replace 'XXXXXXXXXX' for the function name. Pay special attention
-##  and don't forget to let the '_' when appropiate.
+## Replace '_XXXXXXXXXX' and 'newMethodName' as needed.
 ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-#
-#    def XXXXXXXXXX(self):
-#        return self.send_cmd("_XXXXXXXXXX", expected_response="OK")
+#    def newMethodName(self):
+#        return self.send_cmd("_XXXXXXXXXX", expected_response="OK_RESPONSE")
 #    
-#    XXXXXXXXXX.arduino_code = """
+#    newMethodName.arduino_function_name = '_XXXXXXXXXX'
+#    newMethodName.arduino_code = """
 #            void _XXXXXXXXXX() {
-#                
 #                // here
 #                // goes
 #                // Arduino
 #                // code
 #                
 #                // Send 'OK' to the PC.
-#                send_char_array_response("OK");
+#                send_char_array_response("OK_RESPONSE");
 #            }
-#    """
+#        """
 
 ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 ## If the Arduino may take some time to respond, you can
 ##  use a larger timeout. Example: with timeout=60 we will
 ##  wait for 1 minute.
 ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-#    def YYYYYYYYYY(self):
-#        return self.send_cmd("_YYYYYYYYYY", expected_response="OK",timeout=60)
+#    def newMethodName(self):
+#        return self.send_cmd("_XXXXXXXXXX", expected_response="OK_RESPONSE", timeout=60)
 #    
-#    YYYYYYYYYY.arduino_code = """
-#            void _YYYYYYYYYY() {
-#                
+#    newMethodName.arduino_function_name = '_XXXXXXXXXX'
+#    newMethodName.arduino_code = """
+#            void _XXXXXXXXXX() {
 #                // here
 #                // goes
 #                // Arduino
 #                // code
 #                
 #                // Send 'OK' to the PC.
-#                send_char_array_response("OK");
+#                send_char_array_response("OK_RESPONSE");
 #            }
-#    """
+#        """
