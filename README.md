@@ -76,6 +76,12 @@ indefinitely until you press Ctrl+C:
 	Ping sent... OK - Time=18.784 ms
 	^C
 
+Videos!
+=======
+
+* [Testing RGB leds with Py-Arduino-Proxy UI](http://www.youtube.com/watch?v=yM1ZaTFAZwc "Testing RGB leds with Py-Arduino-Proxy UI")
+* [Writing a custom method in Py-Arduino-Proxy](http://www.youtube.com/watch?v=2kgQpQqTVUU "Writing a custom method in Py-Arduino-Proxy")
+
 License y copyright
 ===================
 
