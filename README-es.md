@@ -86,6 +86,7 @@ Videos!
 
 * [Testeando leds RGB con Py-Arduino-Proxy UI](http://www.youtube.com/watch?v=yM1ZaTFAZwc "Testeando leds RGB con Py-Arduino-Proxy UI")
 * [Creando metodos customizados en Py-Arduino-Proxy](http://www.youtube.com/watch?v=2kgQpQqTVUU "Creando metodos customizados en Py-Arduino-Proxy")
+* [Probando shiftOut y 8 LEDs con Py-Arduino-Proxy](http://www.youtube.com/watch?v=_9MselaKcdU "Probando shiftOut y 8 LEDs con Py-Arduino-Proxy")
 
 Licencia y copyright
 ====================
