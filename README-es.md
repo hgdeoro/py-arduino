@@ -48,6 +48,7 @@ tanto, las siguientes acciones se pueden realizar desde Python:
 * Obtener el valor retornados por millis() y micros()
 * Ejecutar delay() y delayMicroseconds()
 * watchInterrupt() y getInterruptMark() para trabajar con interrupciones
+* shiftOut()
 
 Instalación
 ===========

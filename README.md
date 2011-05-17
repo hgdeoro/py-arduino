@@ -43,6 +43,7 @@ The basic methods of Arduino are implemented. The following actions can be done 
 * Get the value returned by millis() and micro()
 * Run delay() and delayMicroseconds()
 * watchInterrupt() and getInterruptMark() to work with interrupts
+* shiftOut()
 
 Installation
 ============
