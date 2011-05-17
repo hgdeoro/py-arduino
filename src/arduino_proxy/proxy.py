@@ -46,36 +46,55 @@ def _unindent(spaces, the_string):
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 class ArduinoProxyException(Exception):
-    """Base exception"""
+    """Base class for all the exception raised in the project."""
 
 class InvalidCommand(ArduinoProxyException):
-    """The Arduino reported an error in the command"""
+    """
+    Raised when the Arduino reported an error in the command.
+    """
     
     def __init__(self, msg, error_code=None):
         ArduinoProxyException.__init__(self, msg)
         self.error_code = error_code
 
 class InvalidParameter(ArduinoProxyException):
-    """The Arduino reported an invalid parameter"""
+    """
+    Raised when the Arduino reported an invalid parameter.
+    """
 
     def __init__(self, msg, error_param=None):
         ArduinoProxyException.__init__(self, msg)
         self.error_param = error_param
 
 class InvalidResponse(ArduinoProxyException):
-    """The response from the Arduino isn't valid."""
+    """
+    Raised when the response from the Arduino wasn't valid.
+    """
 
 class EmptyResponse(ArduinoProxyException):
-    """The response from the Arduino was empty."""
+    """
+    Raised when the response from the Arduino was empty.
+    """
 
 class CommandTimeout(ArduinoProxyException):
-    """Timeout detected while waiting for Arduino's response."""
+    """
+    Raised when a timeout occurs while waiting for Arduino's response.
+    """
 
 class InvalidArgument(ArduinoProxyException):
-    """A method was called with invalid argument type or values."""
+    """
+    Raised when a method was called with invalid argument type or values.
+    This is detected in Python, and thus no data was sent to the Arduino.
+    """
 
 class UnsupportedCommand(ArduinoProxyException):
-    """There is no support for the given command in the Arduino."""
+    """
+    Raised when there is no support for the given command in the Arduino.
+    
+    Raised when lcdWrite() is used, but the uploaded program to the Arduino wans't generated with
+    support for LCD. This means that the command is valid, but the program in the Arduino lacks
+    the functionality to run it.
+    """
 
     def __init__(self, msg, error_param=None):
         ArduinoProxyException.__init__(self, msg)
@@ -84,6 +103,9 @@ class UnsupportedCommand(ArduinoProxyException):
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 class ArduinoProxy(object):
+    """
+    Proxy class for accessing Arduino.
+    """
     
     #define HIGH 0x1
     #define LOW  0x0
@@ -111,6 +133,19 @@ class ArduinoProxy(object):
     
     def __init__(self, tty, speed=9600, wait_after_open=3, timeout=5, # pylint: disable=R0913
             call_connect=True):
+        """
+        
+        Creates a proxy instance, using the serial port specified with 'tty'.
+        
+        If call_connect is true, use connect() to ensures the created instance
+        could communicate to Arduino after established the serial connection.
+        
+        Parameters:
+            - speed: serial port speed.
+            - wait_after_open: this is needed in Ubuntu, because the Arduino resets itself when connecting.
+            - timeout: default timeout (in seconds). Configure how many seconds we wait for a response.
+            - call_connect: call connect() after opening the port.
+        """
         # For communicating with the computer, use one of these rates: 300, 1200, 2400, 4800,
         #    9600, 14400, 19200, 28800, 38400, 57600, or 115200.
         logger.debug("Instantiating ArduinoProxy('%s', %d)..." % (tty, speed))
@@ -136,8 +171,10 @@ class ArduinoProxy(object):
     
     def get_next_response(self, timeout=None):
         """
-        Waits for a response from the serial.
-        Raises CommandTimeout if a timeout while reading is detected.
+        Waits for a response from the serial connection.
+        
+        Raises:
+            - CommandTimeout if a timeout while reading is detected.
         """
         logger.debug("get_next_response() - waiting for response...")
         start = time.time()
@@ -205,23 +242,23 @@ class ArduinoProxy(object):
     
     def send_cmd(self, cmd, expected_response=None, timeout=None, response_transformer=None):
         """
-        Sends a command to the arduino. The command is terminated with a 0x00.
+        Sends a command to the Arduino. The command is terminated with a 0x00.
         Returns the response as a string.
         
         Parameters:
-        - cmd: the command to send (string)
-        - expected_response: the response we expect from the Arduino. If response_transformer is
-            not None, the response is first transformed, and then compared to 'expected_response'.
-            If expected_response is a list or tuple, check that the response is one of its items.
-        - response_transformer: the method to call to transform. Must receive a string (the value
-            recieved from the Arduino).
+            - cmd: the command to send (string)
+            - expected_response: the response we expect from the Arduino. If response_transformer is
+                not None, the response is first transformed, and then compared to 'expected_response'.
+                If expected_response is a list or tuple, check that the response is one of its items.
+            - response_transformer: the method to call to transform. Must receive a string (the value
+                recieved from the Arduino).
         
         Raises:
-        - CommandTimeout: if a timeout is detected while reading response.
-        - InvalidCommand: if the Arduino reported the sent command as invalid.
-        - InvalidParameter: if the Arduino reported that some parameter was invalid.
-        - InvalidResponse: raised when 'expected_response is not None, an
-            the response doesn't equals to 'expected_response'.
+            - CommandTimeout: if a timeout is detected while reading response.
+            - InvalidCommand: if the Arduino reported the sent command as invalid.
+            - InvalidParameter: if the Arduino reported that some parameter was invalid.
+            - InvalidResponse: raised when 'expected_response is not None, an
+                the response doesn't equals to 'expected_response'.
         """
         logger.debug("send_cmd() called. cmd: '%s'" % cmd)
         
@@ -281,7 +318,9 @@ class ArduinoProxy(object):
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
     
     def get_proxy_functions(self):
-        """Returns a list of proxy functions"""
+        """
+        Returns a list of proxy functions. This is used internally to generate the sketch files.
+        """
         all_attributes = [ getattr(self, an_attribute_name) for an_attribute_name in dir(self) ]
         proxy_functions = [an_attribute for an_attribute in all_attributes
             if getattr(an_attribute, 'arduino_code', False)]
@@ -293,13 +332,18 @@ class ArduinoProxy(object):
     
     def pinMode(self, pin, mode): # pylint: disable=C0103
         """
-        * ...vast majority of Arduino (Atmega) analog pins, may be configured, and used,
-        in exactly the same manner as digital pins.
-        * Arduino (Atmega) pins default to inputs: high-impedance state (extremely small demands
-        on the circuit)
-        * NOTE: Digital pin 13 is harder to use as a digital input than the other digital pins
-        because it has an LED and resistor attached to it that's soldered to the board
-        * it is a good idea to connect OUTPUT pins to other devices with 470omh or 1k resistors
+        Proxy function for Arduino's pinMode().
+        
+        See: http://arduino.cc/en/Reference/PinMode
+        
+        Vast majority of Arduino (Atmega) analog pins, may be configured, and used,
+        in exactly the same manner as digital pins. Arduino (Atmega) pins default to inputs:
+        high-impedance state (extremely small demands on the circuit).
+        
+        Notes:
+            - Digital pin 13 is harder to use as a digital input than the other digital pins because it has an LED and resistor attached to it that's soldered to the board.
+            - It is a good idea to connect OUTPUT pins to other devices with 470omh or 1k resistors.
+        
         """
         # TODO: The analog input pins can be used as digital pins, referred to as A0, A1, etc.
         # FIXME: validate pin and value
@@ -329,6 +373,11 @@ class ArduinoProxy(object):
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
     
     def digitalWrite(self, pin, value): # pylint: disable=C0103
+        """
+        Proxy function for Arduino's digitalWrite().
+        
+        See: http://arduino.cc/en/Reference/DigitalWrite
+        """
         # FIXME: validate pin and value
         # FIXME: add doc for parameters and exceptions
         if not type(pin) is int or not value in [ArduinoProxy.LOW, ArduinoProxy.HIGH]:
@@ -357,16 +406,23 @@ class ArduinoProxy(object):
     
     def digitalRead(self, pin): # pylint: disable=C0103
         """
-        * Reads the value from a specified digital pin, either HIGH or LOW.
+        Proxy function for Arduino's digitalRead().
+        
+        See: http://arduino.cc/en/Reference/DigitalRead
+        
+        Reads the value from a specified digital pin, either HIGH or LOW.
         
         Parameters:
-        - pin: the pin to be read
+            * pin: the pin to be read
+        
+        Returns:
+             * Either ArduinoProxy.HIGH or ArduinoProxy.LOW
         
         Raises:
-        - InvalidResponse: if the response isn't valid
+            * InvalidResponse: if the response isn't valid
         """
         # FIXME: validate pin
-        # FIXME: add doc for parameters and exceptions
+        # FIXME: fix doc for parameters and exceptions
         if not type(pin) is int:
             raise(InvalidArgument())
         cmd = "_dRd %d" % (pin)
@@ -405,7 +461,12 @@ class ArduinoProxy(object):
     
     def analogRead(self, pin): # pylint: disable=C0103
         """
-        * map input voltages between 0 and 5 volts into integer values between 0 and 1023.
+        Proxy function for Arduino's analogRead().
+        
+        See: http://arduino.cc/en/Reference/AnalogRead
+        
+        Map input voltages between 0 and 5 volts into integer values between 0 and 1023.
+        
         """
         # FIXME: validate pin
         # FIXME: add doc for parameters and exceptions
@@ -434,6 +495,10 @@ class ArduinoProxy(object):
     
     def analogWrite(self, pin, value): # pylint: disable=C0103
         """
+        Proxy function for Arduino's analogWrite().
+        
+        See: http://arduino.cc/en/Reference/AnalogWrite
+        
         Writes an analog value (PWM wave) to a pin
         """
         # FIXME: validate pin and value
@@ -502,12 +567,15 @@ class ArduinoProxy(object):
     
     def delay(self, value): # pylint: disable=C0103
         """
-        http://arduino.cc/en/Reference/Delay
+        Proxy function for Arduino's delay().
+        
+        See: http://arduino.cc/en/Reference/Delay
+        
         Pauses the program for the amount of time (in miliseconds) specified as parameter.
         (There are 1000 milliseconds in a second.)
 
         Parameters:
-        - value: how much to pause, in miliseconds.
+            - value: how meny miliseconds to pause.
         """
         if not type(value) is int:
             raise(InvalidArgument("value must be an integer"))
@@ -538,7 +606,10 @@ class ArduinoProxy(object):
     
     def delayMicroseconds(self, value): # pylint: disable=C0103
         """
-        http://arduino.cc/en/Reference/DelayMicroseconds
+        Proxy function for Arduino's delayMicroseconds().
+        
+        See: http://arduino.cc/en/Reference/DelayMicroseconds
+        
         Pauses the program for the amount of time (in microseconds) specified as parameter. There
         are a thousand microseconds in a millisecond, and a million microseconds in a second.
         Currently, the largest value that will produce an accurate delay is 16383. This could change
@@ -546,7 +617,7 @@ class ArduinoProxy(object):
         use delay() instead.
         
         Parameters:
-        - value: how much to pause, in microseconds.
+            - value: how much to pause, in microseconds.
         """
         if not type(value) is int:
             raise(InvalidArgument("value must be an integer"))
@@ -575,7 +646,10 @@ class ArduinoProxy(object):
     
     def millis(self): # pylint: disable=C0103
         """
-        http://arduino.cc/en/Reference/Millis
+        Proxy function for Arduino's millis().
+        
+        See: http://arduino.cc/en/Reference/Millis
+        
         Returns the number of milliseconds since the Arduino board began running the current
         program. This number will overflow (go back to zero), after approximately 50 days.
         """
@@ -594,7 +668,10 @@ class ArduinoProxy(object):
     
     def micros(self): # pylint: disable=C0103
         """
-        http://arduino.cc/en/Reference/Micros
+        Proxy function for Arduino's micros().
+        
+        See: http://arduino.cc/en/Reference/Micros
+        
         Returns the number of microseconds since the Arduino board began running the current
         program. This number will overflow (go back to zero), after approximately 70 minutes.
         On 16 MHz Arduino boards (e.g. Duemilanove and Nano), this function has a resolution of
@@ -617,12 +694,13 @@ class ArduinoProxy(object):
     
     def watchInterrupt(self, interrupt, mode): # pylint: disable=C0103
         """
-        Watch if an interrupt was occured.
+        Begin to watch if an interrupt occured. Use getInterruptMark() to check which interrupt
+        occured.
         
         Parameters:
-        - interrupt: 0 or 1- TODO: Arduino Mega has more than 2 interrupts!
-        - mode: one of ATTACH_INTERRUPT_MODE_LOW,ATTACH_INTERRUPT_MODE_CHANGE,
-            ATTACH_INTERRUPT_MODE_RISING,ATTACH_INTERRUPT_MODE_FALLING
+            - interrupt: 0 or 1- TODO: Arduino Mega has more than 2 interrupts!
+            - mode: one of ATTACH_INTERRUPT_MODE_LOW,ATTACH_INTERRUPT_MODE_CHANGE,
+                ATTACH_INTERRUPT_MODE_RISING,ATTACH_INTERRUPT_MODE_FALLING
         """
         if not type(interrupt) is int:
             raise(InvalidArgument("interrupt must be an integer"))
@@ -804,7 +882,13 @@ class ArduinoProxy(object):
     
     def shiftOut(self, dataPin, clockPin, bitOrder, value, set_pin_mode=False): # pylint: disable=C0103
         """
-        shiftOut(dataPin, clockPin, bitOrder, value).
+        Proxy function for Arduino's shiftOut().
+        
+        See: http://arduino.cc/en/Reference/ShiftOut
+        See: http://www.arduino.cc/en/Tutorial/ShiftOut
+        
+        Arduino function: shiftOut(dataPin, clockPin, bitOrder, value).
+        
         Shifts out a byte of data one bit at a time. Starts from either the most (i.e. the leftmost)
         or least (rightmost) significant bit. Each bit is written in turn to a data pin, after which
         a clock pin is pulsed to indicate that the bit is available.
