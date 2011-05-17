@@ -95,6 +95,11 @@ class ArduinoProxy(object):
     INPUT = 0x00
     OUTPUT = 0x01
     
+    #define LSBFIRST 0
+    #define MSBFIRST 1
+    LSBFIRST = 0x00
+    MSBFIRST = 0x01
+    
     ATTACH_INTERRUPT_MODE_LOW = 'L'
     ATTACH_INTERRUPT_MODE_CHANGE = 'C'
     ATTACH_INTERRUPT_MODE_RISING = 'R'
@@ -768,6 +773,15 @@ class ArduinoProxy(object):
         """
         Write a message to the LCD.
         """
+        if not type(col) is int:
+            raise(InvalidArgument("col must be an integer"))
+        if not type(row) is int:
+            raise(InvalidArgument("row must be an integer"))
+        
+        # FIXME: check 'message' type and length
+        # FIXME: check parameters
+        # FIXME: test detection of invalid parameters
+
         return self.send_cmd("_lcdW %s %d %d" % (message.replace(' ', '_'), col, row), "LWOK")
             # raises CommandTimeout,InvalidCommand,InvalidResponse
     
@@ -783,6 +797,47 @@ class ArduinoProxy(object):
                 #else
                     send_unsupported_cmd_response();
                 #endif
+            }
+        """)
+
+    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    
+    def shiftOut(self, dataPin, clockPin, bitOrder, value, set_pin_mode=False): # pylint: disable=C0103
+        """
+        shiftOut(dataPin, clockPin, bitOrder, value).
+        Shifts out a byte of data one bit at a time. Starts from either the most (i.e. the leftmost)
+        or least (rightmost) significant bit. Each bit is written in turn to a data pin, after which
+        a clock pin is pulsed to indicate that the bit is available.
+        """
+        if not type(dataPin) is int:
+            raise(InvalidArgument("dataPin must be an integer"))
+        if not type(clockPin) is int:
+            raise(InvalidArgument("clockPin must be an integer"))
+        if not type(value) is int:
+            raise(InvalidArgument("value must be an integer"))
+        if value < 0 or value > 255:
+            raise(InvalidArgument("value must be between 0 and 255"))
+        if not bitOrder in [ArduinoProxy.LSBFIRST, ArduinoProxy.MSBFIRST]:
+            raise(InvalidArgument("bitOrder must be ArduinoProxy.LSBFIRST or " + \
+                "ArduinoProxy.MSBFIRST"))
+        
+        # FIXME: test detection of invalid parameters
+        
+        if set_pin_mode:
+            self.pinMode(dataPin, ArduinoProxy.OUTPUT)
+            self.pinMode(clockPin, ArduinoProxy.OUTPUT)
+        return self.send_cmd("_sftO %d %d %d %d" % (dataPin, clockPin, bitOrder, value, ), "SOOK")
+            # raises CommandTimeout,InvalidCommand,InvalidResponse
+    
+    shiftOut.arduino_function_name = '_sftO'
+    shiftOut.arduino_code = _unindent(12, """
+            void _sftO() {
+                int dataPin = atoi(received_parameters[1]);
+                int clockPin = atoi(received_parameters[2]);
+                int bitOrder = atoi(received_parameters[3]);
+                int value = atoi(received_parameters[4]);
+                shiftOut(dataPin, clockPin, bitOrder, value);
+                send_char_array_response("SOOK");
             }
         """)
 

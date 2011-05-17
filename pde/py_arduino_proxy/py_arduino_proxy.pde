@@ -267,6 +267,17 @@ void _ping() {
         
 
 
+void _sftO() {
+    int dataPin = atoi(received_parameters[1]);
+    int clockPin = atoi(received_parameters[2]);
+    int bitOrder = atoi(received_parameters[3]);
+    int value = atoi(received_parameters[4]);
+    shiftOut(dataPin, clockPin, bitOrder, value);
+    send_char_array_response("SOOK");
+}
+        
+
+
 void _wI() {
     int mode;
     if(received_parameters[2][0] == ATTACH_INTERRUPT_MODE_LOW) {
@@ -298,12 +309,12 @@ void _wI() {
 	
 	// PROXIED_FUNCTION_COUNT: how many proxied functions we have
 // >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
-	#define PROXIED_FUNCTION_COUNT 17 // {***PLACEHOLDER***}
+	#define PROXIED_FUNCTION_COUNT 18 // {***PLACEHOLDER***}
 	
 // >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
-	proxied_function_ptr function_ptr[PROXIED_FUNCTION_COUNT] = { _aRd, _aWrt, _cnt, _dy, _dMs, _dRd, _dWrt, _dD, _eD, _eDL, _gIM, _lcdW, _mc, _ms, _pMd, _ping, _wI,  }; // {***PLACEHOLDER***}
+	proxied_function_ptr function_ptr[PROXIED_FUNCTION_COUNT] = { _aRd, _aWrt, _cnt, _dy, _dMs, _dRd, _dWrt, _dD, _eD, _eDL, _gIM, _lcdW, _mc, _ms, _pMd, _ping, _sftO, _wI,  }; // {***PLACEHOLDER***}
 // >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
-	char*               function_name[PROXIED_FUNCTION_COUNT] = { "_aRd", "_aWrt", "_cnt", "_dy", "_dMs", "_dRd", "_dWrt", "_dD", "_eD", "_eDL", "_gIM", "_lcdW", "_mc", "_ms", "_pMd", "_ping", "_wI",  }; // {***PLACEHOLDER***}
+	char*               function_name[PROXIED_FUNCTION_COUNT] = { "_aRd", "_aWrt", "_cnt", "_dy", "_dMs", "_dRd", "_dWrt", "_dD", "_eD", "_eDL", "_gIM", "_lcdW", "_mc", "_ms", "_pMd", "_ping", "_sftO", "_wI",  }; // {***PLACEHOLDER***}
 	
 	#define read_char() Serial.read()
 	
