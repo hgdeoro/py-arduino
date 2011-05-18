@@ -912,6 +912,31 @@ class ArduinoProxy(object):
                 #endif
             }
         """)
+    
+    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    
+    def lcdClear(self): # pylint: disable=C0103
+        """
+        Clear the LCD.
+        
+        For this to work, the sketch uploaded to the Arduino must be build
+        using the '--lcd' option. See https://github.com/hgdeoro/py-arduino-proxy/wiki/LCD-Support
+        for more information.
+        """
+        return self.send_cmd("_lcdClr", "LCLROK")
+            # raises CommandTimeout,InvalidCommand,InvalidResponse
+    
+    lcdClear.arduino_function_name = '_lcdClr'
+    lcdClear.arduino_code = _unindent(12, """
+            void _lcdClr() {
+                #if PY_ARDUINO_PROXY_LCD_SUPPORT == 1
+                    lcd.clear();
+                    send_char_array_response("LCLROK");
+                #else
+                    send_unsupported_cmd_response();
+                #endif
+            }
+        """)
 
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
     

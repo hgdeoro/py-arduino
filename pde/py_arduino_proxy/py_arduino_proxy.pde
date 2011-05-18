@@ -227,6 +227,17 @@ void _gIM() {
         
 
 
+void _lcdClr() {
+    #if PY_ARDUINO_PROXY_LCD_SUPPORT == 1
+        lcd.clear();
+        send_char_array_response("LCLROK");
+    #else
+        send_unsupported_cmd_response();
+    #endif
+}
+        
+
+
 void _lcdW() {
     #if PY_ARDUINO_PROXY_LCD_SUPPORT == 1
         int col = atoi(received_parameters[2]);
@@ -317,12 +328,12 @@ void _wI() {
 	
 	// PROXIED_FUNCTION_COUNT: how many proxied functions we have
 // >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
-	#define PROXIED_FUNCTION_COUNT 19 // {***PLACEHOLDER***}
+	#define PROXIED_FUNCTION_COUNT 20 // {***PLACEHOLDER***}
 	
 // >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
-	proxied_function_ptr function_ptr[PROXIED_FUNCTION_COUNT] = { _aRd, _aWrt, _cnt, _dy, _dMs, _dRd, _dWrt, _dD, _eD, _eDL, _gACT, _gIM, _lcdW, _mc, _ms, _pMd, _ping, _sftO, _wI,  }; // {***PLACEHOLDER***}
+	proxied_function_ptr function_ptr[PROXIED_FUNCTION_COUNT] = { _aRd, _aWrt, _cnt, _dy, _dMs, _dRd, _dWrt, _dD, _eD, _eDL, _gACT, _gIM, _lcdClr, _lcdW, _mc, _ms, _pMd, _ping, _sftO, _wI,  }; // {***PLACEHOLDER***}
 // >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
-	char*               function_name[PROXIED_FUNCTION_COUNT] = { "_aRd", "_aWrt", "_cnt", "_dy", "_dMs", "_dRd", "_dWrt", "_dD", "_eD", "_eDL", "_gACT", "_gIM", "_lcdW", "_mc", "_ms", "_pMd", "_ping", "_sftO", "_wI",  }; // {***PLACEHOLDER***}
+	char*               function_name[PROXIED_FUNCTION_COUNT] = { "_aRd", "_aWrt", "_cnt", "_dy", "_dMs", "_dRd", "_dWrt", "_dD", "_eD", "_eDL", "_gACT", "_gIM", "_lcdClr", "_lcdW", "_mc", "_ms", "_pMd", "_ping", "_sftO", "_wI",  }; // {***PLACEHOLDER***}
 	
 	#define read_char() Serial.read()
 	
