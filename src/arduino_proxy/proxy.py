@@ -164,14 +164,38 @@ class ArduinoProxy(object):
             if call_connect:
                 self.connect()
             logger.debug("Done.")
-    
+
+    def _validate_analog_pin(self, pin, pin_name='pin'):
+        # FIXME: validate pin value (depends on the model of Arduino)
+        if not type(pin) is int:
+            raise(InvalidArgument("%s must be an int" % pin_name))
+        if pin < 0:
+            raise(InvalidArgument("%s must be greater or equals to 0" % pin_name))
+
+    def _validate_digital_pin(self, pin, pin_name='pin'):
+        # FIXME: validate pin value (depends on the model of Arduino)
+        # TODO: Remember: all analog pins works as digital pins.
+        if not type(pin) is int:
+            raise(InvalidArgument("%s must be an int" % pin_name))
+        if pin < 0:
+            raise(InvalidArgument("%s must be greater or equals to 0" % pin_name))
+
     def setTimeout(self, new_timeout):
+        """
+        Changes the timeout.
+        """
         self.timeout = new_timeout
         self.serial_port.timeout = new_timeout
     
     def get_next_response(self, timeout=None):
         """
+        Note: this is a **low level** method. The only situation you may need to call this method
+        is if you are creating new methods.
+        
         Waits for a response from the serial connection.
+        
+        Parameters:
+            - timeout (int): timeout to use (instead of the configured for this instance of ArduinoProxy).
         
         Raises:
             - CommandTimeout if a timeout while reading is detected.
@@ -242,6 +266,9 @@ class ArduinoProxy(object):
     
     def send_cmd(self, cmd, expected_response=None, timeout=None, response_transformer=None):
         """
+        Note: this is a **low level** method. The only situation you may need to call this method
+        is if you are creating new methods.
+        
         Sends a command to the Arduino. The command is terminated with a 0x00.
         Returns the response as a string.
         
@@ -250,15 +277,15 @@ class ArduinoProxy(object):
             - expected_response: the response we expect from the Arduino. If response_transformer is
                 not None, the response is first transformed, and then compared to 'expected_response'.
                 If expected_response is a list or tuple, check that the response is one of its items.
-            - response_transformer: the method to call to transform. Must receive a string (the value
-                recieved from the Arduino).
+            - response_transformer: the method to call to transform. Must receive a string (the
+                valuerecieved from the Arduino).
         
         Raises:
             - CommandTimeout: if a timeout is detected while reading response.
             - InvalidCommand: if the Arduino reported the sent command as invalid.
             - InvalidParameter: if the Arduino reported that some parameter was invalid.
-            - InvalidResponse: raised when 'expected_response is not None, an
-                the response doesn't equals to 'expected_response'.
+            - InvalidResponse: raised when 'expected_response is not None, an the response doesn't equals to 'expected_response'.
+            - UnsupportedCommand: if the Arduino reported that the command isn't supported.
         """
         logger.debug("send_cmd() called. cmd: '%s'" % cmd)
         
@@ -311,7 +338,7 @@ class ArduinoProxy(object):
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
     
     def close(self):
-        """Closes the serial port."""
+        """Closes the connection to the Arduino."""
         if self.serial_port:
             self.serial_port.close()
 
@@ -332,23 +359,22 @@ class ArduinoProxy(object):
     
     def pinMode(self, pin, mode): # pylint: disable=C0103
         """
-        Proxy function for Arduino's pinMode().
+        Proxy function for Arduino's **pinMode()**.
         
-        See: http://arduino.cc/en/Reference/PinMode
+        Configures the specified pin to behave either as an input or an output.
         
-        Vast majority of Arduino (Atmega) analog pins, may be configured, and used,
-        in exactly the same manner as digital pins. Arduino (Atmega) pins default to inputs:
-        high-impedance state (extremely small demands on the circuit).
+        See: http://arduino.cc/en/Reference/PinMode and
+        http://arduino.cc/en/Tutorial/DigitalPins
         
-        Notes:
-            - Digital pin 13 is harder to use as a digital input than the other digital pins because it has an LED and resistor attached to it that's soldered to the board.
-            - It is a good idea to connect OUTPUT pins to other devices with 470omh or 1k resistors.
-        
+        Parameters:
+            - pin (int): pin to configure
+            - mode: ArduinoProxy.INPUT or ArduinoProxy.OUTPUT
         """
         # TODO: The analog input pins can be used as digital pins, referred to as A0, A1, etc.
         # FIXME: validate pin and value
         # FIXME: add doc for parameters and exceptions
-        if not type(pin) is int or not mode in [ArduinoProxy.INPUT, ArduinoProxy.OUTPUT]:
+        self._validate_digital_pin(pin)
+        if not mode in [ArduinoProxy.INPUT, ArduinoProxy.OUTPUT]:
             raise(InvalidArgument())
         cmd = "_pMd %d %d" % (pin, mode)
         
@@ -374,14 +400,20 @@ class ArduinoProxy(object):
     
     def digitalWrite(self, pin, value): # pylint: disable=C0103
         """
-        Proxy function for Arduino's digitalWrite().
+        Proxy function for Arduino's **digitalWrite()**.
+        Write a HIGH or a LOW value to a digital pin.
         
         See: http://arduino.cc/en/Reference/DigitalWrite
+        
+        Parameters:
+            - pin (int): pin to write
+            - value (ArduinoProxy.LOW or ArduinoProxy.HIGH): value to write
         """
         # FIXME: validate pin and value
         # FIXME: add doc for parameters and exceptions
-        if not type(pin) is int or not value in [ArduinoProxy.LOW, ArduinoProxy.HIGH]:
-            raise(InvalidArgument())
+        self._validate_digital_pin(pin)
+        if not value in [ArduinoProxy.LOW, ArduinoProxy.HIGH]:
+            raise(InvalidArgument("Invalid value for 'value' parameter."))
         cmd = "_dWrt %d %d" % (pin, value)
         return self.send_cmd(cmd, expected_response="DW_OK")
         # raises CommandTimeout,InvalidCommand,InvalidResponse
@@ -406,25 +438,19 @@ class ArduinoProxy(object):
     
     def digitalRead(self, pin): # pylint: disable=C0103
         """
-        Proxy function for Arduino's digitalRead().
+        Proxy function for Arduino's **digitalRead()**.
+        Reads the value from a specified digital pin, either HIGH or LOW.
         
         See: http://arduino.cc/en/Reference/DigitalRead
         
-        Reads the value from a specified digital pin, either HIGH or LOW.
-        
         Parameters:
-            * pin: the pin to be read
+            - pin (int): digital pin to read
         
         Returns:
-             * Either ArduinoProxy.HIGH or ArduinoProxy.LOW
-        
-        Raises:
-            * InvalidResponse: if the response isn't valid
+            - Either ArduinoProxy.HIGH or ArduinoProxy.LOW
         """
-        # FIXME: validate pin
-        # FIXME: fix doc for parameters and exceptions
-        if not type(pin) is int:
-            raise(InvalidArgument())
+        # FIXME: add doc for exceptions
+        self._validate_digital_pin(pin)
         cmd = "_dRd %d" % (pin)
         response = self.send_cmd(cmd) # raises CommandTimeout,InvalidCommand
         
@@ -461,17 +487,19 @@ class ArduinoProxy(object):
     
     def analogRead(self, pin): # pylint: disable=C0103
         """
-        Proxy function for Arduino's analogRead().
+        Proxy function for Arduino's **analogRead()**.
+        Reads the value from the specified analog pin.
         
         See: http://arduino.cc/en/Reference/AnalogRead
         
-        Map input voltages between 0 and 5 volts into integer values between 0 and 1023.
+        Parameters:
+            - pin (integer): analog pin to read.
         
+        Returns: (int)
+            - analog value (0 to 1023)
         """
-        # FIXME: validate pin
-        # FIXME: add doc for parameters and exceptions
-        if not type(pin) is int:
-            raise(InvalidArgument())
+        # FIXME: add doc for exceptions
+        self._validate_analog_pin(pin)
         cmd = "_aRd %d" % (pin)
         response = self.send_cmd(cmd, response_transformer=int) # raises CommandTimeout,InvalidCommand
         
@@ -495,14 +523,17 @@ class ArduinoProxy(object):
     
     def analogWrite(self, pin, value): # pylint: disable=C0103
         """
-        Proxy function for Arduino's analogWrite().
+        Proxy function for Arduino's **analogWrite()**.
+        Writes an analog value (PWM wave) to a pin
         
         See: http://arduino.cc/en/Reference/AnalogWrite
         
-        Writes an analog value (PWM wave) to a pin
+        Parameters:
+            - pin (integer): pin to write
+            - value (integer): value to write, 0 to 255.
         """
-        # FIXME: validate pin and value
-        # FIXME: add doc for parameters and exceptions
+        # FIXME: validate pin
+        # FIXME: add doc for exceptions
         if not type(pin) is int or not type(value) is int or value < 0 or value > 255:
             raise(InvalidArgument())
         cmd = "_aWrt %d %d" % (pin, value)
@@ -529,7 +560,9 @@ class ArduinoProxy(object):
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
     
     def ping(self): # pylint: disable=C0103
-        # FIXME: add doc
+        """
+        Sends a 'ping' to the Arduino. May be used to check if the connection is alive.
+        """
         cmd = "_ping"
         return self.send_cmd(cmd, expected_response="PING_OK")
         # raises CommandTimeout,InvalidCommand,InvalidResponse
@@ -567,15 +600,14 @@ class ArduinoProxy(object):
     
     def delay(self, value): # pylint: disable=C0103
         """
-        Proxy function for Arduino's delay().
-        
-        See: http://arduino.cc/en/Reference/Delay
-        
+        Proxy function for Arduino's **delay()**.
         Pauses the program for the amount of time (in miliseconds) specified as parameter.
         (There are 1000 milliseconds in a second.)
 
+        See: http://arduino.cc/en/Reference/Delay
+
         Parameters:
-            - value: how meny miliseconds to pause.
+            - value (int): how many miliseconds to pause.
         """
         if not type(value) is int:
             raise(InvalidArgument("value must be an integer"))
@@ -606,18 +638,14 @@ class ArduinoProxy(object):
     
     def delayMicroseconds(self, value): # pylint: disable=C0103
         """
-        Proxy function for Arduino's delayMicroseconds().
+        Proxy function for Arduino's **delayMicroseconds()**.
+        Pauses the program for the amount of time (in microseconds) specified as parameter. There
+        are a thousand microseconds in a millisecond, and a million microseconds in a second.
         
         See: http://arduino.cc/en/Reference/DelayMicroseconds
         
-        Pauses the program for the amount of time (in microseconds) specified as parameter. There
-        are a thousand microseconds in a millisecond, and a million microseconds in a second.
-        Currently, the largest value that will produce an accurate delay is 16383. This could change
-        in future Arduino releases. For delays longer than a few thousand microseconds, you should
-        use delay() instead.
-        
         Parameters:
-            - value: how much to pause, in microseconds.
+            - value (int): how many microseconds to pause.
         """
         if not type(value) is int:
             raise(InvalidArgument("value must be an integer"))
@@ -646,12 +674,11 @@ class ArduinoProxy(object):
     
     def millis(self): # pylint: disable=C0103
         """
-        Proxy function for Arduino's millis().
+        Proxy function for Arduino's **millis()**.
+        Returns the number of milliseconds since the Arduino board began running the
+        current program.
         
         See: http://arduino.cc/en/Reference/Millis
-        
-        Returns the number of milliseconds since the Arduino board began running the current
-        program. This number will overflow (go back to zero), after approximately 50 days.
         """
         return self.send_cmd("_ms", response_transformer=int)
         # raises CommandTimeout,InvalidCommand,InvalidResponse
@@ -668,16 +695,12 @@ class ArduinoProxy(object):
     
     def micros(self): # pylint: disable=C0103
         """
-        Proxy function for Arduino's micros().
-        
-        See: http://arduino.cc/en/Reference/Micros
+        Proxy function for Arduino's **micros()**.
         
         Returns the number of microseconds since the Arduino board began running the current
-        program. This number will overflow (go back to zero), after approximately 70 minutes.
-        On 16 MHz Arduino boards (e.g. Duemilanove and Nano), this function has a resolution of
-        four microseconds (i.e. the value returned is always a multiple of four). On 8 MHz Arduino
-        boards (e.g. the LilyPad), this function has a resolution of eight microseconds.
-        Note: there are 1,000 microseconds in a millisecond and 1,000,000 microseconds in a second.
+        program.
+        
+        See: http://arduino.cc/en/Reference/Micros
         """
         return self.send_cmd("_mc", response_transformer=int)
         # raises CommandTimeout,InvalidCommand,InvalidResponse
@@ -694,14 +717,15 @@ class ArduinoProxy(object):
     
     def watchInterrupt(self, interrupt, mode): # pylint: disable=C0103
         """
-        Begin to watch if an interrupt occured. Use getInterruptMark() to check which interrupt
-        occured.
+        Begin to watch if an interrupt occurs. Use getInterruptMark() to check which interrupt
+        actually occured.
         
         Parameters:
-            - interrupt: 0 or 1- TODO: Arduino Mega has more than 2 interrupts!
+            - interrupt: 0 or 1
             - mode: one of ATTACH_INTERRUPT_MODE_LOW,ATTACH_INTERRUPT_MODE_CHANGE,
                 ATTACH_INTERRUPT_MODE_RISING,ATTACH_INTERRUPT_MODE_FALLING
         """
+        # TODO: Arduino Mega has more than 2 interrupts!
         if not type(interrupt) is int:
             raise(InvalidArgument("interrupt must be an integer"))
         if interrupt < 0 or interrupt > 1:
@@ -748,9 +772,15 @@ class ArduinoProxy(object):
     
     def getInterruptMark(self, interrupt): # pylint: disable=C0103
         """
-        Check if an interrupt was detected.
+        Check if an interrupt was detected on the Arduino.
+        If an interrupt has ocurred, the 'mark' in the Arduino is cleared, so you can call 
+        getInterruptMark() again, to check if another interrupt occurred.
+        
+        Parameters:
+            - interrupt (int): interrupt number to check.
+        
         Returns:
-        - True: if an interrupt was detected. False otherwise.
+            - True: if an interrupt was detected. False otherwise.
         """
         if not type(interrupt) is int:
             raise(InvalidArgument("interrupt must be an integer"))
@@ -811,7 +841,8 @@ class ArduinoProxy(object):
     
     def enableDebugToLcd(self): # pylint: disable=C0103
         """
-        Enable transmision of debug messages from the Arduino, and show info in the LCD.
+        Enable transmision of debug messages from the Arduino, and the display of some
+        info in the LCD.
         """
         return self.send_cmd("_eDL", "ENA")
             # raises CommandTimeout,InvalidCommand,InvalidResponse
@@ -850,6 +881,10 @@ class ArduinoProxy(object):
     def lcdWrite(self, message, col, row): # pylint: disable=C0103
         """
         Write a message to the LCD.
+        
+        For this to work, the sketch uploaded to the Arduino must be build
+        using the '--lcd' option. See https://github.com/hgdeoro/py-arduino-proxy/wiki/LCD-Support
+        for more information.
         """
         if not type(col) is int:
             raise(InvalidArgument("col must be an integer"))
@@ -882,21 +917,20 @@ class ArduinoProxy(object):
     
     def shiftOut(self, dataPin, clockPin, bitOrder, value, set_pin_mode=False): # pylint: disable=C0103
         """
-        Proxy function for Arduino's shiftOut().
+        Proxy function for Arduino's **shiftOut()**.
+        Shifts out a byte of data one bit at a time.
         
-        See: http://arduino.cc/en/Reference/ShiftOut
-        See: http://www.arduino.cc/en/Tutorial/ShiftOut
+        See: http://arduino.cc/en/Reference/ShiftOut and
+        http://www.arduino.cc/en/Tutorial/ShiftOut
         
-        Arduino function: shiftOut(dataPin, clockPin, bitOrder, value).
-        
-        Shifts out a byte of data one bit at a time. Starts from either the most (i.e. the leftmost)
-        or least (rightmost) significant bit. Each bit is written in turn to a data pin, after which
-        a clock pin is pulsed to indicate that the bit is available.
+        Parameters:
+            - dataPin (int): the pin on which to output each bit.
+            - clockPin (int): the pin to toggle once the dataPin has been set to the correct value.
+            - bitOrder: which order to shift out the bits; either ArduinoProxy.LSBFIRST or ArduinoProxy.MSBFIRST.
+            - value (int): the data to shift out.
         """
-        if not type(dataPin) is int:
-            raise(InvalidArgument("dataPin must be an integer"))
-        if not type(clockPin) is int:
-            raise(InvalidArgument("clockPin must be an integer"))
+        self._validate_digital_pin(dataPin, 'dataPin')
+        self._validate_digital_pin(clockPin, 'clockPin')
         if not type(value) is int:
             raise(InvalidArgument("value must be an integer"))
         if value < 0 or value > 255:

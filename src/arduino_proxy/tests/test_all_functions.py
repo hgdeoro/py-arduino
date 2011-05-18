@@ -47,6 +47,8 @@ def main():
         print "delayMicroseconds() -> %s" % str(proxy.delayMicroseconds(1))
         print "millis() -> %s " % str(proxy.millis())
         print "micros() -> %s" % str(proxy.micros())
+        print "shiftOut() -> %s" % str(proxy.shiftOut(10, 11, ArduinoProxy.LSBFIRST, 255,
+            set_pin_mode=True))
         
         #define RETURN_OK 0
         #define READ_ONE_PARAM_NEW_LINE_FOUND 7
