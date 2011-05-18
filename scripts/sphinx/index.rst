@@ -8,15 +8,5 @@ Welcome to Py-Arduino-Proxy's documentation!
 
 Contents:
 
-.. toctree::
-   :maxdepth: 2
-
 .. automodule:: arduino_proxy.proxy
    :members:
-   
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
