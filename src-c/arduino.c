@@ -3,6 +3,8 @@
 #include <string.h>
 #include <inttypes.h>
 
+#include "avr_cpunames.h"
+
 #include "py_arduino_proxy.h"
 
 #define PY_ARDUINO_PROXY_LCD_SUPPORT %(PY_ARDUINO_PROXY_LCD_SUPPORT)d // {***PLACEHOLDER***}

@@ -959,6 +959,22 @@ class ArduinoProxy(object):
             }
         """)
 
+    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    
+    def getAvrCpuType(self): # pylint: disable=C0103
+        """
+        Returns the value of _AVR_CPU_NAME_
+        """
+        return self.send_cmd("_gACT")
+            # raises CommandTimeout,InvalidCommand,InvalidResponse
+    
+    getAvrCpuType.arduino_function_name = '_gACT'
+    getAvrCpuType.arduino_code = _unindent(12, """
+            void _gACT() {
+                send_char_array_response(_AVR_CPU_NAME_);
+            }
+        """)
+
 ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 ## EXAMPLE CODE FOR NEW FUNCTIONS
 ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

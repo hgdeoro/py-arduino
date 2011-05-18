@@ -10,6 +10,8 @@
 #include <string.h>
 #include <inttypes.h>
 
+#include "avr_cpunames.h"
+
 #include "py_arduino_proxy.h"
 
 // >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
@@ -100,7 +102,7 @@ void _aWrt() {
     int value = atoi(received_parameters[2]);
     
     if(value < 0 || value > 255) {
-        send_invalid_parameter_response(1);
+        send_invalid_parameter_response(1); // received_parameters[2]
         return;
     }
     
@@ -120,7 +122,7 @@ void _dy() {
     int value = atoi(received_parameters[1]);
     
     if(value < 0) {
-        send_invalid_parameter_response(0);
+        send_invalid_parameter_response(0); // received_parameters[1]
         return;
     }
     
@@ -134,7 +136,7 @@ void _dMs() {
     int value = atoi(received_parameters[1]);
     
     if(value < 0) {
-        send_invalid_parameter_response(0);
+        send_invalid_parameter_response(0); // received_parameters[1]
         return;
     }
     
@@ -158,7 +160,7 @@ void _dWrt() {
     int value = atoi(received_parameters[2]);
     
     if(value != HIGH && value != LOW) {
-        send_invalid_parameter_response(1);
+        send_invalid_parameter_response(1); // received_parameters[2]
         return;
     }
     
@@ -193,6 +195,12 @@ void _eDL() {
         
 
 
+void _gACT() {
+    send_char_array_response(_AVR_CPU_NAME_);
+}
+        
+
+
 void _gIM() {
     int interrupt = atoi(received_parameters[1]);
     if (interrupt == 0) {
@@ -212,7 +220,7 @@ void _gIM() {
         }
         return;
     } else {
-        send_invalid_parameter_response(0);
+        send_invalid_parameter_response(0); // received_parameters[1]
         return;
     }
 }
@@ -251,7 +259,7 @@ void _pMd() {
     int pin = atoi(received_parameters[1]);
     int mode = atoi(received_parameters[2]);
     if(mode != INPUT && mode != OUTPUT) {
-        send_invalid_parameter_response(1);
+        send_invalid_parameter_response(1); // received_parameters[2]
         return;
     }
     // FIXME: validate pin
@@ -289,7 +297,7 @@ void _wI() {
     } else if(received_parameters[2][0] == ATTACH_INTERRUPT_MODE_FALLING) {
         mode = FALLING;
     } else {
-        send_invalid_parameter_response(1);
+        send_invalid_parameter_response(1); // received_parameters[2]
         return;
     }
     int interrupt = atoi(received_parameters[1]);
@@ -300,7 +308,7 @@ void _wI() {
         attachInterrupt(interrupt, set_mark_interrupt_1, mode);
         send_char_array_response("WI_OK");
     } else {
-        send_invalid_parameter_response(0);
+        send_invalid_parameter_response(0); // received_parameters[1]
         return;
     }
 }
@@ -309,12 +317,12 @@ void _wI() {
 	
 	// PROXIED_FUNCTION_COUNT: how many proxied functions we have
 // >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
-	#define PROXIED_FUNCTION_COUNT 18 // {***PLACEHOLDER***}
+	#define PROXIED_FUNCTION_COUNT 19 // {***PLACEHOLDER***}
 	
 // >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
-	proxied_function_ptr function_ptr[PROXIED_FUNCTION_COUNT] = { _aRd, _aWrt, _cnt, _dy, _dMs, _dRd, _dWrt, _dD, _eD, _eDL, _gIM, _lcdW, _mc, _ms, _pMd, _ping, _sftO, _wI,  }; // {***PLACEHOLDER***}
+	proxied_function_ptr function_ptr[PROXIED_FUNCTION_COUNT] = { _aRd, _aWrt, _cnt, _dy, _dMs, _dRd, _dWrt, _dD, _eD, _eDL, _gACT, _gIM, _lcdW, _mc, _ms, _pMd, _ping, _sftO, _wI,  }; // {***PLACEHOLDER***}
 // >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
-	char*               function_name[PROXIED_FUNCTION_COUNT] = { "_aRd", "_aWrt", "_cnt", "_dy", "_dMs", "_dRd", "_dWrt", "_dD", "_eD", "_eDL", "_gIM", "_lcdW", "_mc", "_ms", "_pMd", "_ping", "_sftO", "_wI",  }; // {***PLACEHOLDER***}
+	char*               function_name[PROXIED_FUNCTION_COUNT] = { "_aRd", "_aWrt", "_cnt", "_dy", "_dMs", "_dRd", "_dWrt", "_dD", "_eD", "_eDL", "_gACT", "_gIM", "_lcdW", "_mc", "_ms", "_pMd", "_ping", "_sftO", "_wI",  }; // {***PLACEHOLDER***}
 	
 	#define read_char() Serial.read()
 	
