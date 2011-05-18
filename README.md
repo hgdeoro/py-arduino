@@ -84,6 +84,11 @@ Videos!
 * [Writing a custom method in Py-Arduino-Proxy](http://www.youtube.com/watch?v=2kgQpQqTVUU "Writing a custom method in Py-Arduino-Proxy")
 * [Testing shiftOut and 8 LEDs with Py-Arduino-Proxy](http://www.youtube.com/watch?v=_9MselaKcdU "Testing shiftOut and 8 LEDs with Py-Arduino-Proxy")
 
+Python API
+==========
+
+You can get some initial API documentation [here](http://www.hgdeoro.com.ar/~horacio/py-arduino-proxy/index.html).
+
 License y copyright
 ===================
 
