@@ -387,7 +387,7 @@ class ArduinoProxy(object):
                 int pin = atoi(received_parameters[1]);
                 int mode = atoi(received_parameters[2]);
                 if(mode != INPUT && mode != OUTPUT) {
-                    send_invalid_parameter_response(1);
+                    send_invalid_parameter_response(1); // received_parameters[2]
                     return;
                 }
                 // FIXME: validate pin
@@ -425,7 +425,7 @@ class ArduinoProxy(object):
                 int value = atoi(received_parameters[2]);
                 
                 if(value != HIGH && value != LOW) {
-                    send_invalid_parameter_response(1);
+                    send_invalid_parameter_response(1); // received_parameters[2]
                     return;
                 }
                 
@@ -548,7 +548,7 @@ class ArduinoProxy(object):
                 int value = atoi(received_parameters[2]);
                 
                 if(value < 0 || value > 255) {
-                    send_invalid_parameter_response(1);
+                    send_invalid_parameter_response(1); // received_parameters[2]
                     return;
                 }
                 
@@ -625,7 +625,7 @@ class ArduinoProxy(object):
                 int value = atoi(received_parameters[1]);
                 
                 if(value < 0) {
-                    send_invalid_parameter_response(0);
+                    send_invalid_parameter_response(0); // received_parameters[1]
                     return;
                 }
                 
@@ -661,7 +661,7 @@ class ArduinoProxy(object):
                 int value = atoi(received_parameters[1]);
                 
                 if(value < 0) {
-                    send_invalid_parameter_response(0);
+                    send_invalid_parameter_response(0); // received_parameters[1]
                     return;
                 }
                 
@@ -751,7 +751,7 @@ class ArduinoProxy(object):
                 } else if(received_parameters[2][0] == ATTACH_INTERRUPT_MODE_FALLING) {
                     mode = FALLING;
                 } else {
-                    send_invalid_parameter_response(1);
+                    send_invalid_parameter_response(1); // received_parameters[2]
                     return;
                 }
                 int interrupt = atoi(received_parameters[1]);
@@ -762,7 +762,7 @@ class ArduinoProxy(object):
                     attachInterrupt(interrupt, set_mark_interrupt_1, mode);
                     send_char_array_response("WI_OK");
                 } else {
-                    send_invalid_parameter_response(0);
+                    send_invalid_parameter_response(0); // received_parameters[1]
                     return;
                 }
             }
@@ -814,7 +814,7 @@ class ArduinoProxy(object):
                     }
                     return;
                 } else {
-                    send_invalid_parameter_response(0);
+                    send_invalid_parameter_response(0); // received_parameters[1]
                     return;
                 }
             }
