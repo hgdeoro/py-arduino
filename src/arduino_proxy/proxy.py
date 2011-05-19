@@ -717,7 +717,7 @@ class ArduinoProxy(object):
     
     def watchInterrupt(self, interrupt, mode): # pylint: disable=C0103
         """
-        Begin to watch if an interrupt occurs. Use getInterruptMark() to check which interrupt
+        Begin to watch if an interrupt occurs. Use :func:`getInterruptMark` to check if an interrupt
         actually occured.
         
         Parameters:
@@ -774,7 +774,9 @@ class ArduinoProxy(object):
         """
         Check if an interrupt was detected on the Arduino.
         If an interrupt has ocurred, the 'mark' in the Arduino is cleared, so you can call 
-        getInterruptMark() again, to check if another interrupt occurred.
+        :func:`getInterruptMark` again, to check if another interrupt occurred.
+        
+        :func:`watchInterrupt` must be called before :func:`getInterruptMark`.
         
         Parameters:
             - interrupt (int): interrupt number to check.
@@ -878,13 +880,45 @@ class ArduinoProxy(object):
 
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
     
-    def lcdWrite(self, message, col, row): # pylint: disable=C0103
+    def lcdMessage(self, message):
         """
-        Write a message to the LCD.
+        Clear the content of the LCD and write the given message.
+        If message is a string, it'll be displayed in the first line of the LCD.
+        If message is a list, each item will be displayed in a different line.
+        
+        See :func:`lcdWrite` for more info.
+        
+        Parameters:
+            - message (string or list): message to display
+        """
+        if isinstance(message, basestring):
+            self.lcdWrite(message, 0, 0, clear_lcd=True)
+        elif isinstance(message, (list, tuple, )):
+            self.lcdClear()
+            for i in range(0, len(message)):
+                self.lcdWrite(message[i], 0, i)
+        else:
+            raise(InvalidArgument("message parameter must be string, list or tuple"))
+    
+    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    
+    def lcdWrite(self, message, col, row, clear_lcd=False): # pylint: disable=C0103
+        """
+        Write a message to the LCD, starting in the given row and column.
+        An exception may be raised if the message is larger than the buffer used in the Arduino
+        to keep the receivded data. And each world of the message is sent as a different parameter;
+        if the message has many words (an thus, many parameters), an exception may be raised.
+        
+        See :func:`lcdMessage`.
         
         For this to work, the sketch uploaded to the Arduino must be build
         using the '--lcd' option. See https://github.com/hgdeoro/py-arduino-proxy/wiki/LCD-Support
         for more information.
+        
+        Parameters:
+            - message (str): message to display
+            - col (int): column
+            - row (int): row
         """
         if not type(col) is int:
             raise(InvalidArgument("col must be an integer"))
@@ -894,18 +928,29 @@ class ArduinoProxy(object):
         # FIXME: check 'message' type and length
         # FIXME: check parameters
         # FIXME: test detection of invalid parameters
-
-        return self.send_cmd("_lcdW %s %d %d" % (message.replace(' ', '_'), col, row), "LWOK")
+        
+        if clear_lcd:
+            self.lcdClear()
+        
+        return self.send_cmd("_lcdW %d %d %s" % (col, row, message),  "LWOK")
             # raises CommandTimeout,InvalidCommand,InvalidResponse
     
     lcdWrite.arduino_function_name = '_lcdW'
     lcdWrite.arduino_code = _unindent(12, """
             void _lcdW() {
                 #if PY_ARDUINO_PROXY_LCD_SUPPORT == 1
-                    int col = atoi(received_parameters[2]);
-                    int row = atoi(received_parameters[3]);
+                    int col = atoi(received_parameters[1]);
+                    int row = atoi(received_parameters[2]);
                     lcd.setCursor(col, row);
-                    lcd.print(received_parameters[1]);
+                    // reuse 'col' variable
+                    for(col=3; col<MAX_RECEIVED_PARAMETERS; col++) {
+                        if(received_parameters[col] == NULL)
+                            break;
+                        lcd.print(received_parameters[col]);
+                        if(col+1<MAX_RECEIVED_PARAMETERS && received_parameters[col+1] != NULL) {
+                            lcd.print(" ");
+                        }
+                    }
                     send_char_array_response("LWOK");
                 #else
                     send_unsupported_cmd_response();

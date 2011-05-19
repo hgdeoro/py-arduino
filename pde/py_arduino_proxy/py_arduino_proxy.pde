@@ -240,10 +240,18 @@ void _lcdClr() {
 
 void _lcdW() {
     #if PY_ARDUINO_PROXY_LCD_SUPPORT == 1
-        int col = atoi(received_parameters[2]);
-        int row = atoi(received_parameters[3]);
+        int col = atoi(received_parameters[1]);
+        int row = atoi(received_parameters[2]);
         lcd.setCursor(col, row);
-        lcd.print(received_parameters[1]);
+        // reuse 'col' variable
+        for(col=3; col<MAX_RECEIVED_PARAMETERS; col++) {
+            if(received_parameters[col] == NULL)
+                break;
+            lcd.print(received_parameters[col]);
+            if(col+1<MAX_RECEIVED_PARAMETERS && received_parameters[col+1] != NULL) {
+                lcd.print(" ");
+            }
+        }
         send_char_array_response("LWOK");
     #else
         send_unsupported_cmd_response();
