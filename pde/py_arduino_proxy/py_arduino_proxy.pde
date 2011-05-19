@@ -1,6 +1,6 @@
 
 //
-// THIS FILE IS GENERATED AUTOMATICALLI WITH generate-pde.sh
+// THIS FILE WAS GENERATED AUTOMATICALLY WITH generate-pde.sh
 // WHICH IS PART OF THE PROJECT "PyArduinoProxy"
 //
     
@@ -13,6 +13,7 @@
 #include "avr_cpunames.h"
 
 #include "py_arduino_proxy.h"
+#include "arduino_type.h"
 
 // >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
 #define PY_ARDUINO_PROXY_LCD_SUPPORT 0 // {***PLACEHOLDER***}
@@ -189,6 +190,21 @@ void _eDL() {
         
 
 
+void _gATS() {
+    Serial.print(this_arduino_type.analog_pins, DEC);
+    Serial.print(" ");
+    Serial.print(this_arduino_type.digital_pins, DEC);
+    Serial.print(" ");
+    Serial.print(this_arduino_type.pwm_pins_bitmap, BIN);
+    Serial.print(" ");
+    Serial.print(this_arduino_type.eeprom_size, DEC);
+    Serial.print(" ");
+    Serial.print(this_arduino_type.flash_size, DEC);
+    Serial.println("");
+}
+        
+
+
 void _gACT() {
     send_char_array_response(_AVR_CPU_NAME_);
 }
@@ -336,12 +352,12 @@ void _wI() {
 	
 	// PROXIED_FUNCTION_COUNT: how many proxied functions we have
 // >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
-	#define PROXIED_FUNCTION_COUNT 20 // {***PLACEHOLDER***}
+	#define PROXIED_FUNCTION_COUNT 21 // {***PLACEHOLDER***}
 	
 // >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
-	proxied_function_ptr function_ptr[PROXIED_FUNCTION_COUNT] = { _aRd, _aWrt, _dy, _dMs, _dRd, _dWrt, _dD, _eD, _eDL, _gACT, _gIM, _lcdClr, _lcdW, _mc, _ms, _pMd, _ping, _sftO, _vCnt, _wI,  }; // {***PLACEHOLDER***}
+	proxied_function_ptr function_ptr[PROXIED_FUNCTION_COUNT] = { _aRd, _aWrt, _dy, _dMs, _dRd, _dWrt, _dD, _eD, _eDL, _gATS, _gACT, _gIM, _lcdClr, _lcdW, _mc, _ms, _pMd, _ping, _sftO, _vCnt, _wI,  }; // {***PLACEHOLDER***}
 // >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
-	char*               function_name[PROXIED_FUNCTION_COUNT] = { "_aRd", "_aWrt", "_dy", "_dMs", "_dRd", "_dWrt", "_dD", "_eD", "_eDL", "_gACT", "_gIM", "_lcdClr", "_lcdW", "_mc", "_ms", "_pMd", "_ping", "_sftO", "_vCnt", "_wI",  }; // {***PLACEHOLDER***}
+	char*               function_name[PROXIED_FUNCTION_COUNT] = { "_aRd", "_aWrt", "_dy", "_dMs", "_dRd", "_dWrt", "_dD", "_eD", "_eDL", "_gATS", "_gACT", "_gIM", "_lcdClr", "_lcdW", "_mc", "_ms", "_pMd", "_ping", "_sftO", "_vCnt", "_wI",  }; // {***PLACEHOLDER***}
 	
 	#define read_char() Serial.read()
 	
