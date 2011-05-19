@@ -30,8 +30,8 @@ sys.path.append(os.path.abspath(SRC_DIR))
 from arduino_proxy import ArduinoProxy, InvalidCommand, CommandTimeout, InvalidResponse
 from arduino_proxy.main_utils import default_main
 
-def main():
-    options, args, proxy = default_main()
+def main(): # pylint: disable=R0915
+    options, args, proxy = default_main() # pylint: disable=W0612
     try:
         print "enableDebug() -> %s" % str(proxy.enableDebug())
         print "disableDebug() -> %s" % str(proxy.disableDebug())
@@ -63,28 +63,28 @@ def main():
             print "Check for READ_ONE_PARAM_ERROR_PARAMETER_TOO_LARGE"
             proxy.send_cmd("laaaarge_meeeethod_" * 10)
             assert False, "The previous line should raise an exception!"
-        except InvalidCommand, e:
+        except InvalidCommand, exception:
             # READ_ONE_PARAM_ERROR_PARAMETER_TOO_LARGE == 2
-            print " +", e
-            assert e.error_code == "2"
+            print " +", exception
+            assert exception.error_code == "2"
 
         try:
             print "Check for FUNCTION_NOT_FOUND"
             proxy.send_cmd("_nonexisting_method p1 p2 p3 p4 p5 p6 p7 p8 p9")
             assert False, "The previous line should raise an exception!"
-        except InvalidCommand, e:
+        except InvalidCommand, exception:
             # FUNCTION_NOT_FOUND == 6
-            print " +", e
-            assert e.error_code == "6"
+            print " +", exception
+            assert exception.error_code == "6"
         
         try:
             print "Check for READ_PARAMETERS_ERROR_TOO_MANY_PARAMETERS"
             proxy.send_cmd("cmd p1 p2 p3 p4 p5 p6 p7 p8 p9 p10")
             assert False, "The previous line should raise an exception!"
-        except InvalidCommand, e:
+        except InvalidCommand, exception:
             # READ_PARAMETERS_ERROR_TOO_MANY_PARAMETERS == 3
-            print " +", e
-            assert e.error_code == "3"
+            print " +", exception
+            assert exception.error_code == "3"
         
         proxy.setTimeout(1)
         print "delay(500)"
@@ -94,15 +94,15 @@ def main():
         try:
             proxy.delay(1500)
             assert False, "The previous line should raise an exception!"
-        except CommandTimeout, e:
-            print " +", e.__class__
+        except CommandTimeout, exception:
+            print " +", exception.__class__
         
         try:
             # The INPUT buffer has the response from the timed-out delay()
             # Anything before a validate_connection() should fail.
             print "ping() -> %s" % str(proxy.ping())
             assert False, "The previous line should raise an exception!"
-        except InvalidResponse, e:
+        except InvalidResponse, exception:
             pass
         
         print "Re-connecting after timeout. validate_connection() -> %s" % \

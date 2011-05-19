@@ -54,7 +54,7 @@ class ArduinoEmulator(threading.Thread):
         self.serial_connection = serial_connection
         self.running = True
     
-    def run_cmd(self, cmd):
+    def run_cmd(self, cmd): #  # pylint: disable=R0912
         if not self.running:
             return
         logger.info("run_cmd() - cmd: %s", pprint.pformat(cmd))
@@ -205,7 +205,7 @@ class SerialConnectionMock(object):
         self.logger.debug("read() -> ''")
         return ''
     
-    def getTimeout(self):
+    def getTimeout(self): # pylint: disable=C0103
         return self.timeout
     
     def __str__(self):
@@ -215,7 +215,7 @@ class SerialConnectionMock(object):
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-class TestArduinoProxyWithInitialContentInSerialBuffer(unittest.TestCase):
+class TestArduinoProxyWithInitialContentInSerialBuffer(unittest.TestCase): # pylint: disable=R0904
     """
     Testcase for commands.
     """
@@ -352,16 +352,16 @@ class TestInternalsOfArduinoProxy(unittest.TestCase): # pylint: disable=R0904
         def valid_transformer1(arg1):
             return arg1
 
-        def valid_transformer2(arg1):
+        def valid_transformer2(arg1): # pylint: disable=W0613
             return "RESPONSE_FROM_TRANSFORMER"
         
         def invalid_transformer1():
             pass
         
-        def invalid_transformer2(arg1, arg2):
+        def invalid_transformer2(arg1, arg2): # pylint: disable=W0613
             pass
         
-        def invalid_transformer3(arg1):
+        def invalid_transformer3(arg1): # pylint: disable=W0613
             raise(Exception("Exception while transforming"))
         
         # send_cmd(self, cmd, expected_response=None, timeout=None, response_transformer=None):

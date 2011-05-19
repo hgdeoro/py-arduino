@@ -21,7 +21,7 @@
 import logging
 import optparse
 import os
-import os.path
+import os.path # pylint: disable=W0404
 import shutil
 import sys
 
@@ -35,7 +35,7 @@ sys.path.append(os.path.abspath(SRC_DIR))
 
 from arduino_proxy.proxy import ArduinoProxy, _unindent
 
-def main():
+def main(): # pylint: disable=R0914,R0912,R0915
     
     parser = optparse.OptionParser()
     parser.add_option("--lcd",
@@ -48,7 +48,7 @@ def main():
         action="store", dest="output_dir", default="", 
         help="Output directory for genereated sketch. Default: 'pde' directory.")
     
-    (options, args) = parser.parse_args()
+    (options, args) = parser.parse_args() # pylint: disable=W0612
     
     if options.output_dir:
         output_dir = options.output_dir
@@ -56,7 +56,7 @@ def main():
         basedir = os.environ['BASEDIR']
         output_dir = os.path.join(basedir, 'pde', 'py_arduino_proxy')
         output_dir = os.path.abspath(output_dir)
-        logging.warn("Using default output directory: %s" % output_dir)
+        logging.warn("Using default output directory: %s", output_dir)
     
     if not os.path.isdir(output_dir):
         raise(Exception("Output path isn't a directory! Path: %s" % output_dir))
@@ -143,8 +143,8 @@ def main():
                 logging.info(" + PLACEHOLDER found. Line: %s", line)
                 if modified_line == line:
                     logging.error(" + PLACEHOLDER found, but no change was found in the line.")
-                    logging.error("    - Original line: %s" % line)
-                    logging.error("    - Modified line: %s" % modified_line)
+                    logging.error("    - Original line: %s", line)
+                    logging.error("    - Modified line: %s", modified_line)
                     assert False
             except TypeError:
                 print "> "

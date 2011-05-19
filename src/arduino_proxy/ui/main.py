@@ -8,9 +8,9 @@ import sys
 try:
     from cStringIO import StringIO
 except ImportError:
-    from StringIO import StringIO
+    from StringIO import StringIO # pylint: disable=W0404
 
-from PyQt4 import QtCore, QtGui
+from PyQt4 import QtCore, QtGui # pylint: disable=E0611
 
 # Setup PYTHONPATH
 SRC_DIR = os.path.split(os.path.realpath(__file__))[0] # SRC_DIR/arduino_proxy/tests

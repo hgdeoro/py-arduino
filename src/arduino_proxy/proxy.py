@@ -17,6 +17,8 @@
 ##    along with Py-Arduino-Proxy; see the file LICENSE.txt.
 ##-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
+# pylint: disable=C0302
+
 # TODO: _unindent() could be a annotation
 
 import logging
@@ -24,7 +26,6 @@ import pprint
 import random
 import serial
 import time
-import uuid
 
 try:
     from cStringIO import StringIO
@@ -102,7 +103,7 @@ class UnsupportedCommand(ArduinoProxyException):
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-class ArduinoProxy(object):
+class ArduinoProxy(object): # pylint: disable=R0904
     """
     Proxy class for accessing Arduino.
     """
@@ -165,14 +166,14 @@ class ArduinoProxy(object):
                 self.validate_connection()
             logger.debug("Done.")
 
-    def _validate_analog_pin(self, pin, pin_name='pin'):
+    def _validate_analog_pin(self, pin, pin_name='pin'): # pylint: disable=R0201
         # FIXME: validate pin value (depends on the model of Arduino)
         if not type(pin) is int:
             raise(InvalidArgument("%s must be an int" % pin_name))
         if pin < 0:
             raise(InvalidArgument("%s must be greater or equals to 0" % pin_name))
 
-    def _validate_digital_pin(self, pin, pin_name='pin'):
+    def _validate_digital_pin(self, pin, pin_name='pin'): # pylint: disable=R0201
         # FIXME: validate pin value (depends on the model of Arduino)
         # TODO: Remember: all analog pins works as digital pins.
         if not type(pin) is int:
@@ -180,7 +181,7 @@ class ArduinoProxy(object):
         if pin < 0:
             raise(InvalidArgument("%s must be greater or equals to 0" % pin_name))
 
-    def setTimeout(self, new_timeout):
+    def setTimeout(self, new_timeout): # pylint: disable=C0103
         """
         Changes the timeout.
         """
@@ -236,7 +237,7 @@ class ArduinoProxy(object):
             response, (end-start))
         return response
     
-    def _check_response_for_errors(self, response, cmd):
+    def _check_response_for_errors(self, response, cmd): # pylint: disable=R0201
         splitted = [item for item in response.split() if item]
         if splitted[0] == ArduinoProxy.INVALID_CMD:
             if len(splitted) == 1:
@@ -306,9 +307,9 @@ class ArduinoProxy(object):
         if response_transformer is not None: # must transform the response
             try:
                 transformed_response = response_transformer(response)
-            except BaseException, e:
+            except BaseException, exception:
                 raise(InvalidResponse("The response couldn't be transformed. " + \
-                    "Response: %s. Exception: %s" % (pprint.pformat(e),
+                    "Response: %s. Exception: %s" % (pprint.pformat(exception),
                     pprint.pformat(response))))
         
         if expected_response is not None: # must check the response
@@ -501,7 +502,7 @@ class ArduinoProxy(object):
         # FIXME: add doc for exceptions
         self._validate_analog_pin(pin)
         cmd = "_aRd %d" % (pin)
-        response = self.send_cmd(cmd, response_transformer=int) # raises CommandTimeout,InvalidCommand
+        response = self.send_cmd(cmd, response_transformer=int)
         
         if response >= 0 and response <= 1023:
             return response
@@ -755,7 +756,8 @@ class ArduinoProxy(object):
         if interrupt < 0 or interrupt > 1:
             raise(InvalidArgument("interrupt must be between 0 and 1"))
         if not mode in [ArduinoProxy.ATTACH_INTERRUPT_MODE_LOW,
-                ArduinoProxy.ATTACH_INTERRUPT_MODE_CHANGE, ArduinoProxy.ATTACH_INTERRUPT_MODE_RISING,
+                ArduinoProxy.ATTACH_INTERRUPT_MODE_CHANGE,
+                ArduinoProxy.ATTACH_INTERRUPT_MODE_RISING,
                 ArduinoProxy.ATTACH_INTERRUPT_MODE_FALLING]:
             raise(InvalidArgument("invalid mode: %s" % str(mode)))
         
@@ -1009,7 +1011,7 @@ class ArduinoProxy(object):
 
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
     
-    def shiftOut(self, dataPin, clockPin, bitOrder, value, set_pin_mode=False): # pylint: disable=C0103
+    def shiftOut(self, dataPin, clockPin, bitOrder, value, set_pin_mode=False): # pylint: disable=C0103,C0301,R0913
         """
         Proxy function for Arduino's **shiftOut()**.
         Shifts out a byte of data one bit at a time.
