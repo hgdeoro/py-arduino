@@ -112,12 +112,6 @@ void _aWrt() {
         
 
 
-void _cnt() {
-    send_char_array_response(received_parameters[1]);
-}
-        
-
-
 void _dy() {
     int value = atoi(received_parameters[1]);
     
@@ -305,6 +299,12 @@ void _sftO() {
         
 
 
+void _vCnt() {
+    send_char_array_response(received_parameters[1]);
+}
+        
+
+
 void _wI() {
     int mode;
     if(received_parameters[2][0] == ATTACH_INTERRUPT_MODE_LOW) {
@@ -339,9 +339,9 @@ void _wI() {
 	#define PROXIED_FUNCTION_COUNT 20 // {***PLACEHOLDER***}
 	
 // >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
-	proxied_function_ptr function_ptr[PROXIED_FUNCTION_COUNT] = { _aRd, _aWrt, _cnt, _dy, _dMs, _dRd, _dWrt, _dD, _eD, _eDL, _gACT, _gIM, _lcdClr, _lcdW, _mc, _ms, _pMd, _ping, _sftO, _wI,  }; // {***PLACEHOLDER***}
+	proxied_function_ptr function_ptr[PROXIED_FUNCTION_COUNT] = { _aRd, _aWrt, _dy, _dMs, _dRd, _dWrt, _dD, _eD, _eDL, _gACT, _gIM, _lcdClr, _lcdW, _mc, _ms, _pMd, _ping, _sftO, _vCnt, _wI,  }; // {***PLACEHOLDER***}
 // >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
-	char*               function_name[PROXIED_FUNCTION_COUNT] = { "_aRd", "_aWrt", "_cnt", "_dy", "_dMs", "_dRd", "_dWrt", "_dD", "_eD", "_eDL", "_gACT", "_gIM", "_lcdClr", "_lcdW", "_mc", "_ms", "_pMd", "_ping", "_sftO", "_wI",  }; // {***PLACEHOLDER***}
+	char*               function_name[PROXIED_FUNCTION_COUNT] = { "_aRd", "_aWrt", "_dy", "_dMs", "_dRd", "_dWrt", "_dD", "_eD", "_eDL", "_gACT", "_gIM", "_lcdClr", "_lcdW", "_mc", "_ms", "_pMd", "_ping", "_sftO", "_vCnt", "_wI",  }; // {***PLACEHOLDER***}
 	
 	#define read_char() Serial.read()
 	

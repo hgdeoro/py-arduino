@@ -27,7 +27,7 @@ SRC_DIR = os.path.split(SRC_DIR)[0] # SRC_DIR/arduino_proxy
 SRC_DIR = os.path.split(SRC_DIR)[0] # SRC_DIR
 sys.path.append(os.path.abspath(SRC_DIR))
 
-from arduino_proxy import ArduinoProxy, InvalidCommand, CommandTimeout
+from arduino_proxy import ArduinoProxy, InvalidCommand, CommandTimeout, InvalidResponse
 from arduino_proxy.main_utils import default_main
 
 def main():
@@ -35,7 +35,7 @@ def main():
     try:
         print "enableDebug() -> %s" % str(proxy.enableDebug())
         print "disableDebug() -> %s" % str(proxy.disableDebug())
-        print "connect() -> %s" % str(proxy.connect())
+        print "validate_connection() -> %s" % str(proxy.validate_connection())
         print "ping() -> %s" % str(proxy.ping())
         print "pinMode() -> %s" % str(proxy.pinMode(13, ArduinoProxy.OUTPUT))
         print "analogRead() -> %s" % str(proxy.analogRead(0))
@@ -97,8 +97,20 @@ def main():
         except CommandTimeout, e:
             print " +", e.__class__
         
-        print "Re-connecting after timeout. connect() -> %s" % str(proxy.connect())
-    
+        try:
+            # The INPUT buffer has the response from the timed-out delay()
+            # Anything before a validate_connection() should fail.
+            print "ping() -> %s" % str(proxy.ping())
+            assert False, "The previous line should raise an exception!"
+        except InvalidResponse, e:
+            pass
+        
+        print "Re-connecting after timeout. validate_connection() -> %s" % \
+            str(proxy.validate_connection())
+        
+        # Now, the connection is valid again, ping() should work...
+        print "ping() -> %s" % str(proxy.ping())
+        
     except KeyboardInterrupt:
         print ""
     except Exception:

@@ -69,7 +69,7 @@ def main():
                 print "##"
                 print "## ERROR DETECTED!"
                 print "##"
-                print "connect() -> %s" % str(proxy.connect())
+                print "validate_connection() -> %s" % str(proxy.validate_connection())
                 print "enableDebug() -> %s" % str(proxy.enableDebug())
                 print "ping() -> %s" % str(proxy.ping())
                 print ""

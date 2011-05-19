@@ -227,7 +227,7 @@ class TestArduinoProxyWithInitialContentInSerialBuffer(unittest.TestCase):
         self.emulator.start()
 
     def test_ping(self):
-        self.proxy.connect()
+        self.proxy.validate_connection()
         response = self.proxy.ping()
         self.assertEquals(response, 'PING_OK')
 

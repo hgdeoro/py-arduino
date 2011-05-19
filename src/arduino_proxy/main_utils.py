@@ -63,10 +63,10 @@ def default_main(optparse_usage="usage: %prog [options] serial_device",
     parser.add_option("--initial-wait",
         action="store", dest="initial_wait", default=None,
         help="How many seconds wait before conect (workaround for auto-reset on connect bug).")
-    parser.add_option("--dont-call-connect",
-        action="store_true", dest="dont_call_connect", default=False,
-        help="Don't call connect on startup (the default is " + \
-            "to call connect automatically at startup).")
+    parser.add_option("--dont-call-validate-connection",
+        action="store_true", dest="dont_call_validate_connection", default=False,
+        help="Don't call validate_connection() on startup (the default is " + \
+            "to call validate_connection() automatically at startup).")
     
     if not add_options_callback is None:
         add_options_callback(parser)
@@ -89,17 +89,17 @@ def default_main(optparse_usage="usage: %prog [options] serial_device",
     
     if options.initial_wait == 0:
         proxy = ArduinoProxy(args[0], 9600, wait_after_open=0,
-            call_connect=not(options.dont_call_connect))
+            call_validate_connection=not(options.dont_call_validate_connection))
     else:
         if options.initial_wait is None:
             logging.info("Waiting some seconds to let the Arduino reset...")
-            proxy = ArduinoProxy(args[0], 9600, call_connect=not(options.dont_call_connect))
+            proxy = ArduinoProxy(args[0], 9600, call_validate_connection=not(options.dont_call_validate_connection))
         else:
             initial_wait = int(options.initial_wait)
             if initial_wait > 0:
                 logging.info("Waiting %d seconds to let the Arduino reset...", initial_wait)
             proxy = ArduinoProxy(args[0], 9600, wait_after_open=initial_wait,
-                call_connect=not(options.dont_call_connect))
+                call_validate_connection=not(options.dont_call_validate_connection))
     
     if options.arduino_debug:
         proxy.enableDebug()
