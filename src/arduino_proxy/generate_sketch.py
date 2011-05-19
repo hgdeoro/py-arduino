@@ -35,59 +35,7 @@ sys.path.append(os.path.abspath(SRC_DIR))
 
 from arduino_proxy.proxy import ArduinoProxy, _unindent
 
-def main(): # pylint: disable=R0914,R0912,R0915
-    
-    parser = optparse.OptionParser()
-    parser.add_option("--lcd",
-        action="store_true", dest="lcd", default=False,
-        help="Generate sketch with support for LCD.")
-    parser.add_option("--disable-debug-to-lcd",
-        action="store_true", dest="disable_debug_to_lcd", default=False,
-        help="Remove support for sending debug message to LCD. This'll shrink the sketch size.")
-    parser.add_option("--output-dir",
-        action="store", dest="output_dir", default="", 
-        help="Output directory for genereated sketch. Default: 'pde' directory.")
-    
-    (options, args) = parser.parse_args() # pylint: disable=W0612
-    
-    if options.output_dir:
-        output_dir = options.output_dir
-    else:
-        basedir = os.environ['BASEDIR']
-        output_dir = os.path.join(basedir, 'pde', 'py_arduino_proxy')
-        output_dir = os.path.abspath(output_dir)
-        logging.warn("Using default output directory: %s", output_dir)
-    
-    if not os.path.isdir(output_dir):
-        raise(Exception("Output path isn't a directory! Path: %s" % output_dir))
-    
-    c_input_filename = os.path.join(SRC_DIR, 'src-c', 'arduino.c')
-    h_input_filename = os.path.join(SRC_DIR, 'src-c', 'py_arduino_proxy.h')
-    
-    logging.info("Template for .c/.pde file: %s", c_input_filename)
-    logging.info("Template for .h file: %s", h_input_filename)
-    
-    c_file = open(c_input_filename, 'r')
-    c_file_lines = [line.strip('\r\n') for line in c_file.readlines()]
-    for i in range(0, len(c_file_lines)):
-        splitted = c_file_lines[i].split()
-        if len(splitted) >= 3 and \
-                splitted[0] == '#define' and \
-                splitted[1] == 'PY_ARDUINO_PROXY_DEVEL' and \
-                splitted[2].startswith('//'):
-            c_file_lines[i] = '// ' + c_file_lines[i]
-            break
-    
-    output = StringIO()
-    output.write(_unindent(8, """
-        //
-        // THIS FILE IS GENERATED AUTOMATICALLI WITH generate-pde.sh
-        // WHICH IS PART OF THE PROJECT "PyArduinoProxy"
-        //
-    """))
-    output.write("\n\n")
-    
-    proxy = ArduinoProxy('')
+def generate_placeholder_values(proxy, options):
     proxy_functions = proxy.get_proxy_functions()
     
     if len(proxy_functions) != len(set([function.arduino_function_name for function in
@@ -125,13 +73,27 @@ def main(): # pylint: disable=R0914,R0912,R0915
         'PY_ARDUINO_PROXY_LCD_SUPPORT': 0, 
         'PY_ARDUINO_PROXY_DEBUG_TO_LCD': 0, 
     }
+    
     if options.lcd:
         placeholder_values['PY_ARDUINO_PROXY_LCD_SUPPORT'] = 1
         if not options.disable_debug_to_lcd:
             placeholder_values['PY_ARDUINO_PROXY_DEBUG_TO_LCD'] = 1
     
-    logging.info("Generating C/PDE file...")
-    for line in c_file_lines:
+    return placeholder_values
+
+def replace_placeholder_values(placeholder_values, input_lines, output):
+    """
+    For each elemento of 'input_lines', replace the values, and write
+    the generated lines to 'output' (an StringIO instance).
+    """
+    output.write(_unindent(8, """
+        //
+        // THIS FILE WAS GENERATED AUTOMATICALLY WITH generate-pde.sh
+        // WHICH IS PART OF THE PROJECT "PyArduinoProxy"
+        //
+    """))
+    output.write("\n\n")
+    for line in input_lines:
         splitted = line.split()
         if len(splitted) > 2 and \
                 splitted[-2] == '//' and \
@@ -155,6 +117,66 @@ def main(): # pylint: disable=R0914,R0912,R0915
         else:
             output.write(line)
         output.write('\n')
+
+def main(): # pylint: disable=R0914,R0912,R0915
+    
+    parser = optparse.OptionParser()
+    parser.add_option("--lcd",
+        action="store_true", dest="lcd", default=False,
+        help="Generate sketch with support for LCD.")
+    parser.add_option("--disable-debug-to-lcd",
+        action="store_true", dest="disable_debug_to_lcd", default=False,
+        help="Remove support for sending debug message to LCD. This'll shrink the sketch size.")
+    parser.add_option("--output-dir",
+        action="store", dest="output_dir", default="", 
+        help="Output directory for genereated sketch. Default: 'pde' directory.")
+    
+    (options, args) = parser.parse_args() # pylint: disable=W0612
+    
+    if options.output_dir:
+        output_dir = options.output_dir
+    else:
+        basedir = os.environ['BASEDIR']
+        output_dir = os.path.join(basedir, 'pde', 'py_arduino_proxy')
+        output_dir = os.path.abspath(output_dir)
+        logging.warn("Using default output directory: %s", output_dir)
+    
+    if not os.path.isdir(output_dir):
+        raise(Exception("Output path isn't a directory! Path: %s" % output_dir))
+    
+    c_input_filename = os.path.join(SRC_DIR, 'src-c', 'arduino.c')
+    h_input_filename = os.path.join(SRC_DIR, 'src-c', 'py_arduino_proxy.h')
+    
+    extra_source_filenames = [
+        'arduino_type.h', 
+    ]
+    
+    logging.info("Template for .pde file: %s", c_input_filename)
+    logging.info("Template for .h file: %s", h_input_filename)
+    for a_file in extra_source_filenames:
+        logging.info("Extra source file: %s", a_file)
+    
+    c_file = open(c_input_filename, 'r')
+    c_file_lines = [line.strip('\r\n') for line in c_file.readlines()]
+    
+    # Remove 'PY_ARDUINO_PROXY_DEVEL' from C file
+    for i in range(0, len(c_file_lines)):
+        splitted = c_file_lines[i].split()
+        if len(splitted) >= 3 and \
+                splitted[0] == '#define' and \
+                splitted[1] == 'PY_ARDUINO_PROXY_DEVEL' and \
+                splitted[2].startswith('//'):
+            c_file_lines[i] = '// ' + c_file_lines[i]
+            break
+    
+    proxy = ArduinoProxy('')
+    
+    placeholder_values = generate_placeholder_values(proxy, options)
+
+    output = StringIO()
+    
+    logging.info("Generating C/PDE file...")
+    replace_placeholder_values(placeholder_values, c_file_lines, output)
     
     # Writing .C/.PDE file
     output_file_c_filename = os.path.join(output_dir, 'py_arduino_proxy.pde')
@@ -167,7 +189,14 @@ def main(): # pylint: disable=R0914,R0912,R0915
     output_file_h_filename = os.path.join(output_dir, 'py_arduino_proxy.h')
     logging.info("Copying to %s", output_file_h_filename)
     shutil.copyfile(h_input_filename, output_file_h_filename)
-    
+
+    # Coping extra source files
+    for extra_filename in extra_source_filenames:
+        input_filename = os.path.join(SRC_DIR, 'src-c', extra_filename)
+        output_filename = os.path.join(output_dir, extra_filename)
+        logging.info("Copying to %s", output_filename)
+        shutil.copyfile(input_filename, output_filename)
+
     logging.info("Done!")
     
 if __name__ == '__main__':
