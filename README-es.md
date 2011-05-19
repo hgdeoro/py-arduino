@@ -39,7 +39,6 @@ Actualmente están implementados los métodos básicos de Arduino. Por lo
 tanto, las siguientes acciones se pueden realizar desde Python:
 
 * Chequear la comunicación con Arduino (ping)
-* Revalidar la conexión, removiendo cualquier informacióin pre-existente que pueda existir en el buffer.
 * pinMode()
 * digitalRead()
 * digitalWrite()
@@ -49,6 +48,7 @@ tanto, las siguientes acciones se pueden realizar desde Python:
 * Ejecutar delay() y delayMicroseconds()
 * watchInterrupt() y getInterruptMark() para trabajar con interrupciones
 * shiftOut()
+* Mostrar mensajes en displays LCD, usando pantallas basadas en el Hitachi HD44780 o compatibles.
 
 Instalación
 ===========

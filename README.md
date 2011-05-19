@@ -34,7 +34,6 @@ Implemented methods
 The basic methods of Arduino are implemented. The following actions can be done from Python: 
 
 * Check communication with Arduino (ping) 
-* Validate the connection, removing any pre-existing data that may exist in the buffer.
 * pinMode()
 * digitalRead()
 * digitalWrite()
@@ -44,6 +43,7 @@ The basic methods of Arduino are implemented. The following actions can be done 
 * Run delay() and delayMicroseconds()
 * watchInterrupt() and getInterruptMark() to work with interrupts
 * shiftOut()
+* Show messages on LCDs, based on the Hitachi HD44780 (or a compatible) chipset.
 
 Installation
 ============
