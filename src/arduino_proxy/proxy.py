@@ -233,8 +233,8 @@ class ArduinoProxy(object): # pylint: disable=R0904
         
         response = response.getvalue().strip()
         end = time.time()
-        logger.debug("get_next_response() - Got response: '%s' - Took: %.2f secs.",
-            response, (end-start))
+        logger.debug("get_next_response() - Got response: %s - Took: %.2f secs.",
+            pprint.pformat(response), (end-start))
         return response
     
     def _check_response_for_errors(self, response, cmd): # pylint: disable=R0201
@@ -1068,6 +1068,38 @@ class ArduinoProxy(object): # pylint: disable=R0904
     getAvrCpuType.arduino_code = _unindent(12, """
             void _gACT() {
                 send_char_array_response(_AVR_CPU_NAME_);
+            }
+        """)
+
+    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    
+    def getArduinoTypeStruct(self): # pylint: disable=C0103
+        """
+        Returns a dict with the value of **this_arduino_type** struct.
+        """
+        value = self.send_cmd("_gATS")
+        splitted = [item for item in value.split() if item]
+        return {
+            'analog_pins': int(splitted[0]), 
+            'digital_pins': int(splitted[1]), 
+            'pwm_pins_bitmap': splitted[2], 
+            'eeprom_size': int(splitted[3]), 
+            'flash_size': int(splitted[4]), 
+        }
+    
+    getArduinoTypeStruct.arduino_function_name = '_gATS'
+    getArduinoTypeStruct.arduino_code = _unindent(12, """
+            void _gATS() {
+                Serial.print(this_arduino_type.analog_pins, DEC);
+                Serial.print(" ");
+                Serial.print(this_arduino_type.digital_pins, DEC);
+                Serial.print(" ");
+                Serial.print(this_arduino_type.pwm_pins_bitmap, BIN);
+                Serial.print(" ");
+                Serial.print(this_arduino_type.eeprom_size, DEC);
+                Serial.print(" ");
+                Serial.print(this_arduino_type.flash_size, DEC);
+                Serial.println("");
             }
         """)
 
