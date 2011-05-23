@@ -8,14 +8,43 @@
 		<script type="text/javascript" src="js/jquery-ui-1.8.13.custom.min.js"></script>
 		<script type="text/javascript">
 			$(function(){
+				//
+				// ping
+				//
 				$("#ping_button").button();
 				$("#ping_button").click(function() {
-					$("#ping_result").html('Ping response: ?');
+					$("#ping_result").html('waiting for response...');
 					$.ajax({
 					  url: '/ping',
 					  dataType: 'json',
 					  success: function(data, textStatus, jqXHR) {
-						$("#ping_result").html('Ping response: ' + data.ping);
+						  if(data.ok) {
+							  $("#ping_result").html('PING OK');
+						  } else {
+							  $("#ping_result").html('no response');
+						  }
+					  },
+					  error: function(jqXHR, textStatus, errorThrown) {
+						alert('AJAX ERROR');
+					  }
+					});
+				});
+				
+				//
+				// validate_connection
+				//
+				$("#validate_connection_button").button();
+				$("#validate_connection_button").click(function() {
+					$("#validate_connection_result").html('waiting for response...');
+					$.ajax({
+					  url: '/validate_connection',
+					  dataType: 'json',
+					  success: function(data, textStatus, jqXHR) {
+						  if(data.ok) {
+							  $("#validate_connection_result").html('validation OK - ID: ' + data.random_value);
+						  } else {
+							  $("#validate_connection_result").html('ERROR');
+						  }
 					  },
 					  error: function(jqXHR, textStatus, errorThrown) {
 						alert('AJAX ERROR');
@@ -32,7 +61,12 @@
 		
 	<h1>Py-Arduino-Proxy</h1>
 	
-	<button id="ping_button">Ping</button> Result: <span id="ping_result"></span>
+	<p>
+		<button id="ping_button">Ping</button> Result: <span id="ping_result"></span>
+	</p>
+	<p>
+		<button id="validate_connection_button">Validate connection</button> Result: <span id="validate_connection_result"></span>
+	</p>
 	
 	</body>
 </html>

@@ -38,9 +38,18 @@ class Root(object):
     def ping(self):
         try:
             self.proxy.ping()
-            return { 'ping': 'ok', }
+            return { 'ok': True, }
         except:
-            return { 'ping': 'error', }
+            return { 'ok': False, }
+
+    @cherrypy.expose
+    @cherrypy.tools.json_out()
+    def validate_connection(self):
+        try:
+            random_value = self.proxy.validate_connection()
+            return { 'ok': True, 'random_value': random_value, }
+        except:
+            return { 'ok': False, }
 
 def start_webserver(base_dir, options, args, proxy):
     #    # Set up site-wide config first so we get a log if errors occur.
