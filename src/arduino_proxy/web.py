@@ -17,29 +17,32 @@
 ##    along with Py-Arduino-Proxy; see the file LICENSE.txt.
 ##-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
+import cherrypy
+import simplejson
 import os
 import sys
 
 from os.path import split, realpath, join, abspath
 
-def get_base_dir():
-    sp = os.path.split
-    return abspath(sp(sp(sp(realpath(__file__))[0])[0])[0])
-
-sys.path.append(join(get_base_dir(), 'lib'))
-
-import cherrypy
-
-class Root:
+class Root(object):
+    
+    def __init__(self, proxy):
+        self.proxy = proxy
     
     @cherrypy.expose
-    def index(self, message=None):
-        if message is None:
-            return "Hello world!"
-        else:
-            return "Message: %s" % message
+    def index(self):
+        raise cherrypy.HTTPRedirect("/static/ui.html")
 
-def main():
+    @cherrypy.expose
+    @cherrypy.tools.json_out()
+    def ping(self):
+        try:
+            self.proxy.ping()
+            return { 'ping': 'ok', }
+        except:
+            return { 'ping': 'error', }
+
+def start_webserver(base_dir, options, args, proxy):
     #    # Set up site-wide config first so we get a log if errors occur.
     #    cherrypy.config.update({'environment': 'production',
     #                            'log.error_file': 'site.log',
@@ -67,11 +70,8 @@ def main():
     conf = {
         '/static': {
             'tools.staticdir.on': True,
-            'tools.staticdir.dir': join(get_base_dir(), 'web', 'static'),
+            'tools.staticdir.dir': join(base_dir, 'web', 'static'),
         }
     }
     
-    cherrypy.quickstart(Root(), '/', config=conf)
-
-if __name__ == '__main__':
-    main()
+    cherrypy.quickstart(Root(proxy), '/', config=conf)

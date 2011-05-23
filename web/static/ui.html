@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+		<title>jQuery UI Example Page</title>
+		<link type="text/css" href="css/ui-lightness/jquery-ui-1.8.13.custom.css" rel="stylesheet" />	
+		<script type="text/javascript" src="js/jquery-1.5.1.min.js"></script>
+		<script type="text/javascript" src="js/jquery-ui-1.8.13.custom.min.js"></script>
+		<script type="text/javascript">
+			$(function(){
+				$("#ping_button").button();
+				$("#ping_button").click(function() {
+					$("#ping_result").html('Ping response: ?');
+					$.ajax({
+					  url: '/ping',
+					  dataType: 'json',
+					  success: function(data, textStatus, jqXHR) {
+						$("#ping_result").html('Ping response: ' + data.ping);
+					  },
+					  error: function(jqXHR, textStatus, errorThrown) {
+						alert('AJAX ERROR');
+					  }
+					});
+				});
+			});
+		</script>
+		<style type="text/css">
+			body{ font: 62.5% sans-serif; margin: 50px;}
+		</style>	
+	</head>
+	<body>
+		
+	<h1>Py-Arduino-Proxy</h1>
+	
+	<button id="ping_button">Ping</button> Result: <span id="ping_result"></span>
+	
+	</body>
+</html>
+
+
