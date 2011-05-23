@@ -60,16 +60,41 @@
 				//
 				
 				$( "#pin13_radio" ).buttonset();
+				
 				// $(this).attr('id') -> ID of component that generated the event :-)
 				$('#pin13_dis').change(function() {
 					$("#pin13_radio_result").html('disabled');
+					$('.pin13_for_read').hide();
+					$('.pin13_for_write').hide();
+					// TODO: reset selected
 				});
 				$('#pin13_in').change(function() {
 					$("#pin13_radio_result").html('INPUT');
+					$('.pin13_for_read').show();
+					$('.pin13_for_write').hide();
+					// TODO: reset selected
 				});
 				$('#pin13_out').change(function() {
 					$("#pin13_radio_result").html('OUTPUT');
+					$('.pin13_for_read').hide();
+					$('.pin13_for_write').show();
+					// TODO: reset selected
 				});
+				
+				$( "#pin13_slider" ).slider({
+					value:0,
+					min: 0,
+					max: 255,
+					step: 1,
+					slide: function( event, ui ) {
+						$("#pin13_radio_result").html('PWM: ' + ui.value);
+					}
+					// TODO: reset selected
+				});
+				
+				$('.pin13_for_read').hide();
+				$('.pin13_for_write').hide();
+				
 			});
 		</script>
 		<style type="text/css">
@@ -90,13 +115,29 @@
 	<p id="pin13_radio">
 		Pin 13 - Mode: &nbsp;
 		<input type="radio" id="pin13_dis" name="pin13_mode" checked="checked"/><label for="pin13_dis">Disabled</label>
-		<input type="radio" id="pin13_in" name="pin13_mode" /><label for="pin13_in">Input</label>
-		<input type="radio" id="pin13_out" name="pin13_mode" /><label for="pin13_out">Output</label>
-		&nbsp; | Digital Write: &nbsp;
-		<input type="radio" id="pin13_lo" name="pin13_dw" /><label for="pin13_lo">Low</label>
-		<input type="radio" id="pin13_hi" name="pin13_dw" /><label for="pin13_hi">High</label>
+		<input type="radio" id="pin13_in" name="pin13_mode" /><label for="pin13_in">INPUT</label>
+		<input type="radio" id="pin13_out" name="pin13_mode" /><label for="pin13_out">OUTPUT</label>
+		
+		<span class="pin13_for_write">
+			&nbsp; | Digital Write: &nbsp;
+			<input type="radio" id="pin13_lo" name="pin13_dw" class="pin13_for_write"/><label for="pin13_lo">LOW</label>
+			<input type="radio" id="pin13_hi" name="pin13_dw" class="pin13_for_write"/><label for="pin13_hi">HIGH</label>
+		</span>
+		
+		<span class="pin13_for_read">
+			&nbsp; | Digital Read: &nbsp;
+			<button id="pin13_dr">HIGH</button> (clic to read)
+		</span>
+		
 		&nbsp; | Current state: <span id="pin13_radio_result">disabled</span>
 	</p>
+	
+	<div class="pin13_for_write">
+		<div style="float: left; padding-right: 20px;">PWM:</div>
+		<div style="width: 300px; float: left;"><div id="pin13_slider"></div></div>
+		<div style="float: left; padding-left: 20px;">0</div>
+		<div style="float: clear;"></div>
+	</div>
 	
 	</body>
 </html>
