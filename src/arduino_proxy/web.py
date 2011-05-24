@@ -139,6 +139,23 @@ class Root(object):
             # FIXME: return error details and log
             logging.exception("Exception raised by proxy.analogWrite()")
             return { 'ok': False, }
+    
+    @cherrypy.expose
+    @cherrypy.tools.json_out()
+    def digital_read(self, pin=None):
+        try:
+            value = self.proxy.digitalRead(int(pin))
+            if value == ArduinoProxy.HIGH:
+                return { 'ok': True, 'value': 1, }
+            elif value == ArduinoProxy.LOW:
+                return { 'ok': True, 'value': 0, }
+            else:
+                # FIXME: return error details and log
+                return { 'ok': False, }
+        except:
+            # FIXME: return error details and log
+            logging.exception("Exception raised by proxy.analogWrite()")
+            return { 'ok': False, }
 
 def start_webserver(arduino_proxy_base_dir, options, args, proxy):
     #    # Set up site-wide config first so we get a log if errors occur.
