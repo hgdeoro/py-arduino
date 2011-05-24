@@ -111,6 +111,24 @@ class Root(object):
             logging.exception("Exception raised by proxy.pinMode()")
             return { 'ok': False, }
 
+    @cherrypy.expose
+    @cherrypy.tools.json_out()
+    def digital_write(self, pin=None, value=None):
+        try:
+            if value == 'low':
+                self.proxy.digitalWrite(int(pin), ArduinoProxy.LOW)
+                return { 'ok': True, }
+            elif value == 'high':
+                self.proxy.digitalWrite(int(pin), ArduinoProxy.HIGH)
+                return { 'ok': True, }
+            else:
+                # FIXME: return error details and log
+                return { 'ok': False, }
+        except:
+            # FIXME: return error details and log
+            logging.exception("Exception raised by proxy.digitalWrite()")
+            return { 'ok': False, }
+
 def start_webserver(arduino_proxy_base_dir, options, args, proxy):
     #    # Set up site-wide config first so we get a log if errors occur.
     #    cherrypy.config.update({'environment': 'production',

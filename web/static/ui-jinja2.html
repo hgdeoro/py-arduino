@@ -79,17 +79,45 @@
 			}
 			
 			function pin_digital_write_low(pin) {
-				pin_status_text(pin, 'digitalWrite(): LOW');
-				if($('#pin' + pin + '_pwm_slider').size()) {
-					$('#pin' + pin + '_pwm_slider').slider("value", 0);
-				}
+				$.ajax({
+				  url: '/digital_write/?pin=' + pin + '&value=low',
+				  dataType: 'json',
+				  async: false,
+				  success: function(data, textStatus, jqXHR) {
+					  if(data.ok) {
+							pin_status_text(pin, 'digitalWrite(): LOW');
+							if($('#pin' + pin + '_pwm_slider').size()) {
+								$('#pin' + pin + '_pwm_slider').slider("value", 0);
+							}
+					  } else {
+							pin_status_text(pin, "Couldn't digitalWrite()");
+					  }
+				  },
+				  error: function(jqXHR, textStatus, errorThrown) {
+					alert('AJAX ERROR');
+				  }
+				});
 			}
 
 			function pin_digital_write_high(pin) {
-				pin_status_text(pin, 'digitalWrite(): HIGH');
-				if($('#pin' + pin + '_pwm_slider').size()) {
-					$('#pin' + pin + '_pwm_slider').slider("value", 255);
-				}
+				$.ajax({
+				  url: '/digital_write/?pin=' + pin + '&value=high',
+				  dataType: 'json',
+				  async: false,
+				  success: function(data, textStatus, jqXHR) {
+					  if(data.ok) {
+							pin_status_text(pin, 'digitalWrite(): HIGH');
+							if($('#pin' + pin + '_pwm_slider').size()) {
+								$('#pin' + pin + '_pwm_slider').slider("value", 255);
+							}
+					  } else {
+							pin_status_text(pin, "Couldn't digitalWrite()");
+					  }
+				  },
+				  error: function(jqXHR, textStatus, errorThrown) {
+					alert('AJAX ERROR');
+				  }
+				});
 			}
 		
 			$(function(){
