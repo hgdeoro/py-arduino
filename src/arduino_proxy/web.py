@@ -95,10 +95,17 @@ class Root(object):
 
     @cherrypy.expose
     @cherrypy.tools.json_out()
-    def pin_mode_output(self, pin=None):
+    def pin_mode(self, pin=None, mode=None):
         try:
-            self.proxy.pinMode(int(pin), ArduinoProxy.OUTPUT)
-            return { 'ok': True, }
+            if mode == 'output':
+                self.proxy.pinMode(int(pin), ArduinoProxy.OUTPUT)
+                return { 'ok': True, }
+            elif mode == 'input':
+                self.proxy.pinMode(int(pin), ArduinoProxy.INPUT)
+                return { 'ok': True, }
+            else:
+                # FIXME: return error details and log
+                return { 'ok': False, }
         except:
             # FIXME: return error details and log
             logging.exception("Exception raised by proxy.pinMode()")

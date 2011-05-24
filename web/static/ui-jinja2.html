@@ -37,16 +37,31 @@
 			}
 			
 			function pin_mode_input(pin) {
-				pin_status_text(pin, 'Mode: INPUT');
-				$('.pin' + pin + '_for_read').show();
-				$('.pin' + pin + '_for_write').hide();
-				// TODO: reset selected
+				$.ajax({
+				  url: '/pin_mode/?pin=' + pin + '&mode=input',
+				  dataType: 'json',
+				  async: false,
+				  success: function(data, textStatus, jqXHR) {
+					  if(data.ok) {
+							pin_status_text(pin, 'Mode: INPUT');
+							$('.pin' + pin + '_for_read').show();
+							$('.pin' + pin + '_for_write').hide();
+							// TODO: reset selected
+					  } else {
+							pin_status_text(pin, "Couldn't set pinMode()");
+					  }
+				  },
+				  error: function(jqXHR, textStatus, errorThrown) {
+					alert('AJAX ERROR');
+				  }
+				});
 			}
 
 			function pin_mode_output(pin) {
 				$.ajax({
-				  url: '/pin_mode_output/?pin=' + pin,
+				  url: '/pin_mode/?pin=' + pin + '&mode=output',
 				  dataType: 'json',
+				  async: false,
 				  success: function(data, textStatus, jqXHR) {
 					  if(data.ok) {
 							pin_status_text(pin, 'Mode: OUTPUT');
