@@ -120,6 +120,25 @@
 				});
 			}
 		
+			function pin_analog_write(pin, value) {
+				$.ajax({
+				  url: '/analog_write/?pin=' + pin + '&value=' + value,
+				  dataType: 'json',
+				  async: false,
+				  success: function(data, textStatus, jqXHR) {
+					  if(data.ok) {
+							pin_status_text(pin, 'PWM: ' + value);
+							// TODO: uncheck LOW/HIGH
+					  } else {
+							pin_status_text(pin, "Couldn't analogWrite()");
+					  }
+				  },
+				  error: function(jqXHR, textStatus, errorThrown) {
+					alert('AJAX ERROR');
+				  }
+				});
+			}
+		
 			$(function(){
 				
 				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -232,8 +251,7 @@
 				// analogWrite()
 				$(".pin_pwm_slider").bind("slide", function(event, ui) {
 					pin = get_pin($(this).attr('id'));
-					pin_status_text(pin, 'PWM: ' + ui.value);
-					// TODO: uncheck LOW/HIGH
+					pin_analog_write(pin, ui.value);
 				});
 				
 			});

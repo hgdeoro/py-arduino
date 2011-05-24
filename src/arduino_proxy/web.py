@@ -129,6 +129,17 @@ class Root(object):
             logging.exception("Exception raised by proxy.digitalWrite()")
             return { 'ok': False, }
 
+    @cherrypy.expose
+    @cherrypy.tools.json_out()
+    def analog_write(self, pin=None, value=None):
+        try:
+            self.proxy.analogWrite(int(pin), int(value))
+            return { 'ok': True, }
+        except:
+            # FIXME: return error details and log
+            logging.exception("Exception raised by proxy.analogWrite()")
+            return { 'ok': False, }
+
 def start_webserver(arduino_proxy_base_dir, options, args, proxy):
     #    # Set up site-wide config first so we get a log if errors occur.
     #    cherrypy.config.update({'environment': 'production',
