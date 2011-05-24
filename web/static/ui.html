@@ -55,39 +55,48 @@
 					});
 				});
 				
-				//
-				// Pin 13
-				//
+				function pin_status_text(pin, text) {
+					$("#pin" + pin + "_status_text").html(text);
+				}
 				
-				$( "#pin13_radio" ).buttonset();
+				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+				// Pin 13
+				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+				
+				// $( "#pin13_radio" ).buttonset();
+				$(".pin13_mode_buttonset").buttonset();
+				$(".pin13_output_buttonset").buttonset();
+				$(".pin13_input_buttonset").buttonset();
 				
 				// $(this).attr('id') -> ID of component that generated the event :-)
 				$('#pin13_dis').change(function() {
-					$("#pin13_radio_result").html('disabled');
+					pin_status_text(13, 'Pin disabled');
 					$('.pin13_for_read').hide();
 					$('.pin13_for_write').hide();
 					// TODO: reset selected
 				});
+				
 				$('#pin13_in').change(function() {
-					$("#pin13_radio_result").html('INPUT');
+					pin_status_text(13, 'Mode: INPUT');
 					$('.pin13_for_read').show();
 					$('.pin13_for_write').hide();
 					// TODO: reset selected
 				});
+				
 				$('#pin13_out').change(function() {
-					$("#pin13_radio_result").html('OUTPUT');
+					pin_status_text(13, 'Mode: OUTPUT');
 					$('.pin13_for_read').hide();
 					$('.pin13_for_write').show();
 					// TODO: reset selected
 				});
 				
-				$( "#pin13_slider" ).slider({
+				$("#pin13_slider").slider({
 					value:0,
 					min: 0,
 					max: 255,
 					step: 1,
 					slide: function( event, ui ) {
-						$("#pin13_radio_result").html('PWM: ' + ui.value);
+						pin_status_text(13, 'PWM: ' + ui.value);
 					}
 					// TODO: reset selected
 				});
@@ -95,10 +104,23 @@
 				$('.pin13_for_read').hide();
 				$('.pin13_for_write').hide();
 				
+				$("#pin13_dr_button").click(function() {
+					pin_status_text(13, 'digitalRead(): HIGH');
+				});
+				
+				$("#pin13_dw_lo").click(function() {
+					pin_status_text(13, 'digitalWrite(): LOW');
+				});
+				
+				$("#pin13_dw_hi").click(function() {
+					pin_status_text(13, 'digitalWrite(): HIGH');
+				});
+				
 			});
 		</script>
 		<style type="text/css">
 			body{ font: 62.5% sans-serif; margin: 20px;}
+			.pin_status_text { color: #888; }
 		</style>	
 	</head>
 	<body>
@@ -112,30 +134,34 @@
 		<button id="validate_connection_button">Validate connection</button> &nbsp; | Result: <span id="validate_connection_result"></span>
 	</p>
 	
-	<p id="pin13_radio">
+	<p id="pin13">
+	
 		Pin 13 - Mode: &nbsp;
-		<input type="radio" id="pin13_dis" name="pin13_mode" checked="checked"/><label for="pin13_dis">Disabled</label>
-		<input type="radio" id="pin13_in" name="pin13_mode" /><label for="pin13_in">INPUT</label>
-		<input type="radio" id="pin13_out" name="pin13_mode" /><label for="pin13_out">OUTPUT</label>
 		
-		<span class="pin13_for_write">
-			&nbsp; | Digital Write: &nbsp;
-			<input type="radio" id="pin13_lo" name="pin13_dw" class="pin13_for_write"/><label for="pin13_lo">LOW</label>
-			<input type="radio" id="pin13_hi" name="pin13_dw" class="pin13_for_write"/><label for="pin13_hi">HIGH</label>
+		<span class="pin13_mode_buttonset">
+			<input type="radio" name="pin13_mode" id="pin13_dis" checked="checked"/><label for="pin13_dis">Disabled</label>
+			<input type="radio" name="pin13_mode" id="pin13_in"/><label for="pin13_in">INPUT</label>
+			<input type="radio" name="pin13_mode" id="pin13_out"/><label for="pin13_out">OUTPUT</label>
 		</span>
 		
-		<span class="pin13_for_read">
-			&nbsp; | Digital Read: &nbsp;
-			<button id="pin13_dr">HIGH</button> (clic to read)
+		<span class="pin13_for_write pin13_output_buttonset">
+			&nbsp; | digitalWrite()&nbsp;
+			<input type="radio" id="pin13_dw_lo" name="pin13_dw" class="pin13_for_write"/><label for="pin13_dw_lo">LOW</label>
+			<input type="radio" id="pin13_dw_hi" name="pin13_dw" class="pin13_for_write"/><label for="pin13_dw_hi">HIGH</label>
 		</span>
 		
-		&nbsp; | Current state: <span id="pin13_radio_result">disabled</span>
+		<span class="pin13_for_read pin13_input_buttonset">
+			&nbsp; | &nbsp;
+			<button id="pin13_dr_button">digitalRead()</button>
+		</span>
+		
+		&nbsp; | <span id="pin13_status_text" class="pin_status_text">Pin disabled</span>
+		
 	</p>
 	
 	<div class="pin13_for_write">
-		<div style="float: left; padding-right: 20px;">PWM:</div>
+		<div style="float: left; padding-right: 20px;">analogWrite():</div>
 		<div style="width: 300px; float: left;"><div id="pin13_slider"></div></div>
-		<div style="float: left; padding-left: 20px;">0</div>
 		<div style="float: clear;"></div>
 	</div>
 	
