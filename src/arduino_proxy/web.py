@@ -18,6 +18,7 @@
 ##-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 import cherrypy
+#import genshi.template
 import simplejson
 import os
 import sys
@@ -26,11 +27,21 @@ from os.path import split, realpath, join, abspath
 
 class Root(object):
     
-    def __init__(self, proxy):
+    def __init__(self, proxy, arduino_proxy_base_dir):
         self.proxy = proxy
+        self.arduino_proxy_base_dir = arduino_proxy_base_dir
+        
+        # In genshi docs, this is placed at module level
+        #self.loader = genshi.template.TemplateLoader(
+        #    os.path.join(self.arduino_proxy_base_dir, 'web', 'static'),
+        #    auto_reload=True, 
+        #)
     
     @cherrypy.expose
     def index(self):
+        #tmpl = self.loader.load('ui-template.html')
+        #context = genshi.template.Context({})
+        #return tmpl.generate(context).render('html', doctype='html')
         raise cherrypy.HTTPRedirect("/static/ui.html")
 
     @cherrypy.expose
@@ -51,7 +62,7 @@ class Root(object):
         except:
             return { 'ok': False, }
 
-def start_webserver(base_dir, options, args, proxy):
+def start_webserver(arduino_proxy_base_dir, options, args, proxy):
     #    # Set up site-wide config first so we get a log if errors occur.
     #    cherrypy.config.update({'environment': 'production',
     #                            'log.error_file': 'site.log',
@@ -79,8 +90,8 @@ def start_webserver(base_dir, options, args, proxy):
     conf = {
         '/static': {
             'tools.staticdir.on': True,
-            'tools.staticdir.dir': join(base_dir, 'web', 'static'),
+            'tools.staticdir.dir': join(arduino_proxy_base_dir, 'web', 'static'),
         }
     }
     
-    cherrypy.quickstart(Root(proxy), '/', config=conf)
+    cherrypy.quickstart(Root(proxy, arduino_proxy_base_dir), '/', config=conf)

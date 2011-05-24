@@ -13,6 +13,10 @@
 		</style>	
 		<script type="text/javascript">
 			
+			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			// Generic functions
+			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			
 			function get_pin(text) {
 				groups = /^pin(\d+)_/(text);
 				if(groups == null)
@@ -20,11 +24,51 @@
 				return parseInt(groups[1]);
 			}
 			
+			function pin_status_text(pin, text) {
+				$("#pin" + pin + "_status_text").html(text);
+			}
+			
+			function pin_mode_disable(pin) {
+				// $(this).attr('id') -> ID of component that generated the event :-)
+				pin_status_text(pin, 'Pin disabled');
+				$('.pin' + pin + '_for_read').hide();
+				$('.pin' + pin + '_for_write').hide();
+				// TODO: reset selected
+			}
+			
+			function pin_mode_input(pin) {
+				pin_status_text(pin, 'Mode: INPUT');
+				$('.pin' + pin + '_for_read').show();
+				$('.pin' + pin + '_for_write').hide();
+				// TODO: reset selected
+			}
+
+			function pin_mode_output(pin) {
+				pin_status_text(pin, 'Mode: OUTPUT');
+				$('.pin' + pin + '_for_read').hide();
+				$('.pin' + pin + '_for_write').show();
+				// TODO: reset selected
+			}
+			
+			function pin_digital_write_low(pin) {
+				pin_status_text(pin, 'digitalWrite(): LOW');
+				if($('#pin' + pin + '_pwm_slider').size()) {
+					$('#pin' + pin + '_pwm_slider').slider("value", 0);
+				}
+			}
+
+			function pin_digital_write_high(pin) {
+				pin_status_text(pin, 'digitalWrite(): HIGH');
+				if($('#pin' + pin + '_pwm_slider').size()) {
+					$('#pin' + pin + '_pwm_slider').slider("value", 255);
+				}
+			}
+		
 			$(function(){
 				
-				//
+				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 				// ping
-				//
+				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 				
 				$("#ping_button").button();
 				$("#ping_button").click(function() {
@@ -45,9 +89,9 @@
 					});
 				});
 				
-				//
+				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 				// validate_connection
-				//
+				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 				
 				$("#validate_connection_button").button();
 				$("#validate_connection_button").click(function() {
@@ -69,50 +113,6 @@
 				});
 				
 				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-				// Generic functions
-				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-				
-				function pin_status_text(pin, text) {
-					$("#pin" + pin + "_status_text").html(text);
-				}
-				
-				function pin_mode_disable(pin) {
-					// $(this).attr('id') -> ID of component that generated the event :-)
-					pin_status_text(pin, 'Pin disabled');
-					$('.pin' + pin + '_for_read').hide();
-					$('.pin' + pin + '_for_write').hide();
-					// TODO: reset selected
-				}
-				
-				function pin_mode_input(pin) {
-					pin_status_text(pin, 'Mode: INPUT');
-					$('.pin' + pin + '_for_read').show();
-					$('.pin' + pin + '_for_write').hide();
-					// TODO: reset selected
-				}
-
-				function pin_mode_output(pin) {
-					pin_status_text(pin, 'Mode: OUTPUT');
-					$('.pin' + pin + '_for_read').hide();
-					$('.pin' + pin + '_for_write').show();
-					// TODO: reset selected
-				}
-				
-				function pin_digital_write_low(pin) {
-					pin_status_text(pin, 'digitalWrite(): LOW');
-					if($('#pin' + pin + '_pwm_slider').size()) {
-						$('#pin' + pin + '_pwm_slider').slider("value", 0);
-					}
-				}
-
-				function pin_digital_write_high(pin) {
-					pin_status_text(pin, 'digitalWrite(): HIGH');
-					if($('#pin' + pin + '_pwm_slider').size()) {
-						$('#pin' + pin + '_pwm_slider').slider("value", 255);
-					}
-				}
-
-				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 				// Pin 13
 				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 				
@@ -120,27 +120,21 @@
 				$(".pin13_mode_buttonset").buttonset();
 				$(".pin13_output_buttonset").buttonset();
 				$(".pin13_input_buttonset").buttonset();
+
+				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+				// *** Generic *** setup of components
+				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 				
 				// Hide components
-				$('.pin13_for_read').hide();
-				$('.pin13_for_write').hide();
+				$('.pin_for_read').hide();
+				$('.pin_for_write').hide();
 				
 				// analogWrite() / PWM
-				$("#pin13_pwm_slider").slider({
-					value:0,
-					min: 0,
-					max: 255,
-					step: 1,
-					slide: function(event, ui) {
-						pin = get_pin($(this).attr('id'));
-						pin_status_text(pin, 'PWM: ' + ui.value);
-						// TODO: uncheck LOW/HIGH
-					}
-				});
+				$(".pin_pwm_slider").slider({ value:0, min: 0, max: 255, step: 1});
 				
-				//
-				// Attach events
-				//
+				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+				// *** Generic *** attach events
+				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 				
 				// pinMode(): disable
 				$('.pin_mode_dis').change(function() {
@@ -177,6 +171,13 @@
 					pin_digital_write_high(pin);
 				});
 				
+				// analogWrite()
+				$(".pin_pwm_slider").bind("slide", function(event, ui) {
+					pin = get_pin($(this).attr('id'));
+					pin_status_text(pin, 'PWM: ' + ui.value);
+					// TODO: uncheck LOW/HIGH
+				});
+				
 			});
 		</script>
 	</head>
@@ -204,14 +205,14 @@
 			</span>
 			
 			<!-- digitalWrite() -->
-			<span class="pin13_output_buttonset pin13_for_write">
+			<span class="pin13_output_buttonset pin13_for_write pin_for_write">
 				&nbsp; | digitalWrite()&nbsp;
-				<input type="radio" id="pin13_dw_lo" name="pin13_dw" class="pin13_for_write pin_dw_lo"/><label for="pin13_dw_lo">LOW</label>
-				<input type="radio" id="pin13_dw_hi" name="pin13_dw" class="pin13_for_write pin_dw_hi"/><label for="pin13_dw_hi">HIGH</label>
+				<input type="radio" id="pin13_dw_lo" name="pin13_dw" class="pin_dw_lo"/><label for="pin13_dw_lo">LOW</label>
+				<input type="radio" id="pin13_dw_hi" name="pin13_dw" class="pin_dw_hi"/><label for="pin13_dw_hi">HIGH</label>
 			</span>
 			
 			<!-- digitalRead() -->
-			<span class="pin13_input_buttonset pin13_for_read">
+			<span class="pin13_input_buttonset pin13_for_read pin_for_read">
 				&nbsp; | &nbsp;
 				<button id="pin13_dr_button" class="pin_dr_button">digitalRead()</button>
 			</span>
@@ -220,9 +221,9 @@
 		</div>
 		
 		<!-- analogWrite() / PWM -->
-		<div class="pin13_for_write pwm_slide">
+		<div class="pin13_for_write pin_for_write pwm_slide">
 			<div style="float: left; padding-right: 20px;">analogWrite():</div>
-			<div style="width: 400px; float: left;"><div id="pin13_pwm_slider"></div></div>
+			<div style="width: 400px; float: left;"><div id="pin13_pwm_slider" class="pin_pwm_slider"></div></div>
 			<div style="float: clear;"></div>
 		</div>
 
