@@ -19,11 +19,14 @@
 
 import cherrypy
 import jinja2
+import logging
 import simplejson
 import os
 import sys
 
 from os.path import split, realpath, join, abspath
+
+from arduino_proxy import ArduinoProxy
 
 class Root(object):
     
@@ -75,6 +78,8 @@ class Root(object):
             self.proxy.ping()
             return { 'ok': True, }
         except:
+            # FIXME: return error details and log
+            logging.exception("Exception raised by proxy.ping()")
             return { 'ok': False, }
 
     @cherrypy.expose
@@ -84,6 +89,19 @@ class Root(object):
             random_value = self.proxy.validate_connection()
             return { 'ok': True, 'random_value': random_value, }
         except:
+            # FIXME: return error details and log
+            logging.exception("Exception raised by proxy.validate_connection()")
+            return { 'ok': False, }
+
+    @cherrypy.expose
+    @cherrypy.tools.json_out()
+    def pin_mode_output(self, pin=None):
+        try:
+            self.proxy.pinMode(int(pin), ArduinoProxy.OUTPUT)
+            return { 'ok': True, }
+        except:
+            # FIXME: return error details and log
+            logging.exception("Exception raised by proxy.pinMode()")
             return { 'ok': False, }
 
 def start_webserver(arduino_proxy_base_dir, options, args, proxy):

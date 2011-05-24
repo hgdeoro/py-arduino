@@ -7,7 +7,7 @@
 		<script type="text/javascript" src="/static/js/jquery-1.5.1.min.js"></script>
 		<script type="text/javascript" src="/static/js/jquery-ui-1.8.13.custom.min.js"></script>
 		<style type="text/css">
-			body{ font: 62.5% sans-serif; margin: 20px; color: #777; }
+			body { font: 62.5% sans-serif; margin: 20px; color: #777; }
 			.pin_status_text { color: #333; }
 			div.pwm_slide { padding-top: 5px; }
 		</style>	
@@ -44,10 +44,23 @@
 			}
 
 			function pin_mode_output(pin) {
-				pin_status_text(pin, 'Mode: OUTPUT');
-				$('.pin' + pin + '_for_read').hide();
-				$('.pin' + pin + '_for_write').show();
-				// TODO: reset selected
+				$.ajax({
+				  url: '/pin_mode_output/?pin=' + pin,
+				  dataType: 'json',
+				  success: function(data, textStatus, jqXHR) {
+					  if(data.ok) {
+							pin_status_text(pin, 'Mode: OUTPUT');
+							$('.pin' + pin + '_for_read').hide();
+							$('.pin' + pin + '_for_write').show();
+							// TODO: reset selected
+					  } else {
+							pin_status_text(pin, "Couldn't set pinMode()");
+					  }
+				  },
+				  error: function(jqXHR, textStatus, errorThrown) {
+					alert('AJAX ERROR');
+				  }
+				});
 			}
 			
 			function pin_digital_write_low(pin) {
@@ -116,14 +129,11 @@
 				// Pin XX
 				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 				
+				// Create buttons
 				{% for pin in digital_pins %}
-				
-					// Create buttons
-					
 					$(".pin{{ pin }}_mode_buttonset").buttonset();
 					$(".pin{{ pin }}_output_buttonset").buttonset();
 					$(".pin{{ pin }}_input_buttonset").buttonset();
-					
 				{% endfor %}
 				
 				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
