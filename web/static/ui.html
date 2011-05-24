@@ -12,6 +12,14 @@
 			div.pwm_slide { padding-top: 5px; }
 		</style>	
 		<script type="text/javascript">
+			
+			function get_pin(text) {
+				groups = /^pin(\d+)_/(text);
+				if(groups == null)
+					alert("groups == null / text='" + text + "'");
+				return parseInt(groups[1]);
+			}
+			
 			$(function(){
 				
 				//
@@ -124,7 +132,8 @@
 					max: 255,
 					step: 1,
 					slide: function(event, ui) {
-						pin_status_text(13, 'PWM: ' + ui.value);
+						pin = get_pin($(this).attr('id'));
+						pin_status_text(pin, 'PWM: ' + ui.value);
 						// TODO: uncheck LOW/HIGH
 					}
 				});
@@ -134,32 +143,38 @@
 				//
 				
 				// pinMode(): disable
-				$('#pin13_mode_dis').change(function() {
-					pin_mode_disable(13);
+				$('.pin_mode_dis').change(function() {
+					pin = get_pin($(this).attr('id'));
+					pin_mode_disable(pin);
 				});
 				
 				// pinMode(): INPUT
-				$('#pin13_mode_in').change(function() {
-					pin_mode_input(13);
+				$('.pin_mode_in').change(function() {
+					pin = get_pin($(this).attr('id'));
+					pin_mode_input(pin);
 				});
 				
 				// pinMode(): OUTPUT
-				$('#pin13_mode_out').change(function() {
-					pin_mode_output(13);
+				$('.pin_mode_out').change(function() {
+					pin = get_pin($(this).attr('id'));
+					pin_mode_output(pin);
 				});
 
 				// digitalRead()
-				$("#pin13_dr_button").click(function() {
-					pin_status_text(13, 'digitalRead(): HIGH');
+				$(".pin_dr_button").click(function() {
+					pin = get_pin($(this).attr('id'));
+					pin_status_text(pin, 'digitalRead(): HIGH');
 				});
 				
 				// digitalWrite()
-				$("#pin13_dw_lo").click(function() {
-					pin_digital_write_low(13);
+				$(".pin_dw_lo").click(function() {
+					pin = get_pin($(this).attr('id'));
+					pin_digital_write_low(pin);
 				});
 				
-				$("#pin13_dw_hi").click(function() {
-					pin_digital_write_high(13);
+				$(".pin_dw_hi").click(function() {
+					pin = get_pin($(this).attr('id'));
+					pin_digital_write_high(pin);
 				});
 				
 			});
@@ -183,22 +198,22 @@
 			
 			<!-- This buttons set the pin mode -->
 			<span class="pin13_mode_buttonset">
-				<input type="radio" id="pin13_mode_dis" name="pin13_mode" checked="checked"/><label for="pin13_mode_dis">Disabled</label>
-				<input type="radio" id="pin13_mode_in"  name="pin13_mode"/><label for="pin13_mode_in">INPUT</label>
-				<input type="radio" id="pin13_mode_out" name="pin13_mode"/><label for="pin13_mode_out">OUTPUT</label>
+				<input type="radio" id="pin13_mode_dis" name="pin13_mode" class="pin_mode_dis" checked="checked"/><label for="pin13_mode_dis">Disabled</label>
+				<input type="radio" id="pin13_mode_in"  name="pin13_mode" class="pin_mode_in"/><label for="pin13_mode_in">INPUT</label>
+				<input type="radio" id="pin13_mode_out" name="pin13_mode" class="pin_mode_out"/><label for="pin13_mode_out">OUTPUT</label>
 			</span>
 			
 			<!-- digitalWrite() -->
 			<span class="pin13_output_buttonset pin13_for_write">
 				&nbsp; | digitalWrite()&nbsp;
-				<input type="radio" id="pin13_dw_lo" name="pin13_dw" class="pin13_for_write"/><label for="pin13_dw_lo">LOW</label>
-				<input type="radio" id="pin13_dw_hi" name="pin13_dw" class="pin13_for_write"/><label for="pin13_dw_hi">HIGH</label>
+				<input type="radio" id="pin13_dw_lo" name="pin13_dw" class="pin13_for_write pin_dw_lo"/><label for="pin13_dw_lo">LOW</label>
+				<input type="radio" id="pin13_dw_hi" name="pin13_dw" class="pin13_for_write pin_dw_hi"/><label for="pin13_dw_hi">HIGH</label>
 			</span>
 			
 			<!-- digitalRead() -->
 			<span class="pin13_input_buttonset pin13_for_read">
 				&nbsp; | &nbsp;
-				<button id="pin13_dr_button">digitalRead()</button>
+				<button id="pin13_dr_button" class="pin_dr_button">digitalRead()</button>
 			</span>
 			
 			&nbsp; | <span id="pin13_status_text" class="pin_status_text">Pin disabled</span>
