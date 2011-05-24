@@ -18,7 +18,7 @@
 ##-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 import cherrypy
-#import genshi.template
+import jinja2
 import simplejson
 import os
 import sys
@@ -31,6 +31,9 @@ class Root(object):
         self.proxy = proxy
         self.arduino_proxy_base_dir = arduino_proxy_base_dir
         
+        self.jinja2_env = jinja2.Environment(loader=jinja2.FileSystemLoader(
+            os.path.join(self.arduino_proxy_base_dir, 'web', 'static')))
+        
         # In genshi docs, this is placed at module level
         #self.loader = genshi.template.TemplateLoader(
         #    os.path.join(self.arduino_proxy_base_dir, 'web', 'static'),
@@ -39,11 +42,18 @@ class Root(object):
     
     @cherrypy.expose
     def index(self):
-        #tmpl = self.loader.load('ui-template.html')
-        #context = genshi.template.Context({})
-        #return tmpl.generate(context).render('html', doctype='html')
         raise cherrypy.HTTPRedirect("/static/ui.html")
-
+    
+    @cherrypy.expose
+    def index2(self):
+        self.proxy.validate_connection()
+        template = self.jinja2_env.get_template('ui-jinja2.html')
+        
+        arduino_type = self.proxy.getArduinoTypeStruct()
+        digital_pins = arduino_type['digital_pins']
+        
+        return template.render(digital_pins=range(0, digital_pins))
+    
     @cherrypy.expose
     @cherrypy.tools.json_out()
     def ping(self):

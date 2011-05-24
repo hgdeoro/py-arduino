@@ -113,14 +113,19 @@
 				});
 				
 				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-				// Pin 13
+				// Pin XX
 				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 				
-				// Create buttons
-				$(".pin13_mode_buttonset").buttonset();
-				$(".pin13_output_buttonset").buttonset();
-				$(".pin13_input_buttonset").buttonset();
-
+				{% for pin in digital_pins %}
+				
+					// Create buttons
+					
+					$(".pin{{ pin }}_mode_buttonset").buttonset();
+					$(".pin{{ pin }}_output_buttonset").buttonset();
+					$(".pin{{ pin }}_input_buttonset").buttonset();
+					
+				{% endfor %}
+				
 				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 				// *** Generic *** setup of components
 				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -185,6 +190,9 @@
 		
 	<h1>Py-Arduino-Proxy</h1>
 	
+	<p style="size: small;">
+		<b>digital_pins:</b> {{ digital_pins }}
+	</p>
 	<p>
 		<button id="ping_button">Ping</button> &nbsp; | Result: <span id="ping_result"></span>
 	</p>
@@ -192,42 +200,43 @@
 		<button id="validate_connection_button">Validate connection</button> &nbsp; | Result: <span id="validate_connection_result"></span>
 	</p>
 	
-	<div id="pin13">
+	{% for pin in digital_pins %}
+	<div id="pin{{ pin }}" style="padding-bottom: 10px; float: clear;">
 		<div>
 			
-			Pin 13 - Mode: &nbsp;
+			Pin {{ pin }} - Mode: &nbsp;
 			
 			<!-- This buttons set the pin mode -->
-			<span class="pin13_mode_buttonset">
-				<input type="radio" id="pin13_mode_dis" name="pin13_mode" class="pin_mode_dis" checked="checked"/><label for="pin13_mode_dis">Disabled</label>
-				<input type="radio" id="pin13_mode_in"  name="pin13_mode" class="pin_mode_in"/><label for="pin13_mode_in">INPUT</label>
-				<input type="radio" id="pin13_mode_out" name="pin13_mode" class="pin_mode_out"/><label for="pin13_mode_out">OUTPUT</label>
+			<span class="pin{{ pin }}_mode_buttonset">
+				<input type="radio" id="pin{{ pin }}_mode_dis" name="pin{{ pin }}_mode" class="pin_mode_dis" checked="checked"/><label for="pin{{ pin }}_mode_dis">Disabled</label>
+				<input type="radio" id="pin{{ pin }}_mode_in"  name="pin{{ pin }}_mode" class="pin_mode_in"/><label for="pin{{ pin }}_mode_in">INPUT</label>
+				<input type="radio" id="pin{{ pin }}_mode_out" name="pin{{ pin }}_mode" class="pin_mode_out"/><label for="pin{{ pin }}_mode_out">OUTPUT</label>
 			</span>
 			
 			<!-- digitalWrite() -->
-			<span class="pin13_output_buttonset pin13_for_write pin_for_write">
+			<span class="pin{{ pin }}_output_buttonset pin{{ pin }}_for_write pin_for_write">
 				&nbsp; | digitalWrite()&nbsp;
-				<input type="radio" id="pin13_dw_lo" name="pin13_dw" class="pin_dw_lo"/><label for="pin13_dw_lo">LOW</label>
-				<input type="radio" id="pin13_dw_hi" name="pin13_dw" class="pin_dw_hi"/><label for="pin13_dw_hi">HIGH</label>
+				<input type="radio" id="pin{{ pin }}_dw_lo" name="pin{{ pin }}_dw" class="pin_dw_lo"/><label for="pin{{ pin }}_dw_lo">LOW</label>
+				<input type="radio" id="pin{{ pin }}_dw_hi" name="pin{{ pin }}_dw" class="pin_dw_hi"/><label for="pin{{ pin }}_dw_hi">HIGH</label>
 			</span>
 			
 			<!-- digitalRead() -->
-			<span class="pin13_input_buttonset pin13_for_read pin_for_read">
+			<span class="pin{{ pin }}_input_buttonset pin{{ pin }}_for_read pin_for_read">
 				&nbsp; | &nbsp;
-				<button id="pin13_dr_button" class="pin_dr_button">digitalRead()</button>
+				<button id="pin{{ pin }}_dr_button" class="pin_dr_button">digitalRead()</button>
 			</span>
 			
-			&nbsp; | <span id="pin13_status_text" class="pin_status_text">Pin disabled</span>
+			&nbsp; | <span id="pin{{ pin }}_status_text" class="pin_status_text">Pin disabled</span>
 		</div>
 		
 		<!-- analogWrite() / PWM -->
-		<div class="pin13_for_write pin_for_write pwm_slide">
+		<div class="pin{{ pin }}_for_write pin_for_write pwm_slide">
 			<div style="float: left; padding-right: 20px;">analogWrite():</div>
-			<div style="width: 400px; float: left;"><div id="pin13_pwm_slider" class="pin_pwm_slider"></div></div>
+			<div style="width: 400px; float: left;"><div id="pin{{ pin }}_pwm_slider" class="pin_pwm_slider"></div></div>
 			<div style="float: clear;"></div>
 		</div>
-
 	</div>
+	{% endfor %}
 	
 	</body>
 </html>
