@@ -229,12 +229,15 @@
 			&nbsp; | <span id="pin{{ pin }}_status_text" class="pin_status_text">Pin disabled</span>
 		</div>
 		
+		{% if pwm_pins_bitmap_list[pin] %}
 		<!-- analogWrite() / PWM -->
 		<div class="pin{{ pin }}_for_write pin_for_write pwm_slide">
 			<div style="float: left; padding-right: 20px;">analogWrite():</div>
 			<div style="width: 400px; float: left;"><div id="pin{{ pin }}_pwm_slider" class="pin_pwm_slider"></div></div>
 			<div style="float: clear;"></div>
 		</div>
+		{% endif %}
+		
 	</div>
 	{% endfor %}
 	

@@ -51,8 +51,22 @@ class Root(object):
         
         arduino_type = self.proxy.getArduinoTypeStruct()
         digital_pins = arduino_type['digital_pins']
+        digital_pins_list = range(0, digital_pins)
         
-        return template.render(digital_pins=range(0, digital_pins))
+        pwm_pins_bitmap = arduino_type['pwm_pins_bitmap']
+        pwm_pins_bitmap = list(pwm_pins_bitmap)
+        pwm_pins_bitmap_list = []
+        while(len(pwm_pins_bitmap_list) != len(digital_pins_list)):
+            try:
+                item = pwm_pins_bitmap.pop() # remove LAST
+                pwm_pins_bitmap_list.append(bool(item == '1'))
+            except IndexError:
+                pwm_pins_bitmap_list.append(False)
+        
+        return template.render(
+            digital_pins=digital_pins_list, 
+            pwm_pins_bitmap_list=pwm_pins_bitmap_list, 
+        )
     
     @cherrypy.expose
     @cherrypy.tools.json_out()
