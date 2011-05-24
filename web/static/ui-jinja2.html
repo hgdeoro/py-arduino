@@ -191,7 +191,10 @@
 	<h1>Py-Arduino-Proxy</h1>
 	
 	<p style="size: small;">
-		<b>digital_pins:</b> {{ digital_pins }}
+		<b>digital_pins:</b>
+		{% for pin in digital_pins %}
+			{{ pin }} {% if pwm_pins_bitmap_list[pin] %} (PWM) {% endif %},
+		{% endfor %}
 	</p>
 	<p>
 		<button id="ping_button">Ping</button> &nbsp; | Result: <span id="ping_result"></span>
@@ -230,12 +233,11 @@
 		</div>
 		
 		{% if pwm_pins_bitmap_list[pin] %}
-		<!-- analogWrite() / PWM -->
-		<div class="pin{{ pin }}_for_write pin_for_write pwm_slide">
-			<div style="float: left; padding-right: 20px;">analogWrite():</div>
-			<div style="width: 400px; float: left;"><div id="pin{{ pin }}_pwm_slider" class="pin_pwm_slider"></div></div>
-			<div style="float: clear;"></div>
-		</div>
+			<!-- analogWrite() / PWM -->
+			<div class="pin{{ pin }}_for_write pin_for_write pwm_slide" style="overflow: auto; width: 100%; padding-bottom: 10px;">
+				<div style="float: left; padding-right: 20px;">analogWrite():</div>
+				<div style="width: 400px; float: left;"><div id="pin{{ pin }}_pwm_slider" class="pin_pwm_slider"></div></div>
+			</div>
 		{% endif %}
 		
 	</div>
