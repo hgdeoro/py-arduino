@@ -6,6 +6,11 @@
 		<link type="text/css" href="css/ui-lightness/jquery-ui-1.8.13.custom.css" rel="stylesheet" />	
 		<script type="text/javascript" src="js/jquery-1.5.1.min.js"></script>
 		<script type="text/javascript" src="js/jquery-ui-1.8.13.custom.min.js"></script>
+		<style type="text/css">
+			body{ font: 62.5% sans-serif; margin: 20px; color: #777; }
+			.pin_status_text { color: #333; }
+			div.pwm_slide { padding-top: 5px; }
+		</style>	
 		<script type="text/javascript">
 			$(function(){
 				
@@ -89,7 +94,7 @@
 				//
 				
 				// pinMode(): disable
-				$('#pin13_dis').change(function() {
+				$('#pin13_mode_dis').change(function() {
 					// $(this).attr('id') -> ID of component that generated the event :-)
 					pin_status_text(13, 'Pin disabled');
 					$('.pin13_for_read').hide();
@@ -98,7 +103,7 @@
 				});
 				
 				// pinMode(): INPUT
-				$('#pin13_in').change(function() {
+				$('#pin13_mode_in').change(function() {
 					pin_status_text(13, 'Mode: INPUT');
 					$('.pin13_for_read').show();
 					$('.pin13_for_write').hide();
@@ -106,7 +111,7 @@
 				});
 				
 				// pinMode(): OUTPUT
-				$('#pin13_out').change(function() {
+				$('#pin13_mode_out').change(function() {
 					pin_status_text(13, 'Mode: OUTPUT');
 					$('.pin13_for_read').hide();
 					$('.pin13_for_write').show();
@@ -131,10 +136,6 @@
 				
 			});
 		</script>
-		<style type="text/css">
-			body{ font: 62.5% sans-serif; margin: 20px; color: #777; }
-			.pin_status_text { color: #333; }
-		</style>	
 	</head>
 	<body>
 		
@@ -147,35 +148,36 @@
 		<button id="validate_connection_button">Validate connection</button> &nbsp; | Result: <span id="validate_connection_result"></span>
 	</p>
 	
-	<p id="pin13">
+	<div id="pin13">
+		<div>
+			Pin 13 - Mode: &nbsp;
+			
+			<span class="pin13_mode_buttonset">
+				<input type="radio" id="pin13_mode_dis" name="pin13_mode" checked="checked"/><label for="pin13_mode_dis">Disabled</label>
+				<input type="radio" id="pin13_mode_in"  name="pin13_mode"/><label for="pin13_mode_in">INPUT</label>
+				<input type="radio" id="pin13_mode_out" name="pin13_mode"/><label for="pin13_mode_out">OUTPUT</label>
+			</span>
+			
+			<span class="pin13_output_buttonset pin13_for_write">
+				&nbsp; | digitalWrite()&nbsp;
+				<input type="radio" id="pin13_dw_lo" name="pin13_dw" class="pin13_for_write"/><label for="pin13_dw_lo">LOW</label>
+				<input type="radio" id="pin13_dw_hi" name="pin13_dw" class="pin13_for_write"/><label for="pin13_dw_hi">HIGH</label>
+			</span>
+			
+			<span class="pin13_input_buttonset pin13_for_read">
+				&nbsp; | &nbsp;
+				<button id="pin13_dr_button">digitalRead()</button>
+			</span>
+			
+			&nbsp; | <span id="pin13_status_text" class="pin_status_text">Pin disabled</span>
+		</div>
 	
-		Pin 13 - Mode: &nbsp;
-		
-		<span class="pin13_mode_buttonset">
-			<input type="radio" name="pin13_mode" id="pin13_dis" checked="checked"/><label for="pin13_dis">Disabled</label>
-			<input type="radio" name="pin13_mode" id="pin13_in"/><label for="pin13_in">INPUT</label>
-			<input type="radio" name="pin13_mode" id="pin13_out"/><label for="pin13_out">OUTPUT</label>
-		</span>
-		
-		<span class="pin13_output_buttonset pin13_for_write">
-			&nbsp; | digitalWrite()&nbsp;
-			<input type="radio" id="pin13_dw_lo" name="pin13_dw" class="pin13_for_write"/><label for="pin13_dw_lo">LOW</label>
-			<input type="radio" id="pin13_dw_hi" name="pin13_dw" class="pin13_for_write"/><label for="pin13_dw_hi">HIGH</label>
-		</span>
-		
-		<span class="pin13_input_buttonset pin13_for_read">
-			&nbsp; | &nbsp;
-			<button id="pin13_dr_button">digitalRead()</button>
-		</span>
-		
-		&nbsp; | <span id="pin13_status_text" class="pin_status_text">Pin disabled</span>
-		
-	</p>
-	
-	<div class="pin13_for_write">
-		<div style="float: left; padding-right: 20px;">analogWrite():</div>
-		<div style="width: 300px; float: left;"><div id="pin13_pwm_slider"></div></div>
-		<div style="float: clear;"></div>
+		<div class="pin13_for_write pwm_slide">
+			<div style="float: left; padding-right: 20px;">analogWrite():</div>
+			<div style="width: 400px; float: left;"><div id="pin13_pwm_slider"></div></div>
+			<div style="float: clear;"></div>
+		</div>
+
 	</div>
 	
 	</body>
