@@ -17,7 +17,7 @@
 			// Returns the 'data' dict
 			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 			
-			function d() {
+			function global_data() {
 				return $('body').data('py-arduino-proxy');
 			}
 			
@@ -56,19 +56,19 @@
 			}
 			
 			function refresh_pin_ui(pin) {
-				if(d()['digital_pin_mode'][pin] == 'disabled') {
+				if(global_data()['digital_pin_mode'][pin] == 'disabled') {
 					pin_status_text(pin, 'Pin disabled');
 					$('.pin' + pin + '_for_read').hide();
 					$('.pin' + pin + '_for_write').hide();
 					// TODO: finish this
 					
-				} else if(d()['digital_pin_mode'][pin] == 'input') {
+				} else if(global_data()['digital_pin_mode'][pin] == 'input') {
 					pin_status_text(pin, 'Mode: INPUT');
 					$('.pin' + pin + '_for_read').show();
 					$('.pin' + pin + '_for_write').hide();
 					// TODO: finish this
 					
-				} else if(d()['digital_pin_mode'][pin] == 'output') {
+				} else if(global_data()['digital_pin_mode'][pin] == 'output') {
 					pin_status_text(pin, 'Mode: OUTPUT');
 					$('.pin' + pin + '_for_read').hide();
 					$('.pin' + pin + '_for_write').show();
@@ -78,15 +78,15 @@
 					$('.pin' +  pin + '_output_buttonset').buttonset("refresh");
 					
 					// Move slider to 0
-					if (pin in d()['arduino_type_struct']['pwm_pin_list']) {
+					if (pin in global_data()['arduino_type_struct']['pwm_pin_list']) {
 						$('#pin' + pin + '_pwm_slider').slider("value", 0);
 					}
 					
 				} else {
-					alert("The mode for pin " + pin + " is invalid. Mode: '" + d()['digital_pin_mode'][pin] + "'");
+					alert("The mode for pin " + pin + " is invalid. Mode: '" + global_data()['digital_pin_mode'][pin] + "'");
 				}
 				
-				$('input:radio[name=pin' + pin + '_mode]').filter('[value=' + d()['digital_pin_mode'][pin] + ']').attr('checked', true);
+				$('input:radio[name=pin' + pin + '_mode]').filter('[value=' + global_data()['digital_pin_mode'][pin] + ']').attr('checked', true);
 				$('.pin' +  pin + '_mode_buttonset').buttonset("refresh");
 				
 			}
@@ -98,7 +98,7 @@
 
 			function pin_mode(pin, mode) {
 				if(mode == 'disabled') {
-					d()['digital_pin_mode'][pin] = 'disabled';
+					global_data()['digital_pin_mode'][pin] = 'disabled';
 				} else if(mode == 'input' || mode == 'output') {
 					$.ajax({
 					  url: '/pin_mode/?pin=' + pin + '&mode=' + mode,
@@ -106,7 +106,7 @@
 					  async: false,
 					  success: function(data, textStatus, jqXHR) {
 						  if(data.ok) {
-								d()['digital_pin_mode'][pin] = mode;
+								global_data()['digital_pin_mode'][pin] = mode;
 						  } else {
 								pin_status_text(pin, "Couldn't set pinMode()"); // FIXME: this message is overwritten
 						  }
@@ -144,7 +144,7 @@
 				  success: function(data, textStatus, jqXHR) {
 					  if(data.ok) {
 							pin_status_text(pin, 'digitalWrite(): <b>' + value + '</b>');
-							if (pin in d()['arduino_type_struct']['pwm_pin_list']) {
+							if (pin in global_data()['arduino_type_struct']['pwm_pin_list']) {
 								$('#pin' + pin + '_pwm_slider').slider("value", slider_value);
 							}
 					  } else {
@@ -200,15 +200,104 @@
 				  }
 				});
 			}
-
-			$(function(){
+			
+			function ping() {
+				$("#ping_result").html('waiting for response...');
+				$.ajax({
+				  url: '/ping',
+				  dataType: 'json',
+				  async: false,
+				  success: function(data, textStatus, jqXHR) {
+					  if(data.ok) {
+						  $("#ping_result").html('PING OK');
+					  } else {
+						  $("#ping_result").html('no response');
+					  }
+				  },
+				  error: function(jqXHR, textStatus, errorThrown) {
+					  $("#ping_result").html('no response (AJAX ERROR)');
+				  }
+				});
+			}
+			
+			function validate_connection() {
+				$("#validate_connection_result").html('waiting for response...');
+				$.ajax({
+				  url: '/validate_connection',
+				  dataType: 'json',
+				  success: function(data, textStatus, jqXHR) {
+					  if(data.ok) {
+						  $("#validate_connection_result").html('validation OK - ID: ' + data.random_value);
+					  } else {
+						  $("#validate_connection_result").html('ERROR');
+					  }
+				  },
+				  error: function(jqXHR, textStatus, errorThrown) {
+				  }
+				});
+			}
+			
+			function load_global_data() {
 				
 				$('body').data('py-arduino-proxy', {});
+				
+				// Get avrCpuType
+				$.ajax({
+				  url: '/get_avr_cpu_type',
+				  dataType: 'json',
+				  async: false,
+				  success: function(data, textStatus, jqXHR) {
+					  if(data.ok) {
+						  $('body').data('py-arduino-proxy')['avrCpuType'] = data.avrCpuType;
+						  $('#avrCpuType').html(data.avrCpuType);
+					  } else {
+						  showError("Couldn't get Avr CPU type info.");
+					  }
+				  },
+				  error: function(jqXHR, textStatus, errorThrown) { }
+				});
+			
+				// Get arduino_type_struct
+				$.ajax({
+				  url: '/get_arduino_type_struct',
+				  dataType: 'json',
+				  async: false,
+				  success: function(data, textStatus, jqXHR) {
+					  if(data.ok) {
+						  $('body').data('py-arduino-proxy')['arduino_type_struct'] = data.arduinoTypeStruct;
+					  } else {
+						  showError("Couldn't get Arduino type struct.");
+					  }
+				  },
+				  error: function(jqXHR, textStatus, errorThrown) {
+					  showError("Couldn't get Arduino type struct.");
+				  }
+				});
+				
+				// Setup variables
+				$('body').data('py-arduino-proxy')['digital_pin_mode'] = {};
+				
+				var i = 0;
+				for (i=0; i<$('body').data('py-arduino-proxy')['arduino_type_struct']['digital_pins']; i++) {
+					$('body').data('py-arduino-proxy')['digital_pin_mode'][i] = 'disabled';
+				}
+				
+			}
+			
+			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			// ON-LOAD
+			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			
+			$(function(){
 				
 				// Attach 'global' event listener of ajax errors
 				$("#error_messages").ajaxError(function(event, request, settings){
 					showError("<b>Error:</b> a problem occurred when communicating to the server. Url: '" + settings.url + "'");
 				});
+				
+				// Now that AJAX errors are reported, we load the data...
+				
+				load_global_data();
 				
 				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 				// ping
@@ -216,20 +305,7 @@
 				
 				$("#ping_button").button();
 				$("#ping_button").click(function() {
-					$("#ping_result").html('waiting for response...');
-					$.ajax({
-					  url: '/ping',
-					  dataType: 'json',
-					  success: function(data, textStatus, jqXHR) {
-						  if(data.ok) {
-							  $("#ping_result").html('PING OK');
-						  } else {
-							  $("#ping_result").html('no response');
-						  }
-					  },
-					  error: function(jqXHR, textStatus, errorThrown) {
-					  }
-					});
+					ping();
 				});
 				
 				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -238,20 +314,7 @@
 				
 				$("#validate_connection_button").button();
 				$("#validate_connection_button").click(function() {
-					$("#validate_connection_result").html('waiting for response...');
-					$.ajax({
-					  url: '/validate_connection',
-					  dataType: 'json',
-					  success: function(data, textStatus, jqXHR) {
-						  if(data.ok) {
-							  $("#validate_connection_result").html('validation OK - ID: ' + data.random_value);
-						  } else {
-							  $("#validate_connection_result").html('ERROR');
-						  }
-					  },
-					  error: function(jqXHR, textStatus, errorThrown) {
-					  }
-					});
+					validate_connection();
 				});
 				
 				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -259,11 +322,12 @@
 				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 				
 				// Create buttons
-				{% for pin in range(0, arduino_type.digital_pins) %}
-					$(".pin{{ pin }}_mode_buttonset").buttonset();
-					$(".pin{{ pin }}_output_buttonset").buttonset();
-					$(".pin{{ pin }}_input_buttonset").buttonset();
-				{% endfor %}
+				var pin = 0;
+				for (pin=0; pin<global_data()['arduino_type_struct']['digital_pins']; pin++) {
+					$(".pin" + pin + "_mode_buttonset").buttonset();
+					$(".pin" + pin + "_output_buttonset").buttonset();
+					$(".pin" + pin + "_input_buttonset").buttonset();
+				}
 				
 				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 				// *** Generic *** setup of components
@@ -320,48 +384,6 @@
 					pin = get_pin($(this).attr('id'));
 					pin_analog_write(pin, ui.value);
 				});
-				
-				// Get avrCpuType
-				$.ajax({
-				  url: '/get_avr_cpu_type',
-				  dataType: 'json',
-				  async: false,
-				  success: function(data, textStatus, jqXHR) {
-					  if(data.ok) {
-						  d()['avrCpuType'] = data.avrCpuType;
-						  $('#avrCpuType').html(data.avrCpuType);
-					  } else {
-						  showError("Couldn't get Avr CPU type info.");
-					  }
-				  },
-				  error: function(jqXHR, textStatus, errorThrown) { }
-				});
-				
-				// get_arduino_type_struct
-				$.ajax({
-				  url: '/get_arduino_type_struct',
-				  dataType: 'json',
-				  async: false,
-				  success: function(data, textStatus, jqXHR) {
-					  if(data.ok) {
-						  d()['arduino_type_struct'] = data.arduinoTypeStruct;
-					  } else {
-						  showError("Couldn't get Arduino type struct.");
-					  }
-				  },
-				  error: function(jqXHR, textStatus, errorThrown) { }
-				});
-				
-				//
-				// Setup variables
-				//
-				
-				d()['digital_pin_mode'] = {};
-				
-				var i = 0;
-				for (i=0; i<d()['arduino_type_struct']['digital_pins']; i++) {
-					d()['digital_pin_mode'][i] = 'disabled';
-				}
 				
 			});
 		</script>
