@@ -17,6 +17,11 @@
 			// Generic functions
 			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 			
+			// Returns the 'data' dict
+			function d() {
+				return $('body').data('py-arduino-proxy');
+			}
+			
 			function hide_error_messages() {
 				$('#error_messages').hide();
 			}
@@ -160,13 +165,21 @@
 				  }
 				});
 			}
-		
+
+			// Show an error message at the TOP of the page.
+			function showError(html_msg) {
+				$('#error_message_text').html(html_msg);
+				$('#error_message_text').append(" <a href='javascript:hide_error_messages(); return false;'>[hide]</a>");
+				$("#error_messages").show();
+			}
+
 			$(function(){
 				
+				$('body').data('py-arduino-proxy', {});
+				
+				// Attach 'global' event listener of ajax errors
 				$("#error_messages").ajaxError(function(event, request, settings){
-					$('#error_message_text').html("<b>Error:</b> a problem occurred when communicating to the server. Url: '" + settings.url + "'");
-					$('#error_message_text').append(" <a href='javascript:hide_error_messages(); return false;'>[hide]</a>");
-					$("#error_messages").show();
+					showError("<b>Error:</b> a problem occurred when communicating to the server. Url: '" + settings.url + "'");
 				});
 				
 				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -218,7 +231,7 @@
 				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 				
 				// Create buttons
-				{% for pin in digital_pins %}
+				{% for pin in range(0, arduino_type.digital_pins) %}
 					$(".pin{{ pin }}_mode_buttonset").buttonset();
 					$(".pin{{ pin }}_output_buttonset").buttonset();
 					$(".pin{{ pin }}_input_buttonset").buttonset();
@@ -280,6 +293,21 @@
 					pin_analog_write(pin, ui.value);
 				});
 				
+				// Get avrCpuType
+				$.ajax({
+				  url: '/get_avr_cpu_type',
+				  dataType: 'json',
+				  success: function(data, textStatus, jqXHR) {
+					  if(data.ok) {
+						  d()['avrCpuType'] = data.avrCpuType;
+						  $('#avrCpuType').html(data.avrCpuType);
+					  } else {
+						  showError("Couldn't get Avr CPU type info.");
+					  }
+				  },
+				  error: function(jqXHR, textStatus, errorThrown) { }
+				});
+				
 			});
 		</script>
 	</head>
@@ -287,6 +315,7 @@
 		
 	<h1>Py-Arduino-Proxy</h1>
 	
+	<!-- Error message -->
 	<div id="error_messages" style="display: none;">
 		<div class="ui-widget">
 			<div class="ui-state-error ui-corner-all" style="padding: 0 .7em;"> 
@@ -300,20 +329,34 @@
 		</div>
 	</div>
 	
+	<!-- Informatino about the Arduino -->
 	<p style="size: small;">
-		<b>digital_pins:</b>
-		{% for pin in digital_pins %}
-			{{ pin }} {% if pwm_pins_bitmap_list[pin] %} (PWM) {% endif %},
+		<b>AVR cpu type:</b> <span id="avrCpuType">unknown</span>
+		
+		- <b>Digital:</b> 
+		{% for pin in range(0, arduino_type.digital_pins) %}
+			{{ pin }} {% if pin in arduino_type.pwm_pin_list %} (PWM) {% endif %}
+			{% if not loop.last%} , {% endif %}
+		{% endfor %}
+		
+		- <b>Analog:</b> 
+		{% for pin in range(0, arduino_type.analog_pins) %}
+			{{ pin }}
+			{% if not loop.last%} , {% endif %}
 		{% endfor %}
 	</p>
+	
+	<!-- ping() -->
 	<p>
 		<button id="ping_button">Ping</button> &nbsp; | Result: <span id="ping_result"></span>
 	</p>
+	
+	<!-- validate_connection() -->
 	<p>
 		<button id="validate_connection_button">Validate connection</button> &nbsp; | Result: <span id="validate_connection_result"></span>
 	</p>
 	
-	{% for pin in digital_pins %}
+	{% for pin in range(0, arduino_type.digital_pins) %}
 	<div id="pin{{ pin }}" style="padding-bottom: 10px; float: clear;">
 		<div>
 			
@@ -342,7 +385,7 @@
 			&nbsp; | <span id="pin{{ pin }}_status_text" class="pin_status_text">Pin disabled</span>
 		</div>
 		
-		{% if pwm_pins_bitmap_list[pin] %}
+		{% if pin in arduino_type.pwm_pin_list %}
 			<!-- analogWrite() / PWM -->
 			<div class="pin{{ pin }}_for_write pin_for_write pwm_slide" style="overflow: auto; width: 100%; padding-bottom: 10px;">
 				<div style="float: left; padding-right: 20px;">analogWrite():</div>

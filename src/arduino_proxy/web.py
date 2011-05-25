@@ -53,22 +53,11 @@ class Root(object):
         template = self.jinja2_env.get_template('ui-jinja2.html')
         
         arduino_type = self.proxy.getArduinoTypeStruct()
-        digital_pins = arduino_type['digital_pins']
-        digital_pins_list = range(0, digital_pins)
-        
-        pwm_pins_bitmap = arduino_type['pwm_pins_bitmap']
-        pwm_pins_bitmap = list(pwm_pins_bitmap)
-        pwm_pins_bitmap_list = []
-        while(len(pwm_pins_bitmap_list) != len(digital_pins_list)):
-            try:
-                item = pwm_pins_bitmap.pop() # remove LAST
-                pwm_pins_bitmap_list.append(bool(item == '1'))
-            except IndexError:
-                pwm_pins_bitmap_list.append(False)
         
         return template.render(
-            digital_pins=digital_pins_list, 
-            pwm_pins_bitmap_list=pwm_pins_bitmap_list, 
+            arduino_type=arduino_type, 
+            #digital_pins=arduino_type['digital_pins'], 
+            #pwm_pin_list=arduino_type['pwm_pin_list'], 
         )
     
     @cherrypy.expose
@@ -155,6 +144,32 @@ class Root(object):
         except:
             # FIXME: return error details and log
             logging.exception("Exception raised by proxy.analogWrite()")
+            return { 'ok': False, }
+
+    @cherrypy.expose
+    @cherrypy.tools.json_out()
+    def get_avr_cpu_type(self):
+        try:
+            return {
+                'ok': True,
+                'avrCpuType': self.proxy.getAvrCpuType(),
+            }
+        except:
+            # FIXME: return error details and log
+            logging.exception("Exception raised by proxy.getAvrCpuType()")
+            return { 'ok': False, }
+
+    @cherrypy.expose
+    @cherrypy.tools.json_out()
+    def get_arduino_type_struct(self):
+        try:
+            return {
+                'ok': True,
+                'arduinoTypeStruct': self.proxy.getArduinoTypeStruct(),
+            }
+        except:
+            # FIXME: return error details and log
+            logging.exception("Exception raised by proxy.getArduinoTypeStruct()")
             return { 'ok': False, }
 
 def start_webserver(arduino_proxy_base_dir, options, args, proxy):
