@@ -1076,16 +1076,43 @@ class ArduinoProxy(object): # pylint: disable=R0904
     def getArduinoTypeStruct(self): # pylint: disable=C0103
         """
         Returns a dict with the value of **this_arduino_type** struct.
+        
+        The dict contains:
+            - analog_pins: how many analog pins the Arduino has.
+            - digital_pins: how many digital pins the Arduino has.
+            - pwm_pins_bitmap: bitmap of digital pin that supports PWM.
+            - pwm_pin_list: tuple of pin numbers that supports PWM.
+            - eeprom_size: EEPROM size in KiB.
+            - eeprom_size_bytes: EEPROM size in bytes.
+            - flash_size: FLASH size in KiB.
+            - flash_size_bytes: FLASH size in bytes.
         """
         value = self.send_cmd("_gATS")
         splitted = [item for item in value.split() if item]
-        return {
+
+        arduino_type_struct = {
             'analog_pins': int(splitted[0]), 
             'digital_pins': int(splitted[1]), 
             'pwm_pins_bitmap': splitted[2], 
-            'eeprom_size': int(splitted[3]), 
-            'flash_size': int(splitted[4]), 
+            'eeprom_size': int(splitted[3]), # KiB
+            'flash_size': int(splitted[4]), # KiB
         }
+        
+        pwm_pin_list = []
+        pwm_pins_bitmap = arduino_type_struct['pwm_pins_bitmap']
+        pwm_pins_bitmap = list(pwm_pins_bitmap)
+        
+        index = 0
+        while pwm_pins_bitmap:
+            if pwm_pins_bitmap.pop() == '1':
+                pwm_pin_list.append(index)
+            index += 1
+        
+        arduino_type_struct['pwm_pin_list'] = tuple(pwm_pin_list)
+        arduino_type_struct['eeprom_size_bytes'] = arduino_type_struct['eeprom_size'] * 1024
+        arduino_type_struct['flash_size_bytes'] = arduino_type_struct['flash_size'] * 1024
+        
+        return arduino_type_struct
     
     getArduinoTypeStruct.arduino_function_name = '_gATS'
     getArduinoTypeStruct.arduino_code = _unindent(12, """
