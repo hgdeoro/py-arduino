@@ -22,10 +22,13 @@
 				return $('body').data('py-arduino-proxy');
 			}
 			
+			// Hide error messages
 			function hide_error_messages() {
 				$('#error_messages').hide();
 			}
 			
+			// Takes the 'pin' from the ID of the element that generated the event.
+			// Returns: Integer
 			function get_pin(text) {
 				groups = /^pin(\d+)_/(text);
 				if(groups == null)
@@ -33,54 +36,85 @@
 				return parseInt(groups[1]);
 			}
 			
+			// Set the 'text' associated to a pin
 			function pin_status_text(pin, text) {
 				$("#pin" + pin + "_status_text").html(text);
 			}
 			
-			function pin_mode_disable(pin) {
-				// $(this).attr('id') -> ID of component that generated the event :-)
-				pin_status_text(pin, 'Pin disabled');
-				$('.pin' + pin + '_for_read').hide();
-				$('.pin' + pin + '_for_write').hide();
-				// TODO: reset selected
+			function refresh_pin_ui(pin) {
+				if(d()['digital_pin_mode'][pin] == 'disabled') {
+					pin_status_text(pin, 'Pin disabled');
+					$('.pin' + pin + '_for_read').hide();
+					$('.pin' + pin + '_for_write').hide();
+					// TODO: finish this
+					
+				} else if(d()['digital_pin_mode'][pin] == 'input') {
+					pin_status_text(pin, 'Mode: INPUT');
+					$('.pin' + pin + '_for_read').show();
+					$('.pin' + pin + '_for_write').hide();
+					// TODO: finish this
+					
+				} else if(d()['digital_pin_mode'][pin] == 'output') {
+					pin_status_text(pin, 'Mode: OUTPUT');
+					$('.pin' + pin + '_for_read').hide();
+					$('.pin' + pin + '_for_write').show();
+					// TODO: finish this
+					
+				} else {
+					alert("The mode for pin " + pin + " is invalid. Mode: '" + d()['digital_pin_mode'][pin] + "'");
+				}
+				
+				$('input:radio[name=pin' + pin + '_mode]').filter('[value=' + d()['digital_pin_mode'][pin] + ']').attr('checked', true);
+				$('.pin' +  pin + '_mode_buttonset').buttonset("refresh");
+				
 			}
 			
-			function pin_mode_input(pin) {
+			// Disable a pin
+			function pin_mode_disable(pin, event) {
+				d()['digital_pin_mode'][pin] = 'disabled';
+				refresh_pin_ui(pin);
+			}
+			
+			function pin_mode_input(pin, event) {
 				$.ajax({
 				  url: '/pin_mode/?pin=' + pin + '&mode=input',
 				  dataType: 'json',
 				  async: false,
 				  success: function(data, textStatus, jqXHR) {
 					  if(data.ok) {
-							pin_status_text(pin, 'Mode: INPUT');
-							$('.pin' + pin + '_for_read').show();
-							$('.pin' + pin + '_for_write').hide();
-							// TODO: reset selected
+							d()['digital_pin_mode'][pin] = 'input';
+							refresh_pin_ui(pin);
 					  } else {
-							pin_status_text(pin, "Couldn't set pinMode()");
+							event.preventDefault();
+							pin_status_text(pin, "Couldn't set pinMode()"); // FIXME: this message is overwritten
+							refresh_pin_ui(pin);
 					  }
 				  },
 				  error: function(jqXHR, textStatus, errorThrown) {
+					  event.preventDefault();
+					  refresh_pin_ui(pin);
 				  }
 				});
 			}
 
-			function pin_mode_output(pin) {
+			function pin_mode_output(pin, event) {
 				$.ajax({
 				  url: '/pin_mode/?pin=' + pin + '&mode=output',
 				  dataType: 'json',
 				  async: false,
 				  success: function(data, textStatus, jqXHR) {
 					  if(data.ok) {
-							pin_status_text(pin, 'Mode: OUTPUT');
-							$('.pin' + pin + '_for_read').hide();
-							$('.pin' + pin + '_for_write').show();
-							// TODO: reset selected
+							d()['digital_pin_mode'][pin] = 'output';
+							refresh_pin_ui(pin);
 					  } else {
-							pin_status_text(pin, "Couldn't set pinMode()");
+							event.preventDefault();
+							pin_status_text(pin, "Couldn't set pinMode()"); // FIXME: this message is overwritten
+							refresh_pin_ui(pin);
 					  }
 				  },
 				  error: function(jqXHR, textStatus, errorThrown) {
+					  event.preventDefault();
+					  refresh_pin_ui(pin);
 				  }
 				});
 			}
@@ -253,21 +287,21 @@
 				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 				
 				// pinMode(): disable
-				$('.pin_mode_dis').change(function() {
+				$('.pin_mode_dis').click(function(event) {
 					pin = get_pin($(this).attr('id'));
-					pin_mode_disable(pin);
+					pin_mode_disable(pin, event);
 				});
 				
 				// pinMode(): INPUT
-				$('.pin_mode_in').change(function() {
+				$('.pin_mode_in').click(function(event) {
 					pin = get_pin($(this).attr('id'));
-					pin_mode_input(pin);
+					pin_mode_input(pin, event);
 				});
 				
 				// pinMode(): OUTPUT
-				$('.pin_mode_out').change(function() {
+				$('.pin_mode_out').click(function(event) {
 					pin = get_pin($(this).attr('id'));
-					pin_mode_output(pin);
+					pin_mode_output(pin, event);
 				});
 
 				// digitalRead()
@@ -297,6 +331,7 @@
 				$.ajax({
 				  url: '/get_avr_cpu_type',
 				  dataType: 'json',
+				  async: false,
 				  success: function(data, textStatus, jqXHR) {
 					  if(data.ok) {
 						  d()['avrCpuType'] = data.avrCpuType;
@@ -307,6 +342,32 @@
 				  },
 				  error: function(jqXHR, textStatus, errorThrown) { }
 				});
+				
+				// get_arduino_type_struct
+				$.ajax({
+				  url: '/get_arduino_type_struct',
+				  dataType: 'json',
+				  async: false,
+				  success: function(data, textStatus, jqXHR) {
+					  if(data.ok) {
+						  d()['arduino_type_struct'] = data.arduinoTypeStruct;
+					  } else {
+						  showError("Couldn't get Arduino type struct.");
+					  }
+				  },
+				  error: function(jqXHR, textStatus, errorThrown) { }
+				});
+				
+				//
+				// Setup variables
+				//
+				
+				d()['digital_pin_mode'] = {};
+				
+				var i = 0;
+				for (i=0; i<d()['arduino_type_struct']['digital_pins']; i++) {
+					d()['digital_pin_mode'][i] = 'disabled';
+				}
 				
 			});
 		</script>
@@ -364,9 +425,9 @@
 			
 			<!-- This buttons set the pin mode -->
 			<span class="pin{{ pin }}_mode_buttonset">
-				<input type="radio" id="pin{{ pin }}_mode_dis" name="pin{{ pin }}_mode" class="pin_mode_dis" checked="checked"/><label for="pin{{ pin }}_mode_dis">Disabled</label>
-				<input type="radio" id="pin{{ pin }}_mode_in"  name="pin{{ pin }}_mode" class="pin_mode_in"/><label for="pin{{ pin }}_mode_in">INPUT</label>
-				<input type="radio" id="pin{{ pin }}_mode_out" name="pin{{ pin }}_mode" class="pin_mode_out"/><label for="pin{{ pin }}_mode_out">OUTPUT</label>
+				<input type="radio" id="pin{{ pin }}_mode_dis" name="pin{{ pin }}_mode" value="disabled" class="pin_mode_dis" checked="checked"/><label for="pin{{ pin }}_mode_dis">Disabled</label>
+				<input type="radio" id="pin{{ pin }}_mode_in"  name="pin{{ pin }}_mode" value="input" class="pin_mode_in"/><label for="pin{{ pin }}_mode_in">INPUT</label>
+				<input type="radio" id="pin{{ pin }}_mode_out" name="pin{{ pin }}_mode" value="output" class="pin_mode_out"/><label for="pin{{ pin }}_mode_out">OUTPUT</label>
 			</span>
 			
 			<!-- digitalWrite() -->
