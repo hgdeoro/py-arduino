@@ -72,7 +72,9 @@
 					pin_status_text(pin, 'Mode: OUTPUT');
 					$('.pin' + pin + '_for_read').hide();
 					$('.pin' + pin + '_for_write').show();
-					// TODO: finish this
+					
+					$('input:radio[name=pin' + pin + '_dw]').attr('checked', false);
+					$('.pin' +  pin + '_output_buttonset').buttonset("refresh");
 					
 				} else {
 					alert("The mode for pin " + pin + " is invalid. Mode: '" + d()['digital_pin_mode'][pin] + "'");
