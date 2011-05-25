@@ -45,7 +45,7 @@ class Root(object):
     
     @cherrypy.expose
     def index(self):
-        raise cherrypy.HTTPRedirect("/static/ui.html")
+        raise cherrypy.HTTPRedirect("/index2")
     
     @cherrypy.expose
     def index2(self):
