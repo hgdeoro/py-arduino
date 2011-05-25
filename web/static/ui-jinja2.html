@@ -77,6 +77,11 @@
 					$('input:radio[name=pin' + pin + '_dw]').attr('checked', false);
 					$('.pin' +  pin + '_output_buttonset').buttonset("refresh");
 					
+					// Move slider to 0
+					if (pin in d()['arduino_type_struct']['pwm_pin_list']) {
+						$('#pin' + pin + '_pwm_slider').slider("value", 0);
+					}
+					
 				} else {
 					alert("The mode for pin " + pin + " is invalid. Mode: '" + d()['digital_pin_mode'][pin] + "'");
 				}
@@ -119,16 +124,28 @@
 			// PIN operation
 			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 			
-			function pin_digital_write_low(pin) {
+			function pin_digital_write(pin, value) {
+				
+				var slider_value = -1;
+				
+				if (value == 'low') {
+					slider_value = 0;
+				} else if (value == 'high') {
+					slider_value = 255.
+				} else {
+					alert("pin_digital_write(): Invalid value.");
+					return;
+				}
+				
 				$.ajax({
-				  url: '/digital_write/?pin=' + pin + '&value=low',
+				  url: '/digital_write/?pin=' + pin + '&value=' + value,
 				  dataType: 'json',
 				  async: false,
 				  success: function(data, textStatus, jqXHR) {
 					  if(data.ok) {
-							pin_status_text(pin, 'digitalWrite(): LOW');
-							if($('#pin' + pin + '_pwm_slider').size()) {
-								$('#pin' + pin + '_pwm_slider').slider("value", 0);
+							pin_status_text(pin, 'digitalWrite(): <b>' + value + '</b>');
+							if (pin in d()['arduino_type_struct']['pwm_pin_list']) {
+								$('#pin' + pin + '_pwm_slider').slider("value", slider_value);
 							}
 					  } else {
 							pin_status_text(pin, "Couldn't digitalWrite()");
@@ -138,27 +155,7 @@
 				  }
 				});
 			}
-
-			function pin_digital_write_high(pin) {
-				$.ajax({
-				  url: '/digital_write/?pin=' + pin + '&value=high',
-				  dataType: 'json',
-				  async: false,
-				  success: function(data, textStatus, jqXHR) {
-					  if(data.ok) {
-							pin_status_text(pin, 'digitalWrite(): HIGH');
-							if($('#pin' + pin + '_pwm_slider').size()) {
-								$('#pin' + pin + '_pwm_slider').slider("value", 255);
-							}
-					  } else {
-							pin_status_text(pin, "Couldn't digitalWrite()");
-					  }
-				  },
-				  error: function(jqXHR, textStatus, errorThrown) {
-				  }
-				});
-			}
-		
+			
 			function pin_analog_write(pin, value) {
 				// Uncheck LOW/HIGH
 				// TODO: uncheck and refresh only if one of this is checked!
@@ -310,12 +307,12 @@
 				// digitalWrite()
 				$(".pin_dw_lo").click(function() {
 					pin = get_pin($(this).attr('id'));
-					pin_digital_write_low(pin);
+					pin_digital_write(pin, 'low');
 				});
 				
 				$(".pin_dw_hi").click(function() {
 					pin = get_pin($(this).attr('id'));
-					pin_digital_write_high(pin);
+					pin_digital_write(pin, 'high');
 				});
 				
 				// analogWrite()
