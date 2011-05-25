@@ -14,18 +14,32 @@
 		<script type="text/javascript">
 			
 			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-			// Generic functions
+			// Returns the 'data' dict
 			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 			
-			// Returns the 'data' dict
 			function d() {
 				return $('body').data('py-arduino-proxy');
 			}
 			
-			// Hide error messages
+			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			// Error messages
+			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			
+			// Show an error message at the TOP of the page.
+			function showError(html_msg) {
+				$('#error_message_text').html(html_msg);
+				$('#error_message_text').append(" <a href='javascript:hide_error_messages(); return false;'>[hide]</a>");
+				$("#error_messages").show();
+			}
+
+			// Hide the error message.
 			function hide_error_messages() {
 				$('#error_messages').hide();
 			}
+			
+			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			// General pin functions
+			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 			
 			// Takes the 'pin' from the ID of the element that generated the event.
 			// Returns: Integer
@@ -69,55 +83,38 @@
 				
 			}
 			
-			// Disable a pin
-			function pin_mode_disable(pin, event) {
-				d()['digital_pin_mode'][pin] = 'disabled';
+			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			// PIN mode
+			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			
+
+			function pin_mode(pin, mode) {
+				if(mode == 'disabled') {
+					d()['digital_pin_mode'][pin] = 'disabled';
+				} else if(mode == 'input' || mode == 'output') {
+					$.ajax({
+					  url: '/pin_mode/?pin=' + pin + '&mode=' + mode,
+					  dataType: 'json',
+					  async: false,
+					  success: function(data, textStatus, jqXHR) {
+						  if(data.ok) {
+								d()['digital_pin_mode'][pin] = mode;
+						  } else {
+								pin_status_text(pin, "Couldn't set pinMode()"); // FIXME: this message is overwritten
+						  }
+					  },
+					  error: function(jqXHR, textStatus, errorThrown) {
+					  }
+					});
+				} else {
+					// INVALID MODE
+				}
 				refresh_pin_ui(pin);
 			}
 			
-			function pin_mode_input(pin, event) {
-				$.ajax({
-				  url: '/pin_mode/?pin=' + pin + '&mode=input',
-				  dataType: 'json',
-				  async: false,
-				  success: function(data, textStatus, jqXHR) {
-					  if(data.ok) {
-							d()['digital_pin_mode'][pin] = 'input';
-							refresh_pin_ui(pin);
-					  } else {
-							event.preventDefault();
-							pin_status_text(pin, "Couldn't set pinMode()"); // FIXME: this message is overwritten
-							refresh_pin_ui(pin);
-					  }
-				  },
-				  error: function(jqXHR, textStatus, errorThrown) {
-					  event.preventDefault();
-					  refresh_pin_ui(pin);
-				  }
-				});
-			}
-
-			function pin_mode_output(pin, event) {
-				$.ajax({
-				  url: '/pin_mode/?pin=' + pin + '&mode=output',
-				  dataType: 'json',
-				  async: false,
-				  success: function(data, textStatus, jqXHR) {
-					  if(data.ok) {
-							d()['digital_pin_mode'][pin] = 'output';
-							refresh_pin_ui(pin);
-					  } else {
-							event.preventDefault();
-							pin_status_text(pin, "Couldn't set pinMode()"); // FIXME: this message is overwritten
-							refresh_pin_ui(pin);
-					  }
-				  },
-				  error: function(jqXHR, textStatus, errorThrown) {
-					  event.preventDefault();
-					  refresh_pin_ui(pin);
-				  }
-				});
-			}
+			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			// PIN operation
+			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 			
 			function pin_digital_write_low(pin) {
 				$.ajax({
@@ -200,13 +197,6 @@
 				});
 			}
 
-			// Show an error message at the TOP of the page.
-			function showError(html_msg) {
-				$('#error_message_text').html(html_msg);
-				$('#error_message_text').append(" <a href='javascript:hide_error_messages(); return false;'>[hide]</a>");
-				$("#error_messages").show();
-			}
-
 			$(function(){
 				
 				$('body').data('py-arduino-proxy', {});
@@ -287,21 +277,21 @@
 				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 				
 				// pinMode(): disable
-				$('.pin_mode_dis').click(function(event) {
+				$('.pin_mode_dis').change(function() {
 					pin = get_pin($(this).attr('id'));
-					pin_mode_disable(pin, event);
+					pin_mode(pin, 'disabled');
 				});
 				
 				// pinMode(): INPUT
-				$('.pin_mode_in').click(function(event) {
+				$('.pin_mode_in').change(function() {
 					pin = get_pin($(this).attr('id'));
-					pin_mode_input(pin, event);
+					pin_mode(pin, 'input');
 				});
 				
 				// pinMode(): OUTPUT
-				$('.pin_mode_out').click(function(event) {
+				$('.pin_mode_out').change(function() {
 					pin = get_pin($(this).attr('id'));
-					pin_mode_output(pin, event);
+					pin_mode(pin, 'output');
 				});
 
 				// digitalRead()
