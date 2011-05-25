@@ -73,6 +73,7 @@
 					$('.pin' + pin + '_for_read').hide();
 					$('.pin' + pin + '_for_write').show();
 					
+					// Uncheck LOW/HIGH
 					$('input:radio[name=pin' + pin + '_dw]').attr('checked', false);
 					$('.pin' +  pin + '_output_buttonset').buttonset("refresh");
 					
@@ -159,6 +160,11 @@
 			}
 		
 			function pin_analog_write(pin, value) {
+				// Uncheck LOW/HIGH
+				// TODO: uncheck and refresh only if one of this is checked!
+				$('input:radio[name=pin' + pin + '_dw]').attr('checked', false);
+				$('.pin' +  pin + '_output_buttonset').buttonset("refresh");
+				
 				$.ajax({
 				  url: '/analog_write/?pin=' + pin + '&value=' + value,
 				  dataType: 'json',
@@ -166,7 +172,6 @@
 				  success: function(data, textStatus, jqXHR) {
 					  if(data.ok) {
 							pin_status_text(pin, 'PWM: ' + value);
-							// TODO: uncheck LOW/HIGH
 					  } else {
 							pin_status_text(pin, "Couldn't analogWrite()");
 					  }
