@@ -68,7 +68,7 @@ class Root(object):
         return template.render(error_message=error_message)
     
     def generate_ui(self, arduino_type):
-        template = self.jinja2_env.get_template('ui-jinja2.html')
+        template = self.jinja2_env.get_template('py-arduino-proxy-main.html')
         
         return template.render(arduino_type=arduino_type)
     
