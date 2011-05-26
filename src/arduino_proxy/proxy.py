@@ -158,7 +158,8 @@ class ArduinoProxy(object): # pylint: disable=R0904
             logger.debug("Opening serial port...")
             self.serial_port = serial.Serial(port=tty, baudrate=speed, bytesize=8, parity='N',
                 stopbits=1, timeout=timeout)
-            self.serial_port.open()
+            # self.serial_port.open() - The port is opened when the instance is created!
+            # This has no efect on Linux, but raises an exception on other os.
             if wait_after_open > 0:
                 logger.debug("Open OK. Now waiting for Arduino's reset")
                 time.sleep(wait_after_open)
