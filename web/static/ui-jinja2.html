@@ -170,19 +170,12 @@
 			
 			function validate_connection() {
 				$("#validate_connection_result").html('waiting for response...');
-				$.ajax({
-				  url: '/validate_connection',
-				  dataType: 'json',
-				  success: function(data, textStatus, jqXHR) {
-					  if(data.ok) {
-						  $("#validate_connection_result").html('validation OK - ID: ' + data.random_value);
-					  } else {
-						  $("#validate_connection_result").html('ERROR');
-					  }
-				  },
-				  error: function(jqXHR, textStatus, errorThrown) {
-				  }
-				});
+				var value = PyArduinoProxy.validateConnection();
+				if(value === false) {
+					$("#validate_connection_result").html('ERROR');
+				} else {
+					$("#validate_connection_result").html('validation OK - ID: ' + value);
+				}
 			}
 			
 			function load_global_data() {

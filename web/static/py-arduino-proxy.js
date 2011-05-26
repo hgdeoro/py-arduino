@@ -180,11 +180,51 @@ PyArduinoProxy = function($) {
 
 	}
 	
+	var validateConnection = function(extra_settings) {
+		
+		//
+		// validateConnection()
+		//
+		// Returns the random generated number if validateConnection() was done ok,
+		//  'false' otherwise.
+		//
+		
+		extra_settings = _f(extra_settings);
+		var retValue = false;
+		
+		var hardcoded_settings = {
+			url: '/validate_connection',
+			dataType: 'json',
+			async: false,
+			success: function(data, textStatus, jqXHR) {
+				if(data.ok) {
+					retValue = data.random_value;
+				} else {
+					retValue = false;
+				}
+				if('success' in extra_settings)
+					extra_settings.success(data, textStatus, jqXHR);
+			},
+			error: function(jqXHR, textStatus, errorThrown) {
+				retValue = false;
+				if('error' in extra_settings)
+					extra_settings.error(jqXHR, textStatus, errorThrown);
+			}
+		}
+		
+		var settings = $.extend({}, extra_settings, hardcoded_settings);
+
+		$.ajax(settings);
+		return retValue;
+
+	}
+	
 	return {
 		globalData: globalData,
 		pinMode: pinMode,
 		digitalWrite: digitalWrite,
 		digitalRead: digitalRead,
+		validateConnection: validateConnection,
 		ping: ping
 	};
 	
