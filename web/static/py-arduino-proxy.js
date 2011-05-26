@@ -1,0 +1,108 @@
+PyArduinoProxy = function($) {
+	
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	// Returns the 'data' dict
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	
+	function _f(somevar) { if(somevar == undefined) return {}; else return somevar; }
+
+	var globalData = function() {
+		//
+		// Returns the global data holder
+		//
+		
+		return $('body').data('py-arduino-proxy');
+	};
+	
+	var pinMode = function(pin, mode, extra_settings) {
+		
+		//
+		// Sets the pin mode
+		//
+		// Returns 'true' if pinMode() could be done. 'false' in case of error.
+		//
+		
+		extra_settings = _f(extra_settings);
+		var retValue = true;
+		
+		var hardcoded_settings = {
+			url: '/pin_mode/?pin=' + pin + '&mode=' + mode,
+			dataType: 'json',
+			async: false,
+			success: function(data, textStatus, jqXHR) {
+				if(data.ok) {
+					globalData()['digital_pin_mode'][pin] = mode;
+				} else {
+					retValue = false;
+				}
+				if('success' in extra_settings)
+					extra_settings.success(data, textStatus, jqXHR);
+			},
+			error: function(jqXHR, textStatus, errorThrown) {
+				retValue = false;
+				if('error' in extra_settings)
+					extra_settings.error(jqXHR, textStatus, errorThrown);
+			}
+		};
+		
+		var settings = $.extend({}, extra_settings, hardcoded_settings);
+
+		if(mode == 'disabled') {
+			globalData()['digital_pin_mode'][pin] = 'disabled';
+			return true;
+		} else if(mode == 'input' || mode == 'output') {
+			$.ajax(settings);
+			return retValue;
+		} else {
+			// TODO: INVALID MODE - raise exception or show message
+			return false;
+		}
+	};
+
+	var digitalWrite = function(pin, value, extra_settings) {
+		
+		//
+		// Digital Write
+		//
+		// Returns 'true' if digitalWrite() could be done. 'false' in case of error.
+		//
+		
+		extra_settings = _f(extra_settings);
+		var retValue = true;
+		
+		var hardcoded_settings = {
+			url: '/digital_write/?pin=' + pin + '&value=' + value,
+			dataType: 'json',
+			async: false,
+			success: function(data, textStatus, jqXHR) {
+				if(data.ok) {
+				} else {
+					retValue = false;
+				}
+				if('success' in extra_settings)
+					extra_settings.success(data, textStatus, jqXHR);
+			},
+			error: function(jqXHR, textStatus, errorThrown) {
+				retValue = false;
+				if('error' in extra_settings)
+					extra_settings.error(jqXHR, textStatus, errorThrown);
+			}
+		}
+		
+		var settings = $.extend({}, extra_settings, hardcoded_settings);
+
+		if (value == 'low' || value == 'high') {
+			$.ajax(settings);
+			return retValue;
+		} else {
+			return false;
+		}
+	}
+	
+	return {
+		globalData: globalData,
+		pinMode: pinMode,
+		digitalWrite: digitalWrite
+	};
+	
+}(jQuery);

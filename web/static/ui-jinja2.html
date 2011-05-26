@@ -6,20 +6,13 @@
 		<link type="text/css" href="/static/css/ui-lightness/jquery-ui-1.8.13.custom.css" rel="stylesheet" />	
 		<script type="text/javascript" src="/static/js/jquery-1.5.1.min.js"></script>
 		<script type="text/javascript" src="/static/js/jquery-ui-1.8.13.custom.min.js"></script>
+		<script type="text/javascript" src="/static/py-arduino-proxy.js"></script>
 		<style type="text/css">
 			body { font: 62.5% sans-serif; margin: 20px; color: #777; }
 			.pin_status_text { color: #333; }
 			div.pwm_slide { padding-top: 5px; }
 		</style>	
 		<script type="text/javascript">
-			
-			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-			// Returns the 'data' dict
-			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-			
-			function global_data() {
-				return $('body').data('py-arduino-proxy');
-			}
 			
 			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 			// Error messages
@@ -56,19 +49,19 @@
 			}
 			
 			function refresh_pin_ui(pin) {
-				if(global_data()['digital_pin_mode'][pin] == 'disabled') {
+				if(PyArduinoProxy.globalData()['digital_pin_mode'][pin] == 'disabled') {
 					pin_status_text(pin, 'Pin disabled');
 					$('.pin' + pin + '_for_read').hide();
 					$('.pin' + pin + '_for_write').hide();
 					// TODO: finish this
 					
-				} else if(global_data()['digital_pin_mode'][pin] == 'input') {
+				} else if(PyArduinoProxy.globalData()['digital_pin_mode'][pin] == 'input') {
 					pin_status_text(pin, 'Mode: INPUT');
 					$('.pin' + pin + '_for_read').show();
 					$('.pin' + pin + '_for_write').hide();
 					// TODO: finish this
 					
-				} else if(global_data()['digital_pin_mode'][pin] == 'output') {
+				} else if(PyArduinoProxy.globalData()['digital_pin_mode'][pin] == 'output') {
 					pin_status_text(pin, 'Mode: OUTPUT');
 					$('.pin' + pin + '_for_read').hide();
 					$('.pin' + pin + '_for_write').show();
@@ -78,15 +71,15 @@
 					$('.pin' +  pin + '_output_buttonset').buttonset("refresh");
 					
 					// Move slider to 0
-					if (pin in global_data()['arduino_type_struct']['pwm_pin_list']) {
+					if (pin in PyArduinoProxy.globalData()['arduino_type_struct']['pwm_pin_list']) {
 						$('#pin' + pin + '_pwm_slider').slider("value", 0);
 					}
 					
 				} else {
-					alert("The mode for pin " + pin + " is invalid. Mode: '" + global_data()['digital_pin_mode'][pin] + "'");
+					alert("The mode for pin " + pin + " is invalid. Mode: '" + PyArduinoProxy.globalData()['digital_pin_mode'][pin] + "'");
 				}
 				
-				$('input:radio[name=pin' + pin + '_mode]').filter('[value=' + global_data()['digital_pin_mode'][pin] + ']').attr('checked', true);
+				$('input:radio[name=pin' + pin + '_mode]').filter('[value=' + PyArduinoProxy.globalData()['digital_pin_mode'][pin] + ']').attr('checked', true);
 				$('.pin' +  pin + '_mode_buttonset').buttonset("refresh");
 				
 			}
@@ -95,27 +88,10 @@
 			// PIN mode
 			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 			
-
 			function pin_mode(pin, mode) {
-				if(mode == 'disabled') {
-					global_data()['digital_pin_mode'][pin] = 'disabled';
-				} else if(mode == 'input' || mode == 'output') {
-					$.ajax({
-					  url: '/pin_mode/?pin=' + pin + '&mode=' + mode,
-					  dataType: 'json',
-					  async: false,
-					  success: function(data, textStatus, jqXHR) {
-						  if(data.ok) {
-								global_data()['digital_pin_mode'][pin] = mode;
-						  } else {
-								pin_status_text(pin, "Couldn't set pinMode()"); // FIXME: this message is overwritten
-						  }
-					  },
-					  error: function(jqXHR, textStatus, errorThrown) {
-					  }
-					});
-				} else {
-					// INVALID MODE
+				var ret = PyArduinoProxy.pinMode(pin, mode);
+				if(!ret) {
+					pin_status_text(pin, "Couldn't set pinMode()"); // FIXME: this message is overwritten
 				}
 				refresh_pin_ui(pin);
 			}
@@ -137,23 +113,14 @@
 					return;
 				}
 				
-				$.ajax({
-				  url: '/digital_write/?pin=' + pin + '&value=' + value,
-				  dataType: 'json',
-				  async: false,
-				  success: function(data, textStatus, jqXHR) {
-					  if(data.ok) {
-							pin_status_text(pin, 'digitalWrite(): <b>' + value + '</b>');
-							if (pin in global_data()['arduino_type_struct']['pwm_pin_list']) {
-								$('#pin' + pin + '_pwm_slider').slider("value", slider_value);
-							}
-					  } else {
-							pin_status_text(pin, "Couldn't digitalWrite()");
-					  }
-				  },
-				  error: function(jqXHR, textStatus, errorThrown) {
-				  }
-				});
+				if(PyArduinoProxy.digitalWrite(pin, value)) {
+					pin_status_text(pin, 'digitalWrite(): <b>' + value + '</b>');
+					if (pin in PyArduinoProxy.globalData()['arduino_type_struct']['pwm_pin_list']) {
+						$('#pin' + pin + '_pwm_slider').slider("value", slider_value);
+					}
+				} else {
+					pin_status_text(pin, "Couldn't digitalWrite()");
+				}
 			}
 			
 			function pin_analog_write(pin, value) {
@@ -323,7 +290,7 @@
 				
 				// Create buttons
 				var pin = 0;
-				for (pin=0; pin<global_data()['arduino_type_struct']['digital_pins']; pin++) {
+				for (pin=0; pin<PyArduinoProxy.globalData()['arduino_type_struct']['digital_pins']; pin++) {
 					$(".pin" + pin + "_mode_buttonset").buttonset();
 					$(".pin" + pin + "_output_buttonset").buttonset();
 					$(".pin" + pin + "_input_buttonset").buttonset();
