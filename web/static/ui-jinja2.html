@@ -146,26 +146,14 @@
 			}
 			
 			function pin_digital_read(pin) {
-				$.ajax({
-				  url: '/digital_read/?pin=' + pin,
-				  dataType: 'json',
-				  async: false,
-				  success: function(data, textStatus, jqXHR) {
-					  if(data.ok) {
-							if(data.value == 0) {
-								pin_status_text(pin, 'digitalRead(): <b>LOW</b>');
-							} else if(data.value == 1) {
-								pin_status_text(pin, 'digitalRead(): <b>HIGH</b>');
-							} else {
-								pin_status_text(pin, 'digitalRead(): invalid response from server.');
-							}
-					  } else {
-							pin_status_text(pin, "Couldn't analogWrite()");
-					  }
-				  },
-				  error: function(jqXHR, textStatus, errorThrown) {
-				  }
-				});
+				var value = PyArduinoProxy.digitalRead(pin);
+				if(value == 0) {
+					pin_status_text(pin, 'digitalRead(): <b>LOW</b>');
+				} else if(value == 1) {
+					pin_status_text(pin, 'digitalRead(): <b>HIGH</b>');
+				} else {
+					pin_status_text(pin, 'digitalRead(): invalid response from server.');
+				}
 			}
 			
 			function ping() {

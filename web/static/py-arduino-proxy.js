@@ -98,11 +98,53 @@ PyArduinoProxy = function($) {
 			return false;
 		}
 	}
+
+	var digitalRead = function(pin, extra_settings) {
+		
+		//
+		// Digital Read
+		//
+		// Returns 0 for 'low', 1 for 'high', -1 if error.
+		//
+		
+		extra_settings = _f(extra_settings);
+		var retValue = -1;
+		
+		var hardcoded_settings = {
+			url: '/digital_read/?pin=' + pin,
+			dataType: 'json',
+			async: false,
+			success: function(data, textStatus, jqXHR) {
+				if(data.ok) {
+					if(data.value == 0 || data.value == 1) {
+						retValue = data.value;
+					} else {
+						retValue = -1;
+					}
+				} else {
+					retValue = -1;
+				}
+				if('success' in extra_settings)
+					extra_settings.success(data, textStatus, jqXHR);
+			},
+			error: function(jqXHR, textStatus, errorThrown) {
+				retValue = -1;
+				if('error' in extra_settings)
+					extra_settings.error(jqXHR, textStatus, errorThrown);
+			}
+		}
+		
+		var settings = $.extend({}, extra_settings, hardcoded_settings);
+
+		$.ajax(settings);
+		return retValue;
+	}
 	
 	return {
 		globalData: globalData,
 		pinMode: pinMode,
-		digitalWrite: digitalWrite
+		digitalWrite: digitalWrite,
+		digitalRead: digitalRead
 	};
 	
 }(jQuery);
