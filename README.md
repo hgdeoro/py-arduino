@@ -92,6 +92,12 @@ indefinitely until you press Ctrl+C:
 	Ping sent... OK - Time=18.784 ms
 	^C
 
+Web interface
+-------------
+
+Here is a simple explanation how to start the web interface (with some screenshots):
+[web interface howto](https://github.com/hgdeoro/py-arduino-proxy/wiki/Web-Interface "web interface howto").
+
 Videos!
 =======
 
