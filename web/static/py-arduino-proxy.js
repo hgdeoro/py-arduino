@@ -142,6 +142,43 @@ PyArduinoProxy = function($) {
 		return retValue;
 	}
 	
+	var analogWrite = function(pin, value, extra_settings) {
+		
+		//
+		// analogWrite()
+		//
+		// Returns 'true' if analogWrite() could be done. 'false' in case of error.
+		//
+		
+		extra_settings = _f(extra_settings);
+		var retValue = false;
+		
+		var hardcoded_settings = {
+			url: '/analog_write/?pin=' + pin + '&value=' + value,
+			dataType: 'json',
+			async: false,
+			success: function(data, textStatus, jqXHR) {
+				if(data.ok) {
+					retValue = true;
+				} else {
+					retValue = false;
+				}
+				if('success' in extra_settings)
+					extra_settings.success(data, textStatus, jqXHR);
+			},
+			error: function(jqXHR, textStatus, errorThrown) {
+				retValue = false;
+				if('error' in extra_settings)
+					extra_settings.error(jqXHR, textStatus, errorThrown);
+			}
+		}
+		
+		var settings = $.extend({}, extra_settings, hardcoded_settings);
+
+		$.ajax(settings);
+		return retValue;
+	}
+	
 	var ping = function(extra_settings) {
 		
 		//
@@ -224,6 +261,7 @@ PyArduinoProxy = function($) {
 		pinMode: pinMode,
 		digitalWrite: digitalWrite,
 		digitalRead: digitalRead,
+		analogWrite: analogWrite,
 		validateConnection: validateConnection,
 		ping: ping
 	};

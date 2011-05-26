@@ -129,20 +129,11 @@
 				$('input:radio[name=pin' + pin + '_dw]').attr('checked', false);
 				$('.pin' +  pin + '_output_buttonset').buttonset("refresh");
 				
-				$.ajax({
-				  url: '/analog_write/?pin=' + pin + '&value=' + value,
-				  dataType: 'json',
-				  async: false,
-				  success: function(data, textStatus, jqXHR) {
-					  if(data.ok) {
-							pin_status_text(pin, 'PWM: ' + value);
-					  } else {
-							pin_status_text(pin, "Couldn't analogWrite()");
-					  }
-				  },
-				  error: function(jqXHR, textStatus, errorThrown) {
-				  }
-				});
+				if(PyArduinoProxy.analogWrite(pin, value)) {
+					pin_status_text(pin, 'PWM: ' + value);
+				} else {
+					pin_status_text(pin, "Couldn't analogWrite()");
+				}
 			}
 			
 			function pin_digital_read(pin) {
