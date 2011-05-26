@@ -29,6 +29,8 @@ BASE_DIR = os.path.split(os.path.split(os.path.realpath(__file__))[0])[0]
 sys.path.append(os.path.abspath(os.path.join(BASE_DIR, 'src')))
 sys.path.append(os.path.abspath(os.path.join(BASE_DIR, 'lib')))
 
+import cherrypy
+
 from arduino_proxy.main_utils import default_main
 from arduino_proxy.web import start_webserver
 
@@ -43,6 +45,10 @@ def main():
         action="store_true", dest="info", default=False,
         help="Configure logging to show info messages.")
     
+    parser.add_option("--access",
+        action="store_true", dest="access", default=False,
+        help="Configure logging to show request processed by the web server.")
+    
     parser.add_option("--initial-wait",
         action="store", dest="initial_wait", default=None,
         help="How many seconds wait before conect (workaround for auto-reset on connect).")
@@ -55,6 +61,11 @@ def main():
         logging.basicConfig(level=logging.INFO)
     else:
         logging.basicConfig(level=logging.ERROR)
+    
+    if options.access:
+        logging.getLogger('cherrypy.access').setLevel(logging.INFO)
+    else:
+        logging.getLogger('cherrypy.access').setLevel(logging.ERROR)
     
     start_webserver(BASE_DIR)
 

@@ -197,8 +197,15 @@ def start_webserver(arduino_proxy_base_dir):
     jinja2_env = jinja2.Environment(loader=jinja2.FileSystemLoader(
         os.path.join(arduino_proxy_base_dir, 'web', 'static')))
     
-    cherrypy.quickstart(Root(jinja2_env), '/', config=conf)
+    cherrypy.config.update({
+        'log.screen': False,
+    })
     
+    cherrypy.quickstart(Root(jinja2_env), '/', config=conf)
+
+    # cherrypy.log.error_log.setLevel(logging.ERROR)
+    # cherrypy.log.access_log.setLevel(logging.ERROR)
+
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # CherryPy examples 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
