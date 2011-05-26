@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-		<title>>Py-Arduino-Proxy</title>
+		<title>{{ avr_cpu_type }} / Py-Arduino-Proxy</title>
 		<link type="text/css" href="/static/jquery-ui/css/ui-lightness/jquery-ui-1.8.13.custom.css" rel="stylesheet" />	
 		<script type="text/javascript" src="/static/jquery-ui/js/jquery-1.5.1.min.js"></script>
 		<script type="text/javascript" src="/static/jquery-ui/js/jquery-ui-1.8.13.custom.min.js"></script>
@@ -184,7 +184,7 @@
 				
 				PyArduinoProxy.init();
 				
-				$('#avrCpuType').html(PyArduinoProxy.globalData()['avrCpuType']);
+				// $('#avrCpuType').html(PyArduinoProxy.globalData()['avrCpuType']);
 				
 				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 				// ping
@@ -277,7 +277,7 @@
 	</head>
 	<body>
 		
-	<h1>Py-Arduino-Proxy</h1>
+	<h1>Py-Arduino-Proxy @ {{ avr_cpu_type }}</h1>
 	
 	<!-- Error message -->
 	<div id="error_messages" style="display: none;">
@@ -295,7 +295,7 @@
 	
 	<!-- Informatino about the Arduino -->
 	<p style="size: small; border-bottom: 1px #aaa solid;">
-		<b>AVR cpu type:</b> <span id="avrCpuType">unknown</span>
+		<b>AVR cpu type:</b> <span id="avrCpuType">{{ avr_cpu_type }}</span>
 		
 		- <b>Digital:</b> 
 		{% for pin in range(0, arduino_type.digital_pins) %}

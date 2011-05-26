@@ -58,8 +58,7 @@ class Root(object):
         if self.proxy is not None:
             try:
                 self.proxy.validate_connection()
-                arduino_type = self.proxy.getArduinoTypeStruct()
-                return self.generate_ui(arduino_type)
+                return self.generate_ui()
             except ArduinoProxyException, e:
                 self.proxy = None
                 error_message = str(e)
@@ -67,10 +66,15 @@ class Root(object):
         template = self.jinja2_env.get_template('select-serial-port.html')
         return template.render(error_message=error_message)
     
-    def generate_ui(self, arduino_type):
+    def generate_ui(self):
+        """
+        Generates the main UI. This method requires an working instance of 'self.proxy'.
+        """
+        arduino_type = self.proxy.getArduinoTypeStruct()
+        avr_cpu_type = self.proxy.getAvrCpuType()
         template = self.jinja2_env.get_template('py-arduino-proxy-main.html')
         
-        return template.render(arduino_type=arduino_type)
+        return template.render(arduino_type=arduino_type, avr_cpu_type=avr_cpu_type)
     
     ## ~~~~~~ Here start AJAX methods
     
