@@ -169,53 +169,6 @@
 				}
 			}
 			
-			function load_global_data() {
-				
-				$('body').data('py-arduino-proxy', {});
-				
-				// Get avrCpuType
-				$.ajax({
-				  url: '/get_avr_cpu_type',
-				  dataType: 'json',
-				  async: false,
-				  success: function(data, textStatus, jqXHR) {
-					  if(data.ok) {
-						  $('body').data('py-arduino-proxy')['avrCpuType'] = data.avrCpuType;
-						  $('#avrCpuType').html(data.avrCpuType);
-					  } else {
-						  showError("Couldn't get Avr CPU type info.");
-					  }
-				  },
-				  error: function(jqXHR, textStatus, errorThrown) { }
-				});
-			
-				// Get arduino_type_struct
-				$.ajax({
-				  url: '/get_arduino_type_struct',
-				  dataType: 'json',
-				  async: false,
-				  success: function(data, textStatus, jqXHR) {
-					  if(data.ok) {
-						  $('body').data('py-arduino-proxy')['arduino_type_struct'] = data.arduinoTypeStruct;
-					  } else {
-						  showError("Couldn't get Arduino type struct.");
-					  }
-				  },
-				  error: function(jqXHR, textStatus, errorThrown) {
-					  showError("Couldn't get Arduino type struct.");
-				  }
-				});
-				
-				// Setup variables
-				$('body').data('py-arduino-proxy')['digital_pin_mode'] = {};
-				
-				var i = 0;
-				for (i=0; i<$('body').data('py-arduino-proxy')['arduino_type_struct']['digital_pins']; i++) {
-					$('body').data('py-arduino-proxy')['digital_pin_mode'][i] = 'disabled';
-				}
-				
-			}
-			
 			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 			// ON-LOAD
 			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -229,7 +182,9 @@
 				
 				// Now that AJAX errors are reported, we load the data...
 				
-				load_global_data();
+				PyArduinoProxy.init();
+				
+				$('#avrCpuType').html(PyArduinoProxy.globalData()['avrCpuType']);
 				
 				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 				// ping

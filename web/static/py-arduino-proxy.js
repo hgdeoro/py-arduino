@@ -1,11 +1,57 @@
 PyArduinoProxy = function($) {
 	
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	// Returns the 'data' dict
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	
 	function _f(somevar) { if(somevar == undefined) return {}; else return somevar; }
 
+	var init = function() {
+		
+		//
+		// Initialize all the variables used by the module.
+		//
+		
+		$('body').data('py-arduino-proxy', {});
+		
+		// Get avrCpuType
+		$.ajax({
+		  url: '/get_avr_cpu_type',
+		  dataType: 'json',
+		  async: false,
+		  success: function(data, textStatus, jqXHR) {
+			  if(data.ok) {
+				  $('body').data('py-arduino-proxy')['avrCpuType'] = data.avrCpuType;
+			  } else {
+				  $('body').data('py-arduino-proxy')['avrCpuType'] = 'UNKNOWN';
+			  }
+		  }
+		});
+	
+		// Get arduino_type_struct
+		$.ajax({
+		  url: '/get_arduino_type_struct',
+		  dataType: 'json',
+		  async: false,
+		  success: function(data, textStatus, jqXHR) {
+			  if(data.ok) {
+				  $('body').data('py-arduino-proxy')['arduino_type_struct'] = data.arduinoTypeStruct;
+			  } else {
+				  $('body').data('py-arduino-proxy')['arduino_type_struct'] = {};
+			  }
+		  }
+		});
+		
+		// Setup variables
+		$('body').data('py-arduino-proxy')['digital_pin_mode'] = {};
+		
+		var i = 0;
+		for (i=0; i<$('body').data('py-arduino-proxy')['arduino_type_struct']['digital_pins']; i++) {
+			$('body').data('py-arduino-proxy')['digital_pin_mode'][i] = 'disabled';
+		}
+		
+	};
+
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	// Returns the global 'data' dict
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	
 	var globalData = function() {
 		//
 		// Returns the global data holder
@@ -257,6 +303,7 @@ PyArduinoProxy = function($) {
 	}
 	
 	return {
+		init: init,
 		globalData: globalData,
 		pinMode: pinMode,
 		digitalWrite: digitalWrite,
