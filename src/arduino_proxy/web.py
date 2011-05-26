@@ -26,39 +26,53 @@ import sys
 
 from os.path import split, realpath, join, abspath
 
-from arduino_proxy import ArduinoProxy
+from arduino_proxy import ArduinoProxy, ArduinoProxyException
+
+logger = logging.getLogger(__name__)
 
 class Root(object):
     
-    def __init__(self, proxy, arduino_proxy_base_dir):
-        self.proxy = proxy
-        self.arduino_proxy_base_dir = arduino_proxy_base_dir
-        
-        self.jinja2_env = jinja2.Environment(loader=jinja2.FileSystemLoader(
-            os.path.join(self.arduino_proxy_base_dir, 'web', 'static')))
-        
-        # In genshi docs, this is placed at module level
-        #self.loader = genshi.template.TemplateLoader(
-        #    os.path.join(self.arduino_proxy_base_dir, 'web', 'static'),
-        #    auto_reload=True, 
-        #)
+    def __init__(self, jinja2_env):
+        self.proxy = None
+        self.jinja2_env = jinja2_env
     
     @cherrypy.expose
-    def index(self):
-        raise cherrypy.HTTPRedirect("/index2")
+    def index(self, serial_port=None, speed=None):
+        error_message = None
+        if serial_port is not None:
+            if serial_port:
+                try:
+                    logger.info("Trying to connect to %s", serial_port)
+                    proxy = ArduinoProxy(tty=serial_port, speed=int(speed))
+                    logger.info("Connected OK")
+                    self.proxy = proxy
+                except ArduinoProxy, ap_exception:
+                    error_message = str(ap_exception)
+                    logger.exception("Couldn't create instance of ArduinoProxy")
+                except Exception, exception:
+                    error_message = str( exception)
+                    logger.exception("Couldn't create instance of ArduinoProxy")
+            else:
+                error_message = "Must specify a serial port."
+        
+        if self.proxy is not None:
+            try:
+                self.proxy.validate_connection()
+                arduino_type = self.proxy.getArduinoTypeStruct()
+                return self.generate_ui(arduino_type)
+            except ArduinoProxyException, e:
+                self.proxy = None
+                error_message = str(e)
+        
+        template = self.jinja2_env.get_template('select-serial-port.html')
+        return template.render(error_message=error_message)
     
-    @cherrypy.expose
-    def index2(self):
-        self.proxy.validate_connection()
+    def generate_ui(self, arduino_type):
         template = self.jinja2_env.get_template('ui-jinja2.html')
         
-        arduino_type = self.proxy.getArduinoTypeStruct()
-        
-        return template.render(
-            arduino_type=arduino_type, 
-            #digital_pins=arduino_type['digital_pins'], 
-            #pwm_pin_list=arduino_type['pwm_pin_list'], 
-        )
+        return template.render(arduino_type=arduino_type)
+    
+    ## ~~~~~~ Here start AJAX methods
     
     @cherrypy.expose
     @cherrypy.tools.json_out()
@@ -172,7 +186,23 @@ class Root(object):
             logging.exception("Exception raised by proxy.getArduinoTypeStruct()")
             return { 'ok': False, }
 
-def start_webserver(arduino_proxy_base_dir, options, args, proxy):
+def start_webserver(arduino_proxy_base_dir):
+    conf = {
+        '/static': {
+            'tools.staticdir.on': True,
+            'tools.staticdir.dir': join(arduino_proxy_base_dir, 'web', 'static'),
+        }
+    }
+    
+    jinja2_env = jinja2.Environment(loader=jinja2.FileSystemLoader(
+        os.path.join(arduino_proxy_base_dir, 'web', 'static')))
+    
+    cherrypy.quickstart(Root(jinja2_env), '/', config=conf)
+    
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # CherryPy examples 
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #
     #    # Set up site-wide config first so we get a log if errors occur.
     #    cherrypy.config.update({'environment': 'production',
     #                            'log.error_file': 'site.log',
@@ -196,12 +226,3 @@ def start_webserver(arduino_proxy_base_dir, options, args, proxy):
     #        }
     #    }
     #    cherrypy.tree.mount(Root(), "/script_name_root", config=config)
-    
-    conf = {
-        '/static': {
-            'tools.staticdir.on': True,
-            'tools.staticdir.dir': join(arduino_proxy_base_dir, 'web', 'static'),
-        }
-    }
-    
-    cherrypy.quickstart(Root(proxy, arduino_proxy_base_dir), '/', config=conf)

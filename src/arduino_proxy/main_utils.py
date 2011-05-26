@@ -62,7 +62,7 @@ def default_main(optparse_usage="usage: %prog [options] serial_device",
         help="Configure logging to show info messages.")
     parser.add_option("--initial-wait",
         action="store", dest="initial_wait", default=None,
-        help="How many seconds wait before conect (workaround for auto-reset on connect bug).")
+        help="How many seconds wait before conect (workaround for auto-reset on connect).")
     parser.add_option("--dont-call-validate-connection",
         action="store_true", dest="dont_call_validate_connection", default=False,
         help="Don't call validate_connection() on startup (the default is " + \

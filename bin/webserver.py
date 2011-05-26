@@ -18,6 +18,8 @@
 ##    along with Py-Arduino-Proxy; see the file LICENSE.txt.
 ##-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
+import logging
+import optparse
 import os
 import sys
 import time
@@ -31,8 +33,30 @@ from arduino_proxy.main_utils import default_main
 from arduino_proxy.web import start_webserver
 
 def main():
-    options, args, proxy = default_main() # pylint: disable=W0612
-    start_webserver(BASE_DIR, options, args, proxy)
+    parser = optparse.OptionParser()
+    
+    parser.add_option("--debug",
+        action="store_true", dest="debug", default=False,
+        help="Configure logging to show debug messages.")
+    
+    parser.add_option("--info",
+        action="store_true", dest="info", default=False,
+        help="Configure logging to show info messages.")
+    
+    parser.add_option("--initial-wait",
+        action="store", dest="initial_wait", default=None,
+        help="How many seconds wait before conect (workaround for auto-reset on connect).")
+    
+    (options, args) = parser.parse_args()
+
+    if options.debug:
+        logging.basicConfig(level=logging.DEBUG)
+    elif options.info:
+        logging.basicConfig(level=logging.INFO)
+    else:
+        logging.basicConfig(level=logging.ERROR)
+    
+    start_webserver(BASE_DIR)
 
 if __name__ == '__main__':
     main()
