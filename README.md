@@ -53,6 +53,16 @@ The basic methods of Arduino are implemented. The following actions can be done 
 Installation
 ============
 
+Requirements
+------------
+
+Py-Arduino-Proxy uses [PySerial](http://pyserial.sourceforge.net/ "PySerial")
+for communicating to the Arduino. On Ubuntu, you can install it with:
+
+    $ sudo aptitude install python-serial
+
+Or you can download it from the project's page: [PySerial downloads](http://pypi.python.org/pypi/pyserial "PySerial downloads").
+
 Step 1: Download the project code using Git
 -------------------------------------------
 

@@ -58,6 +58,16 @@ tanto, las siguientes acciones se pueden realizar desde Python:
 Instalación
 ===========
 
+Requerimientos
+--------------
+
+Py-Arduino-Proxy usa [PySerial](http://pyserial.sourceforge.net/ "PySerial")
+para comunicarse con Arduino. En Ubuntu, se puede instalar con:
+
+    $ sudo aptitude install python-serial
+
+O se puede bajar de la [página de downloads](http://pypi.python.org/pypi/pyserial "página de downloads").
+
 Paso 1: Bajar el código del proyecto usando Git
 -----------------------------------------------
 
