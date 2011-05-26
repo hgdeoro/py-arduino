@@ -158,21 +158,14 @@
 			
 			function ping() {
 				$("#ping_result").html('waiting for response...');
-				$.ajax({
-				  url: '/ping',
-				  dataType: 'json',
-				  async: false,
-				  success: function(data, textStatus, jqXHR) {
-					  if(data.ok) {
-						  $("#ping_result").html('PING OK');
-					  } else {
-						  $("#ping_result").html('no response');
-					  }
-				  },
-				  error: function(jqXHR, textStatus, errorThrown) {
-					  $("#ping_result").html('no response (AJAX ERROR)');
-				  }
-				});
+				var start = new Date().getTime();
+				var value = PyArduinoProxy.ping();
+				var end = new Date().getTime();
+				if(value) {
+				  $("#ping_result").html('PING OK - ' + (end-start) + ' ms');
+				} else {
+				  $("#ping_result").html('no response');
+				}
 			}
 			
 			function validate_connection() {

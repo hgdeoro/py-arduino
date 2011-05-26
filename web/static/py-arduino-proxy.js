@@ -23,7 +23,7 @@ PyArduinoProxy = function($) {
 		//
 		
 		extra_settings = _f(extra_settings);
-		var retValue = true;
+		var retValue = false;
 		
 		var hardcoded_settings = {
 			url: '/pin_mode/?pin=' + pin + '&mode=' + mode,
@@ -32,6 +32,7 @@ PyArduinoProxy = function($) {
 			success: function(data, textStatus, jqXHR) {
 				if(data.ok) {
 					globalData()['digital_pin_mode'][pin] = mode;
+					retValue = true;
 				} else {
 					retValue = false;
 				}
@@ -68,7 +69,7 @@ PyArduinoProxy = function($) {
 		//
 		
 		extra_settings = _f(extra_settings);
-		var retValue = true;
+		var retValue = false;
 		
 		var hardcoded_settings = {
 			url: '/digital_write/?pin=' + pin + '&value=' + value,
@@ -76,6 +77,7 @@ PyArduinoProxy = function($) {
 			async: false,
 			success: function(data, textStatus, jqXHR) {
 				if(data.ok) {
+					retValue = true;
 				} else {
 					retValue = false;
 				}
@@ -140,11 +142,50 @@ PyArduinoProxy = function($) {
 		return retValue;
 	}
 	
+	var ping = function(extra_settings) {
+		
+		//
+		// Ping
+		//
+		// Returns 'true' if ping() could be done. 'false' in case of error.
+		//
+		
+		extra_settings = _f(extra_settings);
+		var retValue = false;
+		
+		var hardcoded_settings = {
+			url: '/ping',
+			dataType: 'json',
+			async: false,
+			success: function(data, textStatus, jqXHR) {
+				if(data.ok) {
+					retValue = true;
+				} else {
+					retValue = false;
+				}
+				if('success' in extra_settings)
+					extra_settings.success(data, textStatus, jqXHR);
+			},
+			error: function(jqXHR, textStatus, errorThrown) {
+				retValue = false;
+				if('error' in extra_settings)
+					extra_settings.error(jqXHR, textStatus, errorThrown);
+			}
+		}
+		
+		var settings = $.extend({}, extra_settings, hardcoded_settings);
+
+		$.ajax(settings);
+		return retValue;
+
+	}
+	
 	return {
 		globalData: globalData,
 		pinMode: pinMode,
 		digitalWrite: digitalWrite,
-		digitalRead: digitalRead
+		digitalRead: digitalRead,
+		ping: ping
 	};
 	
 }(jQuery);
