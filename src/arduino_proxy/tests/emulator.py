@@ -71,7 +71,7 @@ class ArduinoEmulator(threading.Thread):
             self.serial_connection.write("DW_OK\n")
         elif splitted[0] == '_aWrt':
             self.serial_connection.write("AW_OK\n")
-        elif splitted[0] == '_cnt':
+        elif splitted[0] == '_vCnt':
             self.serial_connection.write("%s\n" % splitted[1])
         elif splitted[0] == '_pMd':
             self.serial_connection.write("PM_OK\n")
