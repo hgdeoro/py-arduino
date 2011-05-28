@@ -7,6 +7,7 @@
 		<script type="text/javascript" src="/static/jquery-ui/js/jquery-1.5.1.min.js"></script>
 		<script type="text/javascript" src="/static/jquery-ui/js/jquery-ui-1.8.13.custom.min.js"></script>
 		<script type="text/javascript" src="/static/py-arduino-proxy.js"></script>
+		<link type="text/css" href="/static/py-arduino-proxy.css" rel="stylesheet" />	
 		<style type="text/css">
 			body { font: 62.5% sans-serif; margin: 20px; color: #777; }
 		</style>	
@@ -32,55 +33,62 @@
 			// ON-LOAD
 			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 			
+			/*
 			$(function(){
 				
 			});
+			*/
 			
 		</script>
 	</head>
 	<body>
-		
+	
 	<h1>Py-Arduino-Proxy</h1>
 
 	<!-- Error message -->
 	{% if error_message %}
-	<div id="error_messages">
+	<div id="error_messages" style="margin-bottom: 20px;">
 		<div class="ui-widget">
 			<div class="ui-state-error ui-corner-all" style="padding: 0 .7em;"> 
 				<p>
 					<span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span> 
 					<span id="error_message_text">
-						{{ error_message }}
+						{{ error_message }} {# This is an error message. #}
 					</span>
 				</p>
 			</div>
 		</div>
 	</div>
 	{% endif %}
-	
-	<div id="dialog-form" title="Serial port"> 
-		To establish a connection to the Arduino, insert the serial port name and press "Connect".
-		<form action="." method="post"> 
-		<fieldset> 
-			<div>
-				<label for="serial_port">Serial Port</label> 
-				<input type="text" name="serial_port" id="serial_port" class="text ui-widget-content ui-corner-all" /> 
+
+	<div class="ui-widget">
+		<div class="ui-widget-header ui-corner-top">
+			<h2>Connect to the Arduino</h2>
+		</div>
+		<div class="ui-widget-content ui-corner-bottom">
+			<p>To establish a connection to the Arduino, insert the <strong>serial port</strong> device, the <strong>speed</strong>, and press "<strong>Connect</strong>".</p>
+			<div class="ui-form">
+			<form action="." method="post" class="ui-helper-clearfix">
+				<div style="float: left;">
+					<label for="f_serial_port" class="ui-helper-reset">Serial Port</label> 
+					<input type="text" name="serial_port" id="f_serial_port"/> 
+					-
+					<label for="f_speed" class="ui-helper-reset">Speed</label> 
+					<select name="speed" id="f_speed">
+						<option value="9600" selected="selected">9600</option>
+						<option value="14400">14400</option>
+						<option value="19200">19200</option>
+						<option value="38400">38400</option>
+						<option value="57600">57600</option>
+						<option value="115200">115200</option>
+					</select>
+					-
+					<input type="submit" value="Connect" />
+				</div>
+			</form>
 			</div>
-			<div>
-				Speed: 
-				<select name="speed">
-					<option value="9600" selected="selected">9600</option>
-					<option value="14400">14400</option>
-					<option value="19200">19200</option>
-					<option value="38400">38400</option>
-					<option value="57600">57600</option>
-					<option value="115200">115200</option>
-				</select>
-			</div>
-			<input type="submit" value="Connect" class="ui-widget-content ui-corner-all" />
-		</fieldset> 
-		</form> 
-	</div> 
+		</div>
+	</div>
 	
 	<p style="size: small; border-top: 1px #aaa solid; padding-top: 3px;">
 		Py-Arduino-Proxy | 2011 &copy; Horacio G. de Oro &lt;hgdeoro@gmail.com&gt; | <a href="https://github.com/hgdeoro/py-arduino-proxy" target="_blank">Get the source</a>
