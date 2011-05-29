@@ -51,6 +51,7 @@ class ArduinoEmulator(threading.Thread):
     
     def __init__(self, serial_connection):
         threading.Thread.__init__(self)
+        self.daemon = True
         self.serial_connection = serial_connection
         self.running = True
     
@@ -87,6 +88,10 @@ class ArduinoEmulator(threading.Thread):
             self.serial_connection.write("ENA\n")
         elif splitted[0] == '_dD':
             self.serial_connection.write("DIS\n")
+        elif splitted[0] == '_gACT':
+            self.serial_connection.write("_AVR_CPU_NAME__EMULATOR_\n")
+        elif splitted[0] == '_gATS':
+            self.serial_connection.write("2 5 00111 2 32\n")
         else:
             self.serial_connection.write("%s 0\n" % ArduinoProxy.INVALID_CMD)
             logger.error("run_cmd() - INVALID COMMAND: %s", pprint.pformat(cmd))
