@@ -42,11 +42,8 @@ class TestArduinoProxyWithInitialContentInSerialBuffer(unittest.TestCase): # pyl
     Testcase for commands.
     """
     def setUp(self): # pylint: disable=C0103
-        self.proxy = ArduinoProxy(tty='')
-        self.proxy.serial_port = SerialConnectionMock( \
-            initial_in_buffer_contents="** SOME TEXT **\n" * 5)
-        self.emulator = ArduinoEmulator(self.proxy.serial_port.get_other_side())
-        self.emulator.start()
+        self.proxy = ArduinoProxy.create_emulator(
+            initial_input_buffer_contents="** SOME TEXT **\n" * 5)
 
     def test_ping(self):
         self.proxy.validate_connection()
@@ -55,10 +52,6 @@ class TestArduinoProxyWithInitialContentInSerialBuffer(unittest.TestCase): # pyl
 
     def tearDown(self): # pylint: disable=C0103
         self.proxy.close()
-        self.emulator.stop_running()
-        logger.info("tearDown(): emulator.join()")
-        self.emulator.join()
-        logger.debug("tearDown(): %s", str(self.proxy.serial_port))
 
 class TestProxiedMethodsOfArduinoProxy(unittest.TestCase): # pylint: disable=R0904
     """
@@ -66,10 +59,7 @@ class TestProxiedMethodsOfArduinoProxy(unittest.TestCase): # pylint: disable=R09
     """
     
     def setUp(self): # pylint: disable=C0103
-        self.proxy = ArduinoProxy(tty='')
-        self.proxy.serial_port = SerialConnectionMock()
-        self.emulator = ArduinoEmulator(self.proxy.serial_port.get_other_side())
-        self.emulator.start()
+        self.proxy = ArduinoProxy.create_emulator()
     
     def test_ping(self):
         response = self.proxy.ping()
@@ -154,20 +144,13 @@ class TestProxiedMethodsOfArduinoProxy(unittest.TestCase): # pylint: disable=R09
     
     def tearDown(self): # pylint: disable=C0103
         self.proxy.close()
-        self.emulator.stop_running()
-        logger.info("tearDown(): emulator.join()")
-        self.emulator.join()
-        logger.debug("tearDown(): %s", str(self.proxy.serial_port))
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 class TestInternalsOfArduinoProxy(unittest.TestCase): # pylint: disable=R0904
     
     def setUp(self): # pylint: disable=C0103
-        self.proxy = ArduinoProxy(tty='')
-        self.proxy.serial_port = SerialConnectionMock()
-        self.emulator = ArduinoEmulator(self.proxy.serial_port.get_other_side())
-        self.emulator.start()
+        self.proxy = ArduinoProxy.create_emulator()
     
     def test_send_cmd(self):
         
@@ -205,10 +188,6 @@ class TestInternalsOfArduinoProxy(unittest.TestCase): # pylint: disable=R0904
     
     def tearDown(self): # pylint: disable=C0103
         self.proxy.close()
-        self.emulator.stop_running()
-        logger.info("tearDown(): emulator.join()")
-        self.emulator.join()
-        logger.debug("tearDown(): %s", str(self.proxy.serial_port))
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

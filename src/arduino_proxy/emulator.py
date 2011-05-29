@@ -47,6 +47,9 @@ class ArduinoEmulator(threading.Thread):
     def run_cmd(self, cmd): #  # pylint: disable=R0912
         if not self.running:
             return
+        
+        from arduino_proxy.proxy import ArduinoProxy
+        
         logger.info("run_cmd() - cmd: %s", pprint.pformat(cmd))
         splitted = cmd.split()
         if splitted[0] == '_ping':

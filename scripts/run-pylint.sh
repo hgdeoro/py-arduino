@@ -18,6 +18,7 @@ pylint -d C0111,R0801 \
     src/arduino_proxy/tests/test_lcd_functions.py \
     src/arduino_proxy/tests/test_all_functions.py \
     src/arduino_proxy/tests/emulator.py \
+    src/arduino_proxy/emulator.py \
     src/arduino_proxy/generate_sketch.py \
     src/arduino_proxy/main_utils.py \
     src/arduino_proxy/proxy.py \
