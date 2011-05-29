@@ -39,7 +39,7 @@ def main():
         print "'Hello, world!' on row 0", proxy.lcdMessage("Hello, world!")
         raw_input("Press any key to continue...")
 
-        print "'Hello, world!' on row 0", proxy.lcdMessage(["Hello, world!"])
+        print "'Hello, world!' on row 1", proxy.lcdMessage(["", "Hello, world!"])
         raw_input("Press any key to continue...")
 
         print "'Hello, world!' on row 0, 'bye bye world' on line 1", \
@@ -56,7 +56,7 @@ def main():
         for i in range(0, 32):
             proxy.lcdWrite("@", i%16, i/16, clear_lcd=True) # msg, col, row
             time.sleep(0.2)
-        raw_input("Press any key to continue...")
+        #raw_input("Press any key to continue...")
 
     except KeyboardInterrupt:
         print ""
