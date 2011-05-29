@@ -213,6 +213,18 @@ class Root(object):
             logging.exception("Exception raised by proxy.getArduinoTypeStruct()")
             return { 'ok': False, }
 
+    @cherrypy.expose
+    @cherrypy.tools.json_out()
+    def close(self):
+        try:
+            self.proxy.close()
+            self.proxy = None
+            return { 'ok': True, }
+        except:
+            # FIXME: return error details and log
+            logging.exception("Exception raised by proxy.close()")
+            return { 'ok': False, }
+
 def start_webserver(arduino_proxy_base_dir):
     conf = {
         '/': {

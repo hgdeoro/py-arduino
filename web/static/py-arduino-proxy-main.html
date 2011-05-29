@@ -169,6 +169,15 @@
 				}
 			}
 			
+			function close_proxy() {
+				var value = PyArduinoProxy.close();
+				if(value === true) {
+					window.location.replace("/");
+				} else {
+					$("#close_proxy_result").html('Couldn\'t close the proxy...');
+				}
+			}
+			
 			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 			// ON-LOAD
 			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -183,8 +192,6 @@
 				// Now that AJAX errors are reported, we load the data...
 				
 				PyArduinoProxy.init();
-				
-				// $('#avrCpuType').html(PyArduinoProxy.globalData()['avrCpuType']);
 				
 				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 				// ping
@@ -203,6 +210,16 @@
 				$("#validate_connection_button").click(function() {
 					validate_connection();
 				});
+				
+				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+				// validate_connection
+				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+				
+				$("#close_proxy_button").button();
+				$("#close_proxy_button").click(function() {
+					close_proxy();
+				});
+				
 				
 				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 				// Pin XX
@@ -310,14 +327,13 @@
 		{% endfor %}
 	</p>
 	
-	<!-- ping() -->
-	<p>
-		<button id="ping_button">Ping</button> &nbsp; | Result: <span id="ping_result"></span>
-	</p>
-	
-	<!-- validate_connection() -->
-	<p>
-		<button id="validate_connection_button">Validate connection</button> &nbsp; | Result: <span id="validate_connection_result"></span>
+	<!-- ping() / validate_connection() -->
+	<p class="ui-helper-clearfix">
+		<button id="ping_button">Ping</button> &nbsp; <span id="ping_result"></span>
+		&nbsp; | &nbsp;
+		<button id="validate_connection_button">Validate connection</button> &nbsp; <span id="validate_connection_result"></span>
+		&nbsp; | &nbsp;
+		<button id="close_proxy_button">Close</button> &nbsp; <span id="close_proxy_result"></span>
 	</p>
 	
 	{% for pin in range(0, arduino_type.digital_pins) %}

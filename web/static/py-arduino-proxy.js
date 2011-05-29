@@ -302,9 +302,45 @@ PyArduinoProxy = function($) {
 
 	}
 	
+	var close = function(pin, value, extra_settings) {
+		
+		//
+		// close the proxy
+		//
+		
+		extra_settings = _f(extra_settings);
+		var retValue = false;
+		
+		var hardcoded_settings = {
+			url: '/close',
+			dataType: 'json',
+			async: false,
+			success: function(data, textStatus, jqXHR) {
+				if(data.ok) {
+					retValue = true;
+				} else {
+					retValue = false;
+				}
+				if('success' in extra_settings)
+					extra_settings.success(data, textStatus, jqXHR);
+			},
+			error: function(jqXHR, textStatus, errorThrown) {
+				retValue = false;
+				if('error' in extra_settings)
+					extra_settings.error(jqXHR, textStatus, errorThrown);
+			}
+		}
+		
+		var settings = $.extend({}, extra_settings, hardcoded_settings);
+		
+		$.ajax(settings);
+		return retValue;
+	}
+		
 	return {
 		init: init,
 		globalData: globalData,
+		close: close,
 		pinMode: pinMode,
 		digitalWrite: digitalWrite,
 		digitalRead: digitalRead,
