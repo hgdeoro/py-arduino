@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+		<title>{{ avr_cpu_type }} / Py-Arduino-Proxy</title>
+		<link type="text/css" href="/static/jquery-ui/css/ui-lightness/jquery-ui-1.8.13.custom.css" rel="stylesheet" />	
+		<script type="text/javascript" src="/static/jquery-ui/js/jquery-1.5.1.min.js"></script>
+		<script type="text/javascript" src="/static/jquery-ui/js/jquery-ui-1.8.13.custom.min.js"></script>
+		<script type="text/javascript" src="/static/jquery-ui/js/jquery.tmpl.min.js"></script>
+		<script type="text/javascript" src="/static/jquery-ui/js/jquery.taboverride-1.0.js"></script>
+		<script type="text/javascript" src="/static/py-arduino-proxy.js"></script>
+		<style type="text/css">
+			body { font: 62.5% sans-serif; margin: 20px; color: #777; }
+		</style>	
+		<script type="text/javascript">
+			
+			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			// Error messages
+			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			
+			// Show an error message at the TOP of the page.
+			function showError(html_msg) {
+				$('#error_message_text').html(html_msg);
+				$('#error_message_text').append(" <a href='javascript:hide_error_messages(); return false;'>[hide]</a>");
+				$("#error_messages").show();
+			}
+
+			// Hide the error message.
+			function hide_error_messages() {
+				$('#error_messages').hide();
+			}
+			
+			function ping() {
+				$("#ping_result").html('waiting for response...');
+				var start = new Date().getTime();
+				var value = PyArduinoProxy.ping();
+				var end = new Date().getTime();
+				if(value) {
+				  $("#ping_result").html('PING OK - ' + (end-start) + ' ms');
+				} else {
+				  $("#ping_result").html('no response');
+				}
+			}
+			
+			function validate_connection() {
+				$("#validate_connection_result").html('waiting for response...');
+				var value = PyArduinoProxy.validateConnection();
+				if(value === false) {
+					$("#validate_connection_result").html('ERROR');
+				} else {
+					$("#validate_connection_result").html('validation OK - ID: ' + value);
+				}
+			}
+			
+			function close_proxy() {
+				var value = PyArduinoProxy.close();
+				if(value === true) {
+					window.location.replace("/");
+				} else {
+					$("#close_proxy_result").html('Couldn\'t close the proxy...');
+				}
+			}
+			
+			function clear_log_console() {
+				$("#simple_log_console").html('');
+			}
+			
+			function _log(msg) {
+				$.tmpl("info_message_template", [{ log_message: msg, date: new Date() }]).appendTo("#simple_log_console");
+			}
+			
+			function _error(msg) {
+				$.tmpl("error_message_template", [{ log_message: msg, date: new Date() }]).appendTo("#simple_log_console");
+			}
+			
+			function execute_js() {
+				try {
+					clear_log_console();
+					eval($("#js_code").val());
+					_log("Script executed successfully.");
+				} catch(err) {
+					_error(err);
+				}
+			}
+			
+			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			// ON-LOAD
+			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			
+			$(function(){
+				
+				// Attach 'global' event listener of ajax errors
+				$("#error_messages").ajaxError(function(event, request, settings){
+					showError("<b>Error:</b> a problem occurred when communicating to the server. Url: '" + settings.url + "'");
+				});
+				
+				// Now that AJAX errors are reported, we load the data...
+				
+				$("#info_message_template").template("info_message_template");
+				$("#error_message_template").template("error_message_template");
+				
+				PyArduinoProxy.init();
+				
+				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+				// ping
+				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+				
+				$("#ping_button").button();
+				$("#ping_button").click(function() {
+					ping();
+				});
+				
+				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+				// validate_connection
+				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+				
+				$("#validate_connection_button").button();
+				$("#validate_connection_button").click(function() {
+					validate_connection();
+				});
+				
+				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+				// close_proxy_button
+				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+				
+				$("#close_proxy_button").button();
+				$("#close_proxy_button").click(function() {
+					close_proxy();
+				});
+				
+				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+				// execute_button
+				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+				
+				$("#execute_button").button();
+				$("#execute_button").click(function() {
+					execute_js();
+				});
+				
+				// enable Tab Override
+				$.fn.tabOverride.setTabSize(4);
+				$('textarea').tabOverride();
+			});
+		</script>
+	</head>
+	<body>
+		
+	<h1>Py-Arduino-Proxy @ {{ avr_cpu_type }}</h1>
+	
+	<!-- Error message -->
+	<div id="error_messages" style="display: none;">
+		<div class="ui-widget">
+			<div class="ui-state-error ui-corner-all" style="padding: 0 .7em;"> 
+				<p>
+					<span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span> 
+					<span id="error_message_text">
+						<strong>Alert:</strong> Sample ui-state-error style.
+					</span>
+				</p>
+			</div>
+		</div>
+	</div>
+	
+	<!-- Informatino about the Arduino -->
+	<p style="size: small; border-bottom: 1px #aaa solid;">
+		<b>AVR cpu type:</b> <span id="avrCpuType">{{ avr_cpu_type }}</span>
+		
+		- <b>Digital:</b> 
+		{% for pin in range(0, arduino_type.digital_pins) %}
+			{{ pin }} {% if pin in arduino_type.pwm_pin_list %} (PWM) {% endif %}
+			{% if not loop.last%} , {% endif %}
+		{% endfor %}
+		
+		- <b>Analog:</b> 
+		{% for pin in range(0, arduino_type.analog_pins) %}
+			{{ pin }}
+			{% if not loop.last%} , {% endif %}
+		{% endfor %}
+	</p>
+	
+	<!-- ping() / validate_connection() -->
+	<p class="ui-helper-clearfix">
+		<button id="ping_button">Ping</button> &nbsp; <span id="ping_result"></span>
+		&nbsp; | &nbsp;
+		<button id="validate_connection_button">Validate connection</button> &nbsp; <span id="validate_connection_result"></span>
+		&nbsp; | &nbsp;
+		<button id="close_proxy_button">Close</button> &nbsp; <span id="close_proxy_result"></span>
+		&nbsp; | &nbsp;
+		<button id="execute_button">Execute</button>
+	</p>
+	
+	<div>
+		<textarea id="js_code" rows="10" cols="100"></textarea>
+	</div>
+	
+	<!-- TEMPLATE -->
+	<script id="info_message_template" type="text/x-jquery-tmpl">
+		<div class="ui-state-highlight ui-corner-all" style="padding: 0.3em;">
+			<p style="margin: 0.1em; padding: 0.1em;">
+				<span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em;"></span>
+				<span>${date} - INFO:</span>
+				<strong>${log_message}</strong>
+			</p>
+		</div>
+	</script>
+	
+	<!-- TEMPLATE -->
+	<script id="error_message_template" type="text/x-jquery-tmpl">
+		<div class="ui-state-error ui-corner-all" style="padding: 0 .3em;"> 
+			<p style="margin: 0.1em; padding: 0.1em;">
+				<span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span> 
+				<span>${date} - ERROR:</span>
+				<strong>${log_message}</strong>
+			</p>
+		</div>
+	</script>
+	
+	<div class="ui-widget" id="simple_log_console">
+		<!--
+		<div class="ui-state-highlight ui-corner-all" style="padding: 0.3em;">
+			<p>
+				<span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em;"></span>
+				<strong>INFO:</strong>
+				<span>UI started ok.</span>
+			</p>
+		</div>
+		-->
+	</div>
+		
+	<p style="size: small; border-top: 1px #aaa solid; padding-top: 3px;">
+		Py-Arduino-Proxy | 2011 &copy; Horacio G. de Oro &lt;hgdeoro@gmail.com&gt; | <a href="https://github.com/hgdeoro/py-arduino-proxy" target="_blank">Get the source</a>
+	</p>
+	</body>
+</html>
+
+

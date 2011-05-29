@@ -75,7 +75,7 @@ class Root(object):
         assert error_message
         template = self.jinja2_env.get_template('select-serial-port.html')
         return template.render(error_message=error_message)
-
+    
     @cherrypy.expose
     def index(self):
         if self.proxy is None:
@@ -88,14 +88,27 @@ class Root(object):
             self.proxy = None
             cherrypy.session['error_message'] = str(e)
             raise cherrypy.HTTPRedirect("/connect")
-    
-    def generate_ui(self):
+
+    @cherrypy.expose
+    def js_prototyper(self):
+        if self.proxy is None:
+            raise cherrypy.HTTPRedirect("/connect")
+        
+        try:
+            self.proxy.validate_connection()
+            return self.generate_ui(template_name="py-arduino-proxy-js-prototyper.html")
+        except ArduinoProxyException, e:
+            self.proxy = None
+            cherrypy.session['error_message'] = str(e)
+            raise cherrypy.HTTPRedirect("/connect")
+
+    def generate_ui(self, template_name="py-arduino-proxy-main.html"):
         """
         Generates the main UI. This method requires an working instance of 'self.proxy'.
         """
         arduino_type = self.proxy.getArduinoTypeStruct()
         avr_cpu_type = self.proxy.getAvrCpuType()
-        template = self.jinja2_env.get_template('py-arduino-proxy-main.html')
+        template = self.jinja2_env.get_template(template_name)
         
         return template.render(arduino_type=arduino_type, avr_cpu_type=avr_cpu_type)
     
