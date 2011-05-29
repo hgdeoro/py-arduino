@@ -37,34 +37,57 @@ class Root(object):
         self.jinja2_env = jinja2_env
     
     @cherrypy.expose
-    def index(self, serial_port=None, speed=None):
-        error_message = None
-        if serial_port is not None:
-            if serial_port:
-                try:
-                    logger.info("Trying to connect to %s", serial_port)
-                    proxy = ArduinoProxy(tty=serial_port, speed=int(speed))
-                    logger.info("Connected OK")
-                    self.proxy = proxy
-                except ArduinoProxy, ap_exception:
-                    error_message = str(ap_exception)
-                    logger.exception("Couldn't create instance of ArduinoProxy")
-                except Exception, exception:
-                    error_message = str( exception)
-                    logger.exception("Couldn't create instance of ArduinoProxy")
-            else:
-                error_message = "Must specify a serial port."
+    def connect_emulator(self):
+        logger.info("Creating EMULATOR...")
+        self.proxy = ArduinoProxy.create_emulator()
+        raise cherrypy.HTTPRedirect("/") # Connect OK -> redirect to '/'
+
+    @cherrypy.expose
+    def connect(self, serial_port=None, speed=None):
+        # Render the connect page
+        if serial_port is None:
+            error_message = cherrypy.session.get('error_message')
+            cherrypy.session['error_message'] = None
+            template = self.jinja2_env.get_template('select-serial-port.html')
+            return template.render(error_message=error_message)
         
-        if self.proxy is not None:
+        # Try to conect
+        error_message = None # holds the error messages, and used as a flag too.
+        serial_port = serial_port.strip()
+        if serial_port: # != None 
             try:
-                self.proxy.validate_connection()
-                return self.generate_ui()
-            except ArduinoProxyException, e:
-                self.proxy = None
-                error_message = str(e)
+                logger.info("Trying to connect to %s", serial_port)
+                proxy = ArduinoProxy(tty=serial_port, speed=int(speed))
+                logger.info("Connected OK")
+                self.proxy = proxy
+                raise cherrypy.HTTPRedirect("/") # Connect OK -> redirect to '/'
+            except cherrypy.HTTPRedirect, cherrypy_redirect:
+                raise cherrypy_redirect
+            except ArduinoProxy, ap_exception:
+                error_message = str(ap_exception)
+                logger.exception("Couldn't create instance of ArduinoProxy")
+            except Exception, exception:
+                error_message = str( exception)
+                logger.exception("Couldn't create instance of ArduinoProxy")
+        else:
+            error_message = "Must specify a serial port."
         
+        assert error_message
         template = self.jinja2_env.get_template('select-serial-port.html')
         return template.render(error_message=error_message)
+
+    @cherrypy.expose
+    def index(self):
+        if self.proxy is None:
+            raise cherrypy.HTTPRedirect("/connect")
+        
+        try:
+            self.proxy.validate_connection()
+            return self.generate_ui()
+        except ArduinoProxyException, e:
+            self.proxy = None
+            cherrypy.session['error_message'] = str(e)
+            raise cherrypy.HTTPRedirect("/connect")
     
     def generate_ui(self):
         """
@@ -192,6 +215,9 @@ class Root(object):
 
 def start_webserver(arduino_proxy_base_dir):
     conf = {
+        '/': {
+            'tools.sessions.on': True, 
+        }, 
         '/static': {
             'tools.staticdir.on': True,
             'tools.staticdir.dir': join(arduino_proxy_base_dir, 'web', 'static'),
