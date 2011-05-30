@@ -161,6 +161,10 @@
 					execute_js();
 				});
 				
+				$("textarea").resizable({
+					handles: "se"
+				});
+				
 				// enable Tab Override
 				$.fn.tabOverride.setTabSize(4);
 				$('textarea').tabOverride();
@@ -216,11 +220,11 @@
 	</p>
 	
 	<div>
-		<textarea id="js_code" rows="10" cols="100">
+		<textarea id="js_code" rows="10" cols="100">// Blink on PIN 13 example...
 proxy.pinMode(13, OUTPUT);
 proxy.digitalWrite(13, LOW);
 var i;
-for(i=0; i<10; i++) {
+for(i=0; i<5; i++) {
     proxy.digitalWrite(13, HIGH);
     proxy.delay(250);
     proxy.digitalWrite(13, LOW);
