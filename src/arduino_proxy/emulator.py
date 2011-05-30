@@ -69,6 +69,7 @@ class ArduinoEmulator(threading.Thread):
         elif splitted[0] == '_pMd':
             self.serial_connection.write("PM_OK\n")
         elif splitted[0] == '_dy':
+            time.sleep(int(splitted[1])/10000.0)
             self.serial_connection.write("D_OK\n")
         elif splitted[0] == '_dMs':
             self.serial_connection.write("DMS_OK\n")
