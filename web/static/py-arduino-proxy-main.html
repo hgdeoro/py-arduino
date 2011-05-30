@@ -177,6 +177,10 @@
 					$("#close_proxy_result").html('Couldn\'t close the proxy...');
 				}
 			}
+
+			function goto_js_prototyper() {
+				window.location.replace("/js_prototyper");
+			}
 			
 			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 			// ON-LOAD
@@ -218,6 +222,15 @@
 				$("#close_proxy_button").button();
 				$("#close_proxy_button").click(function() {
 					close_proxy();
+				});
+				
+				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+				// goto_js_prototyper_button
+				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+				
+				$("#goto_js_prototyper_button").button();
+				$("#goto_js_prototyper_button").click(function() {
+					goto_js_prototyper();
 				});
 				
 				
@@ -334,6 +347,8 @@
 		<button id="validate_connection_button">Validate connection</button> &nbsp; <span id="validate_connection_result"></span>
 		&nbsp; | &nbsp;
 		<button id="close_proxy_button">Close</button> &nbsp; <span id="close_proxy_result"></span>
+		&nbsp; | &nbsp;
+		<button id="goto_js_prototyper_button">JS Prototyper</button>
 	</p>
 	
 	{% for pin in range(0, arduino_type.digital_pins) %}

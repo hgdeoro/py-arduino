@@ -61,6 +61,10 @@
 				}
 			}
 			
+			function goto_main() {
+				window.location.replace("/");
+			}
+			
 			function clear_log_console() {
 				$("#simple_log_console").html('');
 			}
@@ -101,6 +105,8 @@
 				
 				PyArduinoProxy.init();
 				
+				proxy = PyArduinoProxy;
+				
 				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 				// ping
 				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -126,6 +132,15 @@
 				$("#close_proxy_button").button();
 				$("#close_proxy_button").click(function() {
 					close_proxy();
+				});
+				
+				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+				// goto_main_button
+				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+				
+				$("#goto_main_button").button();
+				$("#goto_main_button").click(function() {
+					goto_main();
 				});
 				
 				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -185,6 +200,8 @@
 		<button id="validate_connection_button">Validate connection</button> &nbsp; <span id="validate_connection_result"></span>
 		&nbsp; | &nbsp;
 		<button id="close_proxy_button">Close</button> &nbsp; <span id="close_proxy_result"></span>
+		&nbsp; | &nbsp;
+		<button id="goto_main_button">Back to main</button>
 		&nbsp; | &nbsp;
 		<button id="execute_button">Execute</button>
 	</p>
