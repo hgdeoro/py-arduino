@@ -10,6 +10,7 @@
 		<style type="text/css">
 			body { font: 62.5% sans-serif; margin: 20px; color: #777; }
 			.pin_status_text { color: #333; }
+			.pin_label { font-weight: bold; }
 			div.pwm_slide { padding-top: 5px; }
 		</style>	
 		<script type="text/javascript">
@@ -247,6 +248,15 @@
 					$(".pin" + pin + "_input_buttonset").buttonset();
 				}
 				
+				$(".pin_label").click(function() {
+					var pin = get_pin($(this).attr('id'));
+					var newLabel = prompt("Enter new label for pin " + pin);
+					if(newLabel && newLabel.trim) newLabel = newLabel.trim();
+					if(newLabel) {
+						$($(this).html(newLabel));
+					}
+				});
+				
 				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 				// *** Generic *** setup of components
 				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -356,7 +366,7 @@
 	<div id="pin{{ pin }}" style="padding-bottom: 10px; float: clear;">
 		<div>
 			
-			Pin {{ pin }} - Mode: &nbsp;
+			<span id="pin{{ pin }}_label" class="pin_label" title="Click here to edit">Pin {{ pin }}</span> - Mode: &nbsp;
 			
 			<!-- This buttons set the pin mode -->
 			<span class="pin{{ pin }}_mode_buttonset">
