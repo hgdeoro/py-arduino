@@ -251,6 +251,49 @@ PyArduinoProxy = function($) {
 		}
 		return retValue;
 	}
+
+	var delay = function(value, extra_settings) {
+		
+		//
+		// delay()
+		//
+		// Returns 'true' if delay() could be done. 'false' in case of error.
+		//
+		
+		extra_settings = _f(extra_settings);
+		var retValue = false;
+		var ajax_data = null;
+		
+		var hardcoded_settings = {
+			url: '/delay/?value=' + value,
+			dataType: 'json',
+			async: false,
+			success: function(data, textStatus, jqXHR) {
+				ajax_data = data;
+				if(data.ok) {
+					retValue = true;
+				} else {
+					retValue = false;
+				}
+				if('success' in extra_settings)
+					extra_settings.success(data, textStatus, jqXHR);
+			},
+			error: function(jqXHR, textStatus, errorThrown) {
+				retValue = false;
+				if('error' in extra_settings)
+					extra_settings.error(jqXHR, textStatus, errorThrown);
+			}
+		}
+		
+		var settings = $.extend({}, extra_settings, hardcoded_settings);
+		$.ajax(settings);
+		if(jsExceptions && !retValue) {
+			if(ajax_data.exception) throw new Error(ajax_data.exception);
+			if(ajax_data.error) throw new Error(ajax_data.error);
+			throw new Error("Error detected while executing delay().");
+		}
+		return retValue;
+	}
 	
 	var ping = function(extra_settings) {
 		
@@ -399,6 +442,7 @@ PyArduinoProxy = function($) {
 		enableJsExceptions: enableJsExceptions,
 		disableJsExceptions: disableJsExceptions,
 		close: close,
+		delay: delay,
 		pinMode: pinMode,
 		digitalWrite: digitalWrite,
 		digitalRead: digitalRead,

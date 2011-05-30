@@ -173,7 +173,6 @@ class Root(object):
             logging.exception("Exception raised by proxy.digitalWrite()")
             return { 'ok': False, 'exception': str(e), }
 
-
     @cherrypy.expose
     @cherrypy.tools.json_out()
     def analog_write(self, pin=None, value=None):
@@ -184,7 +183,6 @@ class Root(object):
             # FIXME: return error details and log
             logging.exception("Exception raised by proxy.analogWrite()")
             return { 'ok': False, 'exception': str(e), }
-
     
     @cherrypy.expose
     @cherrypy.tools.json_out()
@@ -203,6 +201,16 @@ class Root(object):
             logging.exception("Exception raised by proxy.analogWrite()")
             return { 'ok': False, 'exception': str(e), }
 
+    @cherrypy.expose
+    @cherrypy.tools.json_out()
+    def delay(self, value=None):
+        try:
+            self.proxy.delay(int(value))
+            return { 'ok': True, }
+        except Exception, e:
+            # FIXME: return error details and log
+            logging.exception("Exception raised by proxy.delay()")
+            return { 'ok': False, 'exception': str(e), }
 
     @cherrypy.expose
     @cherrypy.tools.json_out()
@@ -217,7 +225,6 @@ class Root(object):
             logging.exception("Exception raised by proxy.getAvrCpuType()")
             return { 'ok': False, 'exception': str(e), }
 
-
     @cherrypy.expose
     @cherrypy.tools.json_out()
     def get_arduino_type_struct(self):
@@ -231,7 +238,6 @@ class Root(object):
             logging.exception("Exception raised by proxy.getArduinoTypeStruct()")
             return { 'ok': False, 'exception': str(e), }
 
-
     @cherrypy.expose
     @cherrypy.tools.json_out()
     def close(self):
@@ -243,7 +249,6 @@ class Root(object):
             # FIXME: return error details and log
             logging.exception("Exception raised by proxy.close()")
             return { 'ok': False, 'exception': str(e), }
-
 
 def start_webserver(arduino_proxy_base_dir):
     conf = {
