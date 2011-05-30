@@ -22,6 +22,7 @@
 # TODO: _unindent() could be a annotation
 
 import logging
+import math
 import pprint
 import random
 import serial
@@ -220,7 +221,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
 
     def setTimeout(self, new_timeout): # pylint: disable=C0103
         """
-        Changes the timeout.
+        Changes the timeout (in seconds).
         """
         self.timeout = new_timeout
         self.serial_port.timeout = new_timeout
@@ -233,7 +234,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         Waits for a response from the serial connection.
         
         Parameters:
-            - timeout (int): timeout to use (instead of the configured for this instance of ArduinoProxy).
+            - timeout (int): timeout in seconds to use (instead of the configured for this instance of ArduinoProxy).
         
         Raises:
             - CommandTimeout if a timeout while reading is detected.
@@ -317,6 +318,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
                 If expected_response is a list or tuple, check that the response is one of its items.
             - response_transformer: the method to call to transform. Must receive a string (the
                 valuerecieved from the Arduino).
+            - timeout (int): timeout in seconds to use (instead of the configured for this instance of ArduinoProxy).
         
         Raises:
             - CommandTimeout: if a timeout is detected while reading response.
@@ -671,6 +673,9 @@ class ArduinoProxy(object): # pylint: disable=R0904
         Proxy function for Arduino's **delay()**.
         Pauses the program for the amount of time (in miliseconds) specified as parameter.
         (There are 1000 milliseconds in a second.)
+        
+        If the delay is greater than the default timeout of the serial connection, the timeout
+        is automatically increased to avoid CommandTimeout.
 
         See: http://arduino.cc/en/Reference/Delay
 
@@ -682,9 +687,14 @@ class ArduinoProxy(object): # pylint: disable=R0904
         if not value >= 0:
             raise(InvalidArgument("value must be greater or equals than 0"))
         
-        response = self.send_cmd("_dy %d" % value, expected_response="D_OK")
-        # raises CommandTimeout,InvalidCommand,InvalidResponse
-        
+        delay_in_seconds = math.ceil(value/1000.0)
+        if self.timeout > delay_in_seconds:
+            response = self.send_cmd("_dy %d" % value, expected_response="D_OK")
+            # raises CommandTimeout,InvalidCommand,InvalidResponse
+        else:
+            response = self.send_cmd("_dy %d" % value, expected_response="D_OK",
+                timeout=(delay_in_seconds+1))
+            # raises CommandTimeout,InvalidCommand,InvalidResponse
         return response
     
     delay.arduino_function_name = '_dy'
@@ -710,6 +720,9 @@ class ArduinoProxy(object): # pylint: disable=R0904
         Pauses the program for the amount of time (in microseconds) specified as parameter. There
         are a thousand microseconds in a millisecond, and a million microseconds in a second.
         
+        If the delay is greater than the default timeout of the serial connection, the timeout
+        is automatically increased to avoid CommandTimeout.
+        
         See: http://arduino.cc/en/Reference/DelayMicroseconds
         
         Parameters:
@@ -720,8 +733,14 @@ class ArduinoProxy(object): # pylint: disable=R0904
         if not value >= 0:
             raise(InvalidArgument("value must be greater or equals than 0"))
         
-        return self.send_cmd("_dMs %d" % value, expected_response="DMS_OK")
-        # raises CommandTimeout,InvalidCommand,InvalidResponse
+        delay_in_seconds = math.ceil(value/1000000.0)
+        if self.timeout > delay_in_seconds:
+            return self.send_cmd("_dMs %d" % value, expected_response="DMS_OK")
+            # raises CommandTimeout,InvalidCommand,InvalidResponse
+        else:
+            return self.send_cmd("_dMs %d" % value, expected_response="DMS_OK",
+                timeout=(delay_in_seconds+1))
+            # raises CommandTimeout,InvalidCommand,InvalidResponse
     
     delayMicroseconds.arduino_function_name = '_dMs'
     delayMicroseconds.arduino_code = _unindent(12, """
