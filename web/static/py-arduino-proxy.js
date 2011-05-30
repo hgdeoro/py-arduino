@@ -62,6 +62,15 @@ PyArduinoProxy = function($) {
 		return $('body').data('py-arduino-proxy');
 	};
 	
+	var pinIsPwm = function(pin) {
+		var i;
+		var list = globalData()['arduino_type_struct']['pwm_pin_list'];
+		for(i=0; i<list.length; i++)
+			if(list[i] == pin)
+				return true;
+		return false;
+	};
+	
 	var pinMode = function(pin, mode, extra_settings) {
 		
 		//
@@ -441,6 +450,7 @@ PyArduinoProxy = function($) {
 		globalData: globalData,
 		enableJsExceptions: enableJsExceptions,
 		disableJsExceptions: disableJsExceptions,
+		pinIsPwm: pinIsPwm,
 		close: close,
 		delay: delay,
 		pinMode: pinMode,
