@@ -300,8 +300,8 @@ class ArduinoProxyMainWindow(Ui_MainWindow):
     def update_arduino_values(self):
         log = StringIO()
         try:
-            ret = self.proxy.validate_connection()
-            log.write("validate_connection(): %s" % ret)
+            ret = self.proxy.validateConnection()
+            log.write("validateConnection(): %s" % ret)
             for pin in self._get_enabled_pins():
                 self._update_one_pin(pin, log)
             self.statusbar.showMessage(log.getvalue())
@@ -331,8 +331,8 @@ def main():
     ## Check the connection.
     try:
         options, args, proxy = default_main(args_validator=default_args_validator)
-        proxy.validate_connection()
-        logging.info("validate_connection() OK")
+        proxy.validateConnection()
+        logging.info("validateConnection() OK")
     except:
         print ""
         print "**~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"

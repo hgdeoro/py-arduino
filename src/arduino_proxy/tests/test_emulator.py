@@ -46,7 +46,7 @@ class TestArduinoProxyWithInitialContentInSerialBuffer(unittest.TestCase): # pyl
             initial_input_buffer_contents="** SOME TEXT **\n" * 5)
 
     def test_ping(self):
-        self.proxy.validate_connection()
+        self.proxy.validateConnection()
         response = self.proxy.ping()
         self.assertEquals(response, 'PING_OK')
 

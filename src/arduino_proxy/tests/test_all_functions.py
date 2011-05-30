@@ -35,7 +35,7 @@ def main(): # pylint: disable=R0915
     try:
         print "enableDebug() -> %s" % str(proxy.enableDebug())
         print "disableDebug() -> %s" % str(proxy.disableDebug())
-        print "validate_connection() -> %s" % str(proxy.validate_connection())
+        print "validateConnection() -> %s" % str(proxy.validateConnection())
         print "ping() -> %s" % str(proxy.ping())
         print "pinMode() -> %s" % str(proxy.pinMode(13, ArduinoProxy.OUTPUT))
         print "analogRead() -> %s" % str(proxy.analogRead(0))
@@ -99,14 +99,14 @@ def main(): # pylint: disable=R0915
         
         try:
             # The INPUT buffer has the response from the timed-out delay()
-            # Anything before a validate_connection() should fail.
+            # Anything before a validateConnection() should fail.
             print "ping() -> %s" % str(proxy.ping())
             assert False, "The previous line should raise an exception!"
         except InvalidResponse, exception:
             pass
         
-        print "Re-connecting after timeout. validate_connection() -> %s" % \
-            str(proxy.validate_connection())
+        print "Re-connecting after timeout. validateConnection() -> %s" % \
+            str(proxy.validateConnection())
         
         # Now, the connection is valid again, ping() should work...
         print "ping() -> %s" % str(proxy.ping())

@@ -82,7 +82,7 @@ class Root(object):
             raise cherrypy.HTTPRedirect("/connect")
         
         try:
-            self.proxy.validate_connection()
+            self.proxy.validateConnection()
             return self.generate_ui()
         except ArduinoProxyException, e:
             self.proxy = None
@@ -95,7 +95,7 @@ class Root(object):
             raise cherrypy.HTTPRedirect("/connect")
         
         try:
-            self.proxy.validate_connection()
+            self.proxy.validateConnection()
             return self.generate_ui(template_name="py-arduino-proxy-js-prototyper.html")
         except ArduinoProxyException, e:
             self.proxy = None
@@ -129,11 +129,11 @@ class Root(object):
     @cherrypy.tools.json_out()
     def validate_connection(self):
         try:
-            random_value = self.proxy.validate_connection()
+            random_value = self.proxy.validateConnection()
             return { 'ok': True, 'random_value': random_value, }
         except:
             # FIXME: return error details and log
-            logging.exception("Exception raised by proxy.validate_connection()")
+            logging.exception("Exception raised by proxy.validateConnection()")
             return { 'ok': False, }
 
     @cherrypy.expose

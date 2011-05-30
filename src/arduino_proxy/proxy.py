@@ -151,7 +151,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
             proxy.serial_port = SerialConnectionMock()
         proxy.emulator = ArduinoEmulator(proxy.serial_port.get_other_side())
         proxy.emulator.start()
-        proxy.validate_connection()
+        proxy.validateConnection()
         return proxy
     
     def __init__(self, tty, speed=9600, wait_after_open=3, timeout=5, # pylint: disable=R0913
@@ -160,14 +160,14 @@ class ArduinoProxy(object): # pylint: disable=R0904
         
         Creates a proxy instance, using the serial port specified with 'tty'.
         
-        If call_validate_connection is true, a call to validate_connection() is done, to ensures
+        If call_validate_connection is true, a call to validateConnection() is done, to ensures
         the created instance could communicate to Arduino after established the serial connection.
         
         Parameters:
             - speed: serial port speed.
             - wait_after_open: this is needed in Ubuntu, because the Arduino resets itself when connecting.
             - timeout: default timeout (in seconds). Configure how many seconds we wait for a response.
-            - call_validate_connection: call validate_connection() after opening the port.
+            - call_validate_connection: call validateConnection() after opening the port.
         """
         # For communicating with the computer, use one of these rates: 300, 1200, 2400, 4800,
         #    9600, 14400, 19200, 28800, 38400, 57600, or 115200.
@@ -200,7 +200,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
                 time.sleep(wait_after_open)
         
         if call_validate_connection:
-            self.validate_connection()
+            self.validateConnection()
         logger.debug("Done.")
 
     def _validate_analog_pin(self, pin, pin_name='pin'): # pylint: disable=R0201
@@ -620,7 +620,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
     
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
     
-    def validate_connection(self): # pylint: disable=C0103
+    def validateConnection(self): # pylint: disable=C0103
         """
         Asserts that the current connection is valid, discarding any existing information in the 
         buffer of the serial connection.
@@ -640,7 +640,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         * (3b) Arduino responds 'HIGH'
         * (3c) Python reads the previous response 'PING_OK': ERROR!
         
-        This can be solved calling :func:`validate_connection` after (2c), to discard
+        This can be solved calling :func:`validateConnection` after (2c), to discard
         any 'old' response.
         
         """
@@ -650,15 +650,15 @@ class ArduinoProxy(object): # pylint: disable=R0904
         response = self.send_cmd(cmd) # raises CommandTimeout,InvalidCommand
         
         while response != random_str:
-            logger.warn("validate_connection(): Ignoring invalid response: %s",
+            logger.warn("validateConnection(): Ignoring invalid response: %s",
                 pprint.pformat(response))
             # Go for the string, or a timeout exception!
             response = self.get_next_response()
         
         return response
     
-    validate_connection.arduino_function_name = '_vCnt'
-    validate_connection.arduino_code = _unindent(12, """
+    validateConnection.arduino_function_name = '_vCnt'
+    validateConnection.arduino_code = _unindent(12, """
             void _vCnt() {
                 send_char_array_response(received_parameters[1]);
             }
