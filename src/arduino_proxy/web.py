@@ -120,10 +120,10 @@ class Root(object):
         try:
             self.proxy.ping()
             return { 'ok': True, }
-        except:
+        except Exception, e:
             # FIXME: return error details and log
             logging.exception("Exception raised by proxy.ping()")
-            return { 'ok': False, }
+            return { 'ok': False, 'exception': str(e), }
 
     @cherrypy.expose
     @cherrypy.tools.json_out()
@@ -131,10 +131,10 @@ class Root(object):
         try:
             random_value = self.proxy.validateConnection()
             return { 'ok': True, 'random_value': random_value, }
-        except:
+        except Exception, e:
             # FIXME: return error details and log
             logging.exception("Exception raised by proxy.validateConnection()")
-            return { 'ok': False, }
+            return { 'ok': False, 'exception': str(e), }
 
     @cherrypy.expose
     @cherrypy.tools.json_out()
@@ -148,11 +148,12 @@ class Root(object):
                 return { 'ok': True, }
             else:
                 # FIXME: return error details and log
-                return { 'ok': False, }
-        except:
+                return { 'ok': False, 'error': 'Invalid mode: ' +  mode}
+        except Exception, e:
             # FIXME: return error details and log
             logging.exception("Exception raised by proxy.pinMode()")
-            return { 'ok': False, }
+            return { 'ok': False, 'exception': str(e), }
+
 
     @cherrypy.expose
     @cherrypy.tools.json_out()
@@ -166,11 +167,12 @@ class Root(object):
                 return { 'ok': True, }
             else:
                 # FIXME: return error details and log
-                return { 'ok': False, }
-        except:
+                return { 'ok': False, 'error': 'ArduinoProxy returned an invalid value: ' +  value}
+        except Exception, e:
             # FIXME: return error details and log
             logging.exception("Exception raised by proxy.digitalWrite()")
-            return { 'ok': False, }
+            return { 'ok': False, 'exception': str(e), }
+
 
     @cherrypy.expose
     @cherrypy.tools.json_out()
@@ -178,10 +180,11 @@ class Root(object):
         try:
             self.proxy.analogWrite(int(pin), int(value))
             return { 'ok': True, }
-        except:
+        except Exception, e:
             # FIXME: return error details and log
             logging.exception("Exception raised by proxy.analogWrite()")
-            return { 'ok': False, }
+            return { 'ok': False, 'exception': str(e), }
+
     
     @cherrypy.expose
     @cherrypy.tools.json_out()
@@ -194,11 +197,12 @@ class Root(object):
                 return { 'ok': True, 'value': 0, }
             else:
                 # FIXME: return error details and log
-                return { 'ok': False, }
-        except:
+                return { 'ok': False, 'error': 'ArduinoProxy returned an invalid value: ' +  value}
+        except Exception, e:
             # FIXME: return error details and log
             logging.exception("Exception raised by proxy.analogWrite()")
-            return { 'ok': False, }
+            return { 'ok': False, 'exception': str(e), }
+
 
     @cherrypy.expose
     @cherrypy.tools.json_out()
@@ -208,10 +212,11 @@ class Root(object):
                 'ok': True,
                 'avrCpuType': self.proxy.getAvrCpuType(),
             }
-        except:
+        except Exception, e:
             # FIXME: return error details and log
             logging.exception("Exception raised by proxy.getAvrCpuType()")
-            return { 'ok': False, }
+            return { 'ok': False, 'exception': str(e), }
+
 
     @cherrypy.expose
     @cherrypy.tools.json_out()
@@ -221,10 +226,11 @@ class Root(object):
                 'ok': True,
                 'arduinoTypeStruct': self.proxy.getArduinoTypeStruct(),
             }
-        except:
+        except Exception, e:
             # FIXME: return error details and log
             logging.exception("Exception raised by proxy.getArduinoTypeStruct()")
-            return { 'ok': False, }
+            return { 'ok': False, 'exception': str(e), }
+
 
     @cherrypy.expose
     @cherrypy.tools.json_out()
@@ -233,10 +239,11 @@ class Root(object):
             self.proxy.close()
             self.proxy = None
             return { 'ok': True, }
-        except:
+        except Exception, e:
             # FIXME: return error details and log
             logging.exception("Exception raised by proxy.close()")
-            return { 'ok': False, }
+            return { 'ok': False, 'exception': str(e), }
+
 
 def start_webserver(arduino_proxy_base_dir):
     conf = {
