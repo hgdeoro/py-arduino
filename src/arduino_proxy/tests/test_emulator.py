@@ -141,7 +141,27 @@ class TestProxiedMethodsOfArduinoProxy(unittest.TestCase): # pylint: disable=R09
     def test_millis_micros(self):
         self.assertTrue(self.proxy.millis() >= 0)
         self.assertTrue(self.proxy.micros() >= 0)
-    
+
+    def test_disableDebug(self):
+        self.proxy.disableDebug()
+
+    def test_enableDebug(self):
+        self.proxy.enableDebug()
+
+    def test_getArduinoTypeStruct(self):
+        ard_type_st = self.proxy.getArduinoTypeStruct()
+        ard_type_st['analog_pins']
+        ard_type_st['digital_pins']
+        ard_type_st['pwm_pins_bitmap']
+        ard_type_st['eeprom_size']
+        ard_type_st['flash_size']
+        ard_type_st['pwm_pin_list']
+        ard_type_st['eeprom_size_bytes']
+        ard_type_st['flash_size_bytes']
+
+    def test_getAvrCpuType(self):
+        ard_type_st = self.proxy.getAvrCpuType()
+
     def tearDown(self): # pylint: disable=C0103
         self.proxy.close()
 
