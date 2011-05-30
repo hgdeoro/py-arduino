@@ -216,7 +216,17 @@
 	</p>
 	
 	<div>
-		<textarea id="js_code" rows="10" cols="100"></textarea>
+		<textarea id="js_code" rows="10" cols="100">
+proxy.pinMode(13, OUTPUT);
+proxy.digitalWrite(13, LOW);
+var i;
+for(i=0; i<10; i++) {
+    proxy.digitalWrite(13, HIGH);
+    proxy.delay(250);
+    proxy.digitalWrite(13, LOW);
+    proxy.delay(250);
+}
+</textarea>
 	</div>
 	
 	<!-- TEMPLATE -->
