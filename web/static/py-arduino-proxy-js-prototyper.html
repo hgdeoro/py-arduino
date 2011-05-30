@@ -78,9 +78,17 @@
 			}
 			
 			function execute_js() {
+				var js_source = "";
+				js_source += "var OUTPUT = 'output';\n";
+				js_source += "var INPUT = 'input';\n";
+				js_source += "var HIGH = 'high';\n";
+				js_source += "var LOW = 'low';\n";
+				js_source += "var TRUE = true;\n";
+				js_source += "var FALSE = false;\n";
+				js_source += $("#js_code").val();
 				try {
 					clear_log_console();
-					eval($("#js_code").val());
+					eval(js_source);
 					_log("Script executed successfully.");
 				} catch(err) {
 					_error(err);
