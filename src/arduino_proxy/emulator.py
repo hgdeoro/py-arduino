@@ -50,6 +50,13 @@ class ArduinoEmulator(threading.Thread):
         
         from arduino_proxy.proxy import ArduinoProxy
         
+        def _get_int(env_name, default_value):
+            value = os.environ.get(env_name,  '')
+            try:
+                return int(value)
+            except:
+                return default_value
+        
         logger.info("run_cmd() - cmd: %s", pprint.pformat(cmd))
         splitted = cmd.split()
         if splitted[0] == '_ping':
@@ -82,9 +89,25 @@ class ArduinoEmulator(threading.Thread):
         elif splitted[0] == '_dD':
             self.serial_connection.write("DIS\n")
         elif splitted[0] == '_gACT':
-            self.serial_connection.write("_AVR_CPU_NAME__EMULATOR_\n")
+            self.serial_connection.write("ARDUINO_EMULATOR\n")
         elif splitted[0] == '_gATS':
-            self.serial_connection.write("2 5 00111 2 32\n")
+            analog_pins = _get_int("emulator_analog_pins", 5)
+            digital_pins = _get_int("emulator_digital_pins", 5)
+            pwm_pins_bitmap = os.environ.get("emulator_pwm_pins_bitmap", "")
+            if not pwm_pins_bitmap or len(pwm_pins_bitmap) != digital_pins:
+                pwm_pins_bitmap = ''.join([ str(i%2) for i in range(0, digital_pins) ])
+            eeprom_size = _get_int("emulator_eeprom_size", 2)
+            flash_size = _get_int("emulator_flash_size", 16)
+            
+            arduino_type_struct = "%d %d %s %d %d\n" % (
+                analog_pins, 
+                digital_pins, 
+                pwm_pins_bitmap, 
+                eeprom_size, 
+                flash_size, 
+            )
+            
+            self.serial_connection.write(arduino_type_struct)
         else:
             self.serial_connection.write("%s 0\n" % ArduinoProxy.INVALID_CMD)
             logger.error("run_cmd() - INVALID COMMAND: %s", pprint.pformat(cmd))
