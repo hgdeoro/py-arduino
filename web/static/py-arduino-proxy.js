@@ -1,9 +1,46 @@
-PyArduinoProxy = function($) {
+//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+//    Py-Arduino-Proxy - Access your Arduino from Python
+//    Copyright (C) 2011 - Horacio Guillermo de Oro <hgdeoro@gmail.com>
+//
+//    This file is part of Py-Arduino-Proxy.
+//
+//    Py-Arduino-Proxy is free software; you can redistribute it and/or modify
+//    it under the terms of the GNU General Public License as published by
+//    the Free Software Foundation version 2.
+//
+//    Py-Arduino-Proxy is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU General Public License version 2 for more details.
+//
+//    You should have received a copy of the GNU General Public License
+//    along with Py-Arduino-Proxy; see the file LICENSE.txt.
+//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+/*
+ * This script defines the variable 'PyArduinoProxy', implementing
+ * the 'module' pattern. PyArduinoProxy is the entry point for
+ * interacting to the Python web server, and thus, to the Arduino.
+ * 
+ * To make it usable, you must call 'PyArduinoProxy.init()'.
+ * 
+ */
+
+var PyArduinoProxy = function($) {
 	
-	function _f(somevar) { if(somevar == undefined) return {}; else return somevar; }
+    /* Returns **somevar** is defined; otherwise, returns an empty dict */
+	function _ensure_dict(somevar) { if(somevar == undefined) return {}; else return somevar; }
 	
+    /*
+     * jsExceptions flag, used to enable/disable the reporting of errors
+     * using exceptions.
+     */
 	var jsExceptions = false;
 	
+    /*
+     * Initialize the module, setting private variables and calling
+     * the server to get the Arduino type struct.
+     */
 	var init = function() {
 		
 		//
@@ -50,10 +87,9 @@ PyArduinoProxy = function($) {
 		
 	};
 
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	// Returns the global 'data' dict
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	
+    /*
+     * Returns the global 'data' dict.
+     */
 	var globalData = function() {
 		//
 		// Returns the global data holder
@@ -62,6 +98,9 @@ PyArduinoProxy = function($) {
 		return $('body').data('py-arduino-proxy');
 	};
 	
+    /*
+     * Returns true if the *pin* supports PWM.
+     */
 	var pinIsPwm = function(pin) {
 		var i;
 		var list = globalData()['arduino_type_struct']['pwm_pin_list'];
@@ -71,15 +110,15 @@ PyArduinoProxy = function($) {
 		return false;
 	};
 	
+    /*
+     * Calls **pinMode()** on Arduino.
+     * 
+     * Returns 'true' if pinMode() could be done.
+     * Returns 'false' in case of error (or raises an exception
+     *  if *jsExceptions* is enabled).
+     */
 	var pinMode = function(pin, mode, extra_settings) {
-		
-		//
-		// Sets the pin mode
-		//
-		// Returns 'true' if pinMode() could be done. 'false' in case of error.
-		//
-		
-		extra_settings = _f(extra_settings);
+		extra_settings = _ensure_dict(extra_settings);
 		var retValue = false;
 		var ajax_data = null;
 		
@@ -125,15 +164,15 @@ PyArduinoProxy = function($) {
 		}
 	};
 
+    /*
+     * Calls **digitalWrite()** on Arduino.
+     * 
+     * Returns 'true' if digitalWrite() could be done.
+     * Returns 'false' in case of error (or raises an exception
+     *  if *jsExceptions* is enabled).
+     */
 	var digitalWrite = function(pin, value, extra_settings) {
-		
-		//
-		// Digital Write
-		//
-		// Returns 'true' if digitalWrite() could be done. 'false' in case of error.
-		//
-		
-		extra_settings = _f(extra_settings);
+		extra_settings = _ensure_dict(extra_settings);
 		var retValue = false;
 		var ajax_data = null;
 		
@@ -169,15 +208,15 @@ PyArduinoProxy = function($) {
 		return retValue;
 	}
 
+    /*
+     * Calls **digitalRead()** on Arduino.
+     * 
+     * Returns *0* for 'low', 1 for 'high' if the read went ok.
+     * Returns '-1' in case of error (or raises an exception
+     *  if *jsExceptions* is enabled).
+     */
 	var digitalRead = function(pin, extra_settings) {
-		
-		//
-		// Digital Read
-		//
-		// Returns 0 for 'low', 1 for 'high', -1 if error.
-		//
-		
-		extra_settings = _f(extra_settings);
+		extra_settings = _ensure_dict(extra_settings);
 		var retValue = -1;
 		var ajax_data = null;
 		
@@ -218,15 +257,15 @@ PyArduinoProxy = function($) {
 		return retValue;
 	}
 	
+    /*
+     * Calls **analogWrite()** on Arduino.
+     * 
+     * Returns 'true' if analogWrite() could be done.
+     * Returns 'false' in case of error (or raises an exception
+     *  if *jsExceptions* is enabled).
+     */
 	var analogWrite = function(pin, value, extra_settings) {
-		
-		//
-		// analogWrite()
-		//
-		// Returns 'true' if analogWrite() could be done. 'false' in case of error.
-		//
-		
-		extra_settings = _f(extra_settings);
+		extra_settings = _ensure_dict(extra_settings);
 		var retValue = false;
 		var ajax_data = null;
 		
@@ -261,15 +300,15 @@ PyArduinoProxy = function($) {
 		return retValue;
 	}
 
+    /*
+     * Calls **delay()** on Arduino.
+     * 
+     * Returns 'true' if delay() could be done.
+     * Returns 'false' in case of error (or raises an exception
+     *  if *jsExceptions* is enabled).
+     */
 	var delay = function(value, extra_settings) {
-		
-		//
-		// delay()
-		//
-		// Returns 'true' if delay() could be done. 'false' in case of error.
-		//
-		
-		extra_settings = _f(extra_settings);
+		extra_settings = _ensure_dict(extra_settings);
 		var retValue = false;
 		var ajax_data = null;
 		
@@ -304,15 +343,15 @@ PyArduinoProxy = function($) {
 		return retValue;
 	}
 	
+    /*
+     * ping()
+     * 
+     * Returns 'true' if ping() could be done.
+     * Returns 'false' in case of error (or raises an exception
+     *  if *jsExceptions* is enabled).
+     */
 	var ping = function(extra_settings) {
-		
-		//
-		// Ping
-		//
-		// Returns 'true' if ping() could be done. 'false' in case of error.
-		//
-		
-		extra_settings = _f(extra_settings);
+		extra_settings = _ensure_dict(extra_settings);
 		var retValue = false;
 		var ajax_data = null;
 		
@@ -349,16 +388,15 @@ PyArduinoProxy = function($) {
 
 	}
 	
+    /*
+     * validateConnection()
+     * 
+     * Returns the random generated number if validateConnection() could be done.
+     * Returns 'false' in case of error (or raises an exception
+     *  if *jsExceptions* is enabled).
+     */
 	var validateConnection = function(extra_settings) {
-		
-		//
-		// validateConnection()
-		//
-		// Returns the random generated number if validateConnection() was done ok,
-		//  'false' otherwise.
-		//
-		
-		extra_settings = _f(extra_settings);
+		extra_settings = _ensure_dict(extra_settings);
 		var retValue = false;
 		var ajax_data = null;
 		
@@ -395,13 +433,15 @@ PyArduinoProxy = function($) {
 
 	}
 	
+    /*
+     * close()
+     * 
+     * Returns 'true' if close() could be done.
+     * Returns 'false' in case of error (or raises an exception
+     *  if *jsExceptions* is enabled).
+     */
 	var close = function(extra_settings) {
-		
-		//
-		// close the proxy
-		//
-		
-		extra_settings = _f(extra_settings);
+		extra_settings = _ensure_dict(extra_settings);
 		var retValue = false;
 		var ajax_data = null;
 		
@@ -437,14 +477,33 @@ PyArduinoProxy = function($) {
 		return retValue;
 	}
 	
+    /*
+     * enableJsExceptions()
+     * 
+     * Enables the **jsExceptions** flag.
+     * 
+     * When the **jsExceptions** flag is enabled, an exception is raised
+     * if an error is detected.
+     * 
+     * When the **jsExceptions** flag is disabled, a special value
+     * is returned ('false', '-1', etc.) if an error is detected.
+     */
 	var enableJsExceptions = function() {
 		jsExceptions = true;
 	}
 	
+    /*
+     * disableJsExceptions()
+     * 
+     * Disables the **jsExceptions** flag.
+     */
 	var disableJsExceptions = function() {
 		jsExceptions = false;
 	}
 	
+    /*
+     * These are the PUBLIC functions the 'PyArduinoProxy' implements.
+     */
 	return {
 		init: init,
 		globalData: globalData,
