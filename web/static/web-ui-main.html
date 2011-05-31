@@ -61,19 +61,19 @@
             
 			function refreshPinUi(pin) {
 				if(PyArduinoProxy.globalData()['digital_pin_mode'][pin] == 'disabled') {
-					setStatusTextOfPin(pin, 'Pin disabled');
+					setStatusTextOfPin(pin, '');
 					$('.pin' + pin + '_for_read').hide();
 					$('.pin' + pin + '_for_write').hide();
 					// TODO: finish this
 					
 				} else if(PyArduinoProxy.globalData()['digital_pin_mode'][pin] == 'input') {
-					setStatusTextOfPin(pin, 'Mode: INPUT');
+					setStatusTextOfPin(pin, '');
 					$('.pin' + pin + '_for_read').show();
 					$('.pin' + pin + '_for_write').hide();
 					// TODO: finish this
 					
 				} else if(PyArduinoProxy.globalData()['digital_pin_mode'][pin] == 'output') {
-					setStatusTextOfPin(pin, 'Mode: OUTPUT');
+					setStatusTextOfPin(pin, '');
 					$('.pin' + pin + '_for_read').hide();
 					$('.pin' + pin + '_for_write').show();
 					
@@ -118,14 +118,14 @@
 				if (value == 'low') {
 					slider_value = 0;
 				} else if (value == 'high') {
-					slider_value = 255.
+					slider_value = 255;
 				} else {
 					alert("digitalWrite(): Invalid value.");
 					return;
 				}
 				
 				if(PyArduinoProxy.digitalWrite(pin, value)) {
-					setStatusTextOfPin(pin, 'digitalWrite(): <b>' + value + '</b>');
+					setStatusTextOfPin(pin, 'digitalWrite(): <b>' + value.toUpperCase() + '</b>');
 					if (PyArduinoProxy.pinIsPwm(pin)) {
 						$('#pin' + pin + '_pwm_slider').slider("value", slider_value);
 					}
@@ -333,7 +333,6 @@
                 digitalWrite()
             -->
 			<span class="pin{{ pin }}_output_buttonset pin{{ pin }}_for_write ui-helper-hidden">
-				&nbsp; | digitalWrite():
 				<input type="radio" id="pin{{ pin }}_dw_lo" name="pin{{ pin }}_dw" class="pin_dw_lo"/><label for="pin{{ pin }}_dw_lo">LOW</label>
 				<input type="radio" id="pin{{ pin }}_dw_hi" name="pin{{ pin }}_dw" class="pin_dw_hi"/><label for="pin{{ pin }}_dw_hi">HIGH</label>
 			</span>
@@ -342,11 +341,13 @@
                 digitalRead()
             -->
 			<span class="pin{{ pin }}_for_read ui-helper-hidden">
-				&nbsp; | &nbsp;
 				<button id="pin{{ pin }}_bt_digital_read" class="bt_digital_read">digitalRead()</button>
 			</span>
 			
-			&nbsp; | <span id="pin{{ pin }}_status_text" class="pin_status_text">Pin disabled</span>
+			&nbsp;
+            
+            <span id="pin{{ pin }}_status_text" class="pin_status_text"></span>
+            
 		</div>
 		
 		{% if pin in arduino_type.pwm_pin_list %}
@@ -373,6 +374,8 @@
         <span class="pinA{{ pin }}_for_read">
             <button id="pinA{{ pin }}_bt_analog_read" class="bt_analog_read">analogRead()</button>
         </span>
+        
+        &nbsp;
         
         <span id="pinA{{ pin }}_status_text" class="pin_status_text"></span>
         
