@@ -167,42 +167,25 @@
 				PyArduinoProxy.disableJsExceptions();
 				
 				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-				// ping
+				// Attach events to buttons
 				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 				
 				$("#ping_button").button().click(function() {
 					ping();
 				});
 				
-				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-				// validateConnection
-				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-				
 				$("#validate_connection_button").button().click(function() {
 					validateConnection();
 				});
-				
-				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-				// close_proxy_button
-				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 				
 				$("#close_proxy_button").button().click(function() {
 					closeProxy();
 				});
 				
-				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-				// goto_js_prototyper_button
-				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-				
 				$("#goto_js_prototyper_button").button().click(function() {
 					gotoJsPrototyper();
 				});
 				
-				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-				// Pin XX
-				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-				
-				// Create buttons
 				var pin = 0;
 				for (pin=0; pin<PyArduinoProxy.globalData()['arduino_type_struct']['digital_pins']; pin++) {
 					$(".pin" + pin + "_mode_buttonset").buttonset();
@@ -223,10 +206,6 @@
 				// *** Generic *** setup of components
 				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 				
-				// Hide components
-				$('.pin_for_read').hide();
-				$('.pin_for_write').hide();
-				
 				// analogWrite() / PWM
 				$(".pin_pwm_slider").slider({ value:0, min: 0, max: 255, step: 1});
 				
@@ -236,42 +215,43 @@
 				
 				// pinMode(): disable
 				$('.pin_mode_dis').change(function() {
-					pin = getPinFromId($(this).attr('id'));
+					var pin = getPinFromId($(this).attr('id'));
 					pinMode(pin, 'disabled');
 				});
 				
 				// pinMode(): INPUT
 				$('.pin_mode_in').change(function() {
-					pin = getPinFromId($(this).attr('id'));
+					var pin = getPinFromId($(this).attr('id'));
 					pinMode(pin, 'input');
 				});
 				
 				// pinMode(): OUTPUT
 				$('.pin_mode_out').change(function() {
-					pin = getPinFromId($(this).attr('id'));
+					var pin = getPinFromId($(this).attr('id'));
 					pinMode(pin, 'output');
 				});
 
 				// digitalRead()
-				$(".pin_dr_button").click(function() {
-					pin = getPinFromId($(this).attr('id'));
+                $(".bt_digital_read").button().click(function() {
+					var pin = getPinFromId($(this).attr('id'));
 					digitalRead(pin);
 				});
 				
-				// digitalWrite()
+				// digitalWrite(): LOW
 				$(".pin_dw_lo").click(function() {
-					pin = getPinFromId($(this).attr('id'));
+					var pin = getPinFromId($(this).attr('id'));
 					digitalWrite(pin, 'low');
 				});
 				
+				// digitalWrite(): HIGH
 				$(".pin_dw_hi").click(function() {
-					pin = getPinFromId($(this).attr('id'));
+					var pin = getPinFromId($(this).attr('id'));
 					digitalWrite(pin, 'high');
 				});
 				
 				// analogWrite()
 				$(".pin_pwm_slider").bind("slide", function(event, ui) {
-					pin = getPinFromId($(this).attr('id'));
+					var pin = getPinFromId($(this).attr('id'));
 					analogWrite(pin, ui.value);
 				});
 				
@@ -299,29 +279,36 @@
 	</p>
 	
 	{% for pin in range(0, arduino_type.digital_pins) %}
-	<div id="pin{{ pin }}" style="padding-bottom: 10px; float: clear;">
+	<div style="padding-bottom: 4px;">
 		<div>
 			
-			<span id="pin{{ pin }}_label" class="pin_label" title="Click here to edit">Pin {{ pin }}</span> - Mode: &nbsp;
+			<span id="pin{{ pin }}_label" class="pin_label" title="Click here to edit">Digital pin {{ pin }}</span>:
 			
-			<!-- This buttons set the pin mode -->
+			<!--
+                This buttons set the pin mode.
+                Always are visible.
+            -->
 			<span class="pin{{ pin }}_mode_buttonset">
 				<input type="radio" id="pin{{ pin }}_mode_dis" name="pin{{ pin }}_mode" value="disabled" class="pin_mode_dis" checked="checked"/><label for="pin{{ pin }}_mode_dis">Disabled</label>
-				<input type="radio" id="pin{{ pin }}_mode_in"  name="pin{{ pin }}_mode" value="input" class="pin_mode_in"/><label for="pin{{ pin }}_mode_in">INPUT</label>
-				<input type="radio" id="pin{{ pin }}_mode_out" name="pin{{ pin }}_mode" value="output" class="pin_mode_out"/><label for="pin{{ pin }}_mode_out">OUTPUT</label>
+				<input type="radio" id="pin{{ pin }}_mode_in"  name="pin{{ pin }}_mode" value="input"    class="pin_mode_in"/><label for="pin{{ pin }}_mode_in">INPUT</label>
+				<input type="radio" id="pin{{ pin }}_mode_out" name="pin{{ pin }}_mode" value="output"   class="pin_mode_out"/><label for="pin{{ pin }}_mode_out">OUTPUT</label>
 			</span>
 			
-			<!-- digitalWrite() -->
-			<span class="pin{{ pin }}_output_buttonset pin{{ pin }}_for_write pin_for_write">
-				&nbsp; | digitalWrite()&nbsp;
+			<!--
+                digitalWrite()
+            -->
+			<span class="pin{{ pin }}_output_buttonset pin{{ pin }}_for_write ui-helper-hidden">
+				&nbsp; | digitalWrite():
 				<input type="radio" id="pin{{ pin }}_dw_lo" name="pin{{ pin }}_dw" class="pin_dw_lo"/><label for="pin{{ pin }}_dw_lo">LOW</label>
 				<input type="radio" id="pin{{ pin }}_dw_hi" name="pin{{ pin }}_dw" class="pin_dw_hi"/><label for="pin{{ pin }}_dw_hi">HIGH</label>
 			</span>
 			
-			<!-- digitalRead() -->
-			<span class="pin{{ pin }}_input_buttonset pin{{ pin }}_for_read pin_for_read">
+			<!--
+                digitalRead()
+            -->
+			<span class="pin{{ pin }}_for_read ui-helper-hidden">
 				&nbsp; | &nbsp;
-				<button id="pin{{ pin }}_dr_button" class="pin_dr_button">digitalRead()</button>
+				<button id="pin{{ pin }}_bt_digital_read" class="bt_digital_read">digitalRead()</button>
 			</span>
 			
 			&nbsp; | <span id="pin{{ pin }}_status_text" class="pin_status_text">Pin disabled</span>
@@ -329,7 +316,7 @@
 		
 		{% if pin in arduino_type.pwm_pin_list %}
 			<!-- analogWrite() / PWM -->
-			<div class="pin{{ pin }}_for_write pin_for_write pwm_slide" style="overflow: auto; width: 100%; padding-bottom: 10px;">
+			<div class="pin{{ pin }}_for_write pwm_slide ui-helper-hidden" style="overflow: auto; width: 100%; padding-bottom: 10px;">
 				<div style="float: left; padding-right: 20px;">analogWrite():</div>
 				<div style="width: 400px; float: left;"><div id="pin{{ pin }}_pwm_slider" class="pin_pwm_slider"></div></div>
 			</div>
@@ -342,5 +329,3 @@
     
 	</body>
 </html>
-
-
