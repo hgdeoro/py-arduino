@@ -96,7 +96,7 @@ class Root(object):
         
         try:
             self.proxy.validateConnection()
-            return self.generate_ui(template_name="py-arduino-proxy-js-prototyper.html")
+            return self.generate_ui(template_name="web-ui-js-prototyper.html")
         except ArduinoProxyException, e:
             self.proxy = None
             cherrypy.session['error_message'] = str(e)
