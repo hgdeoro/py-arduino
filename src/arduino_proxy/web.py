@@ -261,7 +261,7 @@ class Root(object):
             logging.exception("Exception raised by proxy.close()")
             return { 'ok': False, 'exception': str(e), }
 
-def start_webserver(arduino_proxy_base_dir):
+def start_webserver(arduino_proxy_base_dir, port):
     conf = {
         '/': {
             'tools.sessions.on': True, 
@@ -277,6 +277,7 @@ def start_webserver(arduino_proxy_base_dir):
     
     cherrypy.config.update({
         'log.screen': False,
+        'server.socket_port': port,
     })
     
     cherrypy.quickstart(Root(jinja2_env), '/', config=conf)

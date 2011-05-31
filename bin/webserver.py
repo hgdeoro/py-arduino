@@ -53,6 +53,10 @@ def main():
         action="store", dest="initial_wait", default=None,
         help="How many seconds wait before conect (workaround for auto-reset on connect).")
     
+    parser.add_option("--http-port",
+        action="store", dest="http_port", default=8080, type="int", 
+        help="Tcp port to use for web server.")
+    
     (options, args) = parser.parse_args()
 
     if options.debug:
@@ -67,7 +71,7 @@ def main():
     else:
         logging.getLogger('cherrypy.access').setLevel(logging.ERROR)
     
-    start_webserver(BASE_DIR)
+    start_webserver(BASE_DIR, options.http_port)
 
 if __name__ == '__main__':
     main()
