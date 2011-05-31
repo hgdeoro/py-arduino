@@ -27,20 +27,38 @@
 			// General pin functions
 			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 			
-			// Takes the 'pin' from the ID of the element that generated the event.
-			// Returns: Integer
+            /*
+             * Takes the 'pin' from the ID of the element that generated the event.
+             * Returns an INTEGER.
+             */
 			function getPinFromId(text) {
 				groups = /^pin(\d+)_/(text);
 				if(groups == null)
 					alert("groups == null / text='" + text + "'");
 				return parseInt(groups[1]);
 			}
+
+            /*
+             * Takes the ANALOG 'pin' from the ID of the element that generated the event.
+             * Returns an INTEGER.
+             */
+			function getAnalogPinFromId(text) {
+				groups = /^pinA(\d+)_/(text);
+				if(groups == null)
+					alert("groups == null / text='" + text + "'");
+				return parseInt(groups[1]);
+			}
 			
-			// Set the 'text' associated to a pin
+			// Set the 'text' associated to a DIGITAL pin
 			function setStatusTextOfPin(pin, text) {
 				$("#pin" + pin + "_status_text").html(text);
 			}
 			
+			// Set the 'text' associated to a ANALOG pin
+			function setStatusTextOfAnalogPin(pin, text) {
+				$("#pinA" + pin + "_status_text").html(text);
+			}
+            
 			function refreshPinUi(pin) {
 				if(PyArduinoProxy.globalData()['digital_pin_mode'][pin] == 'disabled') {
 					setStatusTextOfPin(pin, 'Pin disabled');
@@ -137,6 +155,15 @@
 					setStatusTextOfPin(pin, 'digitalRead(): <b>HIGH</b>');
 				} else {
 					setStatusTextOfPin(pin, 'digitalRead(): invalid response from server.');
+				}
+			}
+
+			function analogRead(pin) {
+				var value = PyArduinoProxy.analogRead(pin);
+				if(value >= 0 && value <= 1023) {
+					setStatusTextOfAnalogPin(pin, 'analogRead(): <b>' + value + '</b>');
+				} else {
+					setStatusTextOfAnalogPin(pin, 'analogRead(): invalid response from server.');
 				}
 			}
 			
@@ -237,6 +264,12 @@
 					digitalRead(pin);
 				});
 				
+                // analogRead()
+                $(".bt_analog_read").button().click(function() {
+					var pin = getAnalogPinFromId($(this).attr('id'));
+					analogRead(pin);
+				});
+                
 				// digitalWrite(): LOW
 				$(".pin_dw_lo").click(function() {
 					var pin = getPinFromId($(this).attr('id'));
@@ -278,6 +311,8 @@
 		<button id="goto_js_prototyper_button">JS Prototyper</button>
 	</p>
 	
+    {# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #}
+    
 	{% for pin in range(0, arduino_type.digital_pins) %}
 	<div style="padding-bottom: 4px;">
 		<div>
@@ -325,6 +360,27 @@
 	</div>
 	{% endfor %}
 	
+    {# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #}
+    
+	{% for pin in range(0, arduino_type.analog_pins) %}
+    <div>
+
+        <span class="pin_label">Analog pin {{ pin }}:</span>
+
+        <!--
+            analogRead()
+        -->
+        <span class="pinA{{ pin }}_for_read">
+            <button id="pinA{{ pin }}_bt_analog_read" class="bt_analog_read">analogRead()</button>
+        </span>
+        
+        <span id="pinA{{ pin }}_status_text" class="pin_status_text"></span>
+        
+    </div>
+	{% endfor %}
+
+    {# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #}
+    
     {% include "web-ui__footer.html" %}
     
 	</body>

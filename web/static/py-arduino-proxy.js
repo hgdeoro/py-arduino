@@ -256,6 +256,55 @@ var PyArduinoProxy = function($) {
 		
 		return retValue;
 	}
+
+    /*
+     * Calls **analogRead()** on Arduino.
+     * 
+     * Returns the read value, from *0* to *1023* if the read went ok.
+     * Returns '-1' in case of error (or raises an exception
+     *  if *jsExceptions* is enabled).
+     */
+	var analogRead = function(pin, extra_settings) {
+		extra_settings = _ensure_dict(extra_settings);
+		var retValue = -1;
+		var ajax_data = null;
+		
+		var hardcoded_settings = {
+			url: '/analog_read/?pin=' + pin,
+			dataType: 'json',
+			async: false,
+			success: function(data, textStatus, jqXHR) {
+				ajax_data = data;
+				if(data.ok) {
+					if(data.value >= 0 && data.value <= 1023) {
+						retValue = data.value;
+					} else {
+						retValue = -1;
+					}
+				} else {
+					retValue = -1;
+				}
+				if('success' in extra_settings)
+					extra_settings.success(data, textStatus, jqXHR);
+			},
+			error: function(jqXHR, textStatus, errorThrown) {
+				retValue = -1;
+				if('error' in extra_settings)
+					extra_settings.error(jqXHR, textStatus, errorThrown);
+			}
+		}
+		
+		var settings = $.extend({}, extra_settings, hardcoded_settings);
+
+		$.ajax(settings);
+		if(jsExceptions && (retValue == -1)) {
+			if(ajax_data.exception) throw new Error(ajax_data.exception);
+			if(ajax_data.error) throw new Error(ajax_data.error);
+			throw new Error("Error detected while executing analogRead().");
+		}
+		
+		return retValue;
+	}
 	
     /*
      * Calls **analogWrite()** on Arduino.
@@ -516,6 +565,7 @@ var PyArduinoProxy = function($) {
 		digitalWrite: digitalWrite,
 		digitalRead: digitalRead,
 		analogWrite: analogWrite,
+		analogRead: analogRead,
 		validateConnection: validateConnection,
 		ping: ping
 	};

@@ -186,6 +186,17 @@ class Root(object):
     
     @cherrypy.expose
     @cherrypy.tools.json_out()
+    def analog_read(self, pin=None):
+        try:
+            value = self.proxy.analogRead(int(pin))
+            return { 'ok': True, 'value': value, }
+        except Exception, e:
+            # FIXME: return error details and log
+            logging.exception("Exception raised by proxy.analogRead()")
+            return { 'ok': False, 'exception': str(e), }
+    
+    @cherrypy.expose
+    @cherrypy.tools.json_out()
     def digital_read(self, pin=None):
         try:
             value = self.proxy.digitalRead(int(pin))
