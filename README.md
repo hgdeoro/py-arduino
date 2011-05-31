@@ -56,10 +56,11 @@ The basic methods of Arduino are implemented. The following actions can be done 
 Videos!
 =======
 
-* [Testing RGB leds with Py-Arduino-Proxy UI](http://www.youtube.com/watch?v=yM1ZaTFAZwc "Testing RGB leds with Py-Arduino-Proxy UI")
-* [Writing a custom method in Py-Arduino-Proxy](http://www.youtube.com/watch?v=2kgQpQqTVUU "Writing a custom method in Py-Arduino-Proxy")
-* [Testing shiftOut and 8 LEDs with Py-Arduino-Proxy](http://www.youtube.com/watch?v=_9MselaKcdU "Testing shiftOut and 8 LEDs with Py-Arduino-Proxy")
+* [Web interface + emulator + analog pins](http://www.youtube.com/watch?v=fMhAJlvZQco "Web interface + emulator + analog pins")
 * [Web interface](http://www.youtube.com/watch?v=QE6UJSs3b6Q "Web interface")
+* [Testing shiftOut and 8 LEDs with Py-Arduino-Proxy](http://www.youtube.com/watch?v=_9MselaKcdU "Testing shiftOut and 8 LEDs with Py-Arduino-Proxy")
+* [Writing a custom method in Py-Arduino-Proxy](http://www.youtube.com/watch?v=2kgQpQqTVUU "Writing a custom method in Py-Arduino-Proxy")
+* [Testing RGB leds with Py-Arduino-Proxy UI](http://www.youtube.com/watch?v=yM1ZaTFAZwc "Testing RGB leds with Py-Arduino-Proxy UI")
 
 Python API
 ==========
