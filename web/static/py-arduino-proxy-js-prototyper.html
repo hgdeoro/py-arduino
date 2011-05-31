@@ -19,14 +19,14 @@
 			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 			
 			// Show an error message at the TOP of the page.
-			function showError(html_msg) {
+			function showErrorMessage(html_msg) {
 				$('#error_message_text').html(html_msg);
-				$('#error_message_text').append(" <a href='javascript:hide_error_messages(); return false;'>[hide]</a>");
+				$('#error_message_text').append(" <a href='javascript:hideErrorMessages(); return false;'>[hide]</a>");
 				$("#error_messages").show();
 			}
 
 			// Hide the error message.
-			function hide_error_messages() {
+			function hideErrorMessages() {
 				$('#error_messages').hide();
 			}
 			
@@ -42,7 +42,7 @@
 				}
 			}
 			
-			function validate_connection() {
+			function validateConnection() {
 				$("#validate_connection_result").html('waiting for response...');
 				var value = PyArduinoProxy.validateConnection();
 				if(value === false) {
@@ -52,7 +52,7 @@
 				}
 			}
 			
-			function close_proxy() {
+			function closeProxy() {
 				var value = PyArduinoProxy.close();
 				if(value === true) {
 					window.location.replace("/");
@@ -61,19 +61,19 @@
 				}
 			}
 			
-			function goto_main() {
+			function redirectToMainPage() {
 				window.location.replace("/");
 			}
 			
-			function clear_log_console() {
+			function clearLogConsole() {
 				$("#simple_log_console").html('');
 			}
 			
-			function _log(msg) {
+			function logMessage(msg) {
 				$.tmpl("info_message_template", [{ log_message: msg, date: new Date() }]).appendTo("#simple_log_console");
 			}
 			
-			function _error(msg) {
+			function errorMessage(msg) {
 				$.tmpl("error_message_template", [{ log_message: msg, date: new Date() }]).appendTo("#simple_log_console");
 			}
 			
@@ -87,11 +87,11 @@
 				js_source += "var FALSE = false;\n";
 				js_source += $("#js_code").val();
 				try {
-					clear_log_console();
+					clearLogConsole();
 					eval(js_source);
-					_log("Script executed successfully.");
+					logMessage("Script executed successfully.");
 				} catch(err) {
-					_error(err);
+					errorMessage(err);
 				}
 			}
 			
@@ -103,7 +103,7 @@
 				
 				// Attach 'global' event listener of ajax errors
 				$("#error_messages").ajaxError(function(event, request, settings){
-					showError("<b>Error:</b> a problem occurred when communicating to the server. Url: '" + settings.url + "'");
+					showErrorMessage("<b>Error:</b> a problem occurred when communicating to the server. Url: '" + settings.url + "'");
 				});
 				
 				// Now that AJAX errors are reported, we load the data...
@@ -117,7 +117,7 @@
 				proxy = PyArduinoProxy;
 				
 				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-				// ping
+				// ping()
 				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 				
 				$("#ping_button").button();
@@ -126,30 +126,30 @@
 				});
 				
 				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-				// validate_connection
+				// validateConnection()
 				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 				
 				$("#validate_connection_button").button();
 				$("#validate_connection_button").click(function() {
-					validate_connection();
+					validateConnection();
 				});
 				
 				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-				// close_proxy_button
+				// closeProxy()
 				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 				
 				$("#close_proxy_button").button();
 				$("#close_proxy_button").click(function() {
-					close_proxy();
+					closeProxy();
 				});
 				
 				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-				// goto_main_button
+				// redirectToMainPage()
 				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 				
 				$("#goto_main_button").button();
 				$("#goto_main_button").click(function() {
-					goto_main();
+					redirectToMainPage();
 				});
 				
 				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -206,7 +206,7 @@
 		{% endfor %}
 	</p>
 	
-	<!-- ping() / validate_connection() -->
+	<!-- ping() / validateConnection() -->
 	<p class="ui-helper-clearfix">
 		<button id="ping_button">Ping</button> &nbsp; <span id="ping_result"></span>
 		&nbsp; | &nbsp;
@@ -220,17 +220,21 @@
 	</p>
 	
 	<div>
-		<textarea id="js_code" rows="10" cols="100">// Blink on PIN 13 example...
+		<textarea id="js_code" rows="16" cols="100">/* Blink LED on PIN 13 */
+
+logMessage("Setting pin 13 as OUTPUT");
 proxy.pinMode(13, OUTPUT);
-proxy.digitalWrite(13, LOW);
+
+if(! confirm("Start to blink?")) throw "stopping script";
+
+logMessage("Starting to blink");
 var i;
-for(i=0; i<5; i++) {
+for(i=0; i&lt;5; i++) {
     proxy.digitalWrite(13, HIGH);
     proxy.delay(250);
     proxy.digitalWrite(13, LOW);
     proxy.delay(250);
-}
-</textarea>
+}</textarea>
 	</div>
 	
 	<!-- TEMPLATE -->

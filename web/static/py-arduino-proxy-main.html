@@ -20,14 +20,14 @@
 			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 			
 			// Show an error message at the TOP of the page.
-			function showError(html_msg) {
+			function showErrorMessage(html_msg) {
 				$('#error_message_text').html(html_msg);
-				$('#error_message_text').append(" <a href='javascript:hide_error_messages(); return false;'>[hide]</a>");
+				$('#error_message_text').append(" <a href='javascript:hideErrorMessages(); return false;'>[hide]</a>");
 				$("#error_messages").show();
 			}
 
 			// Hide the error message.
-			function hide_error_messages() {
+			function hideErrorMessages() {
 				$('#error_messages').hide();
 			}
 			
@@ -37,7 +37,7 @@
 			
 			// Takes the 'pin' from the ID of the element that generated the event.
 			// Returns: Integer
-			function get_pin(text) {
+			function getPinFromId(text) {
 				groups = /^pin(\d+)_/(text);
 				if(groups == null)
 					alert("groups == null / text='" + text + "'");
@@ -45,25 +45,25 @@
 			}
 			
 			// Set the 'text' associated to a pin
-			function pin_status_text(pin, text) {
+			function setStatusTextOfPin(pin, text) {
 				$("#pin" + pin + "_status_text").html(text);
 			}
 			
-			function refresh_pin_ui(pin) {
+			function refreshPinUi(pin) {
 				if(PyArduinoProxy.globalData()['digital_pin_mode'][pin] == 'disabled') {
-					pin_status_text(pin, 'Pin disabled');
+					setStatusTextOfPin(pin, 'Pin disabled');
 					$('.pin' + pin + '_for_read').hide();
 					$('.pin' + pin + '_for_write').hide();
 					// TODO: finish this
 					
 				} else if(PyArduinoProxy.globalData()['digital_pin_mode'][pin] == 'input') {
-					pin_status_text(pin, 'Mode: INPUT');
+					setStatusTextOfPin(pin, 'Mode: INPUT');
 					$('.pin' + pin + '_for_read').show();
 					$('.pin' + pin + '_for_write').hide();
 					// TODO: finish this
 					
 				} else if(PyArduinoProxy.globalData()['digital_pin_mode'][pin] == 'output') {
-					pin_status_text(pin, 'Mode: OUTPUT');
+					setStatusTextOfPin(pin, 'Mode: OUTPUT');
 					$('.pin' + pin + '_for_read').hide();
 					$('.pin' + pin + '_for_write').show();
 					
@@ -89,19 +89,19 @@
 			// PIN mode
 			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 			
-			function pin_mode(pin, mode) {
+			function pinMode(pin, mode) {
 				var ret = PyArduinoProxy.pinMode(pin, mode);
 				if(!ret) {
-					pin_status_text(pin, "Couldn't set pinMode()"); // FIXME: this message is overwritten
+					setStatusTextOfPin(pin, "Couldn't set pinMode()"); // FIXME: this message is overwritten
 				}
-				refresh_pin_ui(pin);
+				refreshPinUi(pin);
 			}
 			
 			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 			// PIN operation
 			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 			
-			function pin_digital_write(pin, value) {
+			function digitalWrite(pin, value) {
 				pin = parseInt(pin);
 				var slider_value = -1;
 				
@@ -110,41 +110,41 @@
 				} else if (value == 'high') {
 					slider_value = 255.
 				} else {
-					alert("pin_digital_write(): Invalid value.");
+					alert("digitalWrite(): Invalid value.");
 					return;
 				}
 				
 				if(PyArduinoProxy.digitalWrite(pin, value)) {
-					pin_status_text(pin, 'digitalWrite(): <b>' + value + '</b>');
+					setStatusTextOfPin(pin, 'digitalWrite(): <b>' + value + '</b>');
 					if (PyArduinoProxy.pinIsPwm(pin)) {
 						$('#pin' + pin + '_pwm_slider').slider("value", slider_value);
 					}
 				} else {
-					pin_status_text(pin, "Couldn't digitalWrite()");
+					setStatusTextOfPin(pin, "Couldn't digitalWrite()");
 				}
 			}
 			
-			function pin_analog_write(pin, value) {
+			function analogWrite(pin, value) {
 				// Uncheck LOW/HIGH
 				// TODO: uncheck and refresh only if one of this is checked!
 				$('input:radio[name=pin' + pin + '_dw]').attr('checked', false);
 				$('.pin' +  pin + '_output_buttonset').buttonset("refresh");
 				
 				if(PyArduinoProxy.analogWrite(pin, value)) {
-					pin_status_text(pin, 'PWM: ' + value);
+					setStatusTextOfPin(pin, 'PWM: ' + value);
 				} else {
-					pin_status_text(pin, "Couldn't analogWrite()");
+					setStatusTextOfPin(pin, "Couldn't analogWrite()");
 				}
 			}
 			
-			function pin_digital_read(pin) {
+			function digitalRead(pin) {
 				var value = PyArduinoProxy.digitalRead(pin);
 				if(value == 0) {
-					pin_status_text(pin, 'digitalRead(): <b>LOW</b>');
+					setStatusTextOfPin(pin, 'digitalRead(): <b>LOW</b>');
 				} else if(value == 1) {
-					pin_status_text(pin, 'digitalRead(): <b>HIGH</b>');
+					setStatusTextOfPin(pin, 'digitalRead(): <b>HIGH</b>');
 				} else {
-					pin_status_text(pin, 'digitalRead(): invalid response from server.');
+					setStatusTextOfPin(pin, 'digitalRead(): invalid response from server.');
 				}
 			}
 			
@@ -160,7 +160,7 @@
 				}
 			}
 			
-			function validate_connection() {
+			function validateConnection() {
 				$("#validate_connection_result").html('waiting for response...');
 				var value = PyArduinoProxy.validateConnection();
 				if(value === false) {
@@ -170,7 +170,7 @@
 				}
 			}
 			
-			function close_proxy() {
+			function closeProxy() {
 				var value = PyArduinoProxy.close();
 				if(value === true) {
 					window.location.replace("/");
@@ -179,7 +179,7 @@
 				}
 			}
 
-			function goto_js_prototyper() {
+			function gotoJsPrototyper() {
 				window.location.replace("/js_prototyper");
 			}
 			
@@ -191,7 +191,7 @@
 				
 				// Attach 'global' event listener of ajax errors
 				$("#error_messages").ajaxError(function(event, request, settings){
-					showError("<b>Error:</b> a problem occurred when communicating to the server. Url: '" + settings.url + "'");
+					showErrorMessage("<b>Error:</b> a problem occurred when communicating to the server. Url: '" + settings.url + "'");
 				});
 				
 				// Now that AJAX errors are reported, we load the data...
@@ -209,12 +209,12 @@
 				});
 				
 				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-				// validate_connection
+				// validateConnection
 				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 				
 				$("#validate_connection_button").button();
 				$("#validate_connection_button").click(function() {
-					validate_connection();
+					validateConnection();
 				});
 				
 				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -223,7 +223,7 @@
 				
 				$("#close_proxy_button").button();
 				$("#close_proxy_button").click(function() {
-					close_proxy();
+					closeProxy();
 				});
 				
 				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -232,7 +232,7 @@
 				
 				$("#goto_js_prototyper_button").button();
 				$("#goto_js_prototyper_button").click(function() {
-					goto_js_prototyper();
+					gotoJsPrototyper();
 				});
 				
 				
@@ -249,7 +249,7 @@
 				}
 				
 				$(".pin_label").click(function() {
-					var pin = get_pin($(this).attr('id'));
+					var pin = getPinFromId($(this).attr('id'));
 					var newLabel = prompt("Enter new label for pin " + pin);
 					if(newLabel && newLabel.trim) newLabel = newLabel.trim();
 					if(newLabel) {
@@ -274,43 +274,43 @@
 				
 				// pinMode(): disable
 				$('.pin_mode_dis').change(function() {
-					pin = get_pin($(this).attr('id'));
-					pin_mode(pin, 'disabled');
+					pin = getPinFromId($(this).attr('id'));
+					pinMode(pin, 'disabled');
 				});
 				
 				// pinMode(): INPUT
 				$('.pin_mode_in').change(function() {
-					pin = get_pin($(this).attr('id'));
-					pin_mode(pin, 'input');
+					pin = getPinFromId($(this).attr('id'));
+					pinMode(pin, 'input');
 				});
 				
 				// pinMode(): OUTPUT
 				$('.pin_mode_out').change(function() {
-					pin = get_pin($(this).attr('id'));
-					pin_mode(pin, 'output');
+					pin = getPinFromId($(this).attr('id'));
+					pinMode(pin, 'output');
 				});
 
 				// digitalRead()
 				$(".pin_dr_button").click(function() {
-					pin = get_pin($(this).attr('id'));
-					pin_digital_read(pin);
+					pin = getPinFromId($(this).attr('id'));
+					digitalRead(pin);
 				});
 				
 				// digitalWrite()
 				$(".pin_dw_lo").click(function() {
-					pin = get_pin($(this).attr('id'));
-					pin_digital_write(pin, 'low');
+					pin = getPinFromId($(this).attr('id'));
+					digitalWrite(pin, 'low');
 				});
 				
 				$(".pin_dw_hi").click(function() {
-					pin = get_pin($(this).attr('id'));
-					pin_digital_write(pin, 'high');
+					pin = getPinFromId($(this).attr('id'));
+					digitalWrite(pin, 'high');
 				});
 				
 				// analogWrite()
 				$(".pin_pwm_slider").bind("slide", function(event, ui) {
-					pin = get_pin($(this).attr('id'));
-					pin_analog_write(pin, ui.value);
+					pin = getPinFromId($(this).attr('id'));
+					analogWrite(pin, ui.value);
 				});
 				
 			});
@@ -351,7 +351,7 @@
 		{% endfor %}
 	</p>
 	
-	<!-- ping() / validate_connection() -->
+	<!-- ping() / validateConnection() -->
 	<p class="ui-helper-clearfix">
 		<button id="ping_button">Ping</button> &nbsp; <span id="ping_result"></span>
 		&nbsp; | &nbsp;
