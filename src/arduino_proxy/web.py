@@ -102,7 +102,7 @@ class Root(object):
             cherrypy.session['error_message'] = str(e)
             raise cherrypy.HTTPRedirect("/connect")
 
-    def generate_ui(self, template_name="py-arduino-proxy-main.html"):
+    def generate_ui(self, template_name="web-ui-main.html"):
         """
         Generates the main UI. This method requires an working instance of 'self.proxy'.
         """
