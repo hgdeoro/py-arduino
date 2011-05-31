@@ -3,63 +3,42 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 		<title>Py-Arduino-Proxy</title>
+        
+        <!-- css -->
 		<link type="text/css" href="/static/jquery-ui/css/ui-lightness/jquery-ui-1.8.13.custom.css" rel="stylesheet" />	
+		<link type="text/css" href="/static/web-ui.css" rel="stylesheet" />	
+        
+		<style type="text/css">
+        </style>
+        
+        <!-- javascript -->
 		<script type="text/javascript" src="/static/jquery-ui/js/jquery-1.5.1.min.js"></script>
 		<script type="text/javascript" src="/static/jquery-ui/js/jquery-ui-1.8.13.custom.min.js"></script>
-		<script type="text/javascript" src="/static/py-arduino-proxy.js"></script>
-		<link type="text/css" href="/static/web-ui.css" rel="stylesheet" />	
-		<style type="text/css">
-			body { font: 62.5% sans-serif; margin: 20px; color: #777; }
-		</style>	
+		<script type="text/javascript" src="/static/web-ui.js"></script>
+        
+		<!-- *** py-arduino-proxy.js *** HANDLES THE COMMUNICATION WITH ARDUINO -->
+        <script type="text/javascript" src="/static/py-arduino-proxy.js"></script>
+        
 		<script type="text/javascript">
-			
-			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-			// Error messages
-			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-			
-			// Show an error message at the TOP of the page.
-			function showError(html_msg) {
-				$('#error_message_text').html(html_msg);
-				$('#error_message_text').append(" <a href='javascript:hide_error_messages(); return false;'>[hide]</a>");
-				$("#error_messages").show();
-			}
-
-			// Hide the error message.
-			function hide_error_messages() {
-				$('#error_messages').hide();
-			}
-			
-			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-			// ON-LOAD
-			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-			
-			/*
-			$(function(){
-				
-			});
-			*/
-			
+            
+            $(function(){
+                
+                // {% if error_message %}
+                
+                showCurrentErrorMessage();
+                    
+                // {% endif %}
+                
+            });
+            
 		</script>
+        
 	</head>
 	<body>
 	
 	<h1>Py-Arduino-Proxy</h1>
 
-	<!-- Error message -->
-	{% if error_message %}
-	<div id="error_messages" style="margin-bottom: 20px;">
-		<div class="ui-widget">
-			<div class="ui-state-error ui-corner-all" style="padding: 0 .7em;"> 
-				<p>
-					<span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span> 
-					<span id="error_message_text">
-						{{ error_message }} {# This is an error message. #}
-					</span>
-				</p>
-			</div>
-		</div>
-	</div>
-	{% endif %}
+    {% include "web-ui__top_error_message.html" %}
 
 	<div class="ui-widget">
 		<div class="ui-widget-header ui-corner-top">
@@ -108,10 +87,7 @@
 		</div>
 	</div>
 	
-	<p style="size: small; border-top: 1px #aaa solid; padding-top: 3px;">
-		Py-Arduino-Proxy | 2011 &copy; Horacio G. de Oro &lt;hgdeoro@gmail.com&gt; | <a href="https://github.com/hgdeoro/py-arduino-proxy" target="_blank">Get the source</a>
-	</p>
+    {% include "web-ui__footer.html" %}
+    
 	</body>
 </html>
-
-

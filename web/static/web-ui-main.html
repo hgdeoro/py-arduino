@@ -3,33 +3,25 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 		<title>{{ avr_cpu_type }} / Py-Arduino-Proxy</title>
+        
+        <!-- css -->
 		<link type="text/css" href="/static/jquery-ui/css/ui-lightness/jquery-ui-1.8.13.custom.css" rel="stylesheet" />	
-		<script type="text/javascript" src="/static/jquery-ui/js/jquery-1.5.1.min.js"></script>
-		<script type="text/javascript" src="/static/jquery-ui/js/jquery-ui-1.8.13.custom.min.js"></script>
-		<script type="text/javascript" src="/static/py-arduino-proxy.js"></script>
+		<link type="text/css" href="/static/web-ui.css" rel="stylesheet" />	
 		<style type="text/css">
-			body { font: 62.5% sans-serif; margin: 20px; color: #777; }
 			.pin_status_text { color: #333; }
 			.pin_label { font-weight: bold; }
 			div.pwm_slide { padding-top: 5px; }
-		</style>	
+		</style>
+        
+        <!-- javascript -->
+		<script type="text/javascript" src="/static/jquery-ui/js/jquery-1.5.1.min.js"></script>
+		<script type="text/javascript" src="/static/jquery-ui/js/jquery-ui-1.8.13.custom.min.js"></script>
+		<script type="text/javascript" src="/static/web-ui.js"></script>
+        
+		<!-- *** py-arduino-proxy.js *** HANDLES THE COMMUNICATION WITH ARDUINO -->
+        <script type="text/javascript" src="/static/py-arduino-proxy.js"></script>
+        
 		<script type="text/javascript">
-			
-			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-			// Error messages
-			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-			
-			// Show an error message at the TOP of the page.
-			function showErrorMessage(html_msg) {
-				$('#error_message_text').html(html_msg);
-				$('#error_message_text').append(" <a href='javascript:hideErrorMessages(); return false;'>[hide]</a>");
-				$("#error_messages").show();
-			}
-
-			// Hide the error message.
-			function hideErrorMessages() {
-				$('#error_messages').hide();
-			}
 			
 			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 			// General pin functions
@@ -148,36 +140,14 @@
 				}
 			}
 			
-			function ping() {
-				$("#ping_result").html('waiting for response...');
-				var start = new Date().getTime();
-				var value = PyArduinoProxy.ping();
-				var end = new Date().getTime();
-				if(value) {
-				  $("#ping_result").html('PING OK - ' + (end-start) + ' ms');
-				} else {
-				  $("#ping_result").html('no response');
-				}
-			}
-			
-			function validateConnection() {
-				$("#validate_connection_result").html('waiting for response...');
-				var value = PyArduinoProxy.validateConnection();
-				if(value === false) {
-					$("#validate_connection_result").html('ERROR');
-				} else {
-					$("#validate_connection_result").html('validation OK - ID: ' + value);
-				}
-			}
-			
-			function closeProxy() {
-				var value = PyArduinoProxy.close();
-				if(value === true) {
-					window.location.replace("/");
-				} else {
-					$("#close_proxy_result").html('Couldn\'t close the proxy...');
-				}
-			}
+            //    function ping() {
+            //    }
+                
+            //    function validateConnection() {
+            //    }
+                
+            //    function closeProxy() {
+            //    }
 
 			function gotoJsPrototyper() {
 				window.location.replace("/js_prototyper");
@@ -189,11 +159,8 @@
 			
 			$(function(){
 				
-				// Attach 'global' event listener of ajax errors
-				$("#error_messages").ajaxError(function(event, request, settings){
-					showErrorMessage("<b>Error:</b> a problem occurred when communicating to the server. Url: '" + settings.url + "'");
-				});
-				
+                attachGlobalAjaxError();
+                
 				// Now that AJAX errors are reported, we load the data...
 				
 				PyArduinoProxy.init();
@@ -203,8 +170,7 @@
 				// ping
 				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 				
-				$("#ping_button").button();
-				$("#ping_button").click(function() {
+				$("#ping_button").button().click(function() {
 					ping();
 				});
 				
@@ -212,8 +178,7 @@
 				// validateConnection
 				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 				
-				$("#validate_connection_button").button();
-				$("#validate_connection_button").click(function() {
+				$("#validate_connection_button").button().click(function() {
 					validateConnection();
 				});
 				
@@ -221,8 +186,7 @@
 				// close_proxy_button
 				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 				
-				$("#close_proxy_button").button();
-				$("#close_proxy_button").click(function() {
+				$("#close_proxy_button").button().click(function() {
 					closeProxy();
 				});
 				
@@ -230,11 +194,9 @@
 				// goto_js_prototyper_button
 				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 				
-				$("#goto_js_prototyper_button").button();
-				$("#goto_js_prototyper_button").click(function() {
+				$("#goto_js_prototyper_button").button().click(function() {
 					gotoJsPrototyper();
 				});
-				
 				
 				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 				// Pin XX
@@ -321,36 +283,10 @@
 	<h1>Py-Arduino-Proxy @ {{ avr_cpu_type }}</h1>
 	
 	<!-- Error message -->
-	<div id="error_messages" style="display: none;">
-		<div class="ui-widget">
-			<div class="ui-state-error ui-corner-all" style="padding: 0 .7em;"> 
-				<p>
-					<span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span> 
-					<span id="error_message_text">
-						<strong>Alert:</strong> Sample ui-state-error style.
-					</span>
-				</p>
-			</div>
-		</div>
-	</div>
-	
-	<!-- Informatino about the Arduino -->
-	<p style="size: small; border-bottom: 1px #aaa solid;">
-		<b>AVR cpu type:</b> <span id="avrCpuType">{{ avr_cpu_type }}</span>
-		
-		- <b>Digital:</b> 
-		{% for pin in range(0, arduino_type.digital_pins) %}
-			{{ pin }} {% if pin in arduino_type.pwm_pin_list %} (PWM) {% endif %}
-			{% if not loop.last%} , {% endif %}
-		{% endfor %}
-		
-		- <b>Analog:</b> 
-		{% for pin in range(0, arduino_type.analog_pins) %}
-			{{ pin }}
-			{% if not loop.last%} , {% endif %}
-		{% endfor %}
-	</p>
-	
+    {% include "web-ui__top_error_message.html" %}
+    
+    {% include "web-ui__top_connected_arduino_info.html" %}
+    
 	<!-- ping() / validateConnection() -->
 	<p class="ui-helper-clearfix">
 		<button id="ping_button">Ping</button> &nbsp; <span id="ping_result"></span>
@@ -402,9 +338,8 @@
 	</div>
 	{% endfor %}
 	
-	<p style="size: small; border-top: 1px #aaa solid; padding-top: 3px;">
-		Py-Arduino-Proxy | 2011 &copy; Horacio G. de Oro &lt;hgdeoro@gmail.com&gt; | <a href="https://github.com/hgdeoro/py-arduino-proxy" target="_blank">Get the source</a>
-	</p>
+    {% include "web-ui__footer.html" %}
+    
 	</body>
 </html>
 
