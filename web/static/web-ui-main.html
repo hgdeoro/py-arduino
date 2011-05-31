@@ -9,7 +9,7 @@
 		<link type="text/css" href="/static/web-ui.css" rel="stylesheet" />	
 		<style type="text/css">
 			.pin_status_text { color: #333; }
-			.pin_label { font-weight: bold; }
+			.digital_pin_label, .analog_pin_label { font-weight: bold; }
 			div.pwm_slide { padding-top: 5px; }
 		</style>
         
@@ -220,9 +220,18 @@
 					$(".pin" + pin + "_input_buttonset").buttonset();
 				}
 				
-				$(".pin_label").click(function() {
+				$(".digital_pin_label").click(function() {
 					var pin = getPinFromId($(this).attr('id'));
-					var newLabel = prompt("Enter new label for pin " + pin);
+					var newLabel = prompt("Enter new label for pin " + pin, $(this).html());
+					if(newLabel && newLabel.trim) newLabel = newLabel.trim();
+					if(newLabel) {
+						$($(this).html(newLabel));
+					}
+				});
+
+				$(".analog_pin_label").click(function() {
+					var pin = getAnalogPinFromId($(this).attr('id'));
+					var newLabel = prompt("Enter new label for pin " + pin, $(this).html());
 					if(newLabel && newLabel.trim) newLabel = newLabel.trim();
 					if(newLabel) {
 						$($(this).html(newLabel));
@@ -317,7 +326,7 @@
 	<div style="padding-bottom: 4px;">
 		<div>
 			
-			<span id="pin{{ pin }}_label" class="pin_label" title="Click here to edit">Digital pin {{ pin }}</span>:
+			<span id="pin{{ pin }}_label" class="digital_pin_label" title="Click here to edit">Digital pin {{ pin }}</span>:
 			
 			<!--
                 This buttons set the pin mode.
@@ -366,7 +375,7 @@
 	{% for pin in range(0, arduino_type.analog_pins) %}
     <div>
 
-        <span class="pin_label">Analog pin {{ pin }}:</span>
+        <span id="pinA{{ pin }}_label" class="analog_pin_label" title="Click here to edit">Analog pin {{ pin }}</span>:
 
         <!--
             analogRead()
