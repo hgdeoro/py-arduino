@@ -90,9 +90,16 @@ def main(): # pylint: disable=R0915
         print "delay(500)"
         proxy.delay(500)
         
-        print "delay(1500)"
+        print "delay(2000)"
+        proxy.delay(2000)
+        
+        print "low level delay(500)"
+        ret = proxy.send_cmd("%s 500" % (proxy.delay.arduino_function_name))
+        assert ret == "D_OK"
+        
+        print "low level delay(1500)"
         try:
-            proxy.delay(1500)
+            proxy.send_cmd("%s 1500" % (proxy.delay.arduino_function_name))
             assert False, "The previous line should raise an exception!"
         except CommandTimeout, exception:
             print " +", exception.__class__
