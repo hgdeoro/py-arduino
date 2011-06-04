@@ -225,6 +225,19 @@ class Root(object):
 
     @cherrypy.expose
     @cherrypy.tools.json_out()
+    def get_free_memory(self):
+        try:
+            return {
+                'ok': True,
+                'freeMemory': self.proxy.getFreeMemory(),
+            }
+        except Exception, e:
+            # FIXME: return error details and log
+            logging.exception("Exception raised by proxy.getAvrCpuType()")
+            return { 'ok': False, 'exception': str(e), }
+
+    @cherrypy.expose
+    @cherrypy.tools.json_out()
     def get_avr_cpu_type(self):
         try:
             return {

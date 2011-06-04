@@ -527,6 +527,55 @@ var PyArduinoProxy = function($) {
 	}
 	
     /*
+     * Calls **getFreeMemory()** on Arduino.
+     * 
+     * Returns the free memory on the Arduino.
+     * Returns '-1' in case of error (or raises an exception
+     *  if *jsExceptions* is enabled).
+     */
+	var getFreeMemory = function(extra_settings) {
+		extra_settings = _ensure_dict(extra_settings);
+		var retValue = -1;
+		var ajax_data = null;
+		
+		var hardcoded_settings = {
+			url: '/get_free_memory/',
+			dataType: 'json',
+			async: false,
+			success: function(data, textStatus, jqXHR) {
+				ajax_data = data;
+				if(data.ok) {
+					if(data.freeMemory >= 0) {
+						retValue = data.freeMemory;
+					} else {
+						retValue = -1;
+					}
+				} else {
+					retValue = -1;
+				}
+				if('success' in extra_settings)
+					extra_settings.success(data, textStatus, jqXHR);
+			},
+			error: function(jqXHR, textStatus, errorThrown) {
+				retValue = -1;
+				if('error' in extra_settings)
+					extra_settings.error(jqXHR, textStatus, errorThrown);
+			}
+		}
+		
+		var settings = $.extend({}, extra_settings, hardcoded_settings);
+
+		$.ajax(settings);
+		if(jsExceptions && (retValue == -1)) {
+			if(ajax_data.exception) throw new Error(ajax_data.exception);
+			if(ajax_data.error) throw new Error(ajax_data.error);
+			throw new Error("Error detected while executing getFreeMemory().");
+		}
+		
+		return retValue;
+	}
+    
+    /*
      * enableJsExceptions()
      * 
      * Enables the **jsExceptions** flag.
@@ -556,6 +605,7 @@ var PyArduinoProxy = function($) {
 	return {
 		init: init,
 		globalData: globalData,
+        getFreeMemory: getFreeMemory,
 		enableJsExceptions: enableJsExceptions,
 		disableJsExceptions: disableJsExceptions,
 		pinIsPwm: pinIsPwm,
