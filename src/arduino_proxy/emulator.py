@@ -90,6 +90,10 @@ class ArduinoEmulator(threading.Thread):
             self.serial_connection.write("DIS\n")
         elif splitted[0] == '_gACT':
             self.serial_connection.write("ARDUINO_EMULATOR\n")
+        elif splitted[0] == '_gFM': # getFreeMemory()
+            self.serial_connection.write("%d\n" % random.randint(800, 1200))
+        elif splitted[0] == '_sftO': # shiftOut()
+            self.serial_connection.write("SOOK\n")
         elif splitted[0] == '_gATS':
             analog_pins = _get_int("emulator_analog_pins", 5)
             digital_pins = _get_int("emulator_digital_pins", 5)

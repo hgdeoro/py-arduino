@@ -170,8 +170,8 @@ def main(): # pylint: disable=R0914,R0912,R0915
             break
     
     proxy = ArduinoProxy.create_emulator()
-    
     placeholder_values = generate_placeholder_values(proxy, options)
+    proxy.close()
 
     output = StringIO()
     

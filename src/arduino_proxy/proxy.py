@@ -1191,6 +1191,22 @@ class ArduinoProxy(object): # pylint: disable=R0904
                 Serial.println("");
             }
         """)
+    
+    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    
+    def getFreeMemory(self): # pylint: disable=C0103
+        """
+        Returns the available free memory.
+        """
+        return self.send_cmd("_gFM")
+            # raises CommandTimeout,InvalidCommand,InvalidResponse
+    
+    getFreeMemory.arduino_function_name = '_gFM'
+    getFreeMemory.arduino_code = _unindent(12, """
+            void _gFM() {
+                send_int_response(freeMemory());
+            }
+        """)
 
 ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 ## EXAMPLE CODE FOR NEW FUNCTIONS

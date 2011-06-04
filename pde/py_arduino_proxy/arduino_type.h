@@ -6,8 +6,8 @@
 //   URL: http://arduino.cc/forum/index.php/topic,61528.msg445142.html#msg445142
 //
 // HISTORY:
-// 2011-05-18 initial version
-// 2011-05-19 removed board_name, voltage, RAM, SerialPorts, clockSpeed
+// 2011-05-18 Rob Tillaart <rob.tillaart@gmail.com>: initial version
+// 2011-05-19 Horacio G. de Oro <hgdeoro@gmail.com>: removed board_name, voltage, RAM, SerialPorts, clockSpeed
 //  and added bitmap for PWM pins.
 //
 

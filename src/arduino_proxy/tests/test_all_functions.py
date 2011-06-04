@@ -33,6 +33,7 @@ from arduino_proxy.main_utils import default_main
 def main(): # pylint: disable=R0915
     options, args, proxy = default_main() # pylint: disable=W0612
     try:
+        print "getFreeMemory() -> %s" % str(proxy.getFreeMemory())
         print "enableDebug() -> %s" % str(proxy.enableDebug())
         print "disableDebug() -> %s" % str(proxy.disableDebug())
         print "validateConnection() -> %s" % str(proxy.validateConnection())
@@ -117,6 +118,8 @@ def main(): # pylint: disable=R0915
         
         # Now, the connection is valid again, ping() should work...
         print "ping() -> %s" % str(proxy.ping())
+        
+        print "getFreeMemory() -> %s" % str(proxy.getFreeMemory())
         
     except KeyboardInterrupt:
         print ""

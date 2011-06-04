@@ -211,6 +211,12 @@ void _gACT() {
         
 
 
+void _gFM() {
+    send_int_response(freeMemory());
+}
+        
+
+
 void _gIM() {
     int interrupt = atoi(received_parameters[1]);
     if (interrupt == 0) {
@@ -352,12 +358,12 @@ void _wI() {
 	
 	// PROXIED_FUNCTION_COUNT: how many proxied functions we have
 // >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
-	#define PROXIED_FUNCTION_COUNT 21 // {***PLACEHOLDER***}
+	#define PROXIED_FUNCTION_COUNT 22 // {***PLACEHOLDER***}
 	
 // >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
-	proxied_function_ptr function_ptr[PROXIED_FUNCTION_COUNT] = { _aRd, _aWrt, _dy, _dMs, _dRd, _dWrt, _dD, _eD, _eDL, _gATS, _gACT, _gIM, _lcdClr, _lcdW, _mc, _ms, _pMd, _ping, _sftO, _vCnt, _wI,  }; // {***PLACEHOLDER***}
+	proxied_function_ptr function_ptr[PROXIED_FUNCTION_COUNT] = { _aRd, _aWrt, _dy, _dMs, _dRd, _dWrt, _dD, _eD, _eDL, _gATS, _gACT, _gFM, _gIM, _lcdClr, _lcdW, _mc, _ms, _pMd, _ping, _sftO, _vCnt, _wI,  }; // {***PLACEHOLDER***}
 // >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
-	char*               function_name[PROXIED_FUNCTION_COUNT] = { "_aRd", "_aWrt", "_dy", "_dMs", "_dRd", "_dWrt", "_dD", "_eD", "_eDL", "_gATS", "_gACT", "_gIM", "_lcdClr", "_lcdW", "_mc", "_ms", "_pMd", "_ping", "_sftO", "_vCnt", "_wI",  }; // {***PLACEHOLDER***}
+	char*               function_name[PROXIED_FUNCTION_COUNT] = { "_aRd", "_aWrt", "_dy", "_dMs", "_dRd", "_dWrt", "_dD", "_eD", "_eDL", "_gATS", "_gACT", "_gFM", "_gIM", "_lcdClr", "_lcdW", "_mc", "_ms", "_pMd", "_ping", "_sftO", "_vCnt", "_wI",  }; // {***PLACEHOLDER***}
 	
 	#define read_char() Serial.read()
 	
@@ -531,6 +537,21 @@ void detachInterrupt(uint8_t interruptNum) { }
 #define UNEXPECTED_RESPONSE_FROM_READ_ONE_PARAM					4
 #define UNEXPECTED_RESPONSE_FROM_READ_PARAMETERS				5
 #define FUNCTION_NOT_FOUND										6
+
+extern unsigned int __bss_end;
+extern unsigned int __heap_start;
+extern void *__brkval;
+
+int freeMemory() {
+  int free_memory;
+
+  if((int)__brkval == 0)
+     free_memory = ((int)&free_memory) - ((int)&__bss_end);
+  else
+    free_memory = ((int)&free_memory) - ((int)__brkval);
+
+  return free_memory;
+}
 
 //
 // Read one parameter from serial and store it in the 'tmp_array'.
