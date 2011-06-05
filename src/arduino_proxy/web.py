@@ -20,6 +20,7 @@
 import cherrypy
 import jinja2
 import logging
+import serial
 import simplejson
 import os
 import sys
@@ -78,34 +79,27 @@ class Root(object):
     
     @cherrypy.expose
     def index(self):
-        if self.proxy is None:
-            raise cherrypy.HTTPRedirect("/connect")
-        
-        try:
-            self.proxy.validateConnection()
-            return self.generate_ui()
-        except ArduinoProxyException, e:
-            self.proxy = None
-            cherrypy.session['error_message'] = str(e)
-            raise cherrypy.HTTPRedirect("/connect")
+        return self.generate_ui()
 
     @cherrypy.expose
     def js_prototyper(self):
+        return self.generate_ui(template_name="web-ui-js-prototyper.html")
+    
+    def generate_ui(self, template_name="web-ui-main.html"):
+        """
+        Generates the UI pages (main, JS Prototyper, etc.).
+        If no proxy is defined or validation fails, a redirect is generated.
+        """
         if self.proxy is None:
             raise cherrypy.HTTPRedirect("/connect")
         
         try:
             self.proxy.validateConnection()
-            return self.generate_ui(template_name="web-ui-js-prototyper.html")
-        except ArduinoProxyException, e:
+        except Exception, e:
             self.proxy = None
             cherrypy.session['error_message'] = str(e)
             raise cherrypy.HTTPRedirect("/connect")
-
-    def generate_ui(self, template_name="web-ui-main.html"):
-        """
-        Generates the main UI. This method requires an working instance of 'self.proxy'.
-        """
+        
         arduino_type = self.proxy.getArduinoTypeStruct()
         avr_cpu_type = self.proxy.getAvrCpuType()
         template = self.jinja2_env.get_template(template_name)
