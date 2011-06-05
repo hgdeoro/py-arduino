@@ -86,6 +86,8 @@
 				} catch(err) {
 					errorMessage(err);
 				}
+                if($("body").data("codeMirrorInstance") != null)
+                    $("body").data("codeMirrorInstance").focus();
 			}
 			
 			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
