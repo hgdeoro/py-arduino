@@ -63,3 +63,11 @@ function closeProxy() {
         window.location.replace("/");
     }
 }
+
+function redirectToMainPage() {
+    window.location.replace("/");
+}
+
+function redirectToJsPrototyper() {
+    window.location.replace("/js_prototyper");
+}
