@@ -46,7 +46,7 @@
 				js_source += "var LOW = 'low';\n";
 				js_source += "var TRUE = true;\n";
 				js_source += "var FALSE = false;\n";
-				js_source += $("#js_code").val();
+				js_source += $("#js_code_editor").val();
 				try {
 					clearLogConsole();
 					eval(js_source);
@@ -113,6 +113,22 @@
 					clearLogConsole();
 				});
                 
+                /*
+				$(".button_mv_src_to_editor").button().click(function() {
+					var button_id = $(this).attr('id');
+                    $('#js_code_editor').val($("#" + button_id + "_src").html());
+                    
+                    / *
+					var pin = getPinFromId($(this).attr('id'));
+					var newLabel = prompt("Enter new label for pin " + pin, $(this).html());
+					if(newLabel && newLabel.trim) newLabel = newLabel.trim();
+					if(newLabel) {
+						$($(this).html(newLabel));
+					}
+                    * /
+				});
+                */
+                
                 prettyPrint();
                 
 				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -154,33 +170,21 @@
 	<p class="ui-helper-clearfix">
 		<button id="goto_main_button">Main</button>
 		<button id="goto_js_prototyper_button" class="ui-state-highlight">JS Prototyper</button>
-		&nbsp; | &nbsp;
-		<button id="ping_button">Ping</button> &nbsp; <span id="ping_result"></span>
-		&nbsp; | &nbsp;
-		<button id="validate_connection_button">Validate connection</button> &nbsp; <span id="validate_connection_result"></span>
-		&nbsp; | &nbsp;
-		<button id="close_proxy_button">Close</button> &nbsp; <span id="close_proxy_result"></span>
-		&nbsp; | &nbsp;
-		<button id="execute_button" class="ui-state-highlight">Execute</button>
+        ::
+		<button id="ping_button" class="ui-priority-secondary">Ping</button> <span id="ping_result"></span>
+		<button id="validate_connection_button" class="ui-priority-secondary">Validate connection</button> <span id="validate_connection_result"></span>
+		<button id="close_proxy_button" class="ui-priority-secondary">Close</button> <span id="close_proxy_result"></span>
+        ::
+		<button id="execute_button" class="ui-priority-primary">Execute</button>
 		<button id="clear_log_console_button">Clear console</button>
 	</p>
 	
 	<div>
-		<textarea id="js_code" rows="16" cols="100">/* Blink LED on PIN 13 */
-
-logMessage("Setting pin 13 as OUTPUT");
-proxy.pinMode(13, OUTPUT);
-
-if(! confirm("Start to blink?")) throw "stopping script";
-
-logMessage("Starting to blink");
-var i;
-for(i=0; i&lt;5; i++) {
-    proxy.digitalWrite(13, HIGH);
-    proxy.delay(250);
-    proxy.digitalWrite(13, LOW);
-    proxy.delay(250);
-}</textarea>
+		<textarea id="js_code_editor" rows="16" cols="100">
+logMessage("Will send ping to Arduino...");
+proxy.ping();
+logMessage("Ping OK.");
+</textarea>
 	</div>
 	
 	<!-- TEMPLATE -->
@@ -265,6 +269,7 @@ logMessage("Temp. on A" + analogPort + ": " + readTemp(analogPort));
 
 logMessage("Temp. on A" + analogPort + ": " + readTemp(analogPort).toFixed(1) + "º C");
 </pre>
+<!-- <button id="example_0" class="button_mv_src_to_editor">Move source to editor</button> -->
         </div>
 
 
