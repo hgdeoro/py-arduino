@@ -200,6 +200,8 @@ void _gATS() {
     Serial.print(this_arduino_type.eeprom_size, DEC);
     Serial.print(" ");
     Serial.print(this_arduino_type.flash_size, DEC);
+    Serial.print(" ");
+    Serial.print(this_arduino_type.ram_size, DEC);
     Serial.println("");
 }
         

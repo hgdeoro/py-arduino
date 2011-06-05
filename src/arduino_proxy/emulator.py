@@ -102,13 +102,15 @@ class ArduinoEmulator(threading.Thread):
                 pwm_pins_bitmap = ''.join([ str(i%2) for i in range(0, digital_pins) ])
             eeprom_size = _get_int("emulator_eeprom_size", 2)
             flash_size = _get_int("emulator_flash_size", 16)
+            ram_size = _get_int("emulator_ram_size", 4)
             
-            arduino_type_struct = "%d %d %s %d %d\n" % (
+            arduino_type_struct = "%d %d %s %d %d %d\n" % (
                 analog_pins, 
                 digital_pins, 
                 pwm_pins_bitmap, 
                 eeprom_size, 
                 flash_size, 
+                ram_size, 
             )
             
             self.serial_connection.write(arduino_type_struct)

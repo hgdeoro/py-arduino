@@ -25,9 +25,9 @@ struct arduino_type
   uint8_t digital_pins;     // excl analog pins that can be used as digital ones
   uint16_t pwm_pins_bitmap; // bitmap of digital pin with PWM support
   // uint8_t voltage;       // whole part only
-  // uint16_t RAM;          // KiB
-  uint8_t eeprom_size;      // KiB
-  uint8_t flash_size;       // KiB
+  uint8_t ram_size;         // KiB - uint8_t: MAX=255
+  uint8_t eeprom_size;      // KiB - uint8_t: MAX=255
+  uint16_t flash_size;       // KiB - uint16_t: MAX=65535
   // uint8_t SerialPorts;
   // uint8_t clockSpeed;   // *10e6
 } 
@@ -45,7 +45,7 @@ struct arduino_type
   //
   
   this_arduino_type = {
-    6, 14, 1<<3 | 1<<5 | 1<<6 | 1<<9 | 1<<10 | 1<<11, 1, 32
+    6, 14, 1<<3 | 1<<5 | 1<<6 | 1<<9 | 1<<10 | 1<<11, 2, 1, 32
   };
 
 // #elif defined (__AVR_ATmega644__) // Sanguino?
@@ -61,7 +61,7 @@ struct arduino_type
   //
   
   this_arduino_type = { 
-    16, 54, 0x00 | 1<<2 | 1<<3 | 1<<4 | 1<<5 | 1<<6 | 1<<7 | 1<<8 | 1<<9 | 1<<10 | 1<<11 | 1<<12 | 1<<13, 4, 128
+    16, 54, 0x00 | 1<<2 | 1<<3 | 1<<4 | 1<<5 | 1<<6 | 1<<7 | 1<<8 | 1<<9 | 1<<10 | 1<<11 | 1<<12 | 1<<13, 8, 4, 128
   };
 
 #elif defined (__AVR_ATmega2560__)
@@ -72,7 +72,7 @@ struct arduino_type
   //
   
   this_arduino_type = { 
-    16, 54, 0x00 | 1<<2 | 1<<3 | 1<<4 | 1<<5 | 1<<6 | 1<<7 | 1<<8 | 1<<9 | 1<<10 | 1<<11 | 1<<12 | 1<<13, 4, 256
+    16, 54, 0x00 | 1<<2 | 1<<3 | 1<<4 | 1<<5 | 1<<6 | 1<<7 | 1<<8 | 1<<9 | 1<<10 | 1<<11 | 1<<12 | 1<<13, 8, 4, 256
   };
 
 #else

@@ -155,9 +155,11 @@ class TestProxiedMethodsOfArduinoProxy(unittest.TestCase): # pylint: disable=R09
         ard_type_st['pwm_pins_bitmap']
         ard_type_st['eeprom_size']
         ard_type_st['flash_size']
+        ard_type_st['ram_size']
         ard_type_st['pwm_pin_list']
         ard_type_st['eeprom_size_bytes']
         ard_type_st['flash_size_bytes']
+        ard_type_st['ram_size_bytes']
 
     def test_getAvrCpuType(self):
         ard_type_st = self.proxy.getAvrCpuType()

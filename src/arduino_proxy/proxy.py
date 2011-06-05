@@ -1144,6 +1144,8 @@ class ArduinoProxy(object): # pylint: disable=R0904
             - digital_pins: how many digital pins the Arduino has.
             - pwm_pins_bitmap: bitmap of digital pin that supports PWM.
             - pwm_pin_list: tuple of pin numbers that supports PWM.
+            - ram_size: RAM size in KiB.
+            - ram_size_bytes: RAM size in bytes.
             - eeprom_size: EEPROM size in KiB.
             - eeprom_size_bytes: EEPROM size in bytes.
             - flash_size: FLASH size in KiB.
@@ -1158,6 +1160,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
             'pwm_pins_bitmap': splitted[2], 
             'eeprom_size': int(splitted[3]), # KiB
             'flash_size': int(splitted[4]), # KiB
+            'ram_size': int(splitted[5]), # KiB
         }
         
         pwm_pin_list = []
@@ -1173,6 +1176,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         arduino_type_struct['pwm_pin_list'] = tuple(pwm_pin_list)
         arduino_type_struct['eeprom_size_bytes'] = arduino_type_struct['eeprom_size'] * 1024
         arduino_type_struct['flash_size_bytes'] = arduino_type_struct['flash_size'] * 1024
+        arduino_type_struct['ram_size_bytes'] = arduino_type_struct['ram_size'] * 1024
         
         return arduino_type_struct
     
@@ -1188,6 +1192,8 @@ class ArduinoProxy(object): # pylint: disable=R0904
                 Serial.print(this_arduino_type.eeprom_size, DEC);
                 Serial.print(" ");
                 Serial.print(this_arduino_type.flash_size, DEC);
+                Serial.print(" ");
+                Serial.print(this_arduino_type.ram_size, DEC);
                 Serial.println("");
             }
         """)
