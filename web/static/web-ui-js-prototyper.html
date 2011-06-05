@@ -10,6 +10,10 @@
 		<style type="text/css">
 		</style>
         
+        <link href="/static/google-code-prettify/prettify.css" type="text/css" rel="stylesheet" />
+        <script type="text/javascript" src="/static/google-code-prettify/prettify.js"></script>
+        
+        
         <!-- javascript -->
 		<script type="text/javascript" src="/static/jquery-ui/js/jquery-1.5.1.min.js"></script>
 		<script type="text/javascript" src="/static/jquery-ui/js/jquery-ui-1.8.13.custom.min.js"></script>
@@ -104,7 +108,20 @@
 				$("#execute_button").button().click(function() {
 					executeJavaScript();
 				});
+
+                prettyPrint();
+                
+				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+				// Accordion
+				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 				
+                $(function() {
+                    $( "#docs_accordion" ).accordion({
+                        collapsible: true,
+                        active: false
+                    });
+                });
+                
 				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 				// Setup textarea
 				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -140,7 +157,7 @@
 		&nbsp; | &nbsp;
 		<button id="close_proxy_button">Close</button> &nbsp; <span id="close_proxy_result"></span>
 		&nbsp; | &nbsp;
-		<button id="execute_button">Execute</button>
+		<button id="execute_button" class="ui-state-highlight">Execute</button>
 	</p>
 	
 	<div>
@@ -182,19 +199,84 @@ for(i=0; i&lt;5; i++) {
 			</p>
 		</div>
 	</script>
-	
-	<div class="ui-widget" id="simple_log_console">
-		<!--
-		<div class="ui-state-highlight ui-corner-all" style="padding: 0.3em;">
-			<p>
-				<span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em;"></span>
-				<strong>INFO:</strong>
-				<span>UI started ok.</span>
-			</p>
-		</div>
-		-->
-	</div>
-    
+
+    <div class="ui-widget" id="simple_log_console">
+        <!--
+        <div class="ui-state-highlight ui-corner-all" style="padding: 0.3em;">
+            <p>
+                <span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em;"></span>
+                <strong>INFO:</strong>
+                <span>UI started ok.</span>
+            </p>
+        </div>
+        -->
+    </div>
+    <div id="docs_accordion">
+        <h3><a href="#">Example: blink led</a></h3>
+        <div class="ui-helper-reset" style="font-size: 1.5em;">
+<pre class="prettyprint lang-js">
+/*
+ * Blink LED on PIN 13
+ */
+
+var pinToBlink = 13;
+
+logMessage("Setting pin " + pinToBlink + " as OUTPUT");
+proxy.pinMode(pinToBlink, OUTPUT);
+
+if(! confirm("Start to blink?")) throw "stopping script";
+
+logMessage("Starting to blink");
+var i;
+for(i=0; i&lt;5; i++) {
+    proxy.digitalWrite(pinToBlink, HIGH);
+    proxy.delay(250);
+    proxy.digitalWrite(pinToBlink, LOW);
+    proxy.delay(250);
+}</pre>
+        </div>
+
+        <h3><a href="#">Example: read temperature with LM335</a></h3>
+        <div class="ui-helper-reset" style="font-size: 1.5em;">
+<pre class="prettyprint lang-js">
+/***********************************************************************
+ * Second exampe. Using javascript functions.
+ ***********************************************************************/
+
+function readTemp(analogPort) {
+    var value = proxy.analogRead(analogPort);
+    var volt = (5.0/1024.0) * value;
+    var kelvin = volt * 100;
+    return (kelvin - 273); // return temp. in celcius
+}
+
+var analogPort = 0;
+
+logMessage("Temp. on A" + analogPort + ": " + readTemp(analogPort));
+
+/***********************************************************************
+ * Use 'toFixed()' to get a better formatting
+ ***********************************************************************/
+
+logMessage("Temp. on A" + analogPort + ": " + readTemp(analogPort).toFixed(1) + "º C");
+</pre>
+        </div>
+
+
+
+
+        <h3><a href="#">JavaScript links</a></h3>
+        <div>
+            <p>
+            <ul>
+                <li><a href="https://developer.mozilla.org/en/JavaScript/Reference">https://developer.mozilla.org/en/JavaScript/Reference</a></li>
+                <li><a href="https://developer.mozilla.org/en/JavaScript/Guide">https://developer.mozilla.org/en/JavaScript/Guide</a></li>
+                <li><a href="http://docs.jquery.com/Main_Page">http://docs.jquery.com/Main_Page</a></li>
+            </ul>
+            </p>
+        </div>
+    </div>
+
     {% include "web-ui__footer.html" %}
     
 	</body>
