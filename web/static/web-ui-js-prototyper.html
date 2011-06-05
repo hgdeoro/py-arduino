@@ -109,6 +109,10 @@
 					executeJavaScript();
 				});
 
+				$("#clear_log_console_button").button().click(function() {
+					clearLogConsole();
+				});
+                
                 prettyPrint();
                 
 				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -158,6 +162,7 @@
 		<button id="close_proxy_button">Close</button> &nbsp; <span id="close_proxy_result"></span>
 		&nbsp; | &nbsp;
 		<button id="execute_button" class="ui-state-highlight">Execute</button>
+		<button id="clear_log_console_button">Clear console</button>
 	</p>
 	
 	<div>
