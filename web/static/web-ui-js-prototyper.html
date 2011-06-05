@@ -50,7 +50,14 @@
 				try {
 					clearLogConsole();
 					eval(js_source);
-					logMessage("Script executed successfully.");
+                    try {
+                      var ram = proxy.globalData()['arduino_type_struct']['ram_size_bytes'];
+                      var free = proxy.getFreeMemory();
+                      var pc = Math.floor((free/ram)*100);
+                      logMessage("Script executed successfully - " + pc + "% ram free (" + free + " bytes free of " + ram + " bytes)");
+                    } catch(err) {
+                      logMessage("Script executed successfully");
+                    }
 				} catch(err) {
 					errorMessage(err);
 				}
