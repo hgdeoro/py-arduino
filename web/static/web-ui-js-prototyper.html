@@ -8,11 +8,23 @@
 		<link type="text/css" href="/static/jquery-ui/css/ui-lightness/jquery-ui-1.8.13.custom.css" rel="stylesheet" />
         <link type="text/css" href="/static/web-ui.css" rel="stylesheet" />
 		<style type="text/css">
+            #js_code_editor_wrapper {
+                border: 1px solid #777;
+            }
+            #js_code_editor_wrapper {
+                font-size: 1.5em;
+            }
 		</style>
         
+        <!-- google-code-prettify -->
         <link href="/static/google-code-prettify/prettify.css" type="text/css" rel="stylesheet" />
         <script type="text/javascript" src="/static/google-code-prettify/prettify.js"></script>
         
+        <!-- CodeMirror -->
+        <script src="/static/CodeMirror-2.01/lib/codemirror.js"></script>
+        <link rel="stylesheet" href="/static/CodeMirror-2.01/lib/codemirror.css">
+        <script src="/static/CodeMirror-2.01/mode/javascript/javascript.js"></script>
+        <link rel="stylesheet" href="/static/CodeMirror-2.01/mode/javascript/javascript.css">
         
         <!-- javascript -->
 		<script type="text/javascript" src="/static/jquery-ui/js/jquery-1.5.1.min.js"></script>
@@ -38,6 +50,18 @@
 				$.tmpl("error_message_template", [{ log_message: msg, date: new Date() }]).appendTo("#simple_log_console");
 			}
 			
+            /*
+             * Returns the text of the editor.
+             */
+			function getJsCodeEditorText() {
+                var codeMirrorInstance = $("body").data("codeMirrorInstance");
+                if(codeMirrorInstance != null) {
+                    return codeMirrorInstance.getValue();
+                } else {
+                    return $("#js_code_editor").val();
+                }
+            }
+             
 			function executeJavaScript() {
 				var js_source = "";
 				js_source += "var OUTPUT = 'output';\n";
@@ -46,7 +70,8 @@
 				js_source += "var LOW = 'low';\n";
 				js_source += "var TRUE = true;\n";
 				js_source += "var FALSE = false;\n";
-				js_source += $("#js_code_editor").val();
+				// js_source += $("#js_code_editor").val();
+				js_source += getJsCodeEditorText();
 				try {
 					clearLogConsole();
 					eval(js_source);
@@ -146,13 +171,22 @@
 				// Setup textarea
 				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 
-				$("textarea").resizable({
+                /*
+				$("#js_code_editor").resizable({
 					handles: "se"
 				});
-				
+                */
+                
+                try {
+                    var codeMirrorInstance = CodeMirror.fromTextArea($("#js_code_editor")[0]);
+                    $("body").data("codeMirrorInstance", codeMirrorInstance);
+                } catch(err) {
+                    $("body").data("codeMirrorInstance", null);
+                }
+
 				// enable Tab Override
 				$.fn.tabOverride.setTabSize(4);
-				$('textarea').tabOverride();
+				$("#js_code_editor").tabOverride();
                 
 			});
             
@@ -179,8 +213,8 @@
 		<button id="clear_log_console_button">Clear console</button>
 	</p>
 	
-	<div>
-		<textarea id="js_code_editor" rows="16" cols="100">
+	<div id="js_code_editor_wrapper">
+		<textarea id="js_code_editor">
 logMessage("Will send ping to Arduino...");
 proxy.ping();
 logMessage("Ping OK.");
