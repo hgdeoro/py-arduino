@@ -114,6 +114,10 @@ class ArduinoEmulator(threading.Thread):
             )
             
             self.serial_connection.write(arduino_type_struct)
+        elif splitted[0] == '_lcdClr':
+            self.serial_connection.write("LCLROK\n")
+        elif splitted[0] == '_lcdW':
+            self.serial_connection.write("LWOK\n")
         else:
             self.serial_connection.write("%s 0\n" % ArduinoProxy.INVALID_CMD)
             logger.error("run_cmd() - INVALID COMMAND: %s", pprint.pformat(cmd))
