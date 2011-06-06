@@ -604,6 +604,8 @@ class ArduinoProxy(object): # pylint: disable=R0904
         """)
     
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    ## CONNECTION TESTING FUNCTIONS
+    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
     
     def ping(self): # pylint: disable=C0103
         """
@@ -666,6 +668,8 @@ class ArduinoProxy(object): # pylint: disable=R0904
             }
         """)
 
+    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    ## TIME RELATED FUNCTIONS
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
     
     def delay(self, value): # pylint: disable=C0103
@@ -801,6 +805,8 @@ class ArduinoProxy(object): # pylint: disable=R0904
         """)
 
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    ## INTERRUPT RELATED FUNCTIONS
+    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
     
     def watchInterrupt(self, interrupt, mode): # pylint: disable=C0103
         """
@@ -911,6 +917,8 @@ class ArduinoProxy(object): # pylint: disable=R0904
         """)
 
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    ## DEBUG FUNCTIONS
+    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
     
     def enableDebug(self): # pylint: disable=C0103
         """
@@ -966,6 +974,8 @@ class ArduinoProxy(object): # pylint: disable=R0904
             }
         """)
 
+    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    ## LCD FUNCTIONS
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
     
     def lcdMessage(self, message):
@@ -1117,6 +1127,8 @@ class ArduinoProxy(object): # pylint: disable=R0904
             }
         """)
 
+    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    ## HARDWARD INFO FUNCTIONS
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
     
     def getAvrCpuType(self): # pylint: disable=C0103
