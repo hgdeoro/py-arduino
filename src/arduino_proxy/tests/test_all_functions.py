@@ -71,7 +71,7 @@ def main(): # pylint: disable=R0915
 
         try:
             print "Check for FUNCTION_NOT_FOUND"
-            proxy.send_cmd("_nonexisting_method p1 p2 p3 p4 p5 p6 p7 p8 p9")
+            proxy.send_cmd("_nonexisting_method\tp1\tp2\tp3\tp4\tp5\tp6\tp7\tp8\tp9")
             assert False, "The previous line should raise an exception!"
         except InvalidCommand, exception:
             # FUNCTION_NOT_FOUND == 6
@@ -80,7 +80,7 @@ def main(): # pylint: disable=R0915
         
         try:
             print "Check for READ_PARAMETERS_ERROR_TOO_MANY_PARAMETERS"
-            proxy.send_cmd("cmd p1 p2 p3 p4 p5 p6 p7 p8 p9 p10")
+            proxy.send_cmd("cmd\tp1\tp2\tp3\tp4\tp5\tp6\tp7\tp8\tp9\tp10")
             assert False, "The previous line should raise an exception!"
         except InvalidCommand, exception:
             # READ_PARAMETERS_ERROR_TOO_MANY_PARAMETERS == 3
@@ -95,12 +95,12 @@ def main(): # pylint: disable=R0915
         proxy.delay(2000)
         
         print "low level delay(500)"
-        ret = proxy.send_cmd("%s 500" % (proxy.delay.arduino_function_name))
+        ret = proxy.send_cmd("%s\t500" % (proxy.delay.arduino_function_name))
         assert ret == "D_OK"
         
         print "low level delay(1500)"
         try:
-            proxy.send_cmd("%s 1500" % (proxy.delay.arduino_function_name))
+            proxy.send_cmd("%s\t1500" % (proxy.delay.arduino_function_name))
             assert False, "The previous line should raise an exception!"
         except CommandTimeout, exception:
             print " +", exception.__class__

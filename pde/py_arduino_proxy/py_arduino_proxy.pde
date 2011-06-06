@@ -590,13 +590,13 @@ uint8_t read_one_param(char* tmp_array) {
 			continue;
 		}
 
-		// " " == 32 -> got a space
-		if(incomingByte == 32) {
+		// "\t" == 9 -> got a tab
+		if(incomingByte == 9) {
 			if(pos == 0) {
-				// Ignore leading white spaces
+				// Ignore leading tabs chars
 				continue;
 			}
-			// got a space! mark end of string and return
+			// got a tab! mark end of string and return
 			tmp_array[pos] = 0x00;
 			return RETURN_OK;
 		}

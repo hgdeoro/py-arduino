@@ -327,7 +327,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
             - InvalidResponse: raised when 'expected_response is not None, an the response doesn't equals to 'expected_response'.
             - UnsupportedCommand: if the Arduino reported that the command isn't supported.
         """
-        logger.debug("send_cmd() called. cmd: '%s'" % cmd)
+        logger.debug("send_cmd() called. cmd: '%s'", cmd)
         
         self.serial_port.write(cmd)
         self.serial_port.write("\n")
@@ -422,7 +422,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         self._validate_digital_pin(pin)
         if not mode in [ArduinoProxy.INPUT, ArduinoProxy.OUTPUT]:
             raise(InvalidArgument())
-        cmd = "_pMd %d %d" % (pin, mode)
+        cmd = "_pMd\t%d\t%d" % (pin, mode)
         
         return self.send_cmd(cmd, expected_response="PM_OK")
         # raises CommandTimeout,InvalidCommand,InvalidResponse
@@ -460,7 +460,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         self._validate_digital_pin(pin)
         if not value in [ArduinoProxy.LOW, ArduinoProxy.HIGH]:
             raise(InvalidArgument("Invalid value for 'value' parameter."))
-        cmd = "_dWrt %d %d" % (pin, value)
+        cmd = "_dWrt\t%d\t%d" % (pin, value)
         return self.send_cmd(cmd, expected_response="DW_OK")
         # raises CommandTimeout,InvalidCommand,InvalidResponse
     
@@ -497,7 +497,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         """
         # FIXME: add doc for exceptions
         self._validate_digital_pin(pin)
-        cmd = "_dRd %d" % (pin)
+        cmd = "_dRd\t%d" % (pin)
         response = self.send_cmd(cmd) # raises CommandTimeout,InvalidCommand
         
         try:
@@ -546,7 +546,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         """
         # FIXME: add doc for exceptions
         self._validate_analog_pin(pin)
-        cmd = "_aRd %d" % (pin)
+        cmd = "_aRd\t%d" % (pin)
         response = self.send_cmd(cmd, response_transformer=int)
         
         if response >= 0 and response <= 1023:
@@ -582,7 +582,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         # FIXME: add doc for exceptions
         if not type(pin) is int or not type(value) is int or value < 0 or value > 255:
             raise(InvalidArgument())
-        cmd = "_aWrt %d %d" % (pin, value)
+        cmd = "_aWrt\t%d\t%d" % (pin, value)
         
         return self.send_cmd(cmd, expected_response="AW_OK")
         # raises CommandTimeout,InvalidCommand,InvalidResponse
@@ -648,7 +648,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         """
         # FIXME: add doc
         random_str = str(random.randint(0, 10000000))
-        cmd = "_vCnt %s" % random_str
+        cmd = "_vCnt\t%s" % random_str
         response = self.send_cmd(cmd) # raises CommandTimeout,InvalidCommand
         
         while response != random_str:
@@ -689,10 +689,10 @@ class ArduinoProxy(object): # pylint: disable=R0904
         
         delay_in_seconds = math.ceil(value/1000.0)
         if self.timeout > delay_in_seconds:
-            response = self.send_cmd("_dy %d" % value, expected_response="D_OK")
+            response = self.send_cmd("_dy\t%d" % value, expected_response="D_OK")
             # raises CommandTimeout,InvalidCommand,InvalidResponse
         else:
-            response = self.send_cmd("_dy %d" % value, expected_response="D_OK",
+            response = self.send_cmd("_dy\t%d" % value, expected_response="D_OK",
                 timeout=(delay_in_seconds+1))
             # raises CommandTimeout,InvalidCommand,InvalidResponse
         return response
@@ -735,10 +735,10 @@ class ArduinoProxy(object): # pylint: disable=R0904
         
         delay_in_seconds = math.ceil(value/1000000.0)
         if self.timeout > delay_in_seconds:
-            return self.send_cmd("_dMs %d" % value, expected_response="DMS_OK")
+            return self.send_cmd("_dMs\t%d" % value, expected_response="DMS_OK")
             # raises CommandTimeout,InvalidCommand,InvalidResponse
         else:
-            return self.send_cmd("_dMs %d" % value, expected_response="DMS_OK",
+            return self.send_cmd("_dMs\t%d" % value, expected_response="DMS_OK",
                 timeout=(delay_in_seconds+1))
             # raises CommandTimeout,InvalidCommand,InvalidResponse
     
@@ -823,7 +823,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
                 ArduinoProxy.ATTACH_INTERRUPT_MODE_FALLING]:
             raise(InvalidArgument("invalid mode: %s" % str(mode)))
         
-        return self.send_cmd("_wI %d %s" % (interrupt, mode), expected_response="WI_OK")
+        return self.send_cmd("_wI\t%d\t%s" % (interrupt, mode), expected_response="WI_OK")
                                             # raises CommandTimeout,InvalidCommand,InvalidResponse
     
     watchInterrupt.arduino_function_name = '_wI'
@@ -877,7 +877,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         if interrupt < 0 or interrupt > 1:
             raise(InvalidArgument("interrupt must be between 0 and 1"))
         
-        ret = self.send_cmd("_gIM %d" % interrupt,
+        ret = self.send_cmd("_gIM\t%d" % interrupt,
             expected_response=["GIM_ON", "GIM_OFF"])
             # raises CommandTimeout,InvalidCommand,InvalidResponse
         
@@ -1020,7 +1020,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         if clear_lcd:
             self.lcdClear()
         
-        return self.send_cmd("_lcdW %d %d %s" % (col, row, message),  "LWOK")
+        return self.send_cmd("_lcdW\t%d\t%d\t%s" % (col, row, message),  "LWOK")
             # raises CommandTimeout,InvalidCommand,InvalidResponse
     
     lcdWrite.arduino_function_name = '_lcdW'
@@ -1102,7 +1102,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         if set_pin_mode:
             self.pinMode(dataPin, ArduinoProxy.OUTPUT)
             self.pinMode(clockPin, ArduinoProxy.OUTPUT)
-        return self.send_cmd("_sftO %d %d %d %d" % (dataPin, clockPin, bitOrder, value, ), "SOOK")
+        return self.send_cmd("_sftO\t%d\t%d\t%d\t%d" % (dataPin, clockPin, bitOrder, value, ), "SOOK")
             # raises CommandTimeout,InvalidCommand,InvalidResponse
     
     shiftOut.arduino_function_name = '_sftO'
