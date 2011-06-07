@@ -27,6 +27,8 @@ import time
 import unittest
 import weakref
 
+from arduino_proxy.proxy import ArduinoProxy
+
 logger = logging.getLogger(__name__) # pylint: disable=C0103
 
 class ArduinoEmulator(threading.Thread):
@@ -44,11 +46,32 @@ class ArduinoEmulator(threading.Thread):
         self.serial_connection = serial_connection
         self.running = True
     
+    def _validate_parameters(self, splitted_params):
+        """
+        Validate the parameters.
+        If parameters are OK: returns True
+        If something is wrong: write response using serial connection and return False.
+        """
+        #define READ_ONE_PARAM_EMPTY_RESPONSE 							1
+        #define UNEXPECTED_RESPONSE_FROM_READ_ONE_PARAM		4
+        #define UNEXPECTED_RESPONSE_FROM_READ_PARAMETERS		5
+        #define FUNCTION_NOT_FOUND													6
+        for item in splitted_params:
+            if len(item) > 16:
+                # READ_ONE_PARAM_ERROR_PARAMETER_TOO_LARGE = 2
+                self.serial_connection.write("%s 2\n" % ArduinoProxy.INVALID_CMD)
+                return False
+        
+        if len(splitted_params) > 10:
+            # READ_PARAMETERS_ERROR_TOO_MANY_PARAMETERS = 3
+            self.serial_connection.write("%s 3\n" % ArduinoProxy.INVALID_CMD)
+            return False
+        
+        return True
+    
     def run_cmd(self, cmd): #  # pylint: disable=R0912
         if not self.running:
             return
-        
-        from arduino_proxy.proxy import ArduinoProxy
         
         def _get_int(env_name, default_value):
             value = os.environ.get(env_name,  '')
@@ -59,6 +82,10 @@ class ArduinoEmulator(threading.Thread):
         
         logger.info("run_cmd() - cmd: %s", pprint.pformat(cmd))
         splitted = cmd.split()
+        
+        if not self._validate_parameters(splitted):
+            return
+        
         if splitted[0] == '_ping':
             self.serial_connection.write("PING_OK\n")
         elif splitted[0] == '_aRd':
@@ -75,10 +102,14 @@ class ArduinoEmulator(threading.Thread):
             self.serial_connection.write("%s\n" % splitted[1])
         elif splitted[0] == '_pMd':
             self.serial_connection.write("PM_OK\n")
-        elif splitted[0] == '_dy':
-            time.sleep(int(splitted[1])/10000.0)
-            self.serial_connection.write("D_OK\n")
-        elif splitted[0] == '_dMs':
+        elif splitted[0] == '_dy': # delay()
+            if int(splitted[1])/1000.0 > self.serial_connection.timeout:
+                time.sleep(int(splitted[1])/1000.0) # So timeout is detected
+                self.serial_connection.write("D_OK\n")
+            else:
+                time.sleep(int(splitted[1])/10000.0)
+                self.serial_connection.write("D_OK\n")
+        elif splitted[0] == '_dMs': # delayMicroseconds()
             self.serial_connection.write("DMS_OK\n")
         elif splitted[0] == '_ms':
             self.serial_connection.write("%d\n" % random.randint(0, 999999))
@@ -119,7 +150,8 @@ class ArduinoEmulator(threading.Thread):
         elif splitted[0] == '_lcdW':
             self.serial_connection.write("LWOK\n")
         else:
-            self.serial_connection.write("%s 0\n" % ArduinoProxy.INVALID_CMD)
+            # FUNCTION_NOT_FOUND = 6
+            self.serial_connection.write("%s 6\n" % ArduinoProxy.INVALID_CMD)
             logger.error("run_cmd() - INVALID COMMAND: %s", pprint.pformat(cmd))
     
     def read_cmd(self):

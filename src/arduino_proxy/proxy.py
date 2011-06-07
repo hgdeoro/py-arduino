@@ -33,8 +33,6 @@ try:
 except ImportError:
     from StringIO import StringIO
 
-from arduino_proxy.emulator import SerialConnectionMock, ArduinoEmulator
-
 logger = logging.getLogger(__name__) # pylint: disable=C0103
 
 def _unindent(spaces, the_string):
@@ -144,6 +142,8 @@ class ArduinoProxy(object): # pylint: disable=R0904
         #    proxy.emulator = ArduinoEmulator(self.serial_port.get_other_side())
         #    proxy.emulator.start()
         
+        from arduino_proxy.emulator import SerialConnectionMock, ArduinoEmulator
+        
         proxy = cls(tty='***ARDUINO_EMULATOR***', wait_after_open=0, call_validate_connection=False)
         if initial_input_buffer_contents:
             proxy.serial_port = SerialConnectionMock(
@@ -180,6 +180,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         self.emulator = None
         if tty == 'ARDUINO_EMULATOR':
             # Creating emulator from ArduinoProxy constructor
+            from arduino_proxy.emulator import SerialConnectionMock, ArduinoEmulator
             logger.debug("Creating EMULATOR instance")
             self.serial_port = SerialConnectionMock()
             self.emulator = ArduinoEmulator(self.serial_port.get_other_side())

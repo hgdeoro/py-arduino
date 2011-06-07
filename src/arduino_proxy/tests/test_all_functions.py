@@ -71,7 +71,7 @@ def main(): # pylint: disable=R0915
 
         try:
             print "Check for FUNCTION_NOT_FOUND"
-            proxy.send_cmd("_nonexisting_method\tp1\tp2\tp3\tp4\tp5\tp6\tp7\tp8\tp9")
+            proxy.send_cmd("_nonexisting\tp1\tp2\tp3\tp4\tp5\tp6\tp7\tp8\tp9")
             assert False, "The previous line should raise an exception!"
         except InvalidCommand, exception:
             # FUNCTION_NOT_FOUND == 6
