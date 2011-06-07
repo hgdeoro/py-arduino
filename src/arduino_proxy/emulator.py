@@ -145,9 +145,12 @@ class ArduinoEmulator(threading.Thread):
             )
             
             self.serial_connection.write(arduino_type_struct)
-        elif splitted[0] == '_lcdClr':
+        elif splitted[0] == '_lcdClr': # lcdClear()
+            print "LCD: lcdClear()"
             self.serial_connection.write("LCLROK\n")
-        elif splitted[0] == '_lcdW':
+        elif splitted[0] == '_lcdW': # lcdWrite()
+            print "LCD[col=%d][row=%d]: %s" % (int(splitted[1]), int(splitted[2]),
+                ' '.join(splitted[3:]))
             self.serial_connection.write("LWOK\n")
         else:
             # FUNCTION_NOT_FOUND = 6
