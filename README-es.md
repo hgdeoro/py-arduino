@@ -1,7 +1,8 @@
 Py-Arduino-Proxy
 ================
 
-Aplicación Python para comunicarse con Arduinos. [English version.](/hgdeoro/py-arduino-proxy/blob/master/README.md "English version")
+Aplicación Python para comunicarse con Arduinos. [English version of this README](/hgdeoro/py-arduino-proxy/blob/master/README.md "English version").
+[BLOG del proyecto en español](http://pyarduinoproxy.blogspot.com/ "BLOG del proyecto en español").
 
 Vistazo general de la arquitectura
 ----------------------------------
