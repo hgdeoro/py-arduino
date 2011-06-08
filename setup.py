@@ -1,5 +1,6 @@
 from distutils.core import setup
 
+name = "PyArduinoProxy"
 version = "0.0.1-alpha"
 description = 'Communicate with Arduino from Python, a web page and JavaScript'
 author="Horacio G. de Oro"
@@ -21,7 +22,8 @@ classifiers = [ # http://pypi.python.org/pypi?%3Aaction=list_classifiers
     "Topic :: Utilities",
 ]
 
-setup(name='Distutils',
+setup(
+    name=name,
     version=version,
     description=description,
     author=author,
