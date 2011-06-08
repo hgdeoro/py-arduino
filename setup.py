@@ -1,15 +1,26 @@
 import os
 
 from distutils.core import setup
+from distutils.command.install import INSTALL_SCHEMES
 
-#def static_files_list():
-#    all_files = []
-#    directory = os.path.join(os.path.split(__file__)[0], 'src', 'arduino_proxy', 'webui', 'static')
-#    for root, dirs, files in os.walk(directory):
-#        for a_file in files:
-#            all_files.append(os.path.join(root, a_file))
-#            #all_files.append('/'.join(os.path.join(root, a_file).split('/')[2:]))
-#    return all_files
+IGNORED_DIRS = [
+    "src/arduino_proxy/webui/static/jquery-ui/development-bundle/demos", 
+    "src/arduino_proxy/webui/static/jquery-ui/development-bundle/docs", 
+]
+
+def gen_data_files():
+    directory = os.path.join(os.path.split(__file__)[0], 'src', 'arduino_proxy', 'webui', 'static')
+    all_files = []
+    IGNORED_DIRS2 = [ item + '/' for item in IGNORED_DIRS ]
+    for dirpath, dirnames, filenames in os.walk(directory):
+        #print "dirpath:", dirpath
+        if dirpath in IGNORED_DIRS:
+            continue
+        if [ item for item in IGNORED_DIRS2 if dirpath.startswith(item) ]:
+            continue
+        fixed_dirpath = '/'.join(dirpath.split('/')[1:])
+        all_files.append([fixed_dirpath, [os.path.join(dirpath, f) for f in filenames]])
+    return all_files
 
 name = "PyArduinoProxy"
 version = "0.0.1-alpha"
@@ -17,10 +28,8 @@ description = 'Communicate with Arduino from Python, a web page and JavaScript'
 author="Horacio G. de Oro"
 author_email = "hgdeoror@gmail.com"
 url = "http://pyarduinoproxy.blogspot.com/"
-
 packages = ['arduino_proxy', 'arduino_proxy.ui', 'arduino_proxy.tests', 'arduino_proxy.webui']
-package_dir = {'':'src', }
-package_data = {'': ['webui/static/*'], }
+package_dir = {'arduino_proxy':'src/arduino_proxy', }
 
 classifiers = [ # http://pypi.python.org/pypi?%3Aaction=list_classifiers
     "Development Status :: 3 - Alpha",
@@ -37,8 +46,8 @@ classifiers = [ # http://pypi.python.org/pypi?%3Aaction=list_classifiers
     "Topic :: Utilities",
 ]
 
-#data_files_static = static_files_list()
-#assert data_files_static # print data_files_static
+for scheme in INSTALL_SCHEMES.values():
+    scheme['data'] = scheme['purelib']
 
 setup(
     name=name,
@@ -50,30 +59,5 @@ setup(
     package_dir=package_dir, 
     packages=packages, 
     classifiers=classifiers, 
-    #    data_files=[
-    #        #('arduino_proxy', static_files_list()),
-    #        ('', data_files_static),
-    #    ]
-    #    package_data=package_data, 
+    data_files=gen_data_files(), 
 )
-
-##import os
-##from setuptools import setup, find_packages
-##
-##def read(fname):
-##    return open(os.path.join(os.path.dirname(__file__), fname)).read()
-##
-##setup(
-##    name = "PyArduinoProxy",
-##    version = "0.0.1-alpha",
-##    author = "Horacio G. de Oro",
-##    author_email = "hgdeoror@gmail.com",
-##    description = ("Communicate with Arduino from Python, "
-##        "a web page and JavaScript."),
-##    license = "GPL",
-##    keywords = "arduino web",
-##    url = "http://pyarduinoproxy.blogspot.com/",
-##    package_dir = {'':'src'}, 
-##    packages = find_packages('src'), 
-##    classifiers=classifiers,
-##)

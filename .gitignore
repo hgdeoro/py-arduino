@@ -6,3 +6,4 @@ PyArduinoProxy.e4p
 /src-c/arduino.o
 /docs/
 /build
+/dist
