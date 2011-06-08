@@ -15,6 +15,7 @@ src/arduino_proxy/ui/main.py
 src/arduino_proxy/ui/main_ui.py
 src/arduino_proxy/ui/resources_rc.py
 src/arduino_proxy/webui/__init__.py
+src/arduino_proxy/webui/__main__.py
 src/arduino_proxy/webui/web.py
 src/arduino_proxy/webui/static/py-arduino-proxy.js
 src/arduino_proxy/webui/static/web-ui-js-prototyper.html
