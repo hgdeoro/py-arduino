@@ -32,7 +32,7 @@ sys.path.append(os.path.abspath(os.path.join(BASE_DIR, 'lib')))
 import cherrypy
 
 from arduino_proxy.main_utils import default_main
-from arduino_proxy.web import start_webserver
+from arduino_proxy.webui.web import start_webserver
 
 def main():
     parser = optparse.OptionParser()
@@ -71,7 +71,7 @@ def main():
     else:
         logging.getLogger('cherrypy.access').setLevel(logging.ERROR)
     
-    start_webserver(BASE_DIR, options.http_port)
+    start_webserver(options.http_port)
 
 if __name__ == '__main__':
     main()

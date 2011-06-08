@@ -25,8 +25,6 @@ import simplejson
 import os
 import sys
 
-from os.path import split, realpath, join, abspath
-
 from arduino_proxy import ArduinoProxy, ArduinoProxyException
 
 logger = logging.getLogger(__name__)
@@ -268,19 +266,21 @@ class Root(object):
             logging.exception("Exception raised by proxy.close()")
             return { 'ok': False, 'exception': str(e), }
 
-def start_webserver(arduino_proxy_base_dir, port):
+def start_webserver(port):
+    directory = os.path.split(__file__)[0]
+    static_dir = os.path.join(directory, 'static')
+    logger.info("Using '%s' as directory for templates, images, css, etc.",  static_dir)
     conf = {
         '/': {
             'tools.sessions.on': True, 
         }, 
         '/static': {
             'tools.staticdir.on': True,
-            'tools.staticdir.dir': join(arduino_proxy_base_dir, 'web', 'static'),
+            'tools.staticdir.dir': static_dir,
         }
     }
     
-    jinja2_env = jinja2.Environment(loader=jinja2.FileSystemLoader(
-        os.path.join(arduino_proxy_base_dir, 'web', 'static')))
+    jinja2_env = jinja2.Environment(loader=jinja2.FileSystemLoader(static_dir))
     
     cherrypy.config.update({
         'log.screen': False,
