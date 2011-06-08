@@ -18,60 +18,14 @@
 ##    along with Py-Arduino-Proxy; see the file LICENSE.txt.
 ##-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-import logging
-import optparse
 import os
 import sys
-import time
-
-# Setup PYTHONPATH
-BASE_DIR = os.path.split(os.path.split(os.path.realpath(__file__))[0])[0]
-sys.path.append(os.path.abspath(os.path.join(BASE_DIR, 'src')))
-sys.path.append(os.path.abspath(os.path.join(BASE_DIR, 'lib')))
-
-import cherrypy
-
-from arduino_proxy.main_utils import default_main
-from arduino_proxy.webui.web import start_webserver
-
-def main():
-    parser = optparse.OptionParser()
-    
-    parser.add_option("--debug",
-        action="store_true", dest="debug", default=False,
-        help="Configure logging to show debug messages.")
-    
-    parser.add_option("--info",
-        action="store_true", dest="info", default=False,
-        help="Configure logging to show info messages.")
-    
-    parser.add_option("--access",
-        action="store_true", dest="access", default=False,
-        help="Configure logging to show request processed by the web server.")
-    
-    parser.add_option("--initial-wait",
-        action="store", dest="initial_wait", default=None,
-        help="How many seconds wait before conect (workaround for auto-reset on connect).")
-    
-    parser.add_option("--http-port",
-        action="store", dest="http_port", default=8080, type="int", 
-        help="Tcp port to use for web server.")
-    
-    (options, args) = parser.parse_args()
-
-    if options.debug:
-        logging.basicConfig(level=logging.DEBUG)
-    elif options.info:
-        logging.basicConfig(level=logging.INFO)
-    else:
-        logging.basicConfig(level=logging.ERROR)
-    
-    if options.access:
-        logging.getLogger('cherrypy.access').setLevel(logging.INFO)
-    else:
-        logging.getLogger('cherrypy.access').setLevel(logging.ERROR)
-    
-    start_webserver(options.http_port)
 
 if __name__ == '__main__':
+    # Setup PYTHONPATH
+    BASE_DIR = os.path.split(os.path.split(os.path.realpath(__file__))[0])[0]
+    sys.path.append(os.path.abspath(os.path.join(BASE_DIR, 'src')))
+    sys.path.append(os.path.abspath(os.path.join(BASE_DIR, 'lib')))
+    
+    from arduino_proxy.webui.__main__ import main
     main()
