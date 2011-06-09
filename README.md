@@ -3,7 +3,7 @@ Py-Arduino-Proxy
 
 ![Architecture overview](/hgdeoro/py-arduino-proxy/raw/master/examples/architecture-overview.png "Architecture overview")
 
-**Py-Arduino-Proxy** is a **Python** library to communicate with **Arduinos**. [Versión de LEEME en español](/hgdeoro/py-arduino-proxy/blob/master/README-es.md "Versión en español").
+**Py-Arduino-Proxy** is a **Python** library to communicate with **Arduinos**.
 [BLOG del proyecto en español](http://pyarduinoproxy.blogspot.com/ "BLOG del proyecto en español").
 
 It's a **low level tool**, very easy to **extend** (it is very easy to create a new method in ArduinoProxy class and attach this method to a Arduino function).
