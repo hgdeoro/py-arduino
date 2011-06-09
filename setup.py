@@ -3,24 +3,71 @@ import os
 from distutils.core import setup
 from distutils.command.install import INSTALL_SCHEMES
 
-IGNORED_DIRS = [
-    "src/arduino_proxy/webui/static/jquery-ui/development-bundle/demos", 
-    "src/arduino_proxy/webui/static/jquery-ui/development-bundle/docs", 
-]
-
 def gen_data_files():
-    directory = os.path.join(os.path.split(__file__)[0], 'src', 'arduino_proxy', 'webui', 'static')
-    all_files = []
-    IGNORED_DIRS2 = [ item + '/' for item in IGNORED_DIRS ]
-    for dirpath, dirnames, filenames in os.walk(directory):
-        #print "dirpath:", dirpath
-        if dirpath in IGNORED_DIRS:
+    """
+    Generates a list of items suitables to be used as 'data_files' parameter of setup().
+    Something like:
+        ('arduino_proxy/webui/static', [
+            'src/arduino_proxy/webui/static/py-arduino-proxy.js', 
+            'src/arduino_proxy/webui/static/web-ui.css', 
+            'src/arduino_proxy/webui/static/web-ui__footer.html', 
+            'src/arduino_proxy/webui/static/web-ui.js', 
+            'src/arduino_proxy/webui/static/web-ui-js-prototyper.html', 
+            'src/arduino_proxy/webui/static/web-ui-main.html', 
+            'src/arduino_proxy/webui/static/web-ui-select-serial-port.html', 
+            'src/arduino_proxy/webui/static/web-ui__top_connected_arduino_info.html', 
+            'src/arduino_proxy/webui/static/web-ui__top_error_message.html', 
+            ]),
+    """
+    base_directory = os.path.split(__file__)[0]
+    base_directory = os.path.abspath(base_directory)
+    base_directory = os.path.normpath(base_directory)
+    
+    # ignored directories - relatives to 'base_directory'
+    IGNORED_DIRS = [
+        "src/arduino_proxy/webui/static/jquery-ui/development-bundle/demos", 
+        "src/arduino_proxy/webui/static/jquery-ui/development-bundle/docs", 
+    ]
+    
+    # to safely ignore it's children
+    IGNORED_DIRS_WITH_SLASH = [ item + '/' for item in IGNORED_DIRS ]
+    
+    data_files = []
+    
+    walk_directory = os.path.join(base_directory, 'src', 'arduino_proxy', 'webui', 'static')
+    for dirpath, dirnames, filenames in os.walk(walk_directory):
+        # dirpath -> absolute path
+        # dirpath: /aaa/bbb/ccc/project/src/arduino_proxy/webui/static
+        # dirpath: /aaa/bbb/ccc/project/src/arduino_proxy/webui/static/subdir1
+        # dirpath: /aaa/bbb/ccc/project/src/arduino_proxy/webui/static/subdir2
+        
+        # dirpath = base_directory + src + arduino_proxy -> len(dirpath) < len(base_directory)
+        # tmp -> relative to 'base_directory'
+        tmp = dirpath[(len(base_directory)+1):]
+        
+        # tmp: src/arduino_proxy/webui/static
+        # tmp: src/arduino_proxy/webui/static/subdir1
+        # tmp: src/arduino_proxy/webui/static/subdir2
+        
+        if tmp in IGNORED_DIRS:
             continue
-        if [ item for item in IGNORED_DIRS2 if dirpath.startswith(item) ]:
+        if [ item for item in IGNORED_DIRS_WITH_SLASH if tmp.startswith(item) ]:
             continue
-        fixed_dirpath = '/'.join(dirpath.split('/')[1:])
-        all_files.append([fixed_dirpath, [os.path.join(dirpath, f) for f in filenames]])
-    return all_files
+        
+        tmp2 = tmp[(len("src")+1):] # remove 'src', to use as 1st item of list
+        
+        # tmp2: arduino_proxy/webui/static
+        # tmp2: arduino_proxy/webui/static/subdir1
+        # tmp2: arduino_proxy/webui/static/subdir2
+        
+        data_files.append([
+            tmp2,
+            [os.path.join(os.path.join('src', tmp2), f) for f in filenames]
+        ])
+        
+        # print "append:", data_files[-1]
+        
+    return data_files
 
 name = "PyArduinoProxy"
 version = "0.0.1-alpha"
