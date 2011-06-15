@@ -152,6 +152,14 @@ class ArduinoEmulator(threading.Thread):
             print "LCD[col=%d][row=%d]: %s" % (int(splitted[1]), int(splitted[2]),
                 ' '.join(splitted[3:]))
             self.serial_connection.write("LWOK\n")
+        elif splitted[0] == '_srtRAP': # startStreamingReadAnalogPort()
+            while self.serial_connection.inWaiting() == 0:
+                self.serial_connection.write("%d\n" % random.randint(0, 1023))
+            # If message sent to real Arduino is delayed, maybe some more data is sent from Arduino.
+            self.serial_connection.write("%d\n" % random.randint(0, 1023))
+            self.serial_connection.write("%d\n" % random.randint(0, 1023))
+            self.serial_connection.write("%d\n" % random.randint(0, 1023))
+            self.serial_connection.write("SR_OK\n")
         else:
             # FUNCTION_NOT_FOUND = 6
             self.serial_connection.write("%s 6\n" % ArduinoProxy.INVALID_CMD)
@@ -237,6 +245,18 @@ class SerialConnectionMock(object):
     
     def flush(self):
         pass
+    
+    def inWaiting(self):
+        self._lock.acquire()
+        try:
+            if self.master_of:
+                # WE are in the master side
+                return len(self._in_buffer)
+            else:
+                # WE are in the slave side
+                return len(self.slave_of()._out_buffer)
+        finally:
+            self._lock.release()
     
     def read(self):
         start = time.time()

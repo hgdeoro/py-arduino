@@ -45,6 +45,22 @@ def _unindent(spaces, the_string):
             lines.append(a_line)
     return '\n'.join(lines)
 
+class WrappedBoolean(object):
+    """Wraps a boolean, to emulate passing variables by reference"""
+    
+    def __init__(self, value):
+        assert value is True or value is False
+        self._value = value
+    
+    def setTrue(self):
+        self._value = True
+    
+    def setFalse(self):
+        self._value = False
+    
+    def get(self):
+        return self._value
+
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 class ArduinoProxyException(Exception):
@@ -303,6 +319,42 @@ class ArduinoProxy(object): # pylint: disable=R0904
         if splitted[0] == ArduinoProxy.UNSUPPORTED_CMD:
             raise(UnsupportedCommand("Arduino responded with UNSUPPORTED_CMD." + \
                 "The unsupported command is: %s" % splitted[1], error_param=splitted[1]))
+    
+    def start_streaming(self, cmd, streamEndMark, timeout=None):
+        """
+        Note: this is a **low level** method. The only situation you may need to call this method
+        is if you are creating new methods.
+        
+        Streaming: streamEndMark is set, the command is sent and the responses are read until
+        we get string specified by 'streamEndMark'.
+        
+        In each iteration, a (response, continue_streaming) is running.
+        **response** is the received response, **continue_streaming** is a boolean wrapper to
+        stop the streaming, using continue_streaming.setFalse().
+        """
+        
+        # FIXME: streaming: check this implementation!
+        # FIXME: streaming: do the transmation, check errors, etc!
+        
+        logger.debug("start_streaming() called. cmd: %r. streamEndMark: %r", cmd, streamEndMark)
+        
+        self.serial_port.write(cmd)
+        self.serial_port.write("\n")
+        self.serial_port.flush()
+        
+        continue_streaming = WrappedBoolean(True)
+        response = self.get_next_response(timeout=timeout) # Raises CommandTimeout
+        while response != streamEndMark:
+            if response.startswith('> '):
+                logger.info("[DEBUG-TEXT-RECEIVED] %s", pprint.pformat(response))
+                continue
+            yield response, continue_streaming
+            if not continue_streaming.get():
+                self.serial_port.write("_ping")
+                self.serial_port.write("\n")
+                self.serial_port.flush()
+                continue_streaming.setTrue()
+            response = self.get_next_response(timeout=timeout) # Raises CommandTimeout
     
     def send_cmd(self, cmd, expected_response=None, timeout=None, response_transformer=None):
         """
@@ -1224,6 +1276,39 @@ class ArduinoProxy(object): # pylint: disable=R0904
     getFreeMemory.arduino_code = _unindent(12, """
             void _gFM() {
                 send_int_response(freeMemory());
+            }
+        """)
+    
+    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    
+    def startStreamingReadAnalogPort(self, pin): # pylint: disable=C0103
+        """
+        Start reading continuously from the specified analog pin.
+        In each iteration, a (response, continue_streaming) is running.
+        **response** is the received response, **continue_streaming** is a boolean wrapper to
+        stop the streaming, using continue_streaming.setFalse().
+        
+        See: http://arduino.cc/en/Reference/AnalogRead
+        
+        Parameters:
+            - pin (integer): analog pin to read.
+        
+        Returns: (int)
+            - analog value (0 to 1023)
+        """
+        return self.start_streaming("_srtRAP", streamEndMark="SR_OK")
+            # raises CommandTimeout,InvalidCommand,InvalidResponse
+    
+    startStreamingReadAnalogPort.arduino_function_name = '_srtRAP'
+    startStreamingReadAnalogPort.arduino_code = _unindent(12, """
+            void _srtRAP() {
+                int pin = atoi(received_parameters[1]);
+                int value;
+                while(Serial.available() == 0) {
+                    value = analogRead(pin);
+                    send_int_response(value);
+                }
+                send_char_array_response("SR_OK"); // streaming read ok
             }
         """)
 
