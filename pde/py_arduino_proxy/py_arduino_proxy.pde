@@ -325,8 +325,10 @@ void _sftO() {
 
 void _srtRAP() {
     int pin = atoi(received_parameters[1]);
+    int count = atoi(received_parameters[2]);
     int value;
-    while(Serial.available() == 0) {
+    int i;
+    for(i=0; i<count; i++) {
         value = analogRead(pin);
         send_int_response(value);
     }

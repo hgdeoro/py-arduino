@@ -126,18 +126,11 @@ def main(): # pylint: disable=R0915
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         
         # Test streaming of analog values
-        i = 0
-        for val, continue_streaming in proxy.startStreamingReadAnalogPort(0):
-            print "startStreamingReadAnalogPort() [%d] -> %s" % (i, str(val))
-            i += 1
-            if i == 20:
-                continue_streaming.setFalse()
-                print "continue_streaming.setFalse() -> OK"
+        for val in proxy.streamingReadAnalogPort(0, 10):
+            print "streamingReadAnalogPort() -> %s" % str(val)
         
-        assert i >= 20
         print "validateConnection() -> %s" % str(proxy.validateConnection())
         print "millis() -> %s " % str(proxy.millis())
-        print " + Received %d items after stopping the streaming." % (i-20)
         # Finished!
         
     except KeyboardInterrupt:

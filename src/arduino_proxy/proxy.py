@@ -320,41 +320,41 @@ class ArduinoProxy(object): # pylint: disable=R0904
             raise(UnsupportedCommand("Arduino responded with UNSUPPORTED_CMD." + \
                 "The unsupported command is: %s" % splitted[1], error_param=splitted[1]))
     
-    def start_streaming(self, cmd, streamEndMark, timeout=None):
-        """
-        Note: this is a **low level** method. The only situation you may need to call this method
-        is if you are creating new methods.
-        
-        Streaming: streamEndMark is set, the command is sent and the responses are read until
-        we get string specified by 'streamEndMark'.
-        
-        In each iteration, a (response, continue_streaming) is running.
-        **response** is the received response, **continue_streaming** is a boolean wrapper to
-        stop the streaming, using continue_streaming.setFalse().
-        """
-        
-        # FIXME: streaming: check this implementation!
-        # FIXME: streaming: do the transmation, check errors, etc!
-        
-        logger.debug("start_streaming() called. cmd: %r. streamEndMark: %r", cmd, streamEndMark)
-        
-        self.serial_port.write(cmd)
-        self.serial_port.write("\n")
-        self.serial_port.flush()
-        
-        continue_streaming = WrappedBoolean(True)
-        response = self.get_next_response(timeout=timeout) # Raises CommandTimeout
-        while response != streamEndMark:
-            if response.startswith('> '):
-                logger.info("[DEBUG-TEXT-RECEIVED] %s", pprint.pformat(response))
-                continue
-            yield response, continue_streaming
-            if not continue_streaming.get():
-                self.serial_port.write("_ping")
-                self.serial_port.write("\n")
-                self.serial_port.flush()
-                continue_streaming.setTrue()
-            response = self.get_next_response(timeout=timeout) # Raises CommandTimeout
+    #    def start_streaming(self, cmd, streamEndMark, timeout=None):
+    #        """
+    #        Note: this is a **low level** method. The only situation you may need to call this method
+    #        is if you are creating new methods.
+    #        
+    #        Streaming: streamEndMark is set, the command is sent and the responses are read until
+    #        we get string specified by 'streamEndMark'.
+    #        
+    #        In each iteration, a (response, continue_streaming) is running.
+    #        **response** is the received response, **continue_streaming** is a boolean wrapper to
+    #        stop the streaming, using continue_streaming.setFalse().
+    #        """
+    #        
+    #        # FIXME: streaming: check this implementation!
+    #        # FIXME: streaming: do the transmation, check errors, etc!
+    #        
+    #        logger.debug("start_streaming() called. cmd: %r. streamEndMark: %r", cmd, streamEndMark)
+    #        
+    #        self.serial_port.write(cmd)
+    #        self.serial_port.write("\n")
+    #        self.serial_port.flush()
+    #        
+    #        continue_streaming = WrappedBoolean(True)
+    #        response = self.get_next_response(timeout=timeout) # Raises CommandTimeout
+    #        while response != streamEndMark:
+    #            if response.startswith('> '):
+    #                logger.info("[DEBUG-TEXT-RECEIVED] %s", pprint.pformat(response))
+    #                continue
+    #            yield response, continue_streaming
+    #            if not continue_streaming.get():
+    #                self.serial_port.write("_ping")
+    #                self.serial_port.write("\n")
+    #                self.serial_port.flush()
+    #                continue_streaming.setTrue()
+    #            response = self.get_next_response(timeout=timeout) # Raises CommandTimeout
     
     def send_cmd(self, cmd, expected_response=None, timeout=None, response_transformer=None):
         """
@@ -1280,31 +1280,89 @@ class ArduinoProxy(object): # pylint: disable=R0904
         """)
     
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-    
-    def startStreamingReadAnalogPort(self, pin): # pylint: disable=C0103
+
+    def send_streaming_cmd(self, cmd, count, timeout=None, response_transformer=None):
         """
-        Start reading continuously from the specified analog pin.
-        In each iteration, a (response, continue_streaming) is running.
-        **response** is the received response, **continue_streaming** is a boolean wrapper to
-        stop the streaming, using continue_streaming.setFalse().
+        Note: this is a **low level** method. The only situation you may need to call this method
+        is if you are creating new methods.
+        
+        FIXME: DOCUMENT THIS!
+        
+        """
+        logger.debug("send_streaming_cmd() called. cmd: '%s'", cmd)
+        
+        self.serial_port.write(cmd)
+        self.serial_port.write("\n")
+        self.serial_port.flush()
+        
+        pending_reads = count
+        
+        while pending_reads > 0:
+            while True:
+                response = self.get_next_response(timeout=timeout) # Raises CommandTimeout
+                if response.startswith('> '):
+                    logger.info("[DEBUG-TEXT-RECEIVED] %s", pprint.pformat(response))
+                else:
+                    break
+            
+            self._check_response_for_errors(response, cmd)
+            
+            pending_reads -= 1
+            
+            transformed_response = None
+            if response_transformer is not None: # must transform the response
+                try:
+                    transformed_response = response_transformer(response)
+                except BaseException, exception:
+                    raise(InvalidResponse("The response couldn't be transformed. " + \
+                        "Response: %s. Exception: %s" % (pprint.pformat(exception),
+                        pprint.pformat(response))))
+            
+            if response_transformer is not None:
+                yield transformed_response
+            else:
+                yield response
+        
+        # Read final response
+        while True:
+            response = self.get_next_response(timeout=timeout) # Raises CommandTimeout
+            if response.startswith('> '):
+                logger.info("[DEBUG-TEXT-RECEIVED] %s", pprint.pformat(response))
+            else:
+                break
+        
+        # While streaming, the final response should be "SR_OK"
+        if response != "SR_OK":
+            raise(InvalidResponse(
+                "The response wasn't the expected. " + \
+                "Expected: %s. " % "SR_OK" + \
+                "Response: %s." % pprint.pformat(response) \
+            ))
+
+    def streamingReadAnalogPort(self, pin, count): # pylint: disable=C0103
+        """
+        Start reading from the specified analog pin.
         
         See: http://arduino.cc/en/Reference/AnalogRead
         
         Parameters:
             - pin (integer): analog pin to read.
+            - count (integer): how many values to read.
         
         Returns: (int)
             - analog value (0 to 1023)
         """
-        return self.start_streaming("_srtRAP", streamEndMark="SR_OK")
+        return self.send_streaming_cmd("_srtRAP\t%d\t%d" % (pin, count,), count, response_transformer=int)
             # raises CommandTimeout,InvalidCommand,InvalidResponse
     
-    startStreamingReadAnalogPort.arduino_function_name = '_srtRAP'
-    startStreamingReadAnalogPort.arduino_code = _unindent(12, """
+    streamingReadAnalogPort.arduino_function_name = '_srtRAP'
+    streamingReadAnalogPort.arduino_code = _unindent(12, """
             void _srtRAP() {
                 int pin = atoi(received_parameters[1]);
+                int count = atoi(received_parameters[2]);
                 int value;
-                while(Serial.available() == 0) {
+                int i;
+                for(i=0; i<count; i++) {
                     value = analogRead(pin);
                     send_int_response(value);
                 }

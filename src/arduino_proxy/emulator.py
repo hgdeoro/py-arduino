@@ -152,13 +152,12 @@ class ArduinoEmulator(threading.Thread):
             print "LCD[col=%d][row=%d]: %s" % (int(splitted[1]), int(splitted[2]),
                 ' '.join(splitted[3:]))
             self.serial_connection.write("LWOK\n")
-        elif splitted[0] == '_srtRAP': # startStreamingReadAnalogPort()
-            while self.serial_connection.inWaiting() == 0:
-                self.serial_connection.write("%d\n" % random.randint(0, 1023))
+        elif splitted[0] == '_srtRAP': # streamingReadAnalogPort()
             # If message sent to real Arduino is delayed, maybe some more data is sent from Arduino.
-            self.serial_connection.write("%d\n" % random.randint(0, 1023))
-            self.serial_connection.write("%d\n" % random.randint(0, 1023))
-            self.serial_connection.write("%d\n" % random.randint(0, 1023))
+            # splitted[1] -> pin
+            # splitted[2] -> count
+            for i in range(0, int(splitted[2])):
+                self.serial_connection.write("%d\n" % random.randint(0, 1023))
             self.serial_connection.write("SR_OK\n")
         else:
             # FUNCTION_NOT_FOUND = 6
