@@ -129,6 +129,10 @@ def main(): # pylint: disable=R0915
         for val in proxy.streamingAnalogRead(0, 10):
             print "streamingAnalogRead() -> %s" % str(val)
         
+        # Test streaming of analog values
+        for val in proxy.streamingDigitalRead(0, 10):
+            print "streamingDigitalRead() -> %s" % str(val)
+        
         print "validateConnection() -> %s" % str(proxy.validateConnection())
         print "millis() -> %s " % str(proxy.millis())
         # Finished!

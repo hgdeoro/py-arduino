@@ -1370,6 +1370,37 @@ class ArduinoProxy(object): # pylint: disable=R0904
             }
         """)
 
+    def streamingDigitalRead(self, pin, count): # pylint: disable=C0103
+        """
+        Start reading from the specified digital pin.
+        
+        See: http://arduino.cc/en/Reference/DigitalRead
+        
+        Parameters:
+            - pin (integer): analog pin to read.
+            - count (integer): how many values to read.
+        
+        Returns:
+            - a generator that returns the read values.
+        """
+        return self.send_streaming_cmd("_strDR\t%d\t%d" % (pin, count,), count, response_transformer=int)
+            # raises CommandTimeout,InvalidCommand,InvalidResponse
+    
+    streamingDigitalRead.arduino_function_name = '_strDR'
+    streamingDigitalRead.arduino_code = _unindent(12, """
+            void _strDR() {
+                int pin = atoi(received_parameters[1]);
+                int count = atoi(received_parameters[2]);
+                int value;
+                int i;
+                for(i=0; i<count; i++) {
+                    int value = digitalRead(pin);
+                    send_int_response(value);
+                }
+                send_char_array_response("SR_OK"); // streaming read ok
+            }
+        """)
+
 ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 ## EXAMPLE CODE FOR NEW FUNCTIONS
 ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

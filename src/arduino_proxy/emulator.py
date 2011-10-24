@@ -159,6 +159,12 @@ class ArduinoEmulator(threading.Thread):
             for i in range(0, int(splitted[2])):
                 self.serial_connection.write("%d\n" % random.randint(0, 1023))
             self.serial_connection.write("SR_OK\n")
+        elif splitted[0] == '_strDR': # streamingDigitalRead()
+            # splitted[1] -> pin
+            # splitted[2] -> count
+            for i in range(0, int(splitted[2])):
+                self.serial_connection.write("%d\n" % random.randint(0, 1))
+            self.serial_connection.write("SR_OK\n")
         else:
             # FUNCTION_NOT_FOUND = 6
             self.serial_connection.write("%s 6\n" % ArduinoProxy.INVALID_CMD)
