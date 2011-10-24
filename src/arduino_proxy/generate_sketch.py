@@ -151,7 +151,7 @@ def main(): # pylint: disable=R0914,R0912,R0915
         'arduino_type.h', 
     ]
     
-    logging.info("Template for .pde file: %s", c_input_filename)
+    logging.info("Template for .ino file: %s", c_input_filename)
     logging.info("Template for .h file: %s", h_input_filename)
     for a_file in extra_source_filenames:
         logging.info("Extra source file: %s", a_file)
@@ -178,8 +178,8 @@ def main(): # pylint: disable=R0914,R0912,R0915
     logging.info("Generating C/PDE file...")
     replace_placeholder_values(placeholder_values, c_file_lines, output)
     
-    # Writing .C/.PDE file
-    output_file_c_filename = os.path.join(output_dir, 'py_arduino_proxy.pde')
+    # Writing .C/.INO file
+    output_file_c_filename = os.path.join(output_dir, 'py_arduino_proxy.ino')
     logging.info("Writing to %s", output_file_c_filename)
     output_file_c = open(output_file_c_filename, 'w')
     output_file_c.write(output.getvalue())

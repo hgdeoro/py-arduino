@@ -14,7 +14,7 @@
 #ifndef arduino_type_h
 #define arduino_type_h
 
-#include "WProgram.h"
+#include <Arduino.h>
 #include "avr_cpunames.h"
 #include "inttypes.h"
 
