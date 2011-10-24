@@ -1352,12 +1352,12 @@ class ArduinoProxy(object): # pylint: disable=R0904
         Returns:
             - a generator that returns the read values.
         """
-        return self.send_streaming_cmd("_srtRAP\t%d\t%d" % (pin, count,), count, response_transformer=int)
+        return self.send_streaming_cmd("_strAR\t%d\t%d" % (pin, count,), count, response_transformer=int)
             # raises CommandTimeout,InvalidCommand,InvalidResponse
     
-    streamingAnalogRead.arduino_function_name = '_srtRAP'
+    streamingAnalogRead.arduino_function_name = '_strAR'
     streamingAnalogRead.arduino_code = _unindent(12, """
-            void _srtRAP() {
+            void _strAR() {
                 int pin = atoi(received_parameters[1]);
                 int count = atoi(received_parameters[2]);
                 int value;
