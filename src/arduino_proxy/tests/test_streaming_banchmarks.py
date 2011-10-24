@@ -36,6 +36,9 @@ def main(): # pylint: disable=R0915
     options, args, proxy = default_main() # pylint: disable=W0612
     analog_reads = (400, 1000, )
     try:
+        #
+        # streamingAnalogRead()
+        #
         print "Initiating %d reads using analogRead()" % analog_reads[0]
         start_analogRead = datetime.now()
         for i in xrange(0, analog_reads[0]):
@@ -52,6 +55,27 @@ def main(): # pylint: disable=R0915
         streaming = float(1000.0)/(end_streamingAnalogRead-start_streamingAnalogRead).total_seconds()
         print "analogRead() -> %f reads per second" % non_streaming
         print "streamingAnalogRead() ->  %f reads per second" % streaming
+        print "speedup: X%0.2f" % (int(streaming/non_streaming))
+        
+        #
+        # streamingDigitalRead()
+        #
+        print "Initiating %d reads using digitalRead()" % analog_reads[0]
+        start_digitalRead = datetime.now()
+        for i in xrange(0, analog_reads[0]):
+            proxy.digitalRead(0)
+        end_digitalRead = datetime.now()
+        
+        print "Initiating %d reads using streamingDigitalRead()" % analog_reads[1]
+        start_streamingDigitalRead = datetime.now()
+        for i in proxy.streamingDigitalRead(0, analog_reads[1]):
+            pass
+        end_streamingDigitalRead = datetime.now()
+        
+        non_streaming = float(analog_reads[0])/(end_digitalRead-start_digitalRead).total_seconds()
+        streaming = float(1000.0)/(end_streamingDigitalRead-start_streamingDigitalRead).total_seconds()
+        print "digitalRead() -> %f reads per second" % non_streaming
+        print "streamingDigitalRead() ->  %f reads per second" % streaming
         print "speedup: X%0.2f" % (int(streaming/non_streaming))
         
     except KeyboardInterrupt:
