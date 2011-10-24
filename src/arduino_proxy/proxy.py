@@ -1339,7 +1339,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
                 "Response: %s." % pprint.pformat(response) \
             ))
 
-    def streamingReadAnalogPort(self, pin, count): # pylint: disable=C0103
+    def streamingAnalogRead(self, pin, count): # pylint: disable=C0103
         """
         Start reading from the specified analog pin.
         
@@ -1349,14 +1349,14 @@ class ArduinoProxy(object): # pylint: disable=R0904
             - pin (integer): analog pin to read.
             - count (integer): how many values to read.
         
-        Returns: (int)
-            - analog value (0 to 1023)
+        Returns:
+            - a generator that returns the read values.
         """
         return self.send_streaming_cmd("_srtRAP\t%d\t%d" % (pin, count,), count, response_transformer=int)
             # raises CommandTimeout,InvalidCommand,InvalidResponse
     
-    streamingReadAnalogPort.arduino_function_name = '_srtRAP'
-    streamingReadAnalogPort.arduino_code = _unindent(12, """
+    streamingAnalogRead.arduino_function_name = '_srtRAP'
+    streamingAnalogRead.arduino_code = _unindent(12, """
             void _srtRAP() {
                 int pin = atoi(received_parameters[1]);
                 int count = atoi(received_parameters[2]);

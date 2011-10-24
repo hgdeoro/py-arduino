@@ -42,16 +42,16 @@ def main(): # pylint: disable=R0915
             proxy.analogRead(0)
         end_analogRead = datetime.now()
         
-        print "Initiating %d reads using streamingReadAnalogPort()" % analog_reads[1]
-        start_streamingReadAnalogPort = datetime.now()
-        for i in proxy.streamingReadAnalogPort(0, analog_reads[1]):
+        print "Initiating %d reads using streamingAnalogRead()" % analog_reads[1]
+        start_streamingAnalogRead = datetime.now()
+        for i in proxy.streamingAnalogRead(0, analog_reads[1]):
             pass
-        end_streamingReadAnalogPort = datetime.now()
+        end_streamingAnalogRead = datetime.now()
         
         non_streaming = float(analog_reads[0])/(end_analogRead-start_analogRead).total_seconds()
-        streaming = float(1000.0)/(end_streamingReadAnalogPort-start_streamingReadAnalogPort).total_seconds()
+        streaming = float(1000.0)/(end_streamingAnalogRead-start_streamingAnalogRead).total_seconds()
         print "analogRead() -> %f reads per second" % non_streaming
-        print "streamingReadAnalogPort() ->  %f reads per second" % streaming
+        print "streamingAnalogRead() ->  %f reads per second" % streaming
         print "speedup: X%0.2f" % (int(streaming/non_streaming))
         
     except KeyboardInterrupt:
