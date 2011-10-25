@@ -55,7 +55,7 @@ def main(): # pylint: disable=R0915
         streaming = float(1000.0)/(end_streamingAnalogRead-start_streamingAnalogRead).total_seconds()
         print "analogRead() -> %f reads per second" % non_streaming
         print "streamingAnalogRead() ->  %f reads per second" % streaming
-        print "speedup: X%0.2f" % (int(streaming/non_streaming))
+        print "speedup: X%0.2f" % (streaming/non_streaming)
         
         #
         # streamingDigitalRead()
@@ -76,7 +76,7 @@ def main(): # pylint: disable=R0915
         streaming = float(1000.0)/(end_streamingDigitalRead-start_streamingDigitalRead).total_seconds()
         print "digitalRead() -> %f reads per second" % non_streaming
         print "streamingDigitalRead() ->  %f reads per second" % streaming
-        print "speedup: X%0.2f" % (int(streaming/non_streaming))
+        print "speedup: X%0.2f" % (streaming/non_streaming)
         
     except KeyboardInterrupt:
         print ""
