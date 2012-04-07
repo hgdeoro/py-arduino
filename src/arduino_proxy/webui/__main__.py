@@ -21,10 +21,8 @@
 import logging
 import optparse
 
-import cherrypy
-
-from arduino_proxy.main_utils import default_main
 from arduino_proxy.webui.web import start_webserver
+
 
 def main():
     parser = optparse.OptionParser()
@@ -46,10 +44,10 @@ def main():
         help="How many seconds wait before conect (workaround for auto-reset on connect).")
     
     parser.add_option("--http-port",
-        action="store", dest="http_port", default=8080, type="int", 
+        action="store", dest="http_port", default=8080, type="int",
         help="Tcp port to use for web server.")
     
-    (options, args) = parser.parse_args()
+    (options, _) = parser.parse_args()
 
     if options.debug:
         logging.basicConfig(level=logging.DEBUG)

@@ -21,7 +21,6 @@
 import logging
 import optparse
 import os
-import os.path # pylint: disable=W0404
 import shutil
 import sys
 
@@ -34,6 +33,7 @@ SRC_DIR = os.path.split(SRC_DIR)[0] # SRC_DIR
 sys.path.append(os.path.abspath(SRC_DIR))
 
 from arduino_proxy.proxy import ArduinoProxy, _unindent
+
 
 def generate_placeholder_values(proxy, options):
     proxy_functions = proxy.get_proxy_functions()
@@ -58,20 +58,20 @@ def generate_placeholder_values(proxy, options):
         proxied_function_ptrs.write('%s, ' % function.arduino_function_name)
     
     placeholder_values = {
-        'proxied_function_count': len(proxy_functions), 
-        'proxied_function_names': proxied_function_names.getvalue(), 
-        'proxied_function_ptrs': proxied_function_ptrs.getvalue(), 
-        'proxied_function_source': proxied_function_source.getvalue(), 
-        'serial_speed': proxy.speed, 
-        'INVALID_CMD': ArduinoProxy.INVALID_CMD, 
+        'proxied_function_count': len(proxy_functions),
+        'proxied_function_names': proxied_function_names.getvalue(),
+        'proxied_function_ptrs': proxied_function_ptrs.getvalue(),
+        'proxied_function_source': proxied_function_source.getvalue(),
+        'serial_speed': proxy.speed,
+        'INVALID_CMD': ArduinoProxy.INVALID_CMD,
         'INVALID_PARAMETER': ArduinoProxy.INVALID_PARAMETER,
         'UNSUPPORTED_CMD': ArduinoProxy.UNSUPPORTED_CMD,
-        'ATTACH_INTERRUPT_MODE_LOW': ArduinoProxy.ATTACH_INTERRUPT_MODE_LOW, 
-        'ATTACH_INTERRUPT_MODE_CHANGE': ArduinoProxy.ATTACH_INTERRUPT_MODE_CHANGE, 
-        'ATTACH_INTERRUPT_MODE_RISING': ArduinoProxy.ATTACH_INTERRUPT_MODE_RISING, 
-        'ATTACH_INTERRUPT_MODE_FALLING': ArduinoProxy.ATTACH_INTERRUPT_MODE_FALLING, 
-        'PY_ARDUINO_PROXY_LCD_SUPPORT': 0, 
-        'PY_ARDUINO_PROXY_DEBUG_TO_LCD': 0, 
+        'ATTACH_INTERRUPT_MODE_LOW': ArduinoProxy.ATTACH_INTERRUPT_MODE_LOW,
+        'ATTACH_INTERRUPT_MODE_CHANGE': ArduinoProxy.ATTACH_INTERRUPT_MODE_CHANGE,
+        'ATTACH_INTERRUPT_MODE_RISING': ArduinoProxy.ATTACH_INTERRUPT_MODE_RISING,
+        'ATTACH_INTERRUPT_MODE_FALLING': ArduinoProxy.ATTACH_INTERRUPT_MODE_FALLING,
+        'PY_ARDUINO_PROXY_LCD_SUPPORT': 0,
+        'PY_ARDUINO_PROXY_DEBUG_TO_LCD': 0,
     }
     
     if options.lcd:
@@ -80,6 +80,7 @@ def generate_placeholder_values(proxy, options):
             placeholder_values['PY_ARDUINO_PROXY_DEBUG_TO_LCD'] = 1
     
     return placeholder_values
+
 
 def replace_placeholder_values(placeholder_values, input_lines, output):
     """
@@ -118,6 +119,7 @@ def replace_placeholder_values(placeholder_values, input_lines, output):
             output.write(line)
         output.write('\n')
 
+
 def main(): # pylint: disable=R0914,R0912,R0915
     
     parser = optparse.OptionParser()
@@ -128,10 +130,10 @@ def main(): # pylint: disable=R0914,R0912,R0915
         action="store_true", dest="disable_debug_to_lcd", default=False,
         help="Remove support for sending debug message to LCD. This'll shrink the sketch size.")
     parser.add_option("--output-dir",
-        action="store", dest="output_dir", default="", 
+        action="store", dest="output_dir", default="",
         help="Output directory for genereated sketch. Default: 'pde' directory.")
     
-    (options, args) = parser.parse_args() # pylint: disable=W0612
+    (options, _) = parser.parse_args() # pylint: disable=W0612
     
     if options.output_dir:
         output_dir = options.output_dir
@@ -148,8 +150,8 @@ def main(): # pylint: disable=R0914,R0912,R0915
     h_input_filename = os.path.join(SRC_DIR, 'src-c', 'py_arduino_proxy.h')
     
     extra_source_filenames = [
-        'arduino_type.h', 
-        'avr_cpunames.h', 
+        'arduino_type.h',
+        'avr_cpunames.h',
     ]
     
     logging.info("Template for .ino file: %s", c_input_filename)

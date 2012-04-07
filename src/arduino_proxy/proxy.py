@@ -35,15 +35,17 @@ except ImportError:
 
 logger = logging.getLogger(__name__) # pylint: disable=C0103
 
+
 def _unindent(spaces, the_string):
     lines = []
-    start = ' '*spaces
+    start = ' ' * spaces
     for a_line in the_string.splitlines():
         if a_line.startswith(start):
             lines.append(a_line[spaces:])
         else:
             lines.append(a_line)
     return '\n'.join(lines)
+
 
 class WrappedBoolean(object):
     """Wraps a boolean, to emulate passing variables by reference"""
@@ -63,8 +65,10 @@ class WrappedBoolean(object):
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+
 class ArduinoProxyException(Exception):
     """Base class for all the exception raised in the project."""
+
 
 class InvalidCommand(ArduinoProxyException):
     """
@@ -75,6 +79,7 @@ class InvalidCommand(ArduinoProxyException):
         ArduinoProxyException.__init__(self, msg)
         self.error_code = error_code
 
+
 class InvalidParameter(ArduinoProxyException):
     """
     Raised when the Arduino reported an invalid parameter.
@@ -84,26 +89,31 @@ class InvalidParameter(ArduinoProxyException):
         ArduinoProxyException.__init__(self, msg)
         self.error_param = error_param
 
+
 class InvalidResponse(ArduinoProxyException):
     """
     Raised when the response from the Arduino wasn't valid.
     """
+
 
 class EmptyResponse(ArduinoProxyException):
     """
     Raised when the response from the Arduino was empty.
     """
 
+
 class CommandTimeout(ArduinoProxyException):
     """
     Raised when a timeout occurs while waiting for Arduino's response.
     """
+
 
 class InvalidArgument(ArduinoProxyException):
     """
     Raised when a method was called with invalid argument type or values.
     This is detected in Python, and thus no data was sent to the Arduino.
     """
+
 
 class UnsupportedCommand(ArduinoProxyException):
     """
@@ -119,6 +129,7 @@ class UnsupportedCommand(ArduinoProxyException):
         self.error_param = error_param
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 
 class ArduinoProxy(object): # pylint: disable=R0904
     """
@@ -289,7 +300,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         response = response.getvalue().strip()
         end = time.time()
         logger.debug("get_next_response() - Got response: %s - Took: %.2f secs.",
-            pprint.pformat(response), (end-start))
+            pprint.pformat(response), (end - start))
         return response
     
     def _check_response_for_errors(self, response, cmd): # pylint: disable=R0201
@@ -324,24 +335,24 @@ class ArduinoProxy(object): # pylint: disable=R0904
     #        """
     #        Note: this is a **low level** method. The only situation you may need to call this method
     #        is if you are creating new methods.
-    #        
+    #
     #        Streaming: streamEndMark is set, the command is sent and the responses are read until
     #        we get string specified by 'streamEndMark'.
-    #        
+    #
     #        In each iteration, a (response, continue_streaming) is running.
     #        **response** is the received response, **continue_streaming** is a boolean wrapper to
     #        stop the streaming, using continue_streaming.setFalse().
     #        """
-    #        
+    #
     #        # FIXME: streaming: check this implementation!
     #        # FIXME: streaming: do the transmation, check errors, etc!
-    #        
+    #
     #        logger.debug("start_streaming() called. cmd: %r. streamEndMark: %r", cmd, streamEndMark)
-    #        
+    #
     #        self.serial_port.write(cmd)
     #        self.serial_port.write("\n")
     #        self.serial_port.flush()
-    #        
+    #
     #        continue_streaming = WrappedBoolean(True)
     #        response = self.get_next_response(timeout=timeout) # Raises CommandTimeout
     #        while response != streamEndMark:
@@ -377,7 +388,8 @@ class ArduinoProxy(object): # pylint: disable=R0904
             - CommandTimeout: if a timeout is detected while reading response.
             - InvalidCommand: if the Arduino reported the sent command as invalid.
             - InvalidParameter: if the Arduino reported that some parameter was invalid.
-            - InvalidResponse: raised when 'expected_response is not None, an the response doesn't equals to 'expected_response'.
+            - InvalidResponse: raised when 'expected_response is not None, an the response
+                doesn't equals to 'expected_response'.
             - UnsupportedCommand: if the Arduino reported that the command isn't supported.
         """
         logger.debug("send_cmd() called. cmd: '%s'", cmd)
@@ -447,7 +459,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         """
         Returns a list of proxy functions. This is used internally to generate the sketch files.
         """
-        all_attributes = [ getattr(self, an_attribute_name) for an_attribute_name in dir(self) ]
+        all_attributes = [getattr(self, an_attribute_name) for an_attribute_name in dir(self)]
         proxy_functions = [an_attribute for an_attribute in all_attributes
             if getattr(an_attribute, 'arduino_code', False)]
         return proxy_functions
@@ -679,7 +691,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
     
     def validateConnection(self): # pylint: disable=C0103
         """
-        Asserts that the current connection is valid, discarding any existing information in the 
+        Asserts that the current connection is valid, discarding any existing information in the
         buffer of the serial connection.
         
         This method must be called to continue using a proxy instance after an error, specially
@@ -744,13 +756,13 @@ class ArduinoProxy(object): # pylint: disable=R0904
         if not value >= 0:
             raise(InvalidArgument("value must be greater or equals than 0"))
         
-        delay_in_seconds = math.ceil(value/1000.0)
+        delay_in_seconds = math.ceil(value / 1000.0)
         if self.timeout > delay_in_seconds:
             response = self.send_cmd("_dy\t%d" % value, expected_response="D_OK")
             # raises CommandTimeout,InvalidCommand,InvalidResponse
         else:
             response = self.send_cmd("_dy\t%d" % value, expected_response="D_OK",
-                timeout=(delay_in_seconds+1))
+                timeout=(delay_in_seconds + 1))
             # raises CommandTimeout,InvalidCommand,InvalidResponse
         return response
     
@@ -790,13 +802,13 @@ class ArduinoProxy(object): # pylint: disable=R0904
         if not value >= 0:
             raise(InvalidArgument("value must be greater or equals than 0"))
         
-        delay_in_seconds = math.ceil(value/1000000.0)
+        delay_in_seconds = math.ceil(value / 1000000.0)
         if self.timeout > delay_in_seconds:
             return self.send_cmd("_dMs\t%d" % value, expected_response="DMS_OK")
             # raises CommandTimeout,InvalidCommand,InvalidResponse
         else:
             return self.send_cmd("_dMs\t%d" % value, expected_response="DMS_OK",
-                timeout=(delay_in_seconds+1))
+                timeout=(delay_in_seconds + 1))
             # raises CommandTimeout,InvalidCommand,InvalidResponse
     
     delayMicroseconds.arduino_function_name = '_dMs'
@@ -920,7 +932,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
     def getInterruptMark(self, interrupt): # pylint: disable=C0103
         """
         Check if an interrupt was detected on the Arduino.
-        If an interrupt has ocurred, the 'mark' in the Arduino is cleared, so you can call 
+        If an interrupt has ocurred, the 'mark' in the Arduino is cleared, so you can call
         :func:`getInterruptMark` again, to check if another interrupt occurred.
         
         :func:`watchInterrupt` must be called before :func:`getInterruptMark`.
@@ -1083,7 +1095,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         if clear_lcd:
             self.lcdClear()
         
-        return self.send_cmd("_lcdW\t%d\t%d\t%s" % (col, row, message),  "LWOK")
+        return self.send_cmd("_lcdW\t%d\t%d\t%s" % (col, row, message), "LWOK")
             # raises CommandTimeout,InvalidCommand,InvalidResponse
     
     lcdWrite.arduino_function_name = '_lcdW'
@@ -1220,9 +1232,9 @@ class ArduinoProxy(object): # pylint: disable=R0904
         splitted = [item for item in value.split() if item]
 
         arduino_type_struct = {
-            'analog_pins': int(splitted[0]), 
-            'digital_pins': int(splitted[1]), 
-            'pwm_pins_bitmap': splitted[2], 
+            'analog_pins': int(splitted[0]),
+            'digital_pins': int(splitted[1]),
+            'pwm_pins_bitmap': splitted[2],
             'eeprom_size': int(splitted[3]), # KiB
             'flash_size': int(splitted[4]), # KiB
             'ram_size': int(splitted[5]), # KiB
@@ -1408,7 +1420,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
 ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 #    def newMethodName(self):
 #        return self.send_cmd("_XXXXXXXXXX", expected_response="OK_RESPONSE")
-#    
+#
 #    newMethodName.arduino_function_name = '_XXXXXXXXXX'
 #    newMethodName.arduino_code = """
 #            void _XXXXXXXXXX() {
@@ -1416,7 +1428,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
 #                // goes
 #                // Arduino
 #                // code
-#                
+#
 #                // Send 'OK' to the PC.
 #                send_char_array_response("OK_RESPONSE");
 #            }
@@ -1429,7 +1441,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
 ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 #    def newMethodName(self):
 #        return self.send_cmd("_XXXXXXXXXX", expected_response="OK_RESPONSE", timeout=60)
-#    
+#
 #    newMethodName.arduino_function_name = '_XXXXXXXXXX'
 #    newMethodName.arduino_code = """
 #            void _XXXXXXXXXX() {
@@ -1437,7 +1449,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
 #                // goes
 #                // Arduino
 #                // code
-#                
+#
 #                // Send 'OK' to the PC.
 #                send_char_array_response("OK_RESPONSE");
 #            }

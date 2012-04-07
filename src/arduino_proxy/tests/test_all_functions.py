@@ -30,8 +30,9 @@ sys.path.append(os.path.abspath(SRC_DIR))
 from arduino_proxy import ArduinoProxy, InvalidCommand, CommandTimeout, InvalidResponse
 from arduino_proxy.main_utils import default_main
 
+
 def main(): # pylint: disable=R0915
-    options, args, proxy = default_main() # pylint: disable=W0612
+    _, _, proxy = default_main() # pylint: disable=W0612
     try:
         print "getFreeMemory() -> %s" % str(proxy.getFreeMemory())
         print "enableDebug() -> %s" % str(proxy.enableDebug())

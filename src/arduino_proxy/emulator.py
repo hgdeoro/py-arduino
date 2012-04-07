@@ -21,15 +21,14 @@ import logging
 import os
 import pprint
 import random
-import sys
 import threading
 import time
-import unittest
 import weakref
 
 from arduino_proxy.proxy import ArduinoProxy
 
 logger = logging.getLogger(__name__) # pylint: disable=C0103
+
 
 class ArduinoEmulator(threading.Thread):
     """
@@ -74,7 +73,7 @@ class ArduinoEmulator(threading.Thread):
             return
         
         def _get_int(env_name, default_value):
-            value = os.environ.get(env_name,  '')
+            value = os.environ.get(env_name, '')
             try:
                 return int(value)
             except:
@@ -103,11 +102,11 @@ class ArduinoEmulator(threading.Thread):
         elif splitted[0] == '_pMd':
             self.serial_connection.write("PM_OK\n")
         elif splitted[0] == '_dy': # delay()
-            if int(splitted[1])/1000.0 > self.serial_connection.timeout:
-                time.sleep(int(splitted[1])/1000.0) # So timeout is detected
+            if int(splitted[1]) / 1000.0 > self.serial_connection.timeout:
+                time.sleep(int(splitted[1]) / 1000.0) # So timeout is detected
                 self.serial_connection.write("D_OK\n")
             else:
-                time.sleep(int(splitted[1])/10000.0)
+                time.sleep(int(splitted[1]) / 10000.0)
                 self.serial_connection.write("D_OK\n")
         elif splitted[0] == '_dMs': # delayMicroseconds()
             self.serial_connection.write("DMS_OK\n")
@@ -130,18 +129,18 @@ class ArduinoEmulator(threading.Thread):
             digital_pins = _get_int("emulator_digital_pins", 5)
             pwm_pins_bitmap = os.environ.get("emulator_pwm_pins_bitmap", "")
             if not pwm_pins_bitmap or len(pwm_pins_bitmap) != digital_pins:
-                pwm_pins_bitmap = ''.join([ str(i%2) for i in range(0, digital_pins) ])
+                pwm_pins_bitmap = ''.join([str(i % 2) for i in range(0, digital_pins)])
             eeprom_size = _get_int("emulator_eeprom_size", 2)
             flash_size = _get_int("emulator_flash_size", 16)
             ram_size = _get_int("emulator_ram_size", 4)
             
             arduino_type_struct = "%d %d %s %d %d %d\n" % (
-                analog_pins, 
-                digital_pins, 
-                pwm_pins_bitmap, 
-                eeprom_size, 
-                flash_size, 
-                ram_size, 
+                analog_pins,
+                digital_pins,
+                pwm_pins_bitmap,
+                eeprom_size,
+                flash_size,
+                ram_size,
             )
             
             self.serial_connection.write(arduino_type_struct)
@@ -200,6 +199,7 @@ class ArduinoEmulator(threading.Thread):
         self.running = False
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 
 class SerialConnectionMock(object):
     """
@@ -303,4 +303,3 @@ class SerialConnectionMock(object):
         return "SerialConnectionMock\n" + \
                     " + in_buffer: %s\n" % pprint.pformat(self._in_buffer) + \
                     " + out_buffer: %s\n" % pprint.pformat(self._out_buffer)
-

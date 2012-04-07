@@ -31,8 +31,9 @@ sys.path.append(os.path.abspath(SRC_DIR))
 from arduino_proxy import ArduinoProxy, InvalidCommand, ArduinoProxyException
 from arduino_proxy.main_utils import default_main
 
+
 def main():
-    options, args, proxy = default_main() # pylint: disable=W0612
+    options, _, proxy = default_main() # pylint: disable=W0612
     try:
         if options.debug:
             proxy.enableDebug()

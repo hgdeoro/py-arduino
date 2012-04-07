@@ -30,8 +30,9 @@ sys.path.append(os.path.abspath(SRC_DIR))
 
 from arduino_proxy.main_utils import default_main
 
+
 def main():
-    options, args, proxy = default_main() # pylint: disable=W0612
+    _, _, proxy = default_main() # pylint: disable=W0612
     try:
         print "Clearing LCD", proxy.lcdClear()
         raw_input("Press any key to continue...")
@@ -48,13 +49,13 @@ def main():
         
         print "Filling screen with letters and numbers"
         for a_char in ['a', 'b', 'c', 'x', 'y', 'z']:
-            proxy.lcdMessage([a_char*16, a_char*16])
+            proxy.lcdMessage([a_char * 16, a_char * 16])
             time.sleep(0.1)
         raw_input("Press any key to continue...")
 
         print "Moving an @"
         for i in range(0, 32):
-            proxy.lcdWrite("@", i%16, i/16, clear_lcd=True) # msg, col, row
+            proxy.lcdWrite("@", i % 16, i / 16, clear_lcd=True) # msg, col, row
             time.sleep(0.2)
         #raw_input("Press any key to continue...")
 

@@ -39,6 +39,7 @@ RE_ANALOG_WRITE_SLIDER = re.compile(r'^pinValue(\d{1,2})$')
 ANALOG_WRITE_SLIDER_NAME_GENERATOR = "pinValue%(pin)d"
 # ANALOG_WRITE_SLIDER_NAME_GENERATOR -> usefull when the controls are available for some PINs
 
+
 class ArduinoProxyMainWindow(Ui_MainWindow):
     
     LED_ON_PIXMAP = None
@@ -98,7 +99,7 @@ class ArduinoProxyMainWindow(Ui_MainWindow):
     
     def _get_attributes(self, pattern):
         """Get a list of attributes that matches the pattern"""
-        return [ getattr(self, x) for x in dir(self) if pattern.match(x) ]
+        return [getattr(self, x) for x in dir(self) if pattern.match(x)]
     
     def _easy_connect(self, pattern, signal_str, receiver_function):
         """
@@ -197,7 +198,7 @@ class ArduinoProxyMainWindow(Ui_MainWindow):
         
         # TODO: check if pin is enabled
         
-        slider_name = ANALOG_WRITE_SLIDER_NAME_GENERATOR % { 'pin': pin, }
+        slider_name = ANALOG_WRITE_SLIDER_NAME_GENERATOR % {'pin': pin, }
         slider_object = getattr(self, slider_name, None)
         if slider_object is not None:
             slider_object.setValue(0)
@@ -226,7 +227,7 @@ class ArduinoProxyMainWindow(Ui_MainWindow):
     
         # TODO: check if pin is enabled
         
-        slider_name = ANALOG_WRITE_SLIDER_NAME_GENERATOR % { 'pin': pin, }
+        slider_name = ANALOG_WRITE_SLIDER_NAME_GENERATOR % {'pin': pin, }
         slider_object = getattr(self, slider_name, None)
         if slider_object is not None:
             slider_object.setValue(255)
@@ -281,9 +282,9 @@ class ArduinoProxyMainWindow(Ui_MainWindow):
         Return a list enabled pins.
         Each element is an integer.
         """
-        return [ self._get_pin(RE_PIN_ENABLE_CHECKBOX, an_attr)
+        return [self._get_pin(RE_PIN_ENABLE_CHECKBOX, an_attr)
             for an_attr in self._get_attributes(RE_PIN_ENABLE_CHECKBOX)
-                if bool(an_attr.checkState()) ]
+                if bool(an_attr.checkState())]
     
     def _update_one_pin(self, pin, log):
         # TODO: double check: if this pin is enabled
@@ -319,11 +320,13 @@ class ArduinoProxyMainWindow(Ui_MainWindow):
             self.update_timer.stop()
             self.pushButtonReadPin.setEnabled(True)
 
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 def default_args_validator(parser, options, args): # pylint: disable=W0613
-    if len(args) <1:
+    if len(args) < 1:
         parser.error("You should specify the serial device.")
+
 
 def main():
     options, args, proxy = (None, None, None, )
@@ -348,7 +351,7 @@ def main():
     
     app = QtGui.QApplication(args[1:])
     q_main_window = QtGui.QMainWindow()
-    window = ArduinoProxyMainWindow(q_main_window, options, args, proxy) # pylint: disable=W0612
+    ArduinoProxyMainWindow(q_main_window, options, args, proxy) # pylint: disable=W0612
     q_main_window.show()
     sys.exit(app.exec_())
     

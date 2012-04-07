@@ -20,12 +20,9 @@
 
 import logging
 import os
-import pprint
-import random
 import sys
 import time
 import unittest
-import weakref
 
 # Setup PYTHONPATH
 SRC_DIR = os.path.split(os.path.realpath(__file__))[0] # SRC_DIR/arduino_proxy/tests
@@ -36,6 +33,7 @@ sys.path.append(os.path.abspath(SRC_DIR))
 from arduino_proxy import ArduinoProxy, InvalidArgument, InvalidResponse, InvalidCommand
 
 logger = logging.getLogger(__name__) # pylint: disable=C0103
+
 
 class TestArduinoProxyWithInitialContentInSerialBuffer(unittest.TestCase): # pylint: disable=R0904
     """
@@ -53,6 +51,7 @@ class TestArduinoProxyWithInitialContentInSerialBuffer(unittest.TestCase): # pyl
     def tearDown(self): # pylint: disable=C0103
         self.proxy.close()
 
+
 class TestProxiedMethodsOfArduinoProxy(unittest.TestCase): # pylint: disable=R0904
     """
     Testcase for commands.
@@ -66,12 +65,12 @@ class TestProxiedMethodsOfArduinoProxy(unittest.TestCase): # pylint: disable=R09
         self.assertEquals(response, 'PING_OK')
     
     def test_multiping(self):
-        for i in range(0, 10): # pylint: disable=W0612
+        for i in range(0, 10): # pylint: disable=W0612 @UnusedVariable
             start = time.time()
             response = self.proxy.ping()
             end = time.time()
             self.assertEquals(response, 'PING_OK')
-            logging.info("PING took %.2f ms", ((end-start)*1000))
+            logging.info("PING took %.2f ms", ((end - start) * 1000))
     
     def test_analog_read(self):
         response = self.proxy.analogRead(5)
@@ -162,10 +161,11 @@ class TestProxiedMethodsOfArduinoProxy(unittest.TestCase): # pylint: disable=R09
         ard_type_st['ram_size_bytes']
 
     def test_getAvrCpuType(self):
-        ard_type_st = self.proxy.getAvrCpuType()
+        self.proxy.getAvrCpuType()
 
     def tearDown(self): # pylint: disable=C0103
         self.proxy.close()
+
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -199,9 +199,9 @@ class TestInternalsOfArduinoProxy(unittest.TestCase): # pylint: disable=R0904
         
         self.assertRaises(InvalidResponse, self.proxy.send_cmd, "_ms",
             response_transformer=invalid_transformer1)
-        self.assertRaises(InvalidResponse, self.proxy.send_cmd, "_ms", 
+        self.assertRaises(InvalidResponse, self.proxy.send_cmd, "_ms",
             response_transformer=invalid_transformer2)
-        self.assertRaises(InvalidResponse, self.proxy.send_cmd, "_ms", 
+        self.assertRaises(InvalidResponse, self.proxy.send_cmd, "_ms",
             response_transformer=invalid_transformer3)
         
         self.assertRaises(InvalidResponse, self.proxy.send_cmd, "_ms", expected_response="X")

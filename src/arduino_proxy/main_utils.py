@@ -32,11 +32,13 @@ from arduino_proxy import ArduinoProxy
 #            help="How many seconds wait before conect (workaround for auto-reset on connect bug).")
 #
 
+
 def default_args_validator(parser, options, args): # pylint: disable=W0613
     if len(args) > 1:
         parser.error("you specified more than one argument, and only one is spected")
 
-def default_main(optparse_usage="usage: %prog [options] serial_device", 
+
+def default_main(optparse_usage="usage: %prog [options] serial_device",
         add_options_callback=None, args_validator=default_args_validator):
     """
     Utility method to help creation of programs around ArduinoProxy. This method configures logging
