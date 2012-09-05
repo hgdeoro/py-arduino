@@ -32,7 +32,7 @@
              * Returns an INTEGER.
              */
 			function getPinFromId(text) {
-				groups = /^pin(\d+)_/(text);
+				var groups = String(text).match(/^pin(\d+)_/);
 				if(groups == null)
 					alert("groups == null / text='" + text + "'");
 				return parseInt(groups[1]);
@@ -43,7 +43,7 @@
              * Returns an INTEGER.
              */
 			function getAnalogPinFromId(text) {
-				groups = /^pinA(\d+)_/(text);
+                var groups = String(text).match(/^pinA(\d+)_/);
 				if(groups == null)
 					alert("groups == null / text='" + text + "'");
 				return parseInt(groups[1]);
