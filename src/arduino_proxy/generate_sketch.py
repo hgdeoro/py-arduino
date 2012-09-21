@@ -152,6 +152,8 @@ def main(): # pylint: disable=R0914,R0912,R0915
     extra_source_filenames = [
         'arduino_type.h',
         'avr_cpunames.h',
+        'dht11.cpp',
+        'dht11.h',
     ]
     
     logging.info("Template for .ino file: %s", c_input_filename)
