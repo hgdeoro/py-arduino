@@ -146,7 +146,7 @@ def main(): # pylint: disable=R0914,R0912,R0915
     if not os.path.isdir(output_dir):
         raise(Exception("Output path isn't a directory! Path: %s" % output_dir))
     
-    c_input_filename = os.path.join(SRC_DIR, 'src-c', 'arduino.c')
+    c_input_filename = os.path.join(SRC_DIR, 'src-c', 'py_arduino_proxy.c')
     h_input_filename = os.path.join(SRC_DIR, 'src-c', 'py_arduino_proxy.h')
     
     extra_source_filenames = [
