@@ -14,6 +14,7 @@
 
 #include "py_arduino_proxy.h"
 #include "arduino_type.h"
+#include "dht11.h"
 
 // >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
 #define PY_ARDUINO_PROXY_LCD_SUPPORT 0 // {***PLACEHOLDER***}
@@ -141,10 +142,29 @@ void _dMs() {
         
 
 
-void _dRd() {
+void _dht11Rd() {
     int pin = atoi(received_parameters[1]);
-    int value = digitalRead(pin);
-    send_int_response(value);
+    dht11 DHT11;
+    int checksum_ok = DHT11.read(pin);
+    switch (checksum_ok)
+    {
+        case DHTLIB_OK:
+            Serial.print("DHTLIB_OK,");
+            break;
+        case DHTLIB_ERROR_CHECKSUM:
+            send_char_array_response("DHTLIB_ERROR_CHECKSUM");
+            return;
+        case DHTLIB_ERROR_TIMEOUT:
+            send_char_array_response("DHTLIB_ERROR_TIMEOUT");
+            return;
+        default:
+            send_char_array_response("DHTLIB_UNKNOWN_ERROR");
+            return;
+    }
+    Serial.print(DHT11.temperature);
+    Serial.print(",");
+    Serial.print(DHT11.humidity);
+    Serial.println("");
     return;
 }
         
@@ -391,9 +411,9 @@ void _wI() {
 	#define PROXIED_FUNCTION_COUNT 24 // {***PLACEHOLDER***}
 	
 // >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
-	proxied_function_ptr function_ptr[PROXIED_FUNCTION_COUNT] = { _aRd, _aWrt, _dy, _dMs, _dRd, _dWrt, _dD, _eD, _eDL, _gATS, _gACT, _gFM, _gIM, _lcdClr, _lcdW, _mc, _ms, _pMd, _ping, _sftO, _strAR, _strDR, _vCnt, _wI,  }; // {***PLACEHOLDER***}
+	proxied_function_ptr function_ptr[PROXIED_FUNCTION_COUNT] = { _aRd, _aWrt, _dy, _dMs, _dht11Rd, _dWrt, _dD, _eD, _eDL, _gATS, _gACT, _gFM, _gIM, _lcdClr, _lcdW, _mc, _ms, _pMd, _ping, _sftO, _strAR, _strDR, _vCnt, _wI,  }; // {***PLACEHOLDER***}
 // >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
-	char*               function_name[PROXIED_FUNCTION_COUNT] = { "_aRd", "_aWrt", "_dy", "_dMs", "_dRd", "_dWrt", "_dD", "_eD", "_eDL", "_gATS", "_gACT", "_gFM", "_gIM", "_lcdClr", "_lcdW", "_mc", "_ms", "_pMd", "_ping", "_sftO", "_strAR", "_strDR", "_vCnt", "_wI",  }; // {***PLACEHOLDER***}
+	char*               function_name[PROXIED_FUNCTION_COUNT] = { "_aRd", "_aWrt", "_dy", "_dMs", "_dht11Rd", "_dWrt", "_dD", "_eD", "_eDL", "_gATS", "_gACT", "_gFM", "_gIM", "_lcdClr", "_lcdW", "_mc", "_ms", "_pMd", "_ping", "_sftO", "_strAR", "_strDR", "_vCnt", "_wI",  }; // {***PLACEHOLDER***}
 	
 	#define read_char() Serial.read()
 	
