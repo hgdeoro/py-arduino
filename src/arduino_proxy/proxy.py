@@ -1413,6 +1413,68 @@ class ArduinoProxy(object): # pylint: disable=R0904
             }
         """)
 
+    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    
+    def dht11_read(self, pin): # pylint: disable=C0103
+        """
+        Proxy function for Arduino's **digitalRead()**.
+        Reads the value from a specified digital pin, either HIGH or LOW.
+        
+        See: http://arduino.cc/en/Reference/DigitalRead
+        
+        Parameters:
+            - pin (int): digital pin to read
+        
+        Returns:
+            - Either ArduinoProxy.HIGH or ArduinoProxy.LOW
+        """
+        # FIXME: add doc for exceptions
+        self._validate_digital_pin(pin)
+        cmd = "_dht11Rd\t%d" % (pin)
+
+        response = self.send_cmd(cmd) # raises CommandTimeout,InvalidCommand
+
+        splitted_response = response.split(",")
+        if splitted_response[0] == 'DHTLIB_OK':
+            if len(splitted_response) == 3:
+                try:
+                    return int(splitted_response[1]), int(splitted_response[2])
+                except ValueError:
+                    raise(InvalidResponse("DHTLIB_OK received, but data couldn't be transformed to int"))
+            else:
+                raise(InvalidResponse("DHTLIB_OK received, but without data"))
+
+        raise(InvalidResponse(splitted_response[0]))
+
+    digitalRead.arduino_function_name = '_dht11Rd'
+    digitalRead.arduino_code = _unindent(12, """
+            void _dht11Rd() {
+                int pin = atoi(received_parameters[1]);
+                dht11 DHT11;
+                int checksum_ok = DHT11.read(pin);
+                switch (checksum_ok)
+                {
+                    case DHTLIB_OK:
+                        Serial.print("DHTLIB_OK,");
+                        break;
+                    case DHTLIB_ERROR_CHECKSUM:
+                        send_char_array_response("DHTLIB_ERROR_CHECKSUM");
+                        return;
+                    case DHTLIB_ERROR_TIMEOUT:
+                        send_char_array_response("DHTLIB_ERROR_TIMEOUT");
+                        return;
+                    default:
+                        send_char_array_response("DHTLIB_UNKNOWN_ERROR");
+                        return;
+                }
+                Serial.print(DHT11.temperature);
+                Serial.print(",");
+                Serial.print(DHT11.humidity);
+                Serial.println("");
+                return;
+            }
+        """)
+
 ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 ## EXAMPLE CODE FOR NEW FUNCTIONS
 ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

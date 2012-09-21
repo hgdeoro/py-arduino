@@ -7,6 +7,7 @@
 
 #include "py_arduino_proxy.h"
 #include "arduino_type.h"
+#include "dht11.h"
 
 #define PY_ARDUINO_PROXY_LCD_SUPPORT %(PY_ARDUINO_PROXY_LCD_SUPPORT)d // {***PLACEHOLDER***}
 #define PY_ARDUINO_PROXY_DEBUG_TO_LCD %(PY_ARDUINO_PROXY_DEBUG_TO_LCD)d // {***PLACEHOLDER***}
