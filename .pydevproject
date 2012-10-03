@@ -6,5 +6,7 @@
 <pydev_property name="org.python.pydev.PYTHON_PROJECT_VERSION">python 2.7</pydev_property>
 <pydev_pathproperty name="org.python.pydev.PROJECT_SOURCE_PATH">
 <path>/PyArduinoProxy/src</path>
+<path>/PyArduinoProxy/virtualenv/local/lib/python2.7/site-packages</path>
+<path>/PyArduinoProxy/virtualenv/lib/python2.7/site-packages</path>
 </pydev_pathproperty>
 </pydev_project>
