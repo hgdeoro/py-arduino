@@ -164,7 +164,7 @@ void _dht11Rd() {
     Serial.print(DHT11.temperature);
     Serial.print(",");
     Serial.print(DHT11.humidity);
-    Serial.println("");
+    Serial.print("\n");
     return;
 }
         
@@ -222,7 +222,7 @@ void _gATS() {
     Serial.print(this_arduino_type.flash_size, DEC);
     Serial.print(" ");
     Serial.print(this_arduino_type.ram_size, DEC);
-    Serial.println("");
+    Serial.print("\n");
 }
         
 
@@ -300,14 +300,16 @@ void _lcdW() {
 
 void _mc() {
     send_debug();
-    Serial.println(micros());
+    Serial.print(micros());
+    Serial.print("\n");
 }
         
 
 
 void _ms() {
     send_debug();
-    Serial.println(millis());
+    Serial.print(millis());
+    Serial.print("\n");
 }
         
 
@@ -434,7 +436,8 @@ void _wI() {
 	}
 	
 	void send_int_response(int value) {
-		Serial.println(value, DEC);
+		Serial.print(value, DEC);
+		Serial.print("\n");
 	}
 	
 	// param_num: which parameter is invalid. Starts with '0'.
@@ -444,14 +447,16 @@ void _wI() {
 	void send_invalid_parameter_response(int param_num) {
 // >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
 		Serial.print("INVALID_PARAMETER "); // {***PLACEHOLDER***}
-		Serial.println(param_num, DEC);
+		Serial.print(param_num, DEC);
+		Serial.print("\n");
 	}
 	
 	// error_code == 0 -> UNKNOWN ERROR CORE or WITHOUT ERROR CODE
 	void send_invalid_cmd_response(int error_code) {
 // >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
 		Serial.print("INVALID_CMD "); // {***PLACEHOLDER***}
-		Serial.println(error_code, DEC);
+		Serial.print(error_code, DEC);
+		Serial.print("\n");
 	}
 
 	// Inform that the command is not supported.
@@ -461,15 +466,18 @@ void _wI() {
 	void send_unsupported_cmd_response() {
 // >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
 		Serial.print("UNSUPPORTED_CMD "); // {***PLACEHOLDER***}
-		Serial.println(received_parameters[0]); // The command
+		Serial.print(received_parameters[0]); // The command
+		Serial.print("\n");
 	}
 	
 	void send_ok_response() {
-		Serial.println("OK");
+		Serial.print("OK");
+		Serial.print("\n");
 	}
 	
 	void send_char_array_response(char* response) {
-		Serial.println(response);
+		Serial.print(response);
+		Serial.print("\n");
 	}
 	
 	void send_debug() {
@@ -480,9 +488,11 @@ void _wI() {
 					Serial.print(i);
 					Serial.print("] -> ");
 			if(received_parameters[i] != NULL) {
-						Serial.println(received_parameters[i]);
+						Serial.print(received_parameters[i]);
+						Serial.print("\n");
 			} else {
-						Serial.println("null");
+						Serial.print("null");
+						Serial.print("\n");
 					}
 		}
 	}

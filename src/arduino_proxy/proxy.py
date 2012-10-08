@@ -843,7 +843,8 @@ class ArduinoProxy(object): # pylint: disable=R0904
     millis.arduino_code = _unindent(12, """
             void _ms() {
                 send_debug();
-                Serial.println(millis());
+                Serial.print(millis());
+                Serial.print("\\n");
             }
         """)
 
@@ -865,7 +866,8 @@ class ArduinoProxy(object): # pylint: disable=R0904
     micros.arduino_code = _unindent(12, """
             void _mc() {
                 send_debug();
-                Serial.println(micros());
+                Serial.print(micros());
+                Serial.print("\\n");
             }
         """)
 
@@ -1271,7 +1273,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
                 Serial.print(this_arduino_type.flash_size, DEC);
                 Serial.print(" ");
                 Serial.print(this_arduino_type.ram_size, DEC);
-                Serial.println("");
+                Serial.print("\\n");
             }
         """)
     
@@ -1470,7 +1472,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
                 Serial.print(DHT11.temperature);
                 Serial.print(",");
                 Serial.print(DHT11.humidity);
-                Serial.println("");
+                Serial.print("\\n");
                 return;
             }
         """)

@@ -100,7 +100,8 @@ LiquidCrystal lcd = LiquidCrystal(PY_ARDUINO_PROXY_LCD_SUPPORT_rs,
 	}
 	
 	void send_int_response(int value) {
-		Serial.println(value, DEC);
+		Serial.print(value, DEC);
+		Serial.print("\n");
 	}
 	
 	// param_num: which parameter is invalid. Starts with '0'.
@@ -109,13 +110,15 @@ LiquidCrystal lcd = LiquidCrystal(PY_ARDUINO_PROXY_LCD_SUPPORT_rs,
 	// received_parameters[3] -> '2'
 	void send_invalid_parameter_response(int param_num) {
 		Serial.print("%(INVALID_PARAMETER)s "); // {***PLACEHOLDER***}
-		Serial.println(param_num, DEC);
+		Serial.print(param_num, DEC);
+		Serial.print("\n");
 	}
 	
 	// error_code == 0 -> UNKNOWN ERROR CORE or WITHOUT ERROR CODE
 	void send_invalid_cmd_response(int error_code) {
 		Serial.print("%(INVALID_CMD)s "); // {***PLACEHOLDER***}
-		Serial.println(error_code, DEC);
+		Serial.print(error_code, DEC);
+		Serial.print("\n");
 	}
 
 	// Inform that the command is not supported.
@@ -124,15 +127,18 @@ LiquidCrystal lcd = LiquidCrystal(PY_ARDUINO_PROXY_LCD_SUPPORT_rs,
 	// support for LCDs.
 	void send_unsupported_cmd_response() {
 		Serial.print("%(UNSUPPORTED_CMD)s "); // {***PLACEHOLDER***}
-		Serial.println(received_parameters[0]); // The command
+		Serial.print(received_parameters[0]); // The command
+		Serial.print("\n");
 	}
 	
 	void send_ok_response() {
-		Serial.println("OK");
+		Serial.print("OK");
+		Serial.print("\n");
 	}
 	
 	void send_char_array_response(char* response) {
-		Serial.println(response);
+		Serial.print(response);
+		Serial.print("\n");
 	}
 	
 	void send_debug() {
@@ -143,9 +149,11 @@ LiquidCrystal lcd = LiquidCrystal(PY_ARDUINO_PROXY_LCD_SUPPORT_rs,
 					Serial.print(i);
 					Serial.print("] -> ");
 			if(received_parameters[i] != NULL) {
-						Serial.println(received_parameters[i]);
+						Serial.print(received_parameters[i]);
+						Serial.print("\n");
 			} else {
-						Serial.println("null");
+						Serial.print("null");
+						Serial.print("\n");
 					}
 		}
 	}
