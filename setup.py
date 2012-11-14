@@ -77,11 +77,20 @@ author_email = "hgdeoror@gmail.com"
 url = "http://pyarduinoproxy.blogspot.com/"
 packages = ['arduino_proxy', 'arduino_proxy.tests', 'arduino_proxy.webui']
 package_dir = {'arduino_proxy':'src/arduino_proxy', }
-requires = [
-    'cherrypy (>=3.2)',
-    'simplejson (>=2.1)',
-    'jinja2'
-]
+
+#requires = (
+#    'cherrypy (>=3.2)',
+#    'simplejson (>=2.1)',
+#    'jinja2',
+#    'pyserial',
+#)
+
+install_requires = (
+    'cherrypy<3.3', # 3.2.x
+    'jinja2<2.7', # 2.6.x
+    'pyserial',
+    'simplejson',
+)
 
 classifiers = [ # http://pypi.python.org/pypi?%3Aaction=list_classifiers
     "Development Status :: 3 - Alpha",
@@ -112,5 +121,6 @@ setup(
     packages=packages, 
     classifiers=classifiers, 
     data_files=gen_data_files(), 
-    requires=requires, 
+    # requires=requires, 
+    install_requires=install_requires, 
 )
