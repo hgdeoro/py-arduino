@@ -70,7 +70,7 @@ def gen_data_files():
     return data_files
 
 name = "PyArduinoProxy"
-version = "0.0.1-alpha"
+version = "0.0.2"
 description = 'Communicate with Arduino from Python, a web page and JavaScript'
 author="Horacio G. de Oro"
 author_email = "hgdeoror@gmail.com"
