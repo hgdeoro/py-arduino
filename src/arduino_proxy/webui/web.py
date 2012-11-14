@@ -43,8 +43,8 @@ class Root(object):
     def connect(self, serial_port=None, speed=None):
         # Render the connect page
         if serial_port is None:
-            error_message = cherrypy.session.get('error_message')
-            cherrypy.session['error_message'] = None
+            error_message = cherrypy.session.get('error_message') #@UndefinedVariable
+            cherrypy.session['error_message'] = None #@UndefinedVariable
             template = self.jinja2_env.get_template('web-ui-select-serial-port.html')
             return template.render(error_message=error_message)
         
@@ -93,7 +93,7 @@ class Root(object):
             self.proxy.validateConnection()
         except Exception, e:
             self.proxy = None
-            cherrypy.session['error_message'] = str(e)
+            cherrypy.session['error_message'] = str(e) #@UndefinedVariable
             raise cherrypy.HTTPRedirect("/connect")
         
         arduino_type = self.proxy.getArduinoTypeStruct()
