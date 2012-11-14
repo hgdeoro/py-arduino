@@ -4,7 +4,7 @@ Py-Arduino-Proxy
 ![Architecture overview](/hgdeoro/py-arduino-proxy/raw/master/examples/architecture-overview.png "Architecture overview")
 
 **Py-Arduino-Proxy** is a **Python** library to communicate with **Arduinos**.
-[BLOG del proyecto en español](http://pyarduinoproxy.blogspot.com/ "BLOG del proyecto en español").
+[Mis articulos de PyArduinoProxy](http://blog.hgdeoro.com.ar/search/label/pyarduinoproxy "Mis articulos de PyArduinoProxy").
 
 It's a **low level tool**, very easy to **extend** (it is very easy to create a new method in ArduinoProxy class and attach this method to a Arduino function).
 The project has many **testing** utilities and the ability to see DEBUG messages, to facilitate the location of problems and subsequent solutions.
@@ -63,16 +63,18 @@ Videos!
 * [Writing a custom method in Py-Arduino-Proxy](http://www.youtube.com/watch?v=2kgQpQqTVUU "Writing a custom method in Py-Arduino-Proxy")
 * [Testing RGB leds with Py-Arduino-Proxy UI](http://www.youtube.com/watch?v=yM1ZaTFAZwc "Testing RGB leds with Py-Arduino-Proxy UI")
 
+<!--
 Python API
 ==========
 
 You can get some initial API documentation [here](http://www.hgdeoro.com.ar/~horacio/py-arduino-proxy/index.html).
+-->
 
 License y copyright
 ===================
 
 Py-Arduino-Proxy - Access your Arduino from Python
-Copyright (C) 2011 - Horacio Guillermo de Oro <hgdeoro@gmail.com>
+Copyright (C) 2011-2012 - Horacio Guillermo de Oro <hgdeoro@gmail.com>
 
 Py-Arduino-Proxy is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
