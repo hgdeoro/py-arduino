@@ -1,0 +1,48 @@
+##-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+##    PyArduinoProxy - Access your Arduino from Python
+##    Copyright (C) 2011-2012 - Horacio Guillermo de Oro <hgdeoro@gmail.com>
+##
+##    This file is part of PyArduinoProxy.
+##
+##    PyArduinoProxy is free software; you can redistribute it and/or modify
+##    it under the terms of the GNU General Public License as published by
+##    the Free Software Foundation version 2.
+##
+##    PyArduinoProxy is distributed in the hope that it will be useful,
+##    but WITHOUT ANY WARRANTY; without even the implied warranty of
+##    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+##    GNU General Public License version 2 for more details.
+##
+##    You should have received a copy of the GNU General Public License
+##    along with PyArduinoProxy; see the file LICENSE.txt.
+##-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+import sys
+
+from arduino_proxy.main_utils import default_main
+from arduino_proxy.webui.web import start_webserver
+
+
+def on_error_handler():
+    sys.exit(1)
+
+
+def add_options_callback(parser):
+    parser.add_option("--http-port",
+        action="store", dest="http_port", default="8080",
+        help="TCP port to listen.")
+
+
+def main():
+    options, _, proxy = default_main(add_options_callback=add_options_callback)
+
+    try:
+        http_port = int(options.http_port)
+    except ValueError:
+        raise(Exception("Http port is not valid: {0}".format(options.http_port)))
+
+    start_webserver(http_port, proxy=proxy, validate_connection_error_handler=on_error_handler)
+
+
+if __name__ == '__main__':
+    main()
