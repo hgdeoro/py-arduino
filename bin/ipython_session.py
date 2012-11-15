@@ -22,36 +22,60 @@ import os
 import sys
 import time
 
-from IPython.Shell import IPShellEmbed
+try:
+    from IPython.config.loader import Config
+    from IPython.frontend.terminal.embed import InteractiveShellEmbed
+except ImportError:
+    print ""
+    print ""
+    print "ERROR: Couldn't import ipython. You may need to run somthing like:"
+    print " $ pip install ipython"
+    print ""
+    print ""
+    raise
 
-# Setup PYTHONPATH
-SRC_DIR = os.path.split(os.path.realpath(__file__))[0] # SRC_DIR=BIN_DIR
-SRC_DIR = os.path.split(SRC_DIR)[0] # SRC_DIR=SRC_DIR/../
-SRC_DIR = os.path.join(SRC_DIR, 'src') # SRC_DIR
-sys.path.append(os.path.abspath(SRC_DIR))
+try:
+    from arduino_proxy.main_utils import default_main
+except ImportError:
+    # Setup PYTHONPATH
+    SRC_DIR = os.path.split(os.path.realpath(__file__))[0] # SRC_DIR=BIN_DIR
+    SRC_DIR = os.path.split(SRC_DIR)[0] # SRC_DIR=SRC_DIR/../
+    SRC_DIR = os.path.join(SRC_DIR, 'src') # SRC_DIR
+    sys.path.append(os.path.abspath(SRC_DIR))
+    from arduino_proxy.main_utils import default_main
 
-from arduino_proxy.main_utils import default_main
 from arduino_proxy.proxy import CommandTimeout
 
-def main():
-    
-    options, args, proxy = default_main() # pylint: disable=W0612
-    ipshell = IPShellEmbed()
-    ipshell.set_banner("""
 
-Launching IPython shell...
+banner = """
+
+----------------------------------------------------------------------
+PyArduinoproxy
+----------------------------------------------------------------------
+
+Launching IPython shell... Enter 'quit()' to exit.
 
 Available variables:
- - proxy: the ArduinoProxy instance.
- - options, args: parsed argument options.
+    - proxy: the ArduinoProxy instance.
+    - options, args: parsed argument options.
 
-To import ArduinoProxy class:
->>> from arduino_proxy import ArduinoProxy
-
-Enter 'quit()' to exit.
+Example:
+    >>> proxy.ping()
+    'PING_OK'
  
-    """)
-    ipshell()
+"""
+
+def main():
+
+    options, args, proxy = default_main() # pylint: disable=W0612
+    cfg = Config()
+    cfg.InteractiveShellEmbed.prompt_in1="PyArduinoProxy [\\#]> "
+    cfg.InteractiveShellEmbed.prompt_out="PyArduinoProxy [\\#]: "
+
+    shell = InteractiveShellEmbed(config=cfg, banner2=banner)
+    shell.user_ns = {}
+    shell()
+
 
 if __name__ == '__main__':
     main()
