@@ -24,7 +24,7 @@ from arduino_proxy.main_utils import default_main, \
 from arduino_proxy.webui.web import start_webserver
 
 
-def on_error_handler():
+def exit_on_error():
     sys.exit(1)
 
 
@@ -32,6 +32,9 @@ def add_options_callback(parser):
     parser.add_option("--http-port",
         action="store", dest="http_port", default="8080",
         help="TCP port to listen.")
+    parser.add_option("--exit-on-validate-connection-error",
+        action="store_true", dest="exit_on_validate_connection_error", default=False,
+        help="Exit if validateConnection() fails")
 
 
 def main():
@@ -43,7 +46,10 @@ def main():
     except ValueError:
         raise(Exception("Http port is not valid: {0}".format(options.http_port)))
 
-    start_webserver(http_port, proxy=proxy, validate_connection_error_handler=on_error_handler)
+    if options.exit_on_validate_connection_error:
+        start_webserver(http_port, proxy=proxy, validate_connection_error_handler=exit_on_error)
+    else:
+        start_webserver(http_port, proxy=proxy)
 
 
 if __name__ == '__main__':
