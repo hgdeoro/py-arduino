@@ -1448,8 +1448,8 @@ class ArduinoProxy(object): # pylint: disable=R0904
 
         raise(InvalidResponse(splitted_response[0]))
 
-    digitalRead.arduino_function_name = '_dht11Rd'
-    digitalRead.arduino_code = _unindent(12, """
+    dht11_read.arduino_function_name = '_dht11Rd'
+    dht11_read.arduino_code = _unindent(12, """
             void _dht11Rd() {
                 int pin = atoi(received_parameters[1]);
                 dht11 DHT11;
