@@ -23,6 +23,19 @@ The recommended way to install PyArduinoProxy is using pip and/or virtualenv.
 1. Install PIP [manually](http://www.pip-installer.org/en/latest/installing.html "Install PIP"), or with your distribution's package manager (`sudo apt-get install python-pip` in Ubuntu), or create a [virtualenv](http://www.virtualenv.org/en/latest/ "Vitualenv Site").
 2. Run `pip install pyarduinoproxy`
 
+Launch web interface
+--------------------
+
+Just run:
+
+    $ python -m arduino_proxy.webui --info
+
+and go to `http://localhost:8080/connect`, insert the serial device (something like /dev/ttyACM0)
+and clic 'Connect'. Here are some screenshots:
+[connect](/hgdeoro/py-arduino-proxy/raw/master/examples/arduino-proxy-web-interface-connect.png) and 
+[main page](/hgdeoro/py-arduino-proxy/raw/master/examples/arduino-proxy-web-interface-main.png).
+
+
 How it works 
 ------------
 
