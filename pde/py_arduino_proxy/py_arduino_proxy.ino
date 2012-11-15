@@ -170,6 +170,15 @@ void _dht11Rd() {
         
 
 
+void _dRd() {
+    int pin = atoi(received_parameters[1]);
+    int value = digitalRead(pin);
+    send_int_response(value);
+    return;
+}
+        
+
+
 void _dWrt() {
     int pin = atoi(received_parameters[1]);
     int value = atoi(received_parameters[2]);
@@ -410,12 +419,12 @@ void _wI() {
 	
 	// PROXIED_FUNCTION_COUNT: how many proxied functions we have
 // >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
-	#define PROXIED_FUNCTION_COUNT 24 // {***PLACEHOLDER***}
+	#define PROXIED_FUNCTION_COUNT 25 // {***PLACEHOLDER***}
 	
 // >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
-	proxied_function_ptr function_ptr[PROXIED_FUNCTION_COUNT] = { _aRd, _aWrt, _dy, _dMs, _dht11Rd, _dWrt, _dD, _eD, _eDL, _gATS, _gACT, _gFM, _gIM, _lcdClr, _lcdW, _mc, _ms, _pMd, _ping, _sftO, _strAR, _strDR, _vCnt, _wI,  }; // {***PLACEHOLDER***}
+	proxied_function_ptr function_ptr[PROXIED_FUNCTION_COUNT] = { _aRd, _aWrt, _dy, _dMs, _dht11Rd, _dRd, _dWrt, _dD, _eD, _eDL, _gATS, _gACT, _gFM, _gIM, _lcdClr, _lcdW, _mc, _ms, _pMd, _ping, _sftO, _strAR, _strDR, _vCnt, _wI,  }; // {***PLACEHOLDER***}
 // >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
-	char*               function_name[PROXIED_FUNCTION_COUNT] = { "_aRd", "_aWrt", "_dy", "_dMs", "_dht11Rd", "_dWrt", "_dD", "_eD", "_eDL", "_gATS", "_gACT", "_gFM", "_gIM", "_lcdClr", "_lcdW", "_mc", "_ms", "_pMd", "_ping", "_sftO", "_strAR", "_strDR", "_vCnt", "_wI",  }; // {***PLACEHOLDER***}
+	char*               function_name[PROXIED_FUNCTION_COUNT] = { "_aRd", "_aWrt", "_dy", "_dMs", "_dht11Rd", "_dRd", "_dWrt", "_dD", "_eD", "_eDL", "_gATS", "_gACT", "_gFM", "_gIM", "_lcdClr", "_lcdW", "_mc", "_ms", "_pMd", "_ping", "_sftO", "_strAR", "_strDR", "_vCnt", "_wI",  }; // {***PLACEHOLDER***}
 	
 	#define read_char() Serial.read()
 	
