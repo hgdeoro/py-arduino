@@ -24,8 +24,8 @@
      inkscape:pageopacity="1"
      inkscape:pageshadow="2"
      inkscape:zoom="0.87470587"
-     inkscape:cx="548.36352"
-     inkscape:cy="354.36089"
+     inkscape:cx="48.974112"
+     inkscape:cy="-551.38332"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -64,6 +64,18 @@
          d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
          id="path3817" />
     </marker>
+    <filter
+       inkscape:collect="always"
+       id="filter4701"
+       x="-0.031078085"
+       width="1.0621562"
+       y="-0.10537794"
+       height="1.2107559">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="6.6768225"
+         id="feGaussianBlur4703" />
+    </filter>
   </defs>
   <metadata
      id="metadata7">
@@ -81,32 +93,40 @@
      id="layer1"
      inkscape:groupmode="layer"
      inkscape:label="Layer 1">
-    <path
-       style="fill:none;stroke:#666666;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1, 1;stroke-dashoffset:0"
-       d="m 184.85211,694.96841 0,28.90008"
-       id="path4134"
-       inkscape:connector-curvature="0"
-       inkscape:export-filename="/mnt/seguro/home/horacio/python/PyArduinoProxy/examples/architecture-overview.png"
-       inkscape:export-xdpi="89.892982"
-       inkscape:export-ydpi="89.892982" />
-    <path
-       style="fill:none;stroke:#666666;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1, 1;stroke-dashoffset:0"
-       d="m 261.04491,694.96841 0,28.90008"
-       id="path4138"
-       inkscape:connector-curvature="0"
-       inkscape:export-filename="/mnt/seguro/home/horacio/python/PyArduinoProxy/examples/architecture-overview.png"
+    <rect
+       ry="0"
+       rx="12.641161"
+       y="1351.2273"
+       x="-235.5938"
+       height="189.39268"
+       width="568.72778"
+       id="rect4707"
+       style="color:#000000;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#ffffff;stroke-width:3.49906898000000011;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       inkscape:export-filename="/mnt/seguro/home/horacio/python/PyArduinoProxy/examples/architecture-overview-webapp.png"
        inkscape:export-xdpi="89.892982"
        inkscape:export-ydpi="89.892982" />
     <rect
-       style="color:#000000;fill:none;stroke:#333333;stroke-width:1.99999976;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
-       id="rect3285"
-       width="159.85127"
-       height="208.23399"
-       x="137.8783"
-       y="558.47144"
-       rx="14.653097"
-       ry="14.653098"
-       inkscape:export-filename="/mnt/seguro/home/horacio/python/PyArduinoProxy/examples/architecture-overview.png"
+       ry="12.115922"
+       rx="11.460652"
+       y="1369.8907"
+       x="-209.03816"
+       height="152.06573"
+       width="515.61652"
+       id="rect4705"
+       style="color:#000000;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#333333;stroke-width:2.98536730000000006;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;filter:url(#filter4701)"
+       inkscape:export-filename="/mnt/seguro/home/horacio/python/PyArduinoProxy/examples/architecture-overview-webapp.png"
+       inkscape:export-xdpi="89.892982"
+       inkscape:export-ydpi="89.892982" />
+    <rect
+       style="color:#000000;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#333333;stroke-width:2.98536730000000006;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;"
+       id="rect4691"
+       width="515.61652"
+       height="152.06573"
+       x="-209.03816"
+       y="1369.8907"
+       rx="11.460652"
+       ry="12.115922"
+       inkscape:export-filename="/mnt/seguro/home/horacio/python/PyArduinoProxy/examples/architecture-overview-webapp.png"
        inkscape:export-xdpi="89.892982"
        inkscape:export-ydpi="89.892982" />
     <rect
@@ -1785,8 +1805,8 @@
     <rect
        ry="14.653097"
        rx="14.653097"
-       y="604.20111"
-       x="419.87738"
+       y="1135.8083"
+       x="65.472534"
        height="162.50433"
        width="215.49757"
        id="rect3273"
@@ -1794,9 +1814,67 @@
        inkscape:export-filename="/mnt/seguro/home/horacio/python/PyArduinoProxy/examples/architecture-overview.png"
        inkscape:export-xdpi="89.892982"
        inkscape:export-ydpi="89.892982" />
+    <path
+       sodipodi:nodetypes="cssc"
+       inkscape:connector-curvature="0"
+       id="path4082"
+       d="m -64.999856,1266.5074 c 0,0 19.46627,3.3202 28.29378,0 35.2099156,-13.2431 49.671426,-61.129 84.881346,-74.3722 11.09744,-4.1739 35.56933,0 35.56933,0"
+       style="fill:none;stroke:#ffffff;stroke-width:9;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       inkscape:export-filename="/mnt/seguro/home/horacio/python/PyArduinoProxy/examples/architecture-overview.png"
+       inkscape:export-xdpi="89.892982"
+       inkscape:export-ydpi="89.892982" />
+    <path
+       style="fill:none;stroke:#cccccc;stroke-width:6;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m -64.999856,1266.5074 c 0,0 19.46627,3.3202 28.29378,0 35.2099156,-13.2431 49.671426,-61.129 84.881346,-74.3722 11.09744,-4.174 35.56933,0 35.56933,0"
+       id="path3300"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cssc"
+       inkscape:export-filename="/mnt/seguro/home/horacio/python/PyArduinoProxy/examples/architecture-overview.png"
+       inkscape:export-xdpi="89.892982"
+       inkscape:export-ydpi="89.892982" />
+    <image
+       sodipodi:absref="/mnt/seguro/home/horacio/python/PyArduinoProxy/examples/Arduino-Uno-400x279.png"
+       xlink:href="Arduino-Uno-400x279.png"
+       inkscape:export-filename="/mnt/seguro/home/horacio/python/PyArduinoProxy/examples/architecture-overview.png"
+       y="1150.7222"
+       x="78.112579"
+       id="image3926"
+       height="132.67668"
+       width="190.21747"
+       inkscape:export-xdpi="89.892982"
+       inkscape:export-ydpi="89.892982" />
+    <rect
+       style="color:#000000;fill:none;stroke:#333333;stroke-width:1.99999976;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="rect3285"
+       width="159.85127"
+       height="208.23399"
+       x="1137.1349"
+       y="32.355076"
+       rx="14.653097"
+       ry="14.653098"
+       inkscape:export-filename="/mnt/seguro/home/horacio/python/PyArduinoProxy/examples/architecture-overview.png"
+       inkscape:export-xdpi="89.892982"
+       inkscape:export-ydpi="89.892982"
+       transform="matrix(0,1,-1,0,0,0)" />
+    <path
+       style="fill:none;stroke:#666666;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1, 1;stroke-dashoffset:0"
+       d="m -76.633096,1184.1088 -28.900084,0"
+       id="path4134"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/mnt/seguro/home/horacio/python/PyArduinoProxy/examples/architecture-overview.png"
+       inkscape:export-xdpi="89.892982"
+       inkscape:export-ydpi="89.892982" />
+    <path
+       style="fill:none;stroke:#666666;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1, 1;stroke-dashoffset:0"
+       d="m -76.633096,1260.3016 -28.900084,0"
+       id="path4138"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/mnt/seguro/home/horacio/python/PyArduinoProxy/examples/architecture-overview.png"
+       inkscape:export-xdpi="89.892982"
+       inkscape:export-ydpi="89.892982" />
     <g
        id="g3293"
-       transform="translate(-236.88133,24.851145)"
+       transform="matrix(0,1,-1,0,648.77621,762.37533)"
        inkscape:export-filename="/mnt/seguro/home/horacio/python/PyArduinoProxy/examples/architecture-overview.png"
        inkscape:export-xdpi="89.892982"
        inkscape:export-ydpi="89.892982">
@@ -1822,112 +1900,319 @@
            sodipodi:role="line"
            id="tspan3283">Py-Arduino-Proxy</tspan></text>
     </g>
-    <path
-       sodipodi:nodetypes="cssc"
-       inkscape:connector-curvature="0"
-       id="path4082"
-       d="m 289.40498,734.90018 c 0,0 19.46627,3.3202 28.29378,0 35.20992,-13.2431 49.67143,-61.12908 84.88135,-74.37222 11.09744,-4.17397 35.56933,0 35.56933,0"
-       style="fill:none;stroke:#ffffff;stroke-width:9;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-       inkscape:export-filename="/mnt/seguro/home/horacio/python/PyArduinoProxy/examples/architecture-overview.png"
-       inkscape:export-xdpi="89.892982"
-       inkscape:export-ydpi="89.892982" />
-    <path
-       style="fill:none;stroke:#cccccc;stroke-width:6;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-       d="m 289.40498,734.90018 c 0,0 19.46627,3.3202 28.29378,0 35.20992,-13.2431 49.67143,-61.12908 84.88135,-74.37223 11.09744,-4.17397 35.56933,0 35.56933,0"
-       id="path3300"
-       inkscape:connector-curvature="0"
-       sodipodi:nodetypes="cssc"
-       inkscape:export-filename="/mnt/seguro/home/horacio/python/PyArduinoProxy/examples/architecture-overview.png"
-       inkscape:export-xdpi="89.892982"
-       inkscape:export-ydpi="89.892982" />
-    <text
-       sodipodi:linespacing="125%"
-       id="text4088"
-       y="676.34601"
-       x="354.7933"
-       style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#333333;fill-opacity:1;stroke:none;font-family:Ubuntu;-inkscape-font-specification:Ubuntu"
-       xml:space="preserve"
-       inkscape:export-filename="/mnt/seguro/home/horacio/python/PyArduinoProxy/examples/architecture-overview.png"
-       inkscape:export-xdpi="89.892982"
-       inkscape:export-ydpi="89.892982"><tspan
-         style="font-size:18px;font-weight:bold;text-align:center;text-anchor:middle;fill:#333333;stroke:none;-inkscape-font-specification:Ubuntu Bold"
-         y="676.34601"
-         x="354.7933"
-         sodipodi:role="line"
-         id="tspan4090">USB</tspan></text>
     <rect
        style="color:#000000;fill:#9dc4e1;fill-opacity:1;stroke:#333333;stroke-width:1.99999988;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
        id="rect4097"
        width="136.17714"
        height="33.695152"
-       x="-703.67499"
-       y="244.19734"
+       x="-231.33772"
+       y="1243.454"
        rx="11.841491"
        ry="11.841491"
-       transform="matrix(0,-1,1,0,0,0)"
        inkscape:export-filename="/mnt/seguro/home/horacio/python/PyArduinoProxy/examples/architecture-overview.png"
        inkscape:export-xdpi="89.892982"
        inkscape:export-ydpi="89.892982" />
     <text
        sodipodi:linespacing="125%"
        id="text4099"
-       y="264.59091"
-       x="-635.31134"
+       y="1263.8475"
+       x="-162.97408"
        style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#333333;fill-opacity:1;stroke:none;font-family:Ubuntu;-inkscape-font-specification:Ubuntu"
        xml:space="preserve"
-       transform="matrix(0,-1,1,0,0,0)"
        inkscape:export-filename="/mnt/seguro/home/horacio/python/PyArduinoProxy/examples/architecture-overview.png"
        inkscape:export-xdpi="89.892982"
        inkscape:export-ydpi="89.892982"><tspan
          id="tspan4103"
          style="font-weight:bold;text-align:center;text-anchor:middle;fill:#333333;stroke:none;-inkscape-font-specification:Ubuntu Bold"
-         y="264.59091"
-         x="-635.31134"
+         y="1263.8475"
+         x="-162.97408"
          sodipodi:role="line">Web Application</tspan></text>
     <rect
        ry="11.841491"
        rx="11.841491"
-       y="157.71536"
-       x="-703.67499"
+       y="1156.972"
+       x="-231.33772"
        height="54.273502"
        width="136.17714"
        id="rect4107"
        style="color:#000000;fill:#9dc4e1;fill-opacity:1;stroke:#333333;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
-       transform="matrix(0,-1,1,0,0,0)"
        inkscape:export-filename="/mnt/seguro/home/horacio/python/PyArduinoProxy/examples/architecture-overview.png"
        inkscape:export-xdpi="89.892982"
        inkscape:export-ydpi="89.892982" />
     <text
        xml:space="preserve"
        style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#333333;fill-opacity:1;stroke:none;font-family:Ubuntu;-inkscape-font-specification:Ubuntu"
-       x="-635.50043"
-       y="181.92412"
+       x="-163.16316"
+       y="1181.1808"
        id="text4109"
        sodipodi:linespacing="125%"
-       transform="matrix(0,-1,1,0,0,0)"
        inkscape:export-filename="/mnt/seguro/home/horacio/python/PyArduinoProxy/examples/architecture-overview.png"
        inkscape:export-xdpi="89.892982"
        inkscape:export-ydpi="89.892982"><tspan
          sodipodi:role="line"
-         x="-635.50043"
-         y="181.92412"
+         x="-163.16316"
+         y="1181.1808"
          style="font-weight:bold;text-align:center;text-anchor:middle;fill:#333333;stroke:none;-inkscape-font-specification:Ubuntu Bold"
          id="tspan4113">Console program</tspan><tspan
          id="tspan4117"
          sodipodi:role="line"
-         x="-635.50043"
-         y="196.92412"
+         x="-163.16316"
+         y="1196.1808"
          style="font-weight:bold;text-align:center;text-anchor:middle;fill:#333333;stroke:none;-inkscape-font-specification:Ubuntu Bold">/ Service</tspan></text>
-    <image
-       sodipodi:absref="/mnt/seguro/home/horacio/python/PyArduinoProxy/examples/Arduino-Uno-400x279.png"
-       xlink:href="Arduino-Uno-400x279.png"
-       inkscape:export-ydpi="89.892982"
+    <text
+       sodipodi:linespacing="125%"
+       id="text4088"
+       y="1182.8931"
+       x="36.766171"
+       style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#333333;fill-opacity:1;stroke:none;font-family:Ubuntu;-inkscape-font-specification:Ubuntu"
+       xml:space="preserve"
+       inkscape:export-filename="/mnt/seguro/home/horacio/python/PyArduinoProxy/examples/architecture-overview.png"
        inkscape:export-xdpi="89.892982"
-       width="190.21747"
-       height="132.67668"
-       id="image3926"
-       x="432.51743"
-       y="619.11493"
-       inkscape:export-filename="/mnt/seguro/home/horacio/python/PyArduinoProxy/examples/architecture-overview.png" />
+       inkscape:export-ydpi="89.892982"><tspan
+         style="font-size:22px;font-weight:bold;text-align:center;text-anchor:middle;fill:#333333;stroke:none;-inkscape-font-specification:Ubuntu Bold"
+         y="1182.8931"
+         x="36.766171"
+         sodipodi:role="line"
+         id="tspan4090">USB</tspan></text>
+    <g
+       id="g4662"
+       inkscape:export-filename="/mnt/seguro/home/horacio/python/PyArduinoProxy/examples/architecture-overview-webapp.png"
+       inkscape:export-xdpi="89.892982"
+       inkscape:export-ydpi="89.892982">
+      <path
+         style="fill:none;stroke:#666666;stroke-width:7.70321655;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:3.8516082, 3.8516082;stroke-dashoffset:0"
+         d="m 144.25288,1429.7905 -111.311784,0"
+         id="path4239"
+         inkscape:connector-curvature="0"
+         inkscape:export-filename="/mnt/seguro/home/horacio/python/PyArduinoProxy/examples/architecture-overview.png"
+         inkscape:export-xdpi="89.892982"
+         inkscape:export-ydpi="89.892982" />
+      <g
+         id="g4134"
+         transform="matrix(1.5148366,0,0,1.5148366,-753.14368,354.07708)"
+         inkscape:export-filename="/mnt/seguro/home/horacio/python/PyArduinoProxy/examples/architecture-overview.png"
+         inkscape:export-xdpi="89.892982"
+         inkscape:export-ydpi="89.892982">
+        <rect
+           style="color:#000000;fill:#abdb5d;fill-opacity:1;stroke:#333333;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+           id="rect4136"
+           width="136.17714"
+           height="39.471638"
+           x="386.59668"
+           y="690.38263"
+           rx="11.841491"
+           ry="11.841491" />
+        <text
+           sodipodi:linespacing="125%"
+           id="text4138"
+           y="713.66443"
+           x="454.2645"
+           style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#333333;fill-opacity:1;stroke:none;font-family:Ubuntu;-inkscape-font-specification:Ubuntu"
+           xml:space="preserve"><tspan
+             style="font-weight:bold;text-align:center;text-anchor:middle;fill:#333333;stroke:none;-inkscape-font-specification:Ubuntu Bold"
+             y="713.66443"
+             x="454.2645"
+             sodipodi:role="line"
+             id="tspan4140">Py-Arduino-Proxy</tspan></text>
+      </g>
+      <g
+         transform="translate(-270.04872,610.24362)"
+         id="g4190">
+        <rect
+           inkscape:export-ydpi="89.892982"
+           inkscape:export-xdpi="89.892982"
+           inkscape:export-filename="/mnt/seguro/home/horacio/python/PyArduinoProxy/examples/architecture-overview.png"
+           ry="11.841491"
+           rx="11.841491"
+           y="834.17358"
+           x="157.36436"
+           height="33.695152"
+           width="136.17714"
+           id="rect4142"
+           style="color:#000000;fill:#10c2f5;fill-opacity:1;stroke:#333333;stroke-width:1.99999988;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+        <text
+           inkscape:export-ydpi="89.892982"
+           inkscape:export-xdpi="89.892982"
+           inkscape:export-filename="/mnt/seguro/home/horacio/python/PyArduinoProxy/examples/architecture-overview.png"
+           xml:space="preserve"
+           style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#333333;fill-opacity:1;stroke:none;font-family:Ubuntu;-inkscape-font-specification:Ubuntu"
+           x="225.72801"
+           y="854.56714"
+           id="text4144"
+           sodipodi:linespacing="125%"><tspan
+             sodipodi:role="line"
+             x="225.72801"
+             y="854.56714"
+             style="font-weight:bold;text-align:center;text-anchor:middle;fill:#333333;stroke:none;-inkscape-font-specification:Ubuntu Bold"
+             id="tspan4146">Web Application</tspan></text>
+      </g>
+      <image
+         sodipodi:absref="/mnt/seguro/home/horacio/python/PyArduinoProxy/examples/Arduino-Uno-400x279.png"
+         xlink:href="Arduino-Uno-400x279.png"
+         inkscape:export-filename="/mnt/seguro/home/horacio/python/PyArduinoProxy/examples/architecture-overview.png"
+         y="1405.3778"
+         x="140.27361"
+         id="image4205"
+         height="88.090263"
+         width="126.29429"
+         inkscape:export-xdpi="89.892982"
+         inkscape:export-ydpi="89.892982" />
+      <text
+         sodipodi:linespacing="125%"
+         id="text4207"
+         y="1420.5724"
+         x="92.459999"
+         style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#333333;fill-opacity:1;stroke:none;font-family:Ubuntu;-inkscape-font-specification:Ubuntu"
+         xml:space="preserve"
+         inkscape:export-filename="/mnt/seguro/home/horacio/python/PyArduinoProxy/examples/architecture-overview.png"
+         inkscape:export-xdpi="89.892982"
+         inkscape:export-ydpi="89.892982"><tspan
+           style="font-size:22px;font-weight:bold;text-align:center;text-anchor:middle;fill:#333333;stroke:none;-inkscape-font-specification:Ubuntu Bold"
+           y="1420.5724"
+           x="92.459999"
+           sodipodi:role="line"
+           id="tspan4209">USB</tspan></text>
+    </g>
+    <rect
+       style="color:#000000;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#ffffff;stroke-width:3.49906898;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="rect4709"
+       width="568.72778"
+       height="189.39268"
+       x="-235.5938"
+       y="1575.9255"
+       rx="12.641161"
+       ry="0"
+       inkscape:export-filename="/mnt/seguro/home/horacio/python/PyArduinoProxy/examples/architecture-overview-console.png"
+       inkscape:export-xdpi="89.892982"
+       inkscape:export-ydpi="89.892982" />
+    <rect
+       style="color:#000000;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#333333;stroke-width:2.9853673;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;filter:url(#filter4701);enable-background:accumulate"
+       id="rect4711"
+       width="515.61652"
+       height="152.06573"
+       x="-209.03816"
+       y="1594.589"
+       rx="11.460652"
+       ry="12.115922"
+       inkscape:export-filename="/mnt/seguro/home/horacio/python/PyArduinoProxy/examples/architecture-overview-console.png"
+       inkscape:export-xdpi="89.892982"
+       inkscape:export-ydpi="89.892982" />
+    <rect
+       ry="12.115922"
+       rx="11.460652"
+       y="1594.589"
+       x="-209.03816"
+       height="152.06573"
+       width="515.61652"
+       id="rect4713"
+       style="color:#000000;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#333333;stroke-width:2.9853673;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       inkscape:export-filename="/mnt/seguro/home/horacio/python/PyArduinoProxy/examples/architecture-overview-console.png"
+       inkscape:export-xdpi="89.892982"
+       inkscape:export-ydpi="89.892982" />
+    <g
+       id="g4676"
+       transform="translate(0,46.872899)"
+       inkscape:export-filename="/mnt/seguro/home/horacio/python/PyArduinoProxy/examples/architecture-overview-console.png"
+       inkscape:export-xdpi="89.892982"
+       inkscape:export-ydpi="89.892982">
+      <path
+         inkscape:export-ydpi="89.892982"
+         inkscape:export-xdpi="89.892982"
+         inkscape:export-filename="/mnt/seguro/home/horacio/python/PyArduinoProxy/examples/architecture-overview.png"
+         inkscape:connector-curvature="0"
+         id="path4241"
+         d="m 144.25288,1604.5045 -111.311784,0"
+         style="fill:none;stroke:#666666;stroke-width:7.70321655;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:3.8516082, 3.8516082;stroke-dashoffset:0" />
+      <g
+         inkscape:export-ydpi="89.892982"
+         inkscape:export-xdpi="89.892982"
+         inkscape:export-filename="/mnt/seguro/home/horacio/python/PyArduinoProxy/examples/architecture-overview.png"
+         transform="matrix(1.5148366,0,0,1.5148366,-753.14368,528.79109)"
+         id="g4195">
+        <rect
+           ry="11.841491"
+           rx="11.841491"
+           y="690.38263"
+           x="386.59668"
+           height="39.471638"
+           width="136.17714"
+           id="rect4197"
+           style="color:#000000;fill:#abdb5d;fill-opacity:1;stroke:#333333;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+        <text
+           xml:space="preserve"
+           style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#333333;fill-opacity:1;stroke:none;font-family:Ubuntu;-inkscape-font-specification:Ubuntu"
+           x="454.2645"
+           y="713.66443"
+           id="text4199"
+           sodipodi:linespacing="125%"><tspan
+             id="tspan4201"
+             sodipodi:role="line"
+             x="454.2645"
+             y="713.66443"
+             style="font-weight:bold;text-align:center;text-anchor:middle;fill:#333333;stroke:none;-inkscape-font-specification:Ubuntu Bold">Py-Arduino-Proxy</tspan></text>
+      </g>
+      <g
+         transform="translate(-270.04872,871.43963)"
+         id="g4184">
+        <rect
+           inkscape:export-ydpi="89.892982"
+           inkscape:export-xdpi="89.892982"
+           inkscape:export-filename="/mnt/seguro/home/horacio/python/PyArduinoProxy/examples/architecture-overview.png"
+           style="color:#000000;fill:#f5ae10;fill-opacity:1;stroke:#333333;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+           id="rect4148"
+           width="136.17714"
+           height="54.273502"
+           x="157.36436"
+           y="747.69159"
+           rx="11.841491"
+           ry="11.841491" />
+        <text
+           inkscape:export-ydpi="89.892982"
+           inkscape:export-xdpi="89.892982"
+           inkscape:export-filename="/mnt/seguro/home/horacio/python/PyArduinoProxy/examples/architecture-overview.png"
+           sodipodi:linespacing="125%"
+           id="text4150"
+           y="771.90033"
+           x="225.53893"
+           style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#333333;fill-opacity:1;stroke:none;font-family:Ubuntu;-inkscape-font-specification:Ubuntu"
+           xml:space="preserve"><tspan
+             id="tspan4152"
+             style="font-weight:bold;text-align:center;text-anchor:middle;fill:#333333;stroke:none;-inkscape-font-specification:Ubuntu Bold"
+             y="771.90033"
+             x="225.53893"
+             sodipodi:role="line">Console program</tspan><tspan
+             style="font-weight:bold;text-align:center;text-anchor:middle;fill:#333333;stroke:none;-inkscape-font-specification:Ubuntu Bold"
+             y="786.90033"
+             x="225.53893"
+             sodipodi:role="line"
+             id="tspan4154">/ Service</tspan></text>
+      </g>
+      <image
+         sodipodi:absref="/mnt/seguro/home/horacio/python/PyArduinoProxy/examples/Arduino-Uno-400x279.png"
+         xlink:href="Arduino-Uno-400x279.png"
+         inkscape:export-ydpi="89.892982"
+         inkscape:export-xdpi="89.892982"
+         width="126.29429"
+         height="88.090263"
+         id="image4243"
+         x="140.27361"
+         y="1580.0919"
+         inkscape:export-filename="/mnt/seguro/home/horacio/python/PyArduinoProxy/examples/architecture-overview.png" />
+      <text
+         inkscape:export-ydpi="89.892982"
+         inkscape:export-xdpi="89.892982"
+         inkscape:export-filename="/mnt/seguro/home/horacio/python/PyArduinoProxy/examples/architecture-overview.png"
+         xml:space="preserve"
+         style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#333333;fill-opacity:1;stroke:none;font-family:Ubuntu;-inkscape-font-specification:Ubuntu"
+         x="92.459999"
+         y="1595.2865"
+         id="text4245"
+         sodipodi:linespacing="125%"><tspan
+           id="tspan4247"
+           sodipodi:role="line"
+           x="92.459999"
+           y="1595.2865"
+           style="font-size:22px;font-weight:bold;text-align:center;text-anchor:middle;fill:#333333;stroke:none;-inkscape-font-specification:Ubuntu Bold">USB</tspan></text>
+    </g>
   </g>
 </svg>

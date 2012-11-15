@@ -1,7 +1,9 @@
 Py-Arduino-Proxy
 ================
 
+<!--
 ![Architecture overview](/hgdeoro/py-arduino-proxy/raw/master/examples/architecture-overview.png "Architecture overview")
+-->
 
 **Py-Arduino-Proxy** is a **Python** library to communicate with **Arduinos**.
 [Mis articulos de PyArduinoProxy](http://blog.hgdeoro.com.ar/search/label/pyarduinoproxy "Mis articulos de PyArduinoProxy").
@@ -9,7 +11,7 @@ Py-Arduino-Proxy
 It's a **low level tool**, very easy to **extend** (it is very easy to create a new method in ArduinoProxy class and attach this method to a Arduino function).
 The project has many **testing** utilities and the ability to see DEBUG messages, to facilitate the location of problems and subsequent solutions.
 
-A **web interface** is in progress. See the [Web-Interface wiki page](https://github.com/hgdeoro/py-arduino-proxy/wiki/Web-Interface) for instructions and screenshots.
+A **web interface** is in progress, but fully functional. See the [Web-Interface wiki page](https://github.com/hgdeoro/py-arduino-proxy/wiki/Web-Interface) for instructions and screenshots.
 
 *Unresolved issues: currently, there are problems when working with interrupts, since characters may be lost if an interrupt occurs while 
 reading the serial with Serial.read(). This is an inherent problem of serial communication of Arduino, but may be fixed in next versions of Py-Arduino-Proxy
@@ -23,8 +25,10 @@ The recommended way to install PyArduinoProxy is using pip and/or virtualenv.
 1. Install PIP [manually](http://www.pip-installer.org/en/latest/installing.html "Install PIP"), or with your distribution's package manager (`sudo apt-get install python-pip` in Ubuntu), or create a [virtualenv](http://www.virtualenv.org/en/latest/ "Vitualenv Site").
 2. Run `pip install pyarduinoproxy`
 
-Launch web interface
---------------------
+Web interface
+-------------
+
+![Architecture Web Application](/hgdeoro/py-arduino-proxy/raw/master/examples/architecture-overview-webapp.png)
 
 Just run:
 
@@ -35,6 +39,10 @@ and clic 'Connect'. Here are some screenshots:
 [connect](/hgdeoro/py-arduino-proxy/raw/master/examples/arduino-proxy-web-interface-connect.png) and 
 [main page](/hgdeoro/py-arduino-proxy/raw/master/examples/arduino-proxy-web-interface-main.png).
 
+Console
+-------
+
+![Architecture Console](/hgdeoro/py-arduino-proxy/raw/master/examples/architecture-overview-console.png)
 
 How it works 
 ------------
