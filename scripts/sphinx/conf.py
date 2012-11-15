@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Py-Arduino-Proxy documentation build configuration file, created by
+# PyArduinoProxy documentation build configuration file, created by
 # sphinx-quickstart on Tue May 17 15:07:39 2011.
 #
 # This file is execfile()d with the current directory set to its containing dir.
@@ -40,7 +40,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'Py-Arduino-Proxy'
+project = u'PyArduinoProxy'
 copyright = u'2011, Horacio G. de Oro'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -164,7 +164,7 @@ html_static_path = ['_static']
 #html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'Py-Arduino-Proxydoc'
+htmlhelp_basename = 'PyArduinoProxydoc'
 
 
 # -- Options for LaTeX output --------------------------------------------------
@@ -178,7 +178,7 @@ htmlhelp_basename = 'Py-Arduino-Proxydoc'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'Py-Arduino-Proxy.tex', u'Py-Arduino-Proxy Documentation',
+  ('index', 'PyArduinoProxy.tex', u'PyArduinoProxy Documentation',
    u'Horacio G. de Oro', 'manual'),
 ]
 
@@ -211,6 +211,6 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'py-arduino-proxy', u'Py-Arduino-Proxy Documentation',
+    ('index', 'py-arduino-proxy', u'PyArduinoProxy Documentation',
      [u'Horacio G. de Oro'], 1)
 ]

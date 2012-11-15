@@ -1,20 +1,20 @@
 ##-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-##    Py-Arduino-Proxy - Access your Arduino from Python
-##    Copyright (C) 2011 - Horacio Guillermo de Oro <hgdeoro@gmail.com>
+##    PyArduinoProxy - Access your Arduino from Python
+##    Copyright (C) 2011-2012 - Horacio Guillermo de Oro <hgdeoro@gmail.com>
 ##
-##    This file is part of Py-Arduino-Proxy.
+##    This file is part of PyArduinoProxy.
 ##
-##    Py-Arduino-Proxy is free software; you can redistribute it and/or modify
+##    PyArduinoProxy is free software; you can redistribute it and/or modify
 ##    it under the terms of the GNU General Public License as published by
 ##    the Free Software Foundation version 2.
 ##
-##    Py-Arduino-Proxy is distributed in the hope that it will be useful,
+##    PyArduinoProxy is distributed in the hope that it will be useful,
 ##    but WITHOUT ANY WARRANTY; without even the implied warranty of
 ##    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ##    GNU General Public License version 2 for more details.
 ##
 ##    You should have received a copy of the GNU General Public License
-##    along with Py-Arduino-Proxy; see the file LICENSE.txt.
+##    along with PyArduinoProxy; see the file LICENSE.txt.
 ##-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 import logging
@@ -204,7 +204,7 @@ class ArduinoEmulator(threading.Thread):
 class SerialConnectionMock(object):
     """
     Virtual serial connection. There are 2 endpoints.
-    The MASTER endpoint, on the Py-Arduino-Proxy side,
+    The MASTER endpoint, on the PyArduinoProxy side,
     and the SLAVE endpoint, on the Arduino Emulator side.
     """
     def __init__(self, other_side=None, timeout=1, # pylint: disable=W0613

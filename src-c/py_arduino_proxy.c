@@ -525,7 +525,7 @@ void setup() {
 	lcd.begin(PY_ARDUINO_PROXY_LCD_SUPPORT_COLS,
 		PY_ARDUINO_PROXY_LCD_SUPPORT_ROWS);
 	lcd.clear();
-	lcd.print("Py-Arduino-Proxy");
+	lcd.print("PyArduinoProxy");
 	lcd.setCursor(0, 1); // column, line
 	lcd.print("READY!");
 	#endif

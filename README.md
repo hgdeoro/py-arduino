@@ -1,11 +1,11 @@
-Py-Arduino-Proxy
-================
+PyArduinoProxy
+==============
 
 <!--
 ![Architecture overview](/hgdeoro/py-arduino-proxy/raw/master/examples/architecture-overview.png "Architecture overview")
 -->
 
-**Py-Arduino-Proxy** is a **Python** library to communicate with **Arduinos**.
+**PyArduinoProxy** is a **Python** library to communicate with **Arduinos**.
 [Mis articulos de PyArduinoProxy](http://blog.hgdeoro.com.ar/search/label/pyarduinoproxy "Mis articulos de PyArduinoProxy").
 
 It's a **low level tool**, very easy to **extend** (it is very easy to create a new method in ArduinoProxy class and attach this method to a Arduino function).
@@ -14,7 +14,7 @@ The project has many **testing** utilities and the ability to see DEBUG messages
 A **web interface** is in progress, but fully functional. See the [Web-Interface wiki page](https://github.com/hgdeoro/py-arduino-proxy/wiki/Web-Interface) for instructions and screenshots.
 
 *Unresolved issues: currently, there are problems when working with interrupts, since characters may be lost if an interrupt occurs while 
-reading the serial with Serial.read(). This is an inherent problem of serial communication of Arduino, but may be fixed in next versions of Py-Arduino-Proxy
+reading the serial with Serial.read(). This is an inherent problem of serial communication of Arduino, but may be fixed in next versions of PyArduinoProxy
 if a work-around is found.*
 
 Installation
@@ -93,9 +93,9 @@ Videos!
 
 * [Web interface + emulator + analog pins](http://www.youtube.com/watch?v=fMhAJlvZQco "Web interface + emulator + analog pins")
 * [Web interface](http://www.youtube.com/watch?v=QE6UJSs3b6Q "Web interface")
-* [Testing shiftOut and 8 LEDs with Py-Arduino-Proxy](http://www.youtube.com/watch?v=_9MselaKcdU "Testing shiftOut and 8 LEDs with Py-Arduino-Proxy")
-* [Writing a custom method in Py-Arduino-Proxy](http://www.youtube.com/watch?v=2kgQpQqTVUU "Writing a custom method in Py-Arduino-Proxy")
-* [Testing RGB leds with Py-Arduino-Proxy UI](http://www.youtube.com/watch?v=yM1ZaTFAZwc "Testing RGB leds with Py-Arduino-Proxy UI")
+* [Testing shiftOut and 8 LEDs with PyArduinoProxy](http://www.youtube.com/watch?v=_9MselaKcdU "Testing shiftOut and 8 LEDs with PyArduinoProxy")
+* [Writing a custom method in PyArduinoProxy](http://www.youtube.com/watch?v=2kgQpQqTVUU "Writing a custom method in PyArduinoProxy")
+* [Testing RGB leds with PyArduinoProxy UI](http://www.youtube.com/watch?v=yM1ZaTFAZwc "Testing RGB leds with PyArduinoProxy UI")
 
 <!--
 Python API
@@ -107,14 +107,14 @@ You can get some initial API documentation [here](http://www.hgdeoro.com.ar/~hor
 License y copyright
 ===================
 
-Py-Arduino-Proxy - Access your Arduino from Python
+PyArduinoProxy - Access your Arduino from Python
 Copyright (C) 2011-2012 - Horacio Guillermo de Oro <hgdeoro@gmail.com>
 
-Py-Arduino-Proxy is free software; you can redistribute it and/or modify
+PyArduinoProxy is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation version 2.
 
-Py-Arduino-Proxy is distributed in the hope that it will be useful,
+PyArduinoProxy is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License version 2 for more details.
