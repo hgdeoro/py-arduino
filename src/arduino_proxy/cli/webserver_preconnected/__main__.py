@@ -19,7 +19,8 @@
 
 import sys
 
-from arduino_proxy.main_utils import default_main
+from arduino_proxy.main_utils import default_main, \
+    optional_device_arg_validator
 from arduino_proxy.webui.web import start_webserver
 
 
@@ -34,7 +35,8 @@ def add_options_callback(parser):
 
 
 def main():
-    options, _, proxy = default_main(add_options_callback=add_options_callback)
+    options, _, proxy = default_main(add_options_callback=add_options_callback,
+        args_validator=optional_device_arg_validator, connect_only_if_device_specified=True)
 
     try:
         http_port = int(options.http_port)
