@@ -75,7 +75,8 @@ description = 'Communicate with Arduino from Python, a web page and JavaScript'
 author="Horacio G. de Oro"
 author_email = "hgdeoror@gmail.com"
 url = "http://pyarduinoproxy.blogspot.com/"
-packages = ['arduino_proxy', 'arduino_proxy.tests', 'arduino_proxy.webui']
+packages = ['arduino_proxy', 'arduino_proxy.tests', 'arduino_proxy.webui',
+    'arduino_proxy.cli.ping']
 package_dir = {'arduino_proxy':'src/arduino_proxy', }
 
 #requires = (
