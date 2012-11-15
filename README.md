@@ -18,9 +18,10 @@ if a work-around is found.*
 Installation
 ------------
 
-See the [install instructions on the wiki](https://github.com/hgdeoro/py-arduino-proxy/wiki/How-to-install "Install instructions")
-and the **Videos** section at the bottom of the page.
+The recommended way to install PyArduinoProxy is using pip and/or virtualenv.
 
+1. Install PIP [manually](http://www.pip-installer.org/en/latest/installing.html "Install PIP"), or with your distribution's package manager (`sudo apt-get install python-pip` in Ubuntu), or create a [virtualenv](http://www.virtualenv.org/en/latest/ "Vitualenv Site").
+2. Run `pip install pyarduinoproxy`
 
 How it works 
 ------------
