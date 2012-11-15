@@ -30,13 +30,16 @@ Web interface
 
 ![Architecture Web Application](/hgdeoro/py-arduino-proxy/raw/master/examples/architecture-overview-webapp.png)
 
-Just run:
+To launch the web server, run:
 
     $ python -m arduino_proxy.webui --info
 
-and go to `http://localhost:8080/connect`, insert the serial device (something like /dev/ttyACM0)
+connect your Arduino, go to [http://localhost:8080/connect](http://localhost:8080/connect),
+insert the serial device (something like /dev/ttyACM0)
 and clic 'Connect'. Here are some screenshots:
+
 [connect](/hgdeoro/py-arduino-proxy/raw/master/examples/arduino-proxy-web-interface-connect.png) and 
+
 [main page](/hgdeoro/py-arduino-proxy/raw/master/examples/arduino-proxy-web-interface-main.png).
 
 Console
@@ -44,7 +47,7 @@ Console
 
 ![Architecture Console](/hgdeoro/py-arduino-proxy/raw/master/examples/architecture-overview-console.png)
 
-To ping to the Arduino, just run:
+To ping to the Arduino, make sure it's connected and run:
 
 	$ python -m arduino_proxy.cli.ping --info /dev/ttyACM0 
 	INFO:root:Waiting some seconds to let the Arduino reset...
@@ -83,6 +86,7 @@ The basic methods of Arduino are implemented. The following actions can be done 
 * watchInterrupt() and getInterruptMark() to work with interrupts
 * shiftOut()
 * Show messages on LCDs, based on the Hitachi HD44780 (or a compatible) chipset.
+* Read temperature and humidity with DHT11 sensors.
 
 Videos!
 =======
