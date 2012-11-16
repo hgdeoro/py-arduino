@@ -49,17 +49,17 @@ def _unindent(spaces, the_string):
 
 class WrappedBoolean(object):
     """Wraps a boolean, to emulate passing variables by reference"""
-    
+
     def __init__(self, value):
         assert value is True or value is False
         self._value = value
-    
+
     def setTrue(self):
         self._value = True
-    
+
     def setFalse(self):
         self._value = False
-    
+
     def get(self):
         return self._value
 
@@ -74,7 +74,7 @@ class InvalidCommand(ArduinoProxyException):
     """
     Raised when the Arduino reported an error in the command.
     """
-    
+
     def __init__(self, msg, error_code=None):
         ArduinoProxyException.__init__(self, msg)
         self.error_code = error_code
@@ -135,7 +135,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
     """
     Proxy class for accessing Arduino.
     """
-    
+
     #define HIGH 0x1
     #define LOW  0x0
     HIGH = 0x01
@@ -145,32 +145,32 @@ class ArduinoProxy(object): # pylint: disable=R0904
     #define OUTPUT 0x1
     INPUT = 0x00
     OUTPUT = 0x01
-    
+
     #define LSBFIRST 0
     #define MSBFIRST 1
     LSBFIRST = 0x00
     MSBFIRST = 0x01
-    
+
     ATTACH_INTERRUPT_MODE_LOW = 'L'
     ATTACH_INTERRUPT_MODE_CHANGE = 'C'
     ATTACH_INTERRUPT_MODE_RISING = 'R'
     ATTACH_INTERRUPT_MODE_FALLING = 'F'
-    
+
     INVALID_CMD = "INVALID_CMD"
     INVALID_PARAMETER = "INVALID_PARAMETER"
     UNSUPPORTED_CMD = "UNSUPPORTED_CMD"
-    
+
     @classmethod
     def create_emulator(cls, initial_input_buffer_contents=None):
         # We use '***ARDUINO_EMULATOR***' to let ArduinoProxy.__init__() known
         # that the setup of the instace will be done HERE .
-        
+
         #    proxy.serial_port = SerialConnectionMock()
         #    proxy.emulator = ArduinoEmulator(self.serial_port.get_other_side())
         #    proxy.emulator.start()
-        
+
         from arduino_proxy.emulator import SerialConnectionMock, ArduinoEmulator
-        
+
         proxy = cls(tty='***ARDUINO_EMULATOR***', wait_after_open=0, call_validate_connection=False)
         if initial_input_buffer_contents:
             proxy.serial_port = SerialConnectionMock(
@@ -181,7 +181,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         proxy.emulator.start()
         proxy.validateConnection()
         return proxy
-    
+
     def __init__(self, tty, speed=9600, wait_after_open=3, timeout=5, # pylint: disable=R0913
             call_validate_connection=True):
         """
@@ -227,7 +227,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
             if wait_after_open > 0:
                 logger.debug("Open OK. Now waiting for Arduino's reset")
                 time.sleep(wait_after_open)
-        
+
         if call_validate_connection:
             self.validateConnection()
         logger.debug("Done.")
@@ -253,7 +253,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         """
         self.timeout = new_timeout
         self.serial_port.timeout = new_timeout
-    
+
     def get_next_response(self, timeout=None):
         """
         Note: this is a **low level** method. The only situation you may need to call this method
@@ -276,7 +276,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         else: # Use custom timeout
             if self.serial_port.getTimeout() != timeout:
                 self.serial_port.timeout = timeout
-        
+
         while True:
             char = self.serial_port.read()
             if len(char) == 1:
@@ -296,13 +296,13 @@ class ArduinoProxy(object): # pylint: disable=R0904
                     raise(CommandTimeout(msg))
                 else:
                     raise(CommandTimeout())
-        
+
         response = response.getvalue().strip()
         end = time.time()
         logger.debug("get_next_response() - Got response: %s - Took: %.2f secs.",
             pprint.pformat(response), (end - start))
         return response
-    
+
     def _check_response_for_errors(self, response, cmd): # pylint: disable=R0201
         splitted = [item for item in response.split() if item]
         if splitted[0] == ArduinoProxy.INVALID_CMD:
@@ -315,7 +315,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
                 raise(InvalidCommand("Arduino responded with INVALID_CMD. " + \
                     "The command was: %s. Error code: %s" % (pprint.pformat(cmd), splitted[1]),
                     error_code=splitted[1]))
-        
+
         if splitted[0] == ArduinoProxy.INVALID_PARAMETER:
             if len(splitted) == 1:
                 logger.warn("Received ArduinoProxy.INVALID_PARAMETER, but without error code. " + \
@@ -326,11 +326,11 @@ class ArduinoProxy(object): # pylint: disable=R0904
                 raise(InvalidParameter("Arduino responded with INVALID_PARAMETER." + \
                     "The command was: %s. The invalid parameter is %s" % (pprint.pformat(cmd),
                     splitted[1]), error_param=splitted[1]))
-        
+
         if splitted[0] == ArduinoProxy.UNSUPPORTED_CMD:
             raise(UnsupportedCommand("Arduino responded with UNSUPPORTED_CMD." + \
                 "The unsupported command is: %s" % splitted[1], error_param=splitted[1]))
-    
+
     #    def start_streaming(self, cmd, streamEndMark, timeout=None):
     #        """
     #        Note: this is a **low level** method. The only situation you may need to call this method
@@ -366,7 +366,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
     #                self.serial_port.flush()
     #                continue_streaming.setTrue()
     #            response = self.get_next_response(timeout=timeout) # Raises CommandTimeout
-    
+
     def send_cmd(self, cmd, expected_response=None, timeout=None, response_transformer=None):
         """
         Note: this is a **low level** method. The only situation you may need to call this method
@@ -393,20 +393,20 @@ class ArduinoProxy(object): # pylint: disable=R0904
             - UnsupportedCommand: if the Arduino reported that the command isn't supported.
         """
         logger.debug("send_cmd() called. cmd: '%s'", cmd)
-        
+
         self.serial_port.write(cmd)
         self.serial_port.write("\n")
         self.serial_port.flush()
-        
+
         while True:
             response = self.get_next_response(timeout=timeout) # Raises CommandTimeout
             if response.startswith('> '):
                 logger.info("[DEBUG-TEXT-RECEIVED] %s", pprint.pformat(response))
             else:
                 break
-        
+
         self._check_response_for_errors(response, cmd)
-        
+
         transformed_response = None
         if response_transformer is not None: # must transform the response
             try:
@@ -415,7 +415,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
                 raise(InvalidResponse("The response couldn't be transformed. " + \
                     "Response: %s. Exception: %s" % (pprint.pformat(exception),
                     pprint.pformat(response))))
-        
+
         if expected_response is not None: # must check the response
             if type(expected_response) not in [list, tuple]:
                 # ensure expected_response is a list or tuple, so 'in' works
@@ -434,14 +434,14 @@ class ArduinoProxy(object): # pylint: disable=R0904
                     "Expected: %s. " % pprint.pformat(expected_response) + \
                     "Response: %s." % pprint.pformat(response) \
                 ))
-        
+
         if response_transformer is not None:
             return transformed_response
         else:
             return response
-    
+
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-    
+
     def close(self):
         """Closes the connection to the Arduino."""
         if self.emulator:
@@ -452,9 +452,9 @@ class ArduinoProxy(object): # pylint: disable=R0904
         else:
             if self.serial_port:
                 self.serial_port.close()
-    
+
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-    
+
     def get_proxy_functions(self):
         """
         Returns a list of proxy functions. This is used internally to generate the sketch files.
@@ -467,7 +467,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
     ## HERE STARTS PROXIED FUNCTIONS
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-    
+
     def pinMode(self, pin, mode): # pylint: disable=C0103
         """
         Proxy function for Arduino's **pinMode()**.
@@ -488,10 +488,10 @@ class ArduinoProxy(object): # pylint: disable=R0904
         if not mode in [ArduinoProxy.INPUT, ArduinoProxy.OUTPUT]:
             raise(InvalidArgument())
         cmd = "_pMd\t%d\t%d" % (pin, mode)
-        
+
         return self.send_cmd(cmd, expected_response="PM_OK")
         # raises CommandTimeout,InvalidCommand,InvalidResponse
-    
+
     pinMode.arduino_function_name = '_pMd'
     pinMode.arduino_code = _unindent(12, """
             void _pMd() {
@@ -506,9 +506,9 @@ class ArduinoProxy(object): # pylint: disable=R0904
                 send_char_array_response("PM_OK");
             }
         """)
-    
+
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-    
+
     def digitalWrite(self, pin, value): # pylint: disable=C0103
         """
         Proxy function for Arduino's **digitalWrite()**.
@@ -528,7 +528,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         cmd = "_dWrt\t%d\t%d" % (pin, value)
         return self.send_cmd(cmd, expected_response="DW_OK")
         # raises CommandTimeout,InvalidCommand,InvalidResponse
-    
+
     digitalWrite.arduino_function_name = '_dWrt'
     digitalWrite.arduino_code = _unindent(12, """
             void _dWrt() {
@@ -546,7 +546,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         """)
 
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-    
+
     def digitalRead(self, pin): # pylint: disable=C0103
         """
         Proxy function for Arduino's **digitalRead()**.
@@ -564,19 +564,19 @@ class ArduinoProxy(object): # pylint: disable=R0904
         self._validate_digital_pin(pin)
         cmd = "_dRd\t%d" % (pin)
         response = self.send_cmd(cmd) # raises CommandTimeout,InvalidCommand
-        
+
         try:
             int_response = int(response)
         except ValueError:
             raise(InvalidResponse("The response couldn't be converted to int. Response: %s" % \
                 pprint.pformat(response)))
-        
+
         if int_response in [ArduinoProxy.HIGH, ArduinoProxy.LOW]:
             return int_response
-        
+
         raise(InvalidResponse("The response isn't HIGH (%d) nor LOW (%d). Response: %s" % (
             ArduinoProxy.HIGH, ArduinoProxy.LOW, int_response)))
-    
+
     digitalRead.arduino_function_name = '_dRd'
     digitalRead.arduino_code = _unindent(12, """
             void _dRd() {
@@ -586,16 +586,16 @@ class ArduinoProxy(object): # pylint: disable=R0904
                 return;
             }
         """)
-    
+
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-    
+
     # TODO: implement analogReference()
     #Analog I/O
     # def analogReference(self): # pylint: disable=C0103
     #     pass
-    
+
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-    
+
     def analogRead(self, pin): # pylint: disable=C0103
         """
         Proxy function for Arduino's **analogRead()**.
@@ -613,13 +613,13 @@ class ArduinoProxy(object): # pylint: disable=R0904
         self._validate_analog_pin(pin)
         cmd = "_aRd\t%d" % (pin)
         response = self.send_cmd(cmd, response_transformer=int)
-        
+
         if response >= 0 and response <= 1023:
             return response
-        
+
         raise(InvalidResponse("The response isn't in the valid range of 0-1023. " + \
             "Response: %d" % response))
-    
+
     analogRead.arduino_function_name = '_aRd'
     analogRead.arduino_code = _unindent(12, """
             void _aRd() {
@@ -629,9 +629,9 @@ class ArduinoProxy(object): # pylint: disable=R0904
                 return;
             }
         """)
-    
+
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-    
+
     def analogWrite(self, pin, value): # pylint: disable=C0103
         """
         Proxy function for Arduino's **analogWrite()**.
@@ -648,10 +648,10 @@ class ArduinoProxy(object): # pylint: disable=R0904
         if not type(pin) is int or not type(value) is int or value < 0 or value > 255:
             raise(InvalidArgument())
         cmd = "_aWrt\t%d\t%d" % (pin, value)
-        
+
         return self.send_cmd(cmd, expected_response="AW_OK")
         # raises CommandTimeout,InvalidCommand,InvalidResponse
-    
+
     analogWrite.arduino_function_name = '_aWrt'
     analogWrite.arduino_code = _unindent(12, """
             void _aWrt() {
@@ -667,11 +667,11 @@ class ArduinoProxy(object): # pylint: disable=R0904
                 send_char_array_response("AW_OK");
             }
         """)
-    
+
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
     ## CONNECTION TESTING FUNCTIONS
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-    
+
     def ping(self): # pylint: disable=C0103
         """
         Sends a 'ping' to the Arduino. May be used to check if the connection is alive.
@@ -679,16 +679,16 @@ class ArduinoProxy(object): # pylint: disable=R0904
         cmd = "_ping"
         return self.send_cmd(cmd, expected_response="PING_OK")
         # raises CommandTimeout,InvalidCommand,InvalidResponse
-    
+
     ping.arduino_function_name = '_ping'
     ping.arduino_code = _unindent(12, """
             void _ping() {
                 send_char_array_response("PING_OK");
             }
         """)
-    
+
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-    
+
     def validateConnection(self): # pylint: disable=C0103
         """
         Asserts that the current connection is valid, discarding any existing information in the
@@ -717,15 +717,15 @@ class ArduinoProxy(object): # pylint: disable=R0904
         random_str = str(random.randint(0, 10000000))
         cmd = "_vCnt\t%s" % random_str
         response = self.send_cmd(cmd) # raises CommandTimeout,InvalidCommand
-        
+
         while response != random_str:
             logger.warn("validateConnection(): Ignoring invalid response: %s",
                 pprint.pformat(response))
             # Go for the string, or a timeout exception!
             response = self.get_next_response()
-        
+
         return response
-    
+
     validateConnection.arduino_function_name = '_vCnt'
     validateConnection.arduino_code = _unindent(12, """
             void _vCnt() {
@@ -736,7 +736,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
     ## TIME RELATED FUNCTIONS
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-    
+
     def delay(self, value): # pylint: disable=C0103
         """
         Proxy function for Arduino's **delay()**.
@@ -755,7 +755,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
             raise(InvalidArgument("value must be an integer"))
         if not value >= 0:
             raise(InvalidArgument("value must be greater or equals than 0"))
-        
+
         delay_in_seconds = math.ceil(value / 1000.0)
         if self.timeout > delay_in_seconds:
             response = self.send_cmd("_dy\t%d" % value, expected_response="D_OK")
@@ -765,7 +765,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
                 timeout=(delay_in_seconds + 1))
             # raises CommandTimeout,InvalidCommand,InvalidResponse
         return response
-    
+
     delay.arduino_function_name = '_dy'
     delay.arduino_code = _unindent(12, """
             void _dy() {
@@ -782,7 +782,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         """)
 
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-    
+
     def delayMicroseconds(self, value): # pylint: disable=C0103
         """
         Proxy function for Arduino's **delayMicroseconds()**.
@@ -801,7 +801,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
             raise(InvalidArgument("value must be an integer"))
         if not value >= 0:
             raise(InvalidArgument("value must be greater or equals than 0"))
-        
+
         delay_in_seconds = math.ceil(value / 1000000.0)
         if self.timeout > delay_in_seconds:
             return self.send_cmd("_dMs\t%d" % value, expected_response="DMS_OK")
@@ -810,7 +810,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
             return self.send_cmd("_dMs\t%d" % value, expected_response="DMS_OK",
                 timeout=(delay_in_seconds + 1))
             # raises CommandTimeout,InvalidCommand,InvalidResponse
-    
+
     delayMicroseconds.arduino_function_name = '_dMs'
     delayMicroseconds.arduino_code = _unindent(12, """
             void _dMs() {
@@ -825,9 +825,9 @@ class ArduinoProxy(object): # pylint: disable=R0904
                 send_char_array_response("DMS_OK");
             }
         """)
-    
+
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-    
+
     def millis(self): # pylint: disable=C0103
         """
         Proxy function for Arduino's **millis()**.
@@ -838,7 +838,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         """
         return self.send_cmd("_ms", response_transformer=int)
         # raises CommandTimeout,InvalidCommand,InvalidResponse
-    
+
     millis.arduino_function_name = '_ms'
     millis.arduino_code = _unindent(12, """
             void _ms() {
@@ -849,7 +849,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         """)
 
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-    
+
     def micros(self): # pylint: disable=C0103
         """
         Proxy function for Arduino's **micros()**.
@@ -861,7 +861,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         """
         return self.send_cmd("_mc", response_transformer=int)
         # raises CommandTimeout,InvalidCommand,InvalidResponse
-    
+
     micros.arduino_function_name = '_mc'
     micros.arduino_code = _unindent(12, """
             void _mc() {
@@ -874,7 +874,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
     ## INTERRUPT RELATED FUNCTIONS
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-    
+
     def watchInterrupt(self, interrupt, mode): # pylint: disable=C0103
         """
         Begin to watch if an interrupt occurs. Use :func:`getInterruptMark` to check if an interrupt
@@ -895,10 +895,10 @@ class ArduinoProxy(object): # pylint: disable=R0904
                 ArduinoProxy.ATTACH_INTERRUPT_MODE_RISING,
                 ArduinoProxy.ATTACH_INTERRUPT_MODE_FALLING]:
             raise(InvalidArgument("invalid mode: %s" % str(mode)))
-        
+
         return self.send_cmd("_wI\t%d\t%s" % (interrupt, mode), expected_response="WI_OK")
                                             # raises CommandTimeout,InvalidCommand,InvalidResponse
-    
+
     watchInterrupt.arduino_function_name = '_wI'
     watchInterrupt.arduino_code = _unindent(12, """
             void _wI() {
@@ -930,7 +930,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         """)
 
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-    
+
     def getInterruptMark(self, interrupt): # pylint: disable=C0103
         """
         Check if an interrupt was detected on the Arduino.
@@ -949,13 +949,13 @@ class ArduinoProxy(object): # pylint: disable=R0904
             raise(InvalidArgument("interrupt must be an integer"))
         if interrupt < 0 or interrupt > 1:
             raise(InvalidArgument("interrupt must be between 0 and 1"))
-        
+
         ret = self.send_cmd("_gIM\t%d" % interrupt,
             expected_response=["GIM_ON", "GIM_OFF"])
             # raises CommandTimeout,InvalidCommand,InvalidResponse
-        
+
         return bool(ret == "GIM_ON")
-    
+
     getInterruptMark.arduino_function_name = '_gIM'
     getInterruptMark.arduino_code = _unindent(12, """
             void _gIM() {
@@ -986,14 +986,14 @@ class ArduinoProxy(object): # pylint: disable=R0904
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
     ## DEBUG FUNCTIONS
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-    
+
     def enableDebug(self): # pylint: disable=C0103
         """
         Enable transmision of debug messages from the Arduino.
         """
         return self.send_cmd("_eD", "ENA")
             # raises CommandTimeout,InvalidCommand,InvalidResponse
-    
+
     enableDebug.arduino_function_name = '_eD'
     enableDebug.arduino_code = _unindent(12, """
             void _eD() {
@@ -1003,7 +1003,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         """)
 
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-    
+
     def enableDebugToLcd(self): # pylint: disable=C0103
         """
         Enable transmision of debug messages from the Arduino, and the display of some
@@ -1011,7 +1011,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         """
         return self.send_cmd("_eDL", "ENA")
             # raises CommandTimeout,InvalidCommand,InvalidResponse
-    
+
     enableDebugToLcd.arduino_function_name = '_eDL'
     enableDebugToLcd.arduino_code = _unindent(12, """
             void _eDL() {
@@ -1023,16 +1023,16 @@ class ArduinoProxy(object): # pylint: disable=R0904
                 #endif
             }
         """)
-    
+
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-    
+
     def disableDebug(self): # pylint: disable=C0103
         """
         Disable transmision of debug messages from the Arduino.
         """
         return self.send_cmd("_dD", "DIS")
             # raises CommandTimeout,InvalidCommand,InvalidResponse
-    
+
     disableDebug.arduino_function_name = '_dD'
     disableDebug.arduino_code = _unindent(12, """
             void _dD() {
@@ -1044,7 +1044,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
     ## LCD FUNCTIONS
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-    
+
     def lcdMessage(self, message):
         """
         Clear the content of the LCD and write the given message.
@@ -1058,15 +1058,15 @@ class ArduinoProxy(object): # pylint: disable=R0904
         """
         if isinstance(message, basestring):
             self.lcdWrite(message, 0, 0, clear_lcd=True)
-        elif isinstance(message, (list, tuple, )):
+        elif isinstance(message, (list, tuple,)):
             self.lcdClear()
             for i in range(0, len(message)):
                 self.lcdWrite(message[i], 0, i)
         else:
             raise(InvalidArgument("message parameter must be string, list or tuple"))
-    
+
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-    
+
     def lcdWrite(self, message, col, row, clear_lcd=False): # pylint: disable=C0103
         """
         Write a message to the LCD, starting in the given row and column.
@@ -1089,17 +1089,17 @@ class ArduinoProxy(object): # pylint: disable=R0904
             raise(InvalidArgument("col must be an integer"))
         if not type(row) is int:
             raise(InvalidArgument("row must be an integer"))
-        
+
         # FIXME: check 'message' type and length
         # FIXME: check parameters
         # FIXME: test detection of invalid parameters
-        
+
         if clear_lcd:
             self.lcdClear()
-        
+
         return self.send_cmd("_lcdW\t%d\t%d\t%s" % (col, row, message), "LWOK")
             # raises CommandTimeout,InvalidCommand,InvalidResponse
-    
+
     lcdWrite.arduino_function_name = '_lcdW'
     lcdWrite.arduino_code = _unindent(12, """
             void _lcdW() {
@@ -1122,9 +1122,9 @@ class ArduinoProxy(object): # pylint: disable=R0904
                 #endif
             }
         """)
-    
+
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-    
+
     def lcdClear(self): # pylint: disable=C0103
         """
         Clear the LCD.
@@ -1135,7 +1135,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         """
         return self.send_cmd("_lcdClr", "LCLROK")
             # raises CommandTimeout,InvalidCommand,InvalidResponse
-    
+
     lcdClear.arduino_function_name = '_lcdClr'
     lcdClear.arduino_code = _unindent(12, """
             void _lcdClr() {
@@ -1149,7 +1149,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         """)
 
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-    
+
     def shiftOut(self, dataPin, clockPin, bitOrder, value, set_pin_mode=False): # pylint: disable=C0103,C0301,R0913
         """
         Proxy function for Arduino's **shiftOut()**.
@@ -1173,15 +1173,15 @@ class ArduinoProxy(object): # pylint: disable=R0904
         if not bitOrder in [ArduinoProxy.LSBFIRST, ArduinoProxy.MSBFIRST]:
             raise(InvalidArgument("bitOrder must be ArduinoProxy.LSBFIRST or " + \
                 "ArduinoProxy.MSBFIRST"))
-        
+
         # FIXME: test detection of invalid parameters
-        
+
         if set_pin_mode:
             self.pinMode(dataPin, ArduinoProxy.OUTPUT)
             self.pinMode(clockPin, ArduinoProxy.OUTPUT)
-        return self.send_cmd("_sftO\t%d\t%d\t%d\t%d" % (dataPin, clockPin, bitOrder, value, ), "SOOK")
+        return self.send_cmd("_sftO\t%d\t%d\t%d\t%d" % (dataPin, clockPin, bitOrder, value,), "SOOK")
             # raises CommandTimeout,InvalidCommand,InvalidResponse
-    
+
     shiftOut.arduino_function_name = '_sftO'
     shiftOut.arduino_code = _unindent(12, """
             void _sftO() {
@@ -1197,14 +1197,14 @@ class ArduinoProxy(object): # pylint: disable=R0904
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
     ## HARDWARD INFO FUNCTIONS
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-    
+
     def getAvrCpuType(self): # pylint: disable=C0103
         """
         Returns the value of _AVR_CPU_NAME_
         """
         return self.send_cmd("_gACT")
             # raises CommandTimeout,InvalidCommand,InvalidResponse
-    
+
     getAvrCpuType.arduino_function_name = '_gACT'
     getAvrCpuType.arduino_code = _unindent(12, """
             void _gACT() {
@@ -1213,7 +1213,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         """)
 
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-    
+
     def getArduinoTypeStruct(self): # pylint: disable=C0103
         """
         Returns a dict with the value of **this_arduino_type** struct.
@@ -1241,24 +1241,24 @@ class ArduinoProxy(object): # pylint: disable=R0904
             'flash_size': int(splitted[4]), # KiB
             'ram_size': int(splitted[5]), # KiB
         }
-        
+
         pwm_pin_list = []
         pwm_pins_bitmap = arduino_type_struct['pwm_pins_bitmap']
         pwm_pins_bitmap = list(pwm_pins_bitmap)
-        
+
         index = 0
         while pwm_pins_bitmap:
             if pwm_pins_bitmap.pop() == '1':
                 pwm_pin_list.append(index)
             index += 1
-        
+
         arduino_type_struct['pwm_pin_list'] = tuple(pwm_pin_list)
         arduino_type_struct['eeprom_size_bytes'] = arduino_type_struct['eeprom_size'] * 1024
         arduino_type_struct['flash_size_bytes'] = arduino_type_struct['flash_size'] * 1024
         arduino_type_struct['ram_size_bytes'] = arduino_type_struct['ram_size'] * 1024
-        
+
         return arduino_type_struct
-    
+
     getArduinoTypeStruct.arduino_function_name = '_gATS'
     getArduinoTypeStruct.arduino_code = _unindent(12, """
             void _gATS() {
@@ -1276,23 +1276,23 @@ class ArduinoProxy(object): # pylint: disable=R0904
                 Serial.print("\\n");
             }
         """)
-    
+
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-    
+
     def getFreeMemory(self): # pylint: disable=C0103
         """
         Returns the available free memory.
         """
         return self.send_cmd("_gFM")
             # raises CommandTimeout,InvalidCommand,InvalidResponse
-    
+
     getFreeMemory.arduino_function_name = '_gFM'
     getFreeMemory.arduino_code = _unindent(12, """
             void _gFM() {
                 send_int_response(freeMemory());
             }
         """)
-    
+
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
     def send_streaming_cmd(self, cmd, count, timeout=None, response_transformer=None):
@@ -1304,13 +1304,13 @@ class ArduinoProxy(object): # pylint: disable=R0904
         
         """
         logger.debug("send_streaming_cmd() called. cmd: '%s'", cmd)
-        
+
         self.serial_port.write(cmd)
         self.serial_port.write("\n")
         self.serial_port.flush()
-        
+
         pending_reads = count
-        
+
         while pending_reads > 0:
             while True:
                 response = self.get_next_response(timeout=timeout) # Raises CommandTimeout
@@ -1318,11 +1318,11 @@ class ArduinoProxy(object): # pylint: disable=R0904
                     logger.info("[DEBUG-TEXT-RECEIVED] %s", pprint.pformat(response))
                 else:
                     break
-            
+
             self._check_response_for_errors(response, cmd)
-            
+
             pending_reads -= 1
-            
+
             transformed_response = None
             if response_transformer is not None: # must transform the response
                 try:
@@ -1331,12 +1331,12 @@ class ArduinoProxy(object): # pylint: disable=R0904
                     raise(InvalidResponse("The response couldn't be transformed. " + \
                         "Response: %s. Exception: %s" % (pprint.pformat(exception),
                         pprint.pformat(response))))
-            
+
             if response_transformer is not None:
                 yield transformed_response
             else:
                 yield response
-        
+
         # Read final response
         while True:
             response = self.get_next_response(timeout=timeout) # Raises CommandTimeout
@@ -1344,7 +1344,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
                 logger.info("[DEBUG-TEXT-RECEIVED] %s", pprint.pformat(response))
             else:
                 break
-        
+
         # While streaming, the final response should be "SR_OK"
         if response != "SR_OK":
             raise(InvalidResponse(
@@ -1368,7 +1368,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         """
         return self.send_streaming_cmd("_strAR\t%d\t%d" % (pin, count,), count, response_transformer=int)
             # raises CommandTimeout,InvalidCommand,InvalidResponse
-    
+
     streamingAnalogRead.arduino_function_name = '_strAR'
     streamingAnalogRead.arduino_code = _unindent(12, """
             void _strAR() {
@@ -1399,7 +1399,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         """
         return self.send_streaming_cmd("_strDR\t%d\t%d" % (pin, count,), count, response_transformer=int)
             # raises CommandTimeout,InvalidCommand,InvalidResponse
-    
+
     streamingDigitalRead.arduino_function_name = '_strDR'
     streamingDigitalRead.arduino_code = _unindent(12, """
             void _strDR() {
@@ -1416,7 +1416,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         """)
 
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-    
+
     def dht11_read(self, pin): # pylint: disable=C0103
         """
         Proxy function for Arduino's **digitalRead()**.
