@@ -27,6 +27,7 @@ import pprint
 import random
 import serial
 import time
+import threading
 
 try:
     from cStringIO import StringIO
@@ -34,6 +35,22 @@ except ImportError:
     from StringIO import StringIO
 
 logger = logging.getLogger(__name__) # pylint: disable=C0103
+
+ARDUINO_PROXY_LOCK = threading.RLock()
+
+
+def synchronized(lock):
+    '''Synchronization decorator.'''
+
+    def wrap(f):
+        def new_function(*args, **kw):
+            lock.acquire()
+            try:
+                return f(*args, **kw)
+            finally:
+                lock.release()
+        return new_function
+    return wrap
 
 
 def _unindent(spaces, the_string):
@@ -205,6 +222,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         self.serial_port = None
         self.timeout = timeout
         self.emulator = None
+
         if tty == 'ARDUINO_EMULATOR':
             # Creating emulator from ArduinoProxy constructor
             from arduino_proxy.emulator import SerialConnectionMock, ArduinoEmulator
@@ -247,6 +265,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         if pin < 0:
             raise(InvalidArgument("%s must be greater or equals to 0" % pin_name))
 
+    @synchronized(ARDUINO_PROXY_LOCK)
     def setTimeout(self, new_timeout): # pylint: disable=C0103
         """
         Changes the timeout (in seconds).
@@ -254,6 +273,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         self.timeout = new_timeout
         self.serial_port.timeout = new_timeout
 
+    @synchronized(ARDUINO_PROXY_LOCK)
     def get_next_response(self, timeout=None):
         """
         Note: this is a **low level** method. The only situation you may need to call this method
@@ -367,6 +387,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
     #                continue_streaming.setTrue()
     #            response = self.get_next_response(timeout=timeout) # Raises CommandTimeout
 
+    @synchronized(ARDUINO_PROXY_LOCK)
     def send_cmd(self, cmd, expected_response=None, timeout=None, response_transformer=None):
         """
         Note: this is a **low level** method. The only situation you may need to call this method
@@ -442,6 +463,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
 
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
+    @synchronized(ARDUINO_PROXY_LOCK)
     def close(self):
         """Closes the connection to the Arduino."""
         if self.emulator:
@@ -455,6 +477,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
 
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
+    @synchronized(ARDUINO_PROXY_LOCK)
     def get_proxy_functions(self):
         """
         Returns a list of proxy functions. This is used internally to generate the sketch files.
@@ -468,6 +491,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
     ## HERE STARTS PROXIED FUNCTIONS
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
+    @synchronized(ARDUINO_PROXY_LOCK)
     def pinMode(self, pin, mode): # pylint: disable=C0103
         """
         Proxy function for Arduino's **pinMode()**.
@@ -509,6 +533,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
 
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
+    @synchronized(ARDUINO_PROXY_LOCK)
     def digitalWrite(self, pin, value): # pylint: disable=C0103
         """
         Proxy function for Arduino's **digitalWrite()**.
@@ -547,6 +572,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
 
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
+    @synchronized(ARDUINO_PROXY_LOCK)
     def digitalRead(self, pin): # pylint: disable=C0103
         """
         Proxy function for Arduino's **digitalRead()**.
@@ -596,6 +622,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
 
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
+    @synchronized(ARDUINO_PROXY_LOCK)
     def analogRead(self, pin): # pylint: disable=C0103
         """
         Proxy function for Arduino's **analogRead()**.
@@ -632,6 +659,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
 
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
+    @synchronized(ARDUINO_PROXY_LOCK)
     def analogWrite(self, pin, value): # pylint: disable=C0103
         """
         Proxy function for Arduino's **analogWrite()**.
@@ -672,6 +700,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
     ## CONNECTION TESTING FUNCTIONS
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
+    @synchronized(ARDUINO_PROXY_LOCK)
     def ping(self): # pylint: disable=C0103
         """
         Sends a 'ping' to the Arduino. May be used to check if the connection is alive.
@@ -689,6 +718,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
 
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
+    @synchronized(ARDUINO_PROXY_LOCK)
     def validateConnection(self): # pylint: disable=C0103
         """
         Asserts that the current connection is valid, discarding any existing information in the
@@ -737,6 +767,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
     ## TIME RELATED FUNCTIONS
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
+    @synchronized(ARDUINO_PROXY_LOCK)
     def delay(self, value): # pylint: disable=C0103
         """
         Proxy function for Arduino's **delay()**.
@@ -783,6 +814,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
 
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
+    @synchronized(ARDUINO_PROXY_LOCK)
     def delayMicroseconds(self, value): # pylint: disable=C0103
         """
         Proxy function for Arduino's **delayMicroseconds()**.
@@ -828,6 +860,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
 
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
+    @synchronized(ARDUINO_PROXY_LOCK)
     def millis(self): # pylint: disable=C0103
         """
         Proxy function for Arduino's **millis()**.
@@ -850,6 +883,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
 
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
+    @synchronized(ARDUINO_PROXY_LOCK)
     def micros(self): # pylint: disable=C0103
         """
         Proxy function for Arduino's **micros()**.
@@ -875,6 +909,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
     ## INTERRUPT RELATED FUNCTIONS
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
+    @synchronized(ARDUINO_PROXY_LOCK)
     def watchInterrupt(self, interrupt, mode): # pylint: disable=C0103
         """
         Begin to watch if an interrupt occurs. Use :func:`getInterruptMark` to check if an interrupt
@@ -931,6 +966,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
 
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
+    @synchronized(ARDUINO_PROXY_LOCK)
     def getInterruptMark(self, interrupt): # pylint: disable=C0103
         """
         Check if an interrupt was detected on the Arduino.
@@ -987,6 +1023,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
     ## DEBUG FUNCTIONS
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
+    @synchronized(ARDUINO_PROXY_LOCK)
     def enableDebug(self): # pylint: disable=C0103
         """
         Enable transmision of debug messages from the Arduino.
@@ -1004,6 +1041,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
 
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
+    @synchronized(ARDUINO_PROXY_LOCK)
     def enableDebugToLcd(self): # pylint: disable=C0103
         """
         Enable transmision of debug messages from the Arduino, and the display of some
@@ -1026,6 +1064,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
 
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
+    @synchronized(ARDUINO_PROXY_LOCK)
     def disableDebug(self): # pylint: disable=C0103
         """
         Disable transmision of debug messages from the Arduino.
@@ -1045,6 +1084,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
     ## LCD FUNCTIONS
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
+    @synchronized(ARDUINO_PROXY_LOCK)
     def lcdMessage(self, message):
         """
         Clear the content of the LCD and write the given message.
@@ -1067,6 +1107,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
 
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
+    @synchronized(ARDUINO_PROXY_LOCK)
     def lcdWrite(self, message, col, row, clear_lcd=False): # pylint: disable=C0103
         """
         Write a message to the LCD, starting in the given row and column.
@@ -1125,6 +1166,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
 
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
+    @synchronized(ARDUINO_PROXY_LOCK)
     def lcdClear(self): # pylint: disable=C0103
         """
         Clear the LCD.
@@ -1150,6 +1192,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
 
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
+    @synchronized(ARDUINO_PROXY_LOCK)
     def shiftOut(self, dataPin, clockPin, bitOrder, value, set_pin_mode=False): # pylint: disable=C0103,C0301,R0913
         """
         Proxy function for Arduino's **shiftOut()**.
@@ -1198,6 +1241,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
     ## HARDWARD INFO FUNCTIONS
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
+    @synchronized(ARDUINO_PROXY_LOCK)
     def getAvrCpuType(self): # pylint: disable=C0103
         """
         Returns the value of _AVR_CPU_NAME_
@@ -1214,6 +1258,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
 
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
+    @synchronized(ARDUINO_PROXY_LOCK)
     def getArduinoTypeStruct(self): # pylint: disable=C0103
         """
         Returns a dict with the value of **this_arduino_type** struct.
@@ -1279,6 +1324,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
 
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
+    @synchronized(ARDUINO_PROXY_LOCK)
     def getFreeMemory(self): # pylint: disable=C0103
         """
         Returns the available free memory.
@@ -1295,6 +1341,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
 
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
+    @synchronized(ARDUINO_PROXY_LOCK)
     def send_streaming_cmd(self, cmd, count, timeout=None, response_transformer=None):
         """
         Note: this is a **low level** method. The only situation you may need to call this method
@@ -1353,6 +1400,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
                 "Response: %s." % pprint.pformat(response) \
             ))
 
+    @synchronized(ARDUINO_PROXY_LOCK)
     def streamingAnalogRead(self, pin, count): # pylint: disable=C0103
         """
         Start reading from the specified analog pin.
@@ -1384,6 +1432,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
             }
         """)
 
+    @synchronized(ARDUINO_PROXY_LOCK)
     def streamingDigitalRead(self, pin, count): # pylint: disable=C0103
         """
         Start reading from the specified digital pin.
@@ -1417,6 +1466,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
 
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
+    @synchronized(ARDUINO_PROXY_LOCK)
     def dht11_read(self, pin): # pylint: disable=C0103
         """
         Proxy function for Arduino's **digitalRead()**.
