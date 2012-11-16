@@ -71,8 +71,14 @@ description = 'Communicate with Arduino from Python, a web page and JavaScript'
 author = "Horacio G. de Oro"
 author_email = "hgdeoror@gmail.com"
 url = "http://pyarduinoproxy.blogspot.com/"
-packages = ['arduino_proxy', 'arduino_proxy.tests', 'arduino_proxy.webui',
-    'arduino_proxy.cli.ping']
+packages = [
+    'arduino_proxy',
+    'arduino_proxy.tests',
+    'arduino_proxy.webui',
+    'arduino_proxy.cli',
+    'arduino_proxy.cli.ping',
+    'arduino_proxy.cli.webserver',
+]
 
 install_requires = (
     'cherrypy<3.3', # 3.2.x
