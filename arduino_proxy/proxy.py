@@ -29,6 +29,8 @@ import serial
 import time
 import threading
 
+from serial.tools.list_ports import comports
+
 try:
     from cStringIO import StringIO
 except ImportError:
@@ -268,6 +270,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         if self.call_validate_connection:
             logger.debug("Calling validateConnection()...")
             self.validateConnection()
+
         logger.debug("connect() OK")
         return self
 
@@ -295,6 +298,31 @@ class ArduinoProxy(object): # pylint: disable=R0904
         """Return whenever the proxy is connected"""
         # FIXME: self.serial_port is ALWAYS non-None if connected (even with emulator)
         return bool(self.emulator) or bool(self.serial_port)
+
+    @synchronized(ARDUINO_PROXY_LOCK)
+    def autoconnect(self):
+        """
+        Try to connect on every available serial port.
+        Returns: True if connection was posible, False otherwise.
+        """
+        if self.is_connected():
+            raise(ArduinoProxyException("The instance is already connected"))
+
+        initial_tty = self.tty
+        for a_serial_port, _, _ in comports():
+            # TODO: this 'filtering' of devices should be done in a more extensible way
+            if a_serial_port.startswith('/dev/ttyACM'):
+                logger.info("autoconnect(): trying to connect to %s", a_serial_port)
+                try:
+                    self.tty = a_serial_port
+                    self.connect()
+                    return True
+                except:
+                    # Ignore and continue with next serial port
+                    logger.info("autoconnect(): couldn't connect to %s", a_serial_port)
+                    self.tty = initial_tty
+
+        return False
 
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 

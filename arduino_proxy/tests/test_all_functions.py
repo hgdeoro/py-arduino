@@ -142,6 +142,7 @@ def main(): # pylint: disable=R0915
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # Test NotConnected/close()/re-connect()
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        print "Test close() and re-connect()"
         assert proxy.is_connected()
         proxy.close()
         assert not proxy.is_connected()
@@ -152,6 +153,14 @@ def main(): # pylint: disable=R0915
             pass
 
         proxy.connect()
+        proxy.ping()
+
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        # Test autoconnect()
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        print "Test autoconnect()"
+        proxy.close()
+        assert proxy.autoconnect()
         proxy.ping()
 
     except KeyboardInterrupt:
