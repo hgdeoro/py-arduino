@@ -36,7 +36,12 @@ except ImportError:
 
 logger = logging.getLogger(__name__) # pylint: disable=C0103
 
+DEFAULT_SERIAL_SPEED = 9600
+
 ARDUINO_PROXY_LOCK = threading.RLock()
+
+# Device to use to launch an emulator instad of connecting to a real Arduino
+DEVICE_FOR_EMULATOR = '/dev/ARDUINO_EMULATOR'
 
 
 def synchronized(lock):
@@ -177,78 +182,108 @@ class ArduinoProxy(object): # pylint: disable=R0904
     INVALID_PARAMETER = "INVALID_PARAMETER"
     UNSUPPORTED_CMD = "UNSUPPORTED_CMD"
 
-    @classmethod
-    def create_emulator(cls, initial_input_buffer_contents=None):
-        # We use '***ARDUINO_EMULATOR***' to let ArduinoProxy.__init__() known
-        # that the setup of the instace will be done HERE .
-
-        #    proxy.serial_port = SerialConnectionMock()
-        #    proxy.emulator = ArduinoEmulator(self.serial_port.get_other_side())
-        #    proxy.emulator.start()
-
-        from arduino_proxy.emulator import SerialConnectionMock, ArduinoEmulator
-
-        proxy = cls(tty='***ARDUINO_EMULATOR***', wait_after_open=0, call_validate_connection=False)
-        if initial_input_buffer_contents:
-            proxy.serial_port = SerialConnectionMock(
-                initial_in_buffer_contents=initial_input_buffer_contents)
-        else:
-            proxy.serial_port = SerialConnectionMock()
-        proxy.emulator = ArduinoEmulator(proxy.serial_port.get_other_side())
-        proxy.emulator.start()
-        proxy.validateConnection()
-        return proxy
-
-    def __init__(self, tty, speed=9600, wait_after_open=3, timeout=5, # pylint: disable=R0913
-            call_validate_connection=True):
+    def __init__(self, tty=None, speed=DEFAULT_SERIAL_SPEED,
+        wait_after_open=2, timeout=5, call_validate_connection=True):
         """
-        
-        Creates a proxy instance, using the serial port specified with 'tty'.
-        
+        Creates a proxy instance, BUT DOESN'T CONNECT IT.
+
         If call_validate_connection is true, a call to validateConnection() is done, to ensures
         the created instance could communicate to Arduino after established the serial connection.
-        
+
         Parameters:
+            - device name (serial port) to connect. May be None (and `connect` should be False)
             - speed: serial port speed.
-            - wait_after_open: this is needed in Ubuntu, because the Arduino resets itself when connecting.
+            - wait_after_open: this is needed because the Arduino resets itself when connecting the USB.
             - timeout: default timeout (in seconds). Configure how many seconds we wait for a response.
             - call_validate_connection: call validateConnection() after opening the port.
+            - connect: if the connection should be established
         """
         # For communicating with the computer, use one of these rates: 300, 1200, 2400, 4800,
         #    9600, 14400, 19200, 28800, 38400, 57600, or 115200.
         logger.debug("Instantiating ArduinoProxy('%s', %d)..." % (tty, speed))
         self.tty = tty
         self.speed = speed
-        self.serial_port = None
+        self.wait_after_open = wait_after_open
         self.timeout = timeout
+        self.call_validate_connection = call_validate_connection
+
+        # One, and only one of (self.serial_port, self.emulator) should be not None
+        self.serial_port = None
         self.emulator = None
 
-        if tty == 'ARDUINO_EMULATOR':
-            # Creating emulator from ArduinoProxy constructor
-            from arduino_proxy.emulator import SerialConnectionMock, ArduinoEmulator
-            logger.debug("Creating EMULATOR instance")
-            self.serial_port = SerialConnectionMock()
-            self.emulator = ArduinoEmulator(self.serial_port.get_other_side())
-            self.emulator.start()
-        elif tty == '***ARDUINO_EMULATOR***':
-            # Creating emulator from ArduinoProxy.create_emulator()
-            # The setup is done by ArduinoProxy.create_emulator()
-            logger.debug("Creating EMULATOR instance")
-            self.tty = tty = 'ARDUINO_EMULATOR'
+    def _connect_emulator(self, initial_input_buffer_contents=None):
+        """Common method to be used from `create_emulator()` and `__init__()`"""
+        from arduino_proxy.emulator import SerialConnectionMock, ArduinoEmulator
+        if initial_input_buffer_contents:
+            self.serial_port = SerialConnectionMock(
+                initial_in_buffer_contents=initial_input_buffer_contents)
         else:
-            self.emulator = None
-            logger.debug("Opening serial port %s...", tty)
-            self.serial_port = serial.Serial(port=tty, baudrate=speed, bytesize=8, parity='N',
-                stopbits=1, timeout=timeout)
+            self.serial_port = SerialConnectionMock()
+        self.emulator = ArduinoEmulator(self.serial_port.get_other_side())
+        self.emulator.start()
+        self.validateConnection()
+
+    @classmethod
+    def create_emulator(cls, initial_input_buffer_contents=None):
+        """
+        Returns an instance of ArduinoProxy CONNECTED to the Arduino emulator.
+
+        You should NOT call to `connect()` on the returned instance.
+        """
+        proxy = cls(tty=DEVICE_FOR_EMULATOR, wait_after_open=0, call_validate_connection=False)
+        proxy._connect_emulator(initial_input_buffer_contents=initial_input_buffer_contents)
+        return proxy
+
+    @synchronized(ARDUINO_PROXY_LOCK)
+    def connect(self):
+        """
+        Estabishes serial connection to the Arduino, and returns the proxy instance.
+        This allow the instantiation and connection in one line:
+
+        >>> proxy = ArduinoProxy('/dev/ttyACM0').connect()
+        """
+        assert self.tty is not None
+        assert not self.is_connected()
+
+        if self.tty == DEVICE_FOR_EMULATOR:
+            self._connect_emulator()
+
+        else:
+            logger.debug("Opening serial port %s...", self.tty)
+            self.serial_port = serial.Serial(port=self.tty, baudrate=self.speed, bytesize=8, parity='N',
+                stopbits=1, timeout=self.timeout)
             # self.serial_port.open() - The port is opened when the instance is created!
             # This has no efect on Linux, but raises an exception on other os.
-            if wait_after_open > 0:
+            if self.wait_after_open > 0:
                 logger.debug("Open OK. Now waiting for Arduino's reset")
-                time.sleep(wait_after_open)
+                time.sleep(self.wait_after_open)
 
-        if call_validate_connection:
+        if self.call_validate_connection:
+            logger.debug("Calling validateConnection()...")
             self.validateConnection()
-        logger.debug("Done.")
+        logger.debug("connect() OK")
+        return self
+
+    @synchronized(ARDUINO_PROXY_LOCK)
+    def close(self):
+        """Closes the connection to the Arduino."""
+        assert self.is_connected()
+        if self.emulator:
+            self.emulator.stop_running()
+            logger.info("Running emulator... Will join the threads...")
+            self.emulator.join()
+            logger.info("Threads joined OK.")
+            self.emulator = None
+        else:
+            self.serial_port.close()
+            self.serial_port = None
+
+    @synchronized(ARDUINO_PROXY_LOCK)
+    def is_connected(self):
+        """Return whenever the proxy is connected"""
+        return bool(self.emulator) or bool(self.serial_port)
+
+    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
     def _validate_analog_pin(self, pin, pin_name='pin'): # pylint: disable=R0201
         # FIXME: validate pin value (depends on the model of Arduino)
@@ -464,24 +499,11 @@ class ArduinoProxy(object): # pylint: disable=R0904
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
     @synchronized(ARDUINO_PROXY_LOCK)
-    def close(self):
-        """Closes the connection to the Arduino."""
-        if self.emulator:
-            self.emulator.stop_running()
-            logger.info("Running emulator... Will join the threads...")
-            self.emulator.join()
-            logger.info("Threads joined OK.")
-        else:
-            if self.serial_port:
-                self.serial_port.close()
-
-    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-
-    @synchronized(ARDUINO_PROXY_LOCK)
     def get_proxy_functions(self):
         """
         Returns a list of proxy functions. This is used internally to generate the sketch files.
         """
+        # FIXME: this should be moved to the module (no need to be an instance method)
         all_attributes = [getattr(self, an_attribute_name) for an_attribute_name in dir(self)]
         proxy_functions = [an_attribute for an_attribute in all_attributes
             if getattr(an_attribute, 'arduino_code', False)]

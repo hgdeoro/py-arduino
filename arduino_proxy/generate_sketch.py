@@ -174,9 +174,9 @@ def main(): # pylint: disable=R0914,R0912,R0915
             c_file_lines[i] = '// ' + c_file_lines[i]
             break
     
-    proxy = ArduinoProxy.create_emulator()
+    proxy = ArduinoProxy()
     placeholder_values = generate_placeholder_values(proxy, options)
-    proxy.close()
+    # proxy.close() # No need to close
 
     output = StringIO()
     

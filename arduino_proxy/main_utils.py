@@ -101,18 +101,18 @@ def default_main(optparse_usage="usage: %prog [options] serial_device",
     else:
         if options.initial_wait == 0:
             proxy = ArduinoProxy(args[0], 9600, wait_after_open=0,
-                call_validate_connection=not(options.dont_call_validate_connection))
+                call_validate_connection=not(options.dont_call_validate_connection)).connect()
         else:
             if options.initial_wait is None:
                 logging.info("Waiting some seconds to let the Arduino reset...")
                 proxy = ArduinoProxy(args[0], 9600,
-                    call_validate_connection=not(options.dont_call_validate_connection))
+                    call_validate_connection=not(options.dont_call_validate_connection)).connect()
             else:
                 initial_wait = int(options.initial_wait)
                 if initial_wait > 0:
                     logging.info("Waiting %d seconds to let the Arduino reset...", initial_wait)
                 proxy = ArduinoProxy(args[0], 9600, wait_after_open=initial_wait,
-                    call_validate_connection=not(options.dont_call_validate_connection))
+                    call_validate_connection=not(options.dont_call_validate_connection)).connect()
     
         if options.arduino_debug:
             proxy.enableDebug()
