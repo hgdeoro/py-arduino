@@ -29,6 +29,7 @@ sys.path.append(os.path.abspath(SRC_DIR))
 
 from arduino_proxy import ArduinoProxy, InvalidCommand, CommandTimeout, InvalidResponse
 from arduino_proxy.main_utils import default_main
+from arduino_proxy.proxy import NotConnected
 
 
 def main(): # pylint: disable=R0915
@@ -139,11 +140,16 @@ def main(): # pylint: disable=R0915
         # Finished!
 
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        # Test close()/re-connect()
+        # Test NotConnected/close()/re-connect()
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         assert proxy.is_connected()
         proxy.close()
         assert not proxy.is_connected()
+
+        try:
+            proxy.ping()
+        except NotConnected:
+            pass
 
         proxy.connect()
         proxy.ping()
