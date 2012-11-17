@@ -150,6 +150,13 @@ class UnsupportedCommand(ArduinoProxyException):
         ArduinoProxyException.__init__(self, msg)
         self.error_param = error_param
 
+
+class NotConnected(ArduinoProxyException):
+    """
+    Raised when a method that required a connection was called, but the
+    instance wasn't connected.
+    """
+
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
@@ -267,7 +274,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
     @synchronized(ARDUINO_PROXY_LOCK)
     def close(self):
         """Closes the connection to the Arduino."""
-        assert self.is_connected()
+        self._assert_connected()
         if self.emulator:
             self.emulator.stop_running()
             logger.info("Running emulator... Will join the threads...")
@@ -279,8 +286,14 @@ class ArduinoProxy(object): # pylint: disable=R0904
             self.serial_port = None
 
     @synchronized(ARDUINO_PROXY_LOCK)
+    def _assert_connected(self):
+        if not self.is_connected():
+            raise(NotConnected())
+
+    @synchronized(ARDUINO_PROXY_LOCK)
     def is_connected(self):
         """Return whenever the proxy is connected"""
+        # FIXME: self.serial_port is ALWAYS non-None if connected (even with emulator)
         return bool(self.emulator) or bool(self.serial_port)
 
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -306,7 +319,8 @@ class ArduinoProxy(object): # pylint: disable=R0904
         Changes the timeout (in seconds).
         """
         self.timeout = new_timeout
-        self.serial_port.timeout = new_timeout
+        if self.serial_port:
+            self.serial_port.timeout = new_timeout
 
     @synchronized(ARDUINO_PROXY_LOCK)
     def get_next_response(self, timeout=None):
@@ -322,6 +336,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         Raises:
             - CommandTimeout if a timeout while reading is detected.
         """
+        self._assert_connected()
         logger.debug("get_next_response() - waiting for response...")
         start = time.time()
         response = StringIO()
@@ -448,6 +463,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
                 doesn't equals to 'expected_response'.
             - UnsupportedCommand: if the Arduino reported that the command isn't supported.
         """
+        self._assert_connected()
         logger.debug("send_cmd() called. cmd: '%s'", cmd)
 
         self.serial_port.write(cmd)
@@ -530,6 +546,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         # TODO: The analog input pins can be used as digital pins, referred to as A0, A1, etc.
         # FIXME: validate pin and value
         # FIXME: add doc for parameters and exceptions
+        self._assert_connected()
         self._validate_digital_pin(pin)
         if not mode in [ArduinoProxy.INPUT, ArduinoProxy.OUTPUT]:
             raise(InvalidArgument())
@@ -569,6 +586,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         """
         # FIXME: validate pin and value
         # FIXME: add doc for parameters and exceptions
+        self._assert_connected()
         self._validate_digital_pin(pin)
         if not value in [ArduinoProxy.LOW, ArduinoProxy.HIGH]:
             raise(InvalidArgument("Invalid value for 'value' parameter."))
@@ -609,6 +627,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
             - Either ArduinoProxy.HIGH or ArduinoProxy.LOW
         """
         # FIXME: add doc for exceptions
+        self._assert_connected()
         self._validate_digital_pin(pin)
         cmd = "_dRd\t%d" % (pin)
         response = self.send_cmd(cmd) # raises CommandTimeout,InvalidCommand
@@ -659,6 +678,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
             - analog value (0 to 1023)
         """
         # FIXME: add doc for exceptions
+        self._assert_connected()
         self._validate_analog_pin(pin)
         cmd = "_aRd\t%d" % (pin)
         response = self.send_cmd(cmd, response_transformer=int)
@@ -695,6 +715,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         """
         # FIXME: validate pin
         # FIXME: add doc for exceptions
+        self._assert_connected()
         if not type(pin) is int or not type(value) is int or value < 0 or value > 255:
             raise(InvalidArgument())
         cmd = "_aWrt\t%d\t%d" % (pin, value)
@@ -727,6 +748,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         """
         Sends a 'ping' to the Arduino. May be used to check if the connection is alive.
         """
+        self._assert_connected()
         cmd = "_ping"
         return self.send_cmd(cmd, expected_response="PING_OK")
         # raises CommandTimeout,InvalidCommand,InvalidResponse
@@ -765,7 +787,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         any 'old' response.
         
         """
-        # FIXME: add doc
+        self._assert_connected()
         random_str = str(random.randint(0, 10000000))
         cmd = "_vCnt\t%s" % random_str
         response = self.send_cmd(cmd) # raises CommandTimeout,InvalidCommand
@@ -804,6 +826,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         Parameters:
             - value (int): how many miliseconds to pause.
         """
+        self._assert_connected()
         if not type(value) is int:
             raise(InvalidArgument("value must be an integer"))
         if not value >= 0:
@@ -851,6 +874,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         Parameters:
             - value (int): how many microseconds to pause.
         """
+        self._assert_connected()
         if not type(value) is int:
             raise(InvalidArgument("value must be an integer"))
         if not value >= 0:
@@ -891,6 +915,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         
         See: http://arduino.cc/en/Reference/Millis
         """
+        self._assert_connected()
         return self.send_cmd("_ms", response_transformer=int)
         # raises CommandTimeout,InvalidCommand,InvalidResponse
 
@@ -915,6 +940,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         
         See: http://arduino.cc/en/Reference/Micros
         """
+        self._assert_connected()
         return self.send_cmd("_mc", response_transformer=int)
         # raises CommandTimeout,InvalidCommand,InvalidResponse
 
@@ -943,6 +969,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
                 ATTACH_INTERRUPT_MODE_RISING,ATTACH_INTERRUPT_MODE_FALLING
         """
         # TODO: Arduino Mega has more than 2 interrupts!
+        self._assert_connected()
         if not type(interrupt) is int:
             raise(InvalidArgument("interrupt must be an integer"))
         if interrupt < 0 or interrupt > 1:
@@ -1003,6 +1030,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         Returns:
             - True: if an interrupt was detected. False otherwise.
         """
+        self._assert_connected()
         if not type(interrupt) is int:
             raise(InvalidArgument("interrupt must be an integer"))
         if interrupt < 0 or interrupt > 1:
@@ -1050,6 +1078,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         """
         Enable transmision of debug messages from the Arduino.
         """
+        self._assert_connected()
         return self.send_cmd("_eD", "ENA")
             # raises CommandTimeout,InvalidCommand,InvalidResponse
 
@@ -1069,6 +1098,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         Enable transmision of debug messages from the Arduino, and the display of some
         info in the LCD.
         """
+        self._assert_connected()
         return self.send_cmd("_eDL", "ENA")
             # raises CommandTimeout,InvalidCommand,InvalidResponse
 
@@ -1091,6 +1121,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         """
         Disable transmision of debug messages from the Arduino.
         """
+        self._assert_connected()
         return self.send_cmd("_dD", "DIS")
             # raises CommandTimeout,InvalidCommand,InvalidResponse
 
@@ -1118,6 +1149,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         Parameters:
             - message (string or list): message to display
         """
+        self._assert_connected()
         if isinstance(message, basestring):
             self.lcdWrite(message, 0, 0, clear_lcd=True)
         elif isinstance(message, (list, tuple,)):
@@ -1148,6 +1180,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
             - col (int): column
             - row (int): row
         """
+        self._assert_connected()
         if not type(col) is int:
             raise(InvalidArgument("col must be an integer"))
         if not type(row) is int:
@@ -1197,6 +1230,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         using the '--lcd' option. See https://github.com/hgdeoro/py-arduino-proxy/wiki/LCD-Support
         for more information.
         """
+        self._assert_connected()
         return self.send_cmd("_lcdClr", "LCLROK")
             # raises CommandTimeout,InvalidCommand,InvalidResponse
 
@@ -1229,6 +1263,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
             - bitOrder: which order to shift out the bits; either ArduinoProxy.LSBFIRST or ArduinoProxy.MSBFIRST.
             - value (int): the data to shift out.
         """
+        self._assert_connected()
         self._validate_digital_pin(dataPin, 'dataPin')
         self._validate_digital_pin(clockPin, 'clockPin')
         if not type(value) is int:
@@ -1268,6 +1303,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         """
         Returns the value of _AVR_CPU_NAME_
         """
+        self._assert_connected()
         return self.send_cmd("_gACT")
             # raises CommandTimeout,InvalidCommand,InvalidResponse
 
@@ -1297,6 +1333,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
             - flash_size: FLASH size in KiB.
             - flash_size_bytes: FLASH size in bytes.
         """
+        self._assert_connected()
         value = self.send_cmd("_gATS")
         splitted = [item for item in value.split() if item]
 
@@ -1351,6 +1388,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         """
         Returns the available free memory.
         """
+        self._assert_connected()
         return self.send_cmd("_gFM")
             # raises CommandTimeout,InvalidCommand,InvalidResponse
 
@@ -1372,6 +1410,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         FIXME: DOCUMENT THIS!
         
         """
+        self._assert_connected()
         logger.debug("send_streaming_cmd() called. cmd: '%s'", cmd)
 
         self.serial_port.write(cmd)
@@ -1436,6 +1475,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         Returns:
             - a generator that returns the read values.
         """
+        self._assert_connected()
         return self.send_streaming_cmd("_strAR\t%d\t%d" % (pin, count,), count, response_transformer=int)
             # raises CommandTimeout,InvalidCommand,InvalidResponse
 
@@ -1468,6 +1508,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         Returns:
             - a generator that returns the read values.
         """
+        self._assert_connected()
         return self.send_streaming_cmd("_strDR\t%d\t%d" % (pin, count,), count, response_transformer=int)
             # raises CommandTimeout,InvalidCommand,InvalidResponse
 
@@ -1503,6 +1544,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
             - Either ArduinoProxy.HIGH or ArduinoProxy.LOW
         """
         # FIXME: add doc for exceptions
+        self._assert_connected()
         self._validate_digital_pin(pin)
         cmd = "_dht11Rd\t%d" % (pin)
 
