@@ -321,7 +321,7 @@
 	
     {# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #}
     
-	{% for pin in range(0, arduino_type.digital_pins) %}
+	{% for pin in arduino_type.digital_pins_items %}
 	<div style="padding-bottom: 4px;">
 		<div>
 			
@@ -371,7 +371,7 @@
 	
     {# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #}
     
-	{% for pin in range(0, arduino_type.analog_pins) %}
+	{% for pin in arduino_type.analog_pins_items %}
     <div>
 
         <span id="pinA{{ pin }}_label" class="analog_pin_label" title="Click here to edit">Analog pin {{ pin }}</span>:

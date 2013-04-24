@@ -10,13 +10,13 @@
     <b>AVR cpu type:</b> <span id="avrCpuType">{{ avr_cpu_type }}</span>
     
     - <b>Digital:</b> 
-    {% for pin in range(0, arduino_type.digital_pins) %}
+    {% for pin in arduino_type.digital_pins_items %}
         {{ pin }} {% if pin in arduino_type.pwm_pin_list %} (PWM) {% endif %}
         {% if not loop.last%} , {% endif %}
     {% endfor %}
     
     - <b>Analog:</b> 
-    {% for pin in range(0, arduino_type.analog_pins) %}
+    {% for pin in arduino_type.analog_pins_items %}
         {{ pin }}
         {% if not loop.last%} , {% endif %}
     {% endfor %}

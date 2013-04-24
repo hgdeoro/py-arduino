@@ -79,14 +79,14 @@ class Root(object):
         assert error_message
         template = self.jinja2_env.get_template('web-ui-select-serial-port.html')
         return template.render(error_message=error_message)
-    
-    @cherrypy.expose
-    def index(self):
-        return self.generate_ui()
 
-    @cherrypy.expose
-    def js_prototyper(self):
-        return self.generate_ui(template_name="web-ui-js-prototyper.html")
+    #    @cherrypy.expose
+    #    def index(self):
+    #        return self.generate_ui()
+    #
+    #    @cherrypy.expose
+    #    def js_prototyper(self):
+    #        return self.generate_ui(template_name="web-ui-js-prototyper.html")
 
     def generate_ui(self, template_name="web-ui-main.html"):
         """
@@ -112,218 +112,187 @@ class Root(object):
         return template.render(arduino_type=arduino_type, avr_cpu_type=avr_cpu_type)
 
     ## ~~~~~~ Here start AJAX methods
+#
+#    @cherrypy.expose
+#    @cherrypy.tools.json_out()
+#    def ping(self):
+#        try:
+#            self.proxy.ping()
+#            return {'ok': True, }
+#        except Exception, e:
+#            # FIXME: return error details and log
+#            logging.exception("Exception raised by proxy.ping()")
+#            return {'ok': False, 'exception': str(e), }
+#
+#    @cherrypy.expose
+#    @cherrypy.tools.json_out()
+#    def validate_connection(self):
+#        try:
+#            random_value = self.proxy.validateConnection()
+#            return {'ok': True, 'random_value': random_value, }
+#        except Exception, e:
+#            # FIXME: return error details and log
+#            logging.exception("Exception raised by proxy.validateConnection()")
+#            return {'ok': False, 'exception': str(e), }
+#
+#    @cherrypy.expose
+#    @cherrypy.tools.json_out()
+#    def pin_mode(self, pin=None, mode=None):
+#        try:
+#            if mode == 'output':
+#                self.proxy.pinMode(int(pin), ArduinoProxy.OUTPUT)
+#                return {'ok': True, }
+#            elif mode == 'input':
+#                self.proxy.pinMode(int(pin), ArduinoProxy.INPUT)
+#                return {'ok': True, }
+#            else:
+#                # FIXME: return error details and log
+#                return {'ok': False, 'error': 'Invalid mode: ' + mode}
+#        except Exception, e:
+#            # FIXME: return error details and log
+#            logging.exception("Exception raised by proxy.pinMode()")
+#            return {'ok': False, 'exception': str(e), }
+#
+#    @cherrypy.expose
+#    @cherrypy.tools.json_out()
+#    def digital_write(self, pin=None, value=None):
+#        try:
+#            if value == 'low':
+#                self.proxy.digitalWrite(int(pin), ArduinoProxy.LOW)
+#                return {'ok': True, }
+#            elif value == 'high':
+#                self.proxy.digitalWrite(int(pin), ArduinoProxy.HIGH)
+#                return {'ok': True, }
+#            else:
+#                # FIXME: return error details and log
+#                return {'ok': False, 'error': 'ArduinoProxy returned an invalid value: ' + value}
+#        except Exception, e:
+#            # FIXME: return error details and log
+#            logging.exception("Exception raised by proxy.digitalWrite()")
+#            return {'ok': False, 'exception': str(e), }
+#
+#    @cherrypy.expose
+#    @cherrypy.tools.json_out()
+#    def analog_write(self, pin=None, value=None):
+#        try:
+#            self.proxy.analogWrite(int(pin), int(value))
+#            return {'ok': True, }
+#        except Exception, e:
+#            # FIXME: return error details and log
+#            logging.exception("Exception raised by proxy.analogWrite()")
+#            return {'ok': False, 'exception': str(e), }
+#    
+#    @cherrypy.expose
+#    @cherrypy.tools.json_out()
+#    def analog_read(self, pin=None):
+#        try:
+#            value = self.proxy.analogRead(int(pin))
+#            return {'ok': True, 'value': value, }
+#        except Exception, e:
+#            # FIXME: return error details and log
+#            logging.exception("Exception raised by proxy.analogRead()")
+#            return {'ok': False, 'exception': str(e), }
+#    
+#    @cherrypy.expose
+#    @cherrypy.tools.json_out()
+#    def digital_read(self, pin=None):
+#        try:
+#            value = self.proxy.digitalRead(int(pin))
+#            if value == ArduinoProxy.HIGH:
+#                return {'ok': True, 'value': 1, }
+#            elif value == ArduinoProxy.LOW:
+#                return {'ok': True, 'value': 0, }
+#            else:
+#                # FIXME: return error details and log
+#                return {'ok': False, 'error': 'ArduinoProxy returned an invalid value: ' + value}
+#        except Exception, e:
+#            # FIXME: return error details and log
+#            logging.exception("Exception raised by proxy.analogWrite()")
+#            return {'ok': False, 'exception': str(e), }
+#
+#    @cherrypy.expose
+#    @cherrypy.tools.json_out()
+#    def delay(self, value=None):
+#        try:
+#            self.proxy.delay(int(value))
+#            return {'ok': True, }
+#        except Exception, e:
+#            # FIXME: return error details and log
+#            logging.exception("Exception raised by proxy.delay()")
+#            return {'ok': False, 'exception': str(e), }
+#
+#    @cherrypy.expose
+#    @cherrypy.tools.json_out()
+#    def get_free_memory(self):
+#        try:
+#            return {
+#                'ok': True,
+#                'freeMemory': self.proxy.getFreeMemory(),
+#            }
+#        except Exception, e:
+#            # FIXME: return error details and log
+#            logging.exception("Exception raised by proxy.getAvrCpuType()")
+#            return {'ok': False, 'exception': str(e), }
 
-    @cherrypy.expose
-    @cherrypy.tools.json_out()
-    def ping(self):
-        try:
-            self.proxy.ping()
-            return {'ok': True, }
-        except Exception, e:
-            # FIXME: return error details and log
-            logging.exception("Exception raised by proxy.ping()")
-            return {'ok': False, 'exception': str(e), }
+#    @cherrypy.expose
+#    @cherrypy.tools.json_out()
+#    def get_avr_cpu_type(self):
+#        try:
+#            return {
+#                'ok': True,
+#                'avrCpuType': self.proxy.getAvrCpuType(),
+#            }
+#        except Exception, e:
+#            # FIXME: return error details and log
+#            logging.exception("Exception raised by proxy.getAvrCpuType()")
+#            return {'ok': False, 'exception': str(e), }
+#
+#    @cherrypy.expose
+#    @cherrypy.tools.json_out()
+#    def get_arduino_type_struct(self):
+#        try:
+#            return {
+#                'ok': True,
+#                'arduinoTypeStruct': self.proxy.getArduinoTypeStruct(),
+#            }
+#        except Exception, e:
+#            # FIXME: return error details and log
+#            logging.exception("Exception raised by proxy.getArduinoTypeStruct()")
+#            return {'ok': False, 'exception': str(e), }
 
-    @cherrypy.expose
-    @cherrypy.tools.json_out()
-    def validate_connection(self):
-        try:
-            random_value = self.proxy.validateConnection()
-            return {'ok': True, 'random_value': random_value, }
-        except Exception, e:
-            # FIXME: return error details and log
-            logging.exception("Exception raised by proxy.validateConnection()")
-            return {'ok': False, 'exception': str(e), }
-
-    @cherrypy.expose
-    @cherrypy.tools.json_out()
-    def pin_mode(self, pin=None, mode=None):
-        try:
-            if mode == 'output':
-                self.proxy.pinMode(int(pin), ArduinoProxy.OUTPUT)
-                return {'ok': True, }
-            elif mode == 'input':
-                self.proxy.pinMode(int(pin), ArduinoProxy.INPUT)
-                return {'ok': True, }
-            else:
-                # FIXME: return error details and log
-                return {'ok': False, 'error': 'Invalid mode: ' + mode}
-        except Exception, e:
-            # FIXME: return error details and log
-            logging.exception("Exception raised by proxy.pinMode()")
-            return {'ok': False, 'exception': str(e), }
-
-    @cherrypy.expose
-    @cherrypy.tools.json_out()
-    def digital_write(self, pin=None, value=None):
-        try:
-            if value == 'low':
-                self.proxy.digitalWrite(int(pin), ArduinoProxy.LOW)
-                return {'ok': True, }
-            elif value == 'high':
-                self.proxy.digitalWrite(int(pin), ArduinoProxy.HIGH)
-                return {'ok': True, }
-            else:
-                # FIXME: return error details and log
-                return {'ok': False, 'error': 'ArduinoProxy returned an invalid value: ' + value}
-        except Exception, e:
-            # FIXME: return error details and log
-            logging.exception("Exception raised by proxy.digitalWrite()")
-            return {'ok': False, 'exception': str(e), }
-
-    @cherrypy.expose
-    @cherrypy.tools.json_out()
-    def analog_write(self, pin=None, value=None):
-        try:
-            self.proxy.analogWrite(int(pin), int(value))
-            return {'ok': True, }
-        except Exception, e:
-            # FIXME: return error details and log
-            logging.exception("Exception raised by proxy.analogWrite()")
-            return {'ok': False, 'exception': str(e), }
-    
-    @cherrypy.expose
-    @cherrypy.tools.json_out()
-    def analog_read(self, pin=None):
-        try:
-            value = self.proxy.analogRead(int(pin))
-            return {'ok': True, 'value': value, }
-        except Exception, e:
-            # FIXME: return error details and log
-            logging.exception("Exception raised by proxy.analogRead()")
-            return {'ok': False, 'exception': str(e), }
-    
-    @cherrypy.expose
-    @cherrypy.tools.json_out()
-    def digital_read(self, pin=None):
-        try:
-            value = self.proxy.digitalRead(int(pin))
-            if value == ArduinoProxy.HIGH:
-                return {'ok': True, 'value': 1, }
-            elif value == ArduinoProxy.LOW:
-                return {'ok': True, 'value': 0, }
-            else:
-                # FIXME: return error details and log
-                return {'ok': False, 'error': 'ArduinoProxy returned an invalid value: ' + value}
-        except Exception, e:
-            # FIXME: return error details and log
-            logging.exception("Exception raised by proxy.analogWrite()")
-            return {'ok': False, 'exception': str(e), }
-
-    @cherrypy.expose
-    @cherrypy.tools.json_out()
-    def delay(self, value=None):
-        try:
-            self.proxy.delay(int(value))
-            return {'ok': True, }
-        except Exception, e:
-            # FIXME: return error details and log
-            logging.exception("Exception raised by proxy.delay()")
-            return {'ok': False, 'exception': str(e), }
-
-    @cherrypy.expose
-    @cherrypy.tools.json_out()
-    def get_free_memory(self):
-        try:
-            return {
-                'ok': True,
-                'freeMemory': self.proxy.getFreeMemory(),
-            }
-        except Exception, e:
-            # FIXME: return error details and log
-            logging.exception("Exception raised by proxy.getAvrCpuType()")
-            return {'ok': False, 'exception': str(e), }
-
-    @cherrypy.expose
-    @cherrypy.tools.json_out()
-    def get_avr_cpu_type(self):
-        try:
-            return {
-                'ok': True,
-                'avrCpuType': self.proxy.getAvrCpuType(),
-            }
-        except Exception, e:
-            # FIXME: return error details and log
-            logging.exception("Exception raised by proxy.getAvrCpuType()")
-            return {'ok': False, 'exception': str(e), }
-
-    @cherrypy.expose
-    @cherrypy.tools.json_out()
-    def get_arduino_type_struct(self):
-        try:
-            return {
-                'ok': True,
-                'arduinoTypeStruct': self.proxy.getArduinoTypeStruct(),
-            }
-        except Exception, e:
-            # FIXME: return error details and log
-            logging.exception("Exception raised by proxy.getArduinoTypeStruct()")
-            return {'ok': False, 'exception': str(e), }
-
-    @cherrypy.expose
-    @cherrypy.tools.json_out()
-    def close(self):
-        try:
-            self.proxy.close()
-            self.proxy = None
-            return {'ok': True, }
-        except Exception, e:
-            # FIXME: return error details and log
-            logging.exception("Exception raised by proxy.close()")
-            return {'ok': False, 'exception': str(e), }
+#    @cherrypy.expose
+#    @cherrypy.tools.json_out()
+#    def close(self):
+#        try:
+#            self.proxy.close()
+#            self.proxy = None
+#            return {'ok': True, }
+#        except Exception, e:
+#            # FIXME: return error details and log
+#            logging.exception("Exception raised by proxy.close()")
+#            return {'ok': False, 'exception': str(e), }
 
 
-def start_webserver(port, proxy=None, validate_connection_error_handler=None):
-    directory = os.path.split(__file__)[0]
-    static_dir = os.path.join(directory, 'static')
-    logger.info("Using '%s' as directory for templates, images, css, etc.", static_dir)
-    conf = {
-        '/': {
-            'tools.sessions.on': True,
-        },
-        '/static': {
-            'tools.staticdir.on': True,
-            'tools.staticdir.dir': static_dir,
-        }
-    }
-    
-    jinja2_env = jinja2.Environment(loader=jinja2.FileSystemLoader(static_dir))
-    
-    cherrypy.config.update({
-        'log.screen': False,
-        'server.socket_port': port,
-    })
-    
-    cherrypy.quickstart(Root(jinja2_env, proxy=proxy,
-        validate_connection_error_handler=validate_connection_error_handler), '/', config=conf)
-
-    # cherrypy.log.error_log.setLevel(logging.ERROR)
-    # cherrypy.log.access_log.setLevel(logging.ERROR)
-
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    # CherryPy examples
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    #
-    #    # Set up site-wide config first so we get a log if errors occur.
-    #    cherrypy.config.update({'environment': 'production',
-    #                            'log.error_file': 'site.log',
-    #                            'log.screen': True})
-    #
-    #    conf = {'/feed': {'tools.staticdir.on': True,
-    #                      'tools.staticdir.dir': os.path.join(current_dir, 'feeds'),
-    #                      'tools.staticdir.content_types': {'rss': 'application/xml',
-    #                                                        'atom': 'application/atom+xml'}}}
-    #    cherrypy.quickstart(Root(), '/', config=conf)
-    #
-    #    cherrypy.config.update({
-    #        'server.socket_host': '64.72.221.48',
-    #        'server.socket_port': 80,
-    #    })
-    #
-    #    config = {'/':
-    #        {
-    #            'request.dispatch': cherrypy.dispatch.MethodDispatcher(),
-    #            'tools.trailing_slash.on': False,
-    #        }
-    #    }
-    #    cherrypy.tree.mount(Root(), "/script_name_root", config=config)
+#def start_webserver(port, proxy=None, validate_connection_error_handler=None):
+#    directory = os.path.split(__file__)[0]
+#    static_dir = os.path.join(directory, 'static')
+#    logger.info("Using '%s' as directory for templates, images, css, etc.", static_dir)
+#    conf = {
+#        '/': {
+#            'tools.sessions.on': True,
+#        },
+#        '/static': {
+#            'tools.staticdir.on': True,
+#            'tools.staticdir.dir': static_dir,
+#        }
+#    }
+#
+#    jinja2_env = jinja2.Environment(loader=jinja2.FileSystemLoader(static_dir))
+#
+#    cherrypy.config.update({
+#        'log.screen': False,
+#        'server.socket_port': port,
+#    })
+#
+#    cherrypy.quickstart(Root(jinja2_env, proxy=proxy,
+#        validate_connection_error_handler=validate_connection_error_handler), '/', config=conf)

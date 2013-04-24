@@ -1367,7 +1367,9 @@ class ArduinoProxy(object): # pylint: disable=R0904
 
         arduino_type_struct = {
             'analog_pins': int(splitted[0]),
+            'analog_pins_items': range(0, int(splitted[0])),
             'digital_pins': int(splitted[1]),
+            'digital_pins_items': range(0, int(splitted[1])),
             'pwm_pins_bitmap': splitted[2],
             'eeprom_size': int(splitted[3]), # KiB
             'flash_size': int(splitted[4]), # KiB
