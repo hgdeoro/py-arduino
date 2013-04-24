@@ -34,7 +34,7 @@ from arduino_proxy.main_utils import default_main
 
 def main(): # pylint: disable=R0915
     _, _, proxy = default_main() # pylint: disable=W0612
-    analog_reads = (400, 1000, )
+    analog_reads = (400, 1000,)
     try:
         #
         # streamingAnalogRead()
@@ -44,19 +44,21 @@ def main(): # pylint: disable=R0915
         for i in xrange(0, analog_reads[0]): #@UnusedVariable
             proxy.analogRead(0)
         end_analogRead = datetime.now()
-        
+        analogRead_time = end_analogRead - start_analogRead
+
         print "Initiating %d reads using streamingAnalogRead()" % analog_reads[1]
         start_streamingAnalogRead = datetime.now()
         for i in proxy.streamingAnalogRead(0, analog_reads[1]): #@UnusedVariable
             pass
         end_streamingAnalogRead = datetime.now()
-        
-        non_streaming = float(analog_reads[0]) / (end_analogRead - start_analogRead).total_seconds()
-        streaming = float(1000.0) / (end_streamingAnalogRead - start_streamingAnalogRead).total_seconds()
+        streamingAnalogRead_time = end_streamingAnalogRead - start_streamingAnalogRead
+
+        non_streaming = float(analog_reads[0]) / analogRead_time.total_seconds()
+        streaming = float(1000.0) / streamingAnalogRead_time.total_seconds()
         print "analogRead() -> %f reads per second" % non_streaming
         print "streamingAnalogRead() ->  %f reads per second" % streaming
         print "speedup: X%0.2f" % (streaming / non_streaming)
-        
+
         #
         # streamingDigitalRead()
         #
@@ -65,19 +67,21 @@ def main(): # pylint: disable=R0915
         for i in xrange(0, analog_reads[0]): #@UnusedVariable
             proxy.digitalRead(0)
         end_digitalRead = datetime.now()
-        
+        digitalRead_time = end_digitalRead - start_digitalRead
+
         print "Initiating %d reads using streamingDigitalRead()" % analog_reads[1]
         start_streamingDigitalRead = datetime.now()
         for i in proxy.streamingDigitalRead(0, analog_reads[1]): #@UnusedVariable
             pass
         end_streamingDigitalRead = datetime.now()
-        
-        non_streaming = float(analog_reads[0]) / (end_digitalRead - start_digitalRead).total_seconds()
-        streaming = float(1000.0) / (end_streamingDigitalRead - start_streamingDigitalRead).total_seconds()
+        streamingDigitalRead_time = end_streamingDigitalRead - start_streamingDigitalRead
+
+        non_streaming = float(analog_reads[0]) / digitalRead_time.total_seconds()
+        streaming = float(1000.0) / streamingDigitalRead_time.total_seconds()
         print "digitalRead() -> %f reads per second" % non_streaming
         print "streamingDigitalRead() ->  %f reads per second" % streaming
         print "speedup: X%0.2f" % (streaming / non_streaming)
-        
+
     except KeyboardInterrupt:
         print ""
     except Exception:
