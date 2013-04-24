@@ -7,9 +7,6 @@ from arduino_proxy.proxy import ArduinoProxy
 from django.http.response import HttpResponse
 
 
-EXPORT_VIEWS = ('get_avr_cpu_type', 'get_arduino_type_struct', 'ping', 'validate_connection',
-    'get_free_memory', 'close',)
-
 PROXY = ArduinoProxy.create_emulator()
 
 
