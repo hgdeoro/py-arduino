@@ -51,11 +51,13 @@ def home(request):
 
     # At this point, PROXY exists and is valid
     arduino_type = PROXY.getArduinoTypeStruct()
+    enhanced_arduino_type = PROXY.enhanceArduinoTypeStruct(arduino_type)
     avr_cpu_type = PROXY.getAvrCpuType()
 
     ctx = {
         'arduino_type': arduino_type,
         'avr_cpu_type': avr_cpu_type,
+        'enhanced_arduino_type': enhanced_arduino_type,
     }
 
     return render(request, 'web-ui-main.html', ctx)

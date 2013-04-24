@@ -1367,13 +1367,15 @@ class ArduinoProxy(object): # pylint: disable=R0904
 
         arduino_type_struct = {
             'analog_pins': int(splitted[0]),
-            'analog_pins_items': range(0, int(splitted[0])),
             'digital_pins': int(splitted[1]),
-            'digital_pins_items': range(0, int(splitted[1])),
             'pwm_pins_bitmap': splitted[2],
             'eeprom_size': int(splitted[3]), # KiB
             'flash_size': int(splitted[4]), # KiB
             'ram_size': int(splitted[5]), # KiB
+            'pwm_pin_list': None,
+            'eeprom_size_bytes': None,
+            'flash_size_bytes': None,
+            'ram_size_bytes': None,
         }
 
         pwm_pin_list = []
@@ -1391,6 +1393,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         arduino_type_struct['flash_size_bytes'] = arduino_type_struct['flash_size'] * 1024
         arduino_type_struct['ram_size_bytes'] = arduino_type_struct['ram_size'] * 1024
 
+        assert None not in arduino_type_struct.keys()
         return arduino_type_struct
 
     getArduinoTypeStruct.arduino_function_name = '_gATS'
@@ -1410,6 +1413,15 @@ class ArduinoProxy(object): # pylint: disable=R0904
                 Serial.print("\\n");
             }
         """)
+
+    def enhanceArduinoTypeStruct(self, arduino_type_struct):
+        """
+        Enhance the 'type struct' with utilities and user-friendly data.
+        """
+        arduino_type_struct = arduino_type_struct.copy()
+        arduino_type_struct['analog_pins_items'] = range(0, arduino_type_struct['analog_pins'])
+        arduino_type_struct['digital_pins_items'] = range(0, arduino_type_struct['digital_pins'])
+        return arduino_type_struct
 
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 

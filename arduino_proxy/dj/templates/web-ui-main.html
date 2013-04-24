@@ -321,7 +321,7 @@
 	
     {# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #}
     
-	{% for pin in arduino_type.digital_pins_items %}
+	{% for pin in enhanced_arduino_type.digital_pins_items %}
 	<div style="padding-bottom: 4px;">
 		<div>
 			
@@ -358,7 +358,7 @@
             
 		</div>
 		
-		{% if pin in arduino_type.pwm_pin_list %}
+		{% if pin in enhanced_arduino_type.pwm_pin_list %}
 			<!-- analogWrite() / PWM -->
 			<div class="pin{{ pin }}_for_write pwm_slide ui-helper-hidden" style="overflow: auto; width: 100%; padding-bottom: 10px;">
 				<div style="float: left; padding-right: 20px;">analogWrite():</div>
@@ -371,7 +371,7 @@
 	
     {# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #}
     
-	{% for pin in arduino_type.analog_pins_items %}
+	{% for pin in enhanced_arduino_type.analog_pins_items %}
     <div>
 
         <span id="pinA{{ pin }}_label" class="analog_pin_label" title="Click here to edit">Analog pin {{ pin }}</span>:

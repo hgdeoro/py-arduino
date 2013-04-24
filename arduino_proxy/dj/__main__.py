@@ -51,19 +51,19 @@ def start_gunicorn():
 
 def main():
     logging.basicConfig(level=logging.INFO)
-    logging.info("Creando instancias de Process...")
+    logging.info("Creating Process instances...")
     py_arduino_proxy = multiprocessing.Process(target=start_pyarduinoproxy, args=[])
     django = multiprocessing.Process(target=start_gunicorn, args=[])
 
-    logging.info("Iniciando procesos...")
+    logging.info("Starting processes...")
     py_arduino_proxy.start()
     django.start()
 
-    logging.info("Esperando join()")
+    logging.info("Waiting for join()")
     py_arduino_proxy.join()
     django.join()
 
-    logging.info("Todo termino!")
+    logging.info("Finished!!")
 
 if __name__ == '__main__':
     main()
