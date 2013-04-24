@@ -21,7 +21,7 @@
 
 # TODO: _unindent() could be a annotation
 
-import logging
+import logging as _logging
 import math
 import pprint
 import random
@@ -36,7 +36,7 @@ try:
 except ImportError:
     from StringIO import StringIO
 
-logger = logging.getLogger(__name__) # pylint: disable=C0103
+logger = _logging.getLogger(__name__) # pylint: disable=C0103
 
 DEFAULT_SERIAL_SPEED = 9600
 
@@ -209,7 +209,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         """
         # For communicating with the computer, use one of these rates: 300, 1200, 2400, 4800,
         #    9600, 14400, 19200, 28800, 38400, 57600, or 115200.
-        logger.debug("Instantiating ArduinoProxy('%s', %d)..." % (tty, speed))
+        logger.debug("Instantiating ArduinoProxy('%s', %d)...", tty, speed)
         self.tty = tty
         self.speed = speed
         self.wait_after_open = wait_after_open
@@ -406,7 +406,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         if splitted[0] == ArduinoProxy.INVALID_CMD:
             if len(splitted) == 1:
                 logger.warn("Received ArduinoProxy.INVALID_CMD, but without error code. " + \
-                    "The command was: %s" % pprint.pformat(cmd))
+                    "The command was: %s", pprint.pformat(cmd))
                 raise(InvalidCommand("Arduino responded with INVALID_CMD. " + \
                     "The command was: %s" % pprint.pformat(cmd)))
             else:
@@ -417,7 +417,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         if splitted[0] == ArduinoProxy.INVALID_PARAMETER:
             if len(splitted) == 1:
                 logger.warn("Received ArduinoProxy.INVALID_PARAMETER, but without error code. " + \
-                    "The command was: %s" % pprint.pformat(cmd))
+                    "The command was: %s", pprint.pformat(cmd))
                 raise(InvalidParameter("Arduino responded with INVALID_PARAMETER. " + \
                     "The command was: %s" % pprint.pformat(cmd)))
             else:
