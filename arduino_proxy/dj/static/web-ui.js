@@ -1,8 +1,3 @@
-// Hide the error message.
-function hideErrorMessages() {
-    $('#error_messages').hide();
-}
-
 // Attach 'global' event listener of ajax errors
 function attachGlobalAjaxError() {
 	// http://api.jquery.com/ajaxError/
