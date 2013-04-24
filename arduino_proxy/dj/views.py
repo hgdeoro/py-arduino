@@ -63,7 +63,7 @@ def home(request):
 def connect(request):
     global PROXY
     if request.method == 'GET':
-        return render(request, 'web-ui-select-serial-port.html', {})
+        return render(request, 'web-ui-connect.html', {})
 
     if PROXY is not None:
         raise(Exception("WHAT TO DO???"))

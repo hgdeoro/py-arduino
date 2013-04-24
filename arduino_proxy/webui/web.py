@@ -52,7 +52,7 @@ class Root(object):
         if serial_port is None:
             error_message = cherrypy.session.get('error_message') #@UndefinedVariable
             cherrypy.session['error_message'] = None #@UndefinedVariable
-            template = self.jinja2_env.get_template('web-ui-select-serial-port.html')
+            template = self.jinja2_env.get_template('web-ui-connect.html')
             return template.render(error_message=error_message)
         
         # Try to conect
@@ -77,7 +77,7 @@ class Root(object):
             error_message = "Must specify a serial port."
         
         assert error_message
-        template = self.jinja2_env.get_template('web-ui-select-serial-port.html')
+        template = self.jinja2_env.get_template('web-ui-connect.html')
         return template.render(error_message=error_message)
 
     #    @cherrypy.expose
