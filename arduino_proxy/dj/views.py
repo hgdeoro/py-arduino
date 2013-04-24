@@ -2,7 +2,8 @@ import logging
 import json
 
 from django.shortcuts import render
-from django.http.response import HttpResponse, HttpResponseRedirect
+from django.http.response import HttpResponse, HttpResponseRedirect,\
+    HttpResponseServerError
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 
@@ -21,7 +22,7 @@ class JsonResponse(HttpResponse):
             *args, **kwargs)
 
 
-class JsonErrorResponse(HttpResponse):
+class JsonErrorResponse(HttpResponseServerError):
     def __init__(self, exception, *args, **kwargs):
         content = json.dumps({
             'ok': False,
@@ -113,6 +114,7 @@ def get_arduino_type_struct(request):
 
 def ping(request):
     try:
+        PROXY.ping()
         return JsonResponse({
             'ok': True,
         })
