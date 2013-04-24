@@ -1,0 +1,44 @@
+	<script type="text/javascript" src="/static/jquery-ui/js/jquery.tmpl.min.js"></script>
+
+    <div class="ui-widget" id="simple_log_console" style="padding-top: 1em;">
+        <!--
+        <div class="ui-state-highlight ui-corner-all" style="padding: 0.3em;">
+            <p>
+                <span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em;"></span>
+                <strong>INFO:</strong>
+                <span>UI started ok.</span>
+            </p>
+        </div>
+        -->
+    </div>
+
+    <!-- TEMPLATE -->
+    <script id="info_message_template" type="text/x-jquery-tmpl">
+        <div class="ui-state-highlight ui-corner-all" style="padding: 0.3em;">
+            <p style="margin: 0.1em; padding: 0.1em;">
+                <span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em;"></span>
+                <span>${date} - INFO:</span>
+                <strong>${log_message}</strong>
+            </p>
+        </div>
+    </script>
+    
+    <!-- TEMPLATE -->
+    <script id="error_message_template" type="text/x-jquery-tmpl">
+        <div class="ui-state-error ui-corner-all" style="padding: 0 .3em;"> 
+            <p style="margin: 0.1em; padding: 0.1em;">
+                <span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span> 
+                <span>${date} - ERROR:</span>
+                <strong>${log_message}</strong>
+            </p>
+        </div>
+    </script>
+
+<script type="text/javascript">
+$(function(){
+
+    $("#info_message_template").template("info_message_template");
+    $("#error_message_template").template("error_message_template");
+
+});
+</script>

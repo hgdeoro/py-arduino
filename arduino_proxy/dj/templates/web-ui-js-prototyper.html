@@ -38,18 +38,6 @@
         
 		<script type="text/javascript">
             
-			function clearLogConsole() {
-				$("#simple_log_console").html('');
-			}
-			
-			function logMessage(msg) {
-				$.tmpl("info_message_template", [{ log_message: msg, date: new Date() }]).appendTo("#simple_log_console");
-			}
-			
-			function errorMessage(msg) {
-				$.tmpl("error_message_template", [{ log_message: msg, date: new Date() }]).appendTo("#simple_log_console");
-			}
-			
             /*
              * Returns the text of the editor.
              */
@@ -73,18 +61,18 @@
 				// js_source += $("#js_code_editor").val();
 				js_source += getJsCodeEditorText();
 				try {
-					clearLogConsole();
+					simpleLogConsoleClear();
 					eval(js_source);
                     try {
                       var ram = proxy.globalData()['arduino_type_struct']['ram_size_bytes'];
                       var free = proxy.getFreeMemory();
                       var pc = Math.floor((free/ram)*100);
-                      logMessage("Script executed successfully - " + pc + "% ram free (" + free + " bytes free of " + ram + " bytes)");
+                      simpleLogConsoleLogInfo("Script executed successfully - " + pc + "% ram free (" + free + " bytes free of " + ram + " bytes)");
                     } catch(err) {
-                      logMessage("Script executed successfully");
+                      simpleLogConsoleLogInfo("Script executed successfully");
                     }
 				} catch(err) {
-					errorMessage(err);
+					simpleLogConsoleLogError(err);
 				}
                 if($("body").data("codeMirrorInstance") != null)
                     $("body").data("codeMirrorInstance").focus();
@@ -104,9 +92,6 @@
 				PyArduinoProxy.enableJsExceptions();
 				
 				proxy = PyArduinoProxy;
-				
-				$("#info_message_template").template("info_message_template");
-				$("#error_message_template").template("error_message_template");
 				
 				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 				// Attach events to buttons
@@ -137,7 +122,7 @@
 				});
 
 				$("#clear_log_console_button").button().click(function() {
-					clearLogConsole();
+					simpleLogConsoleClear();
 				});
                 
                 /*
@@ -217,45 +202,12 @@
 	
 	<div id="js_code_editor_wrapper">
 		<textarea id="js_code_editor">
-logMessage("Will send ping to Arduino...");
+simpleLogConsoleLogInfo("Will send ping to Arduino...");
 proxy.ping();
-logMessage("Ping OK.");
+simpleLogConsoleLogInfo("Ping OK.");
 </textarea>
 	</div>
 	
-	<!-- TEMPLATE -->
-	<script id="info_message_template" type="text/x-jquery-tmpl">
-		<div class="ui-state-highlight ui-corner-all" style="padding: 0.3em;">
-			<p style="margin: 0.1em; padding: 0.1em;">
-				<span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em;"></span>
-				<span>${date} - INFO:</span>
-				<strong>${log_message}</strong>
-			</p>
-		</div>
-	</script>
-	
-	<!-- TEMPLATE -->
-	<script id="error_message_template" type="text/x-jquery-tmpl">
-		<div class="ui-state-error ui-corner-all" style="padding: 0 .3em;"> 
-			<p style="margin: 0.1em; padding: 0.1em;">
-				<span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span> 
-				<span>${date} - ERROR:</span>
-				<strong>${log_message}</strong>
-			</p>
-		</div>
-	</script>
-
-    <div class="ui-widget" id="simple_log_console">
-        <!--
-        <div class="ui-state-highlight ui-corner-all" style="padding: 0.3em;">
-            <p>
-                <span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em;"></span>
-                <strong>INFO:</strong>
-                <span>UI started ok.</span>
-            </p>
-        </div>
-        -->
-    </div>
     <div id="docs_accordion">
         <h3><a href="#">Example: blink led</a></h3>
         <div class="ui-helper-reset" style="font-size: 1.5em;">
@@ -266,12 +218,12 @@ logMessage("Ping OK.");
 
 var pinToBlink = 13;
 
-logMessage("Setting pin " + pinToBlink + " as OUTPUT");
+simpleLogConsoleLogInfo("Setting pin " + pinToBlink + " as OUTPUT");
 proxy.pinMode(pinToBlink, OUTPUT);
 
 if(! confirm("Start to blink?")) throw "stopping script";
 
-logMessage("Starting to blink");
+simpleLogConsoleLogInfo("Starting to blink");
 var i;
 for(i=0; i&lt;5; i++) {
     proxy.digitalWrite(pinToBlink, HIGH);
@@ -297,13 +249,13 @@ function readTemp(analogPort) {
 
 var analogPort = 0;
 
-logMessage("Temp. on A" + analogPort + ": " + readTemp(analogPort));
+simpleLogConsoleLogInfo("Temp. on A" + analogPort + ": " + readTemp(analogPort));
 
 /***********************************************************************
  * Use 'toFixed()' to get a better formatting
  ***********************************************************************/
 
-logMessage("Temp. on A" + analogPort + ": " + readTemp(analogPort).toFixed(1) + "º C");
+simpleLogConsoleLogInfo("Temp. on A" + analogPort + ": " + readTemp(analogPort).toFixed(1) + "º C");
 </pre>
 <!-- <button id="example_0" class="button_mv_src_to_editor">Move source to editor</button> -->
         </div>

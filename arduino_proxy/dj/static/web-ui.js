@@ -2,8 +2,9 @@
 function attachGlobalAjaxError() {
 	// http://api.jquery.com/ajaxError/
 	$(document).ajaxError(function(event, request, settings){
-        var msg = "<b>Error:</b> a problem occurred when communicating to the server. Url: '" + settings.url + "'";
-        alert(msg);
+        var msg = "A problem occurred when communicating to the server. Url: '" + settings.url + "'";
+        // alert(msg);
+        simpleLogConsoleLogError(msg);
         // FIXME: remove 'alert' and show the message in the HTML
     });
 }
@@ -56,4 +57,19 @@ function redirectToMainPage() {
 
 function redirectToJsPrototyper() {
     window.location.replace("/js_prototyper");
+}
+
+/*
+ * Simple Log Console
+ */
+function simpleLogConsoleClear() {
+	$("#simple_log_console").html('');
+}
+
+function simpleLogConsoleLogInfo(msg) {
+	$.tmpl("info_message_template", [{ log_message: msg, date: new Date() }]).appendTo("#simple_log_console");
+}
+
+function simpleLogConsoleLogError(msg) {
+	$.tmpl("error_message_template", [{ log_message: msg, date: new Date() }]).appendTo("#simple_log_console");
 }
