@@ -1,13 +1,14 @@
-<!-- dynamic error messages, generated from js -->
-<div id="error_messages" style="display: none; margin-bottom: 20px;">
+{% if messages %}
+<div style="margin-bottom: 20px;">
     <div class="ui-widget">
         <div class="ui-state-error ui-corner-all" style="padding: 0 .7em;"> 
-            <p>
-                <span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span> 
-                <span id="error_message_text">
-                    {{ error_message }}
-                </span>
-            </p>
+            {% for message in messages %}
+	            <p>
+	                <span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span> 
+	                   {{ message }}
+	            </p>
+            {% endfor %}
         </div>
     </div>
 </div>
+{% endif %}

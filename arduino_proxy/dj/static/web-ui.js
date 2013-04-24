@@ -1,15 +1,3 @@
-// Show an error message at the TOP of the page.
-function showErrorMessage(html_msg) {
-    $('#error_message_text').html(html_msg);
-    $('#error_message_text').append(" <a href='javascript:hideErrorMessages(); return false;'>[hide]</a>");
-    $("#error_messages").show();
-}
-
-// Show the current (jinja2 rendered) error mesage.
-function showCurrentErrorMessage(html_msg) {
-    $("#error_messages").show();
-}
-
 // Hide the error message.
 function hideErrorMessages() {
     $('#error_messages').hide();
@@ -17,8 +5,11 @@ function hideErrorMessages() {
 
 // Attach 'global' event listener of ajax errors
 function attachGlobalAjaxError() {
-    $("#error_messages").ajaxError(function(event, request, settings){
-        showErrorMessage("<b>Error:</b> a problem occurred when communicating to the server. Url: '" + settings.url + "'");
+	// http://api.jquery.com/ajaxError/
+	$(document).ajaxError(function(event, request, settings){
+        var msg = "<b>Error:</b> a problem occurred when communicating to the server. Url: '" + settings.url + "'";
+        alert(msg);
+        // FIXME: remove 'alert' and show the message in the HTML
     });
 }
 
