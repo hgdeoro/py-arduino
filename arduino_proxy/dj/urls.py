@@ -6,10 +6,11 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    # Examples:
-    # url(r'^dj/', include('dj.foo.urls')),
+    # Global URLs
     url(r'^$', 'arduino_proxy.dj.views.home', name='home'),
+    url(r'^connect/?$', 'arduino_proxy.dj.views.connect', name='connect'),
 
+    # URLs for methods
     url(r'^pin_mode/?$', 'arduino_proxy.dj.views.pin_mode', name='pin_mode'),
     url(r'^digital_write/?$', 'arduino_proxy.dj.views.digital_write', name='digital_write'),
     url(r'^analog_write/?$', 'arduino_proxy.dj.views.analog_write', name='analog_write'),

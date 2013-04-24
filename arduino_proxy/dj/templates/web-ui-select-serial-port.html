@@ -47,7 +47,7 @@
 		<div class="ui-widget-content ui-corner-bottom">
 			<p>To establish a connection to the Arduino, insert the <strong>serial port</strong> device, the <strong>speed</strong>, and press "<strong>Connect</strong>".</p>
 			<div class="ui-form">
-			<form action="/connect" method="post" class="ui-helper-clearfix">
+			<form action="{% url 'connect' %}" method="post" class="ui-helper-clearfix">
 				<div style="float: left;">
 					<label for="f_serial_port" class="ui-helper-reset">Serial Port</label> 
 					<input type="text" name="serial_port" id="f_serial_port"/> 
@@ -63,6 +63,7 @@
 					</select>
 					-
 					<input type="submit" value="Connect" />
+                    {% csrf_token %}
 				</div>
 			</form>
 			</div>
@@ -78,9 +79,10 @@
 		<div class="ui-widget-content ui-corner-bottom">
 			<p>You can start the web interface with an "Arduino emulator".</p>
 			<div class="ui-form">
-			<form action="/connect_emulator" method="post" class="ui-helper-clearfix">
+			<form action="{% url 'connect' %}" method="post" class="ui-helper-clearfix">
 				<div style="float: left;">
-					<input type="submit" value="Start emulator" />
+					<input type="submit" name="connect_emulator" value="Start emulator" />
+                    {% csrf_token %}
 				</div>
 			</form>
 			</div>

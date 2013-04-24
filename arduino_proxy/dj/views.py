@@ -2,12 +2,15 @@ import logging
 import json
 
 from django.shortcuts import render
+from django.http.response import HttpResponse, HttpResponseRedirect
+from django.core.urlresolvers import reverse
+from django.contrib import messages
 
 from arduino_proxy.proxy import ArduinoProxy
-from django.http.response import HttpResponse
 
 
-PROXY = ArduinoProxy.create_emulator()
+# FIXME: for serious uses, creation of PROXY should be synchronized
+PROXY = None
 
 
 class JsonResponse(HttpResponse):
@@ -30,20 +33,22 @@ class JsonErrorResponse(HttpResponse):
 
 
 def home(request):
-    if not PROXY.is_connected():
-        PROXY.connect()
+    global PROXY
 
-    PROXY.validateConnection()
+    if PROXY is None:
+        return HttpResponseRedirect(reverse('connect'))
 
-    #    try:
-    #        PROXY.validateConnection()
-    #    except Exception, e:
-    #        if self.validate_connection_error_handler:
-    #            self.validate_connection_error_handler()
-    #        self.proxy = None
-    #        cherrypy.session['error_message'] = str(e) #@UndefinedVariable
-    #        raise cherrypy.HTTPRedirect("/connect")
+    try:
+        PROXY.validateConnection()
+    except Exception, e:
+        # FIXME: DESIGN: error hablder should be part of ArduinoProxy, not web interface...
+        #    if self.validate_connection_error_handler:
+        #        self.validate_connection_error_handler()
+        PROXY = None
+        messages.add_message(request, messages.ERROR, str(e))
+        return HttpResponseRedirect(reverse('connect'))
 
+    # At this point, PROXY exists and is valid
     arduino_type = PROXY.getArduinoTypeStruct()
     avr_cpu_type = PROXY.getAvrCpuType()
 
@@ -53,6 +58,33 @@ def home(request):
     }
 
     return render(request, 'web-ui-main.html', ctx)
+
+
+def connect(request):
+    global PROXY
+    if request.method == 'GET':
+        return render(request, 'web-ui-select-serial-port.html', {})
+
+    if PROXY is not None:
+        raise(Exception("WHAT TO DO???"))
+
+    if 'connect_emulator' in request.REQUEST:
+        PROXY = ArduinoProxy.create_emulator()
+        return HttpResponseRedirect(reverse('home'))
+
+    serial_port = request.REQUEST['serial_port']
+    speed = int(request.REQUEST['speed'])
+    try:
+        logging.info("Trying to connect to %s", serial_port)
+        PROXY = ArduinoProxy(serial_port, speed, wait_after_open=True)
+        PROXY.connect()
+        return HttpResponseRedirect(reverse('home'))
+    except Exception, e:
+        PROXY = None
+        logging.exception("Couldn't connect")
+        messages.add_message(request, messages.ERROR,
+            "Couldn't connect: {0}".format(str(e)))
+        return HttpResponseRedirect(reverse('connect'))
 
 
 def get_avr_cpu_type(request):
@@ -220,8 +252,10 @@ def get_free_memory(request):
 
 
 def close(request):
+    global PROXY
     try:
         PROXY.close()
+        PROXY = None
         return JsonResponse({
             'ok': True,
         })
