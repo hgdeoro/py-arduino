@@ -30,6 +30,7 @@ import time
 import threading
 
 from serial.tools.list_ports import comports
+from arduino_proxy.storage import Storage
 
 try:
     from cStringIO import StringIO
@@ -215,6 +216,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         self.wait_after_open = wait_after_open
         self.timeout = timeout
         self.call_validate_connection = call_validate_connection
+        self.storage = Storage()
 
         # One, and only one of (self.serial_port, self.emulator) should be not None
         self.serial_port = None
@@ -1442,7 +1444,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
                 'pin': dp,
                 'digital': True,
                 'pwm': (dp in arduino_type_struct['pwm_pin_list']),
-                'label': 'Digital PIN #{0}'.format(dp),
+                'label': self.storage.get_label(dp, True),
             })
         arduino_type_struct['digital_pins_struct'] = digital_pins_struct
 
@@ -1453,7 +1455,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
                 'pin': ap,
                 'digital': True,
                 'pwm': False,
-                'label': 'Analog PIN #{0}'.format(ap),
+                'label': self.storage.get_label(ap, False),
             })
         arduino_type_struct['analog_pins_struct'] = analog_pins_struct
 
