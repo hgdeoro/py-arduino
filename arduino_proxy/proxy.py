@@ -217,7 +217,10 @@ class ArduinoProxy(object): # pylint: disable=R0904
         self.wait_after_open = wait_after_open
         self.timeout = timeout
         self.call_validate_connection = call_validate_connection
-        self.storage = DjStorage()
+        try:
+            self.storage = DjStorage()
+        except:
+            self.storage = Storage()
 
         # One, and only one of (self.serial_port, self.emulator) should be not None
         self.serial_port = None

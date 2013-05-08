@@ -26,6 +26,10 @@ class Pin(models.Model):
 
 class DjStorage():
 
+    def __init__(self):
+        # Force access to the database, to raise exception if no DB exists
+        Pin.objects.count()
+
     def get_label(self, pin, is_digital):
         """
         Returns the label of the pin `pin`.
