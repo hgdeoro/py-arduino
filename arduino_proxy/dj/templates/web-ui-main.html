@@ -321,12 +321,13 @@
 	
     {# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #}
     
-	{% for pin in enhanced_arduino_type.digital_pins_items %}
+	{% for pin_struct in enhanced_arduino_type.digital_pins_struct %}
+	{% with pin=pin_struct.pin %}
 	<div style="padding-bottom: 4px;">
 		<div>
 			
-			<span id="pin{{ pin }}_label" class="digital_pin_label" title="Click here to edit">Digital pin {{ pin }}</span>:
-			
+			<span id="pin{{ pin }}_label" class="digital_pin_label" title="Click here to edit">{{ pin_struct.label }}</span>:
+            
 			<!--
                 This buttons set the pin mode.
                 Always are visible.
@@ -367,14 +368,16 @@
 		{% endif %}
 		
 	</div>
+	{% endwith %}
 	{% endfor %}
 	
     {# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #}
     
-	{% for pin in enhanced_arduino_type.analog_pins_items %}
+	{% for pin_struct in enhanced_arduino_type.analog_pins_struct %}
+    {% with pin=pin_struct.pin %}
     <div>
 
-        <span id="pinA{{ pin }}_label" class="analog_pin_label" title="Click here to edit">Analog pin {{ pin }}</span>:
+        <span id="pinA{{ pin }}_label" class="analog_pin_label" title="Click here to edit">{{ pin_struct.label }}</span>:
 
         <!--
             analogRead()
@@ -388,6 +391,7 @@
         <span id="pinA{{ pin }}_status_text" class="pin_status_text"></span>
         
     </div>
+    {% endwith %}
 	{% endfor %}
 
     {# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #}

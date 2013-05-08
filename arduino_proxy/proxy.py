@@ -1417,10 +1417,46 @@ class ArduinoProxy(object): # pylint: disable=R0904
     def enhanceArduinoTypeStruct(self, arduino_type_struct):
         """
         Enhance the 'type struct' with utilities and user-friendly data.
+        Adds:
+            - digital_pins_items -> list
+            - analog_pins_items -> list
+            - digital_pins_struct -> list of dicts
+                + pin
+                + digital
+                + pwm
+                + label
+            - analog_pins_struct
+                + pin (int)
+                + digital (bool)
+                + pwm (bool)
+                + label (str)
         """
         arduino_type_struct = arduino_type_struct.copy()
-        arduino_type_struct['analog_pins_items'] = range(0, arduino_type_struct['analog_pins'])
         arduino_type_struct['digital_pins_items'] = range(0, arduino_type_struct['digital_pins'])
+        arduino_type_struct['analog_pins_items'] = range(0, arduino_type_struct['analog_pins'])
+
+        # create 'structs' for each digital pin
+        digital_pins_struct = []
+        for dp in arduino_type_struct['digital_pins_items']:
+            digital_pins_struct.append({
+                'pin': dp,
+                'digital': True,
+                'pwm': (dp in arduino_type_struct['pwm_pin_list']),
+                'label': 'Digital PIN #{0}'.format(dp),
+            })
+        arduino_type_struct['digital_pins_struct'] = digital_pins_struct
+
+        # create 'structs' for each analog pin
+        analog_pins_struct = []
+        for ap in arduino_type_struct['analog_pins_items']:
+            analog_pins_struct.append({
+                'pin': ap,
+                'digital': True,
+                'pwm': False,
+                'label': 'Analog PIN #{0}'.format(ap),
+            })
+        arduino_type_struct['analog_pins_struct'] = analog_pins_struct
+
         return arduino_type_struct
 
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

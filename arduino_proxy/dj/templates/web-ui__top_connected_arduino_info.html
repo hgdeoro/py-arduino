@@ -10,14 +10,14 @@
     <b>AVR cpu type:</b> <span id="avrCpuType">{{ avr_cpu_type }}</span>
     
     - <b>Digital:</b> 
-    {% for pin in arduino_type.digital_pins_items %}
-        {{ pin }} {% if pin in arduino_type.pwm_pin_list %} (PWM) {% endif %}
+    {% for pin_struct in enhanced_arduino_type.digital_pins_struct %}
+        {{ pin_struct.pin }} {% if pin_struct.pwms %} (PWM) {% endif %}
         {% if not loop.last%} , {% endif %}
     {% endfor %}
     
     - <b>Analog:</b> 
-    {% for pin in arduino_type.analog_pins_items %}
-        {{ pin }}
+    {% for pin_struct in enhanced_arduino_type.analog_pins_struct %}
+        {{ pin_struct.pin }}
         {% if not loop.last%} , {% endif %}
     {% endfor %}
 </p>
