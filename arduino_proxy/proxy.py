@@ -31,7 +31,6 @@ import threading
 
 from serial.tools.list_ports import comports
 from arduino_proxy.storage import Storage
-from arduino_proxy.dj.models import DjStorage
 
 try:
     from cStringIO import StringIO
@@ -218,6 +217,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         self.timeout = timeout
         self.call_validate_connection = call_validate_connection
         try:
+            from arduino_proxy.dj.models import DjStorage
             self.storage = DjStorage()
         except:
             self.storage = Storage()
