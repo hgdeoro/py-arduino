@@ -1,5 +1,7 @@
 import logging
 import json
+import Pyro4
+import hmac
 
 from django.shortcuts import render
 from django.http.response import HttpResponse, HttpResponseRedirect,\
@@ -7,11 +9,12 @@ from django.http.response import HttpResponse, HttpResponseRedirect,\
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 
-from arduino_proxy.proxy import ArduinoProxy
+from arduino_proxy.proxy import ArduinoProxy, DEVICE_FOR_EMULATOR
 
 
 # FIXME: for serious uses, creation of PROXY should be synchronized
-PROXY = None
+Pyro4.config.HMAC_KEY = hmac.new('this-is-PyArduinoProxy').digest()
+PROXY = Pyro4.Proxy("PYRO:arduino_proxy.Proxy@localhost:61234")
 
 
 class JsonResponse(HttpResponse):
@@ -34,9 +37,7 @@ class JsonErrorResponse(HttpResponseServerError):
 
 
 def home(request):
-    global PROXY
-
-    if PROXY is None:
+    if not PROXY.is_connected():
         return HttpResponseRedirect(reverse('connect'))
 
     try:
@@ -45,7 +46,7 @@ def home(request):
         # FIXME: DESIGN: error hablder should be part of ArduinoProxy, not web interface...
         #    if self.validate_connection_error_handler:
         #        self.validate_connection_error_handler()
-        PROXY = None
+        PROXY.close()
         messages.add_message(request, messages.ERROR, str(e))
         return HttpResponseRedirect(reverse('connect'))
 
@@ -64,27 +65,29 @@ def home(request):
 
 
 def connect(request):
-    global PROXY
     if request.method == 'GET':
         return render(request, 'web-ui-connect.html', {})
 
-    if PROXY is not None:
-        raise(Exception("WHAT TO DO???"))
+    if PROXY.is_connected():
+        raise(Exception("ArduinoProxy is already connected"))
 
     if 'connect_emulator' in request.REQUEST:
-        PROXY = ArduinoProxy.create_emulator()
-        return HttpResponseRedirect(reverse('home'))
+        serial_port = DEVICE_FOR_EMULATOR
+        speed = None
+    else:
+        serial_port = request.REQUEST['serial_port']
+        speed = int(request.REQUEST['speed'])
 
-    serial_port = request.REQUEST['serial_port']
-    speed = int(request.REQUEST['speed'])
     try:
         logging.info("Trying to connect to %s", serial_port)
-        PROXY = ArduinoProxy(serial_port, speed, wait_after_open=True)
-        PROXY.connect()
+        PROXY.connect(tty=serial_port, speed=speed)
         return HttpResponseRedirect(reverse('home'))
     except Exception, e:
-        PROXY = None
-        logging.exception("Couldn't connect")
+        try:
+            PROXY.close()
+        except:
+            pass
+        logging.error("Couldn't connect. " + "".join(Pyro4.util.getPyroTraceback()))
         messages.add_message(request, messages.ERROR,
             "Couldn't connect: {0}".format(str(e)))
         return HttpResponseRedirect(reverse('connect'))
@@ -98,7 +101,8 @@ def get_avr_cpu_type(request):
         })
     except Exception, e:
         # FIXME: return error details and log
-        logging.exception("Exception raised by proxy.getAvrCpuType()")
+        logging.exception("Exception raised by proxy.getAvrCpuType(). " +
+            "".join(Pyro4.util.getPyroTraceback()))
         return JsonErrorResponse(e)
 
 
@@ -110,7 +114,8 @@ def get_arduino_type_struct(request):
         })
     except Exception, e:
         # FIXME: return error details and log
-        logging.exception("Exception raised by proxy.getArduinoTypeStruct()")
+        logging.exception("Exception raised by proxy.getArduinoTypeStruct(). " +
+            "".join(Pyro4.util.getPyroTraceback()))
         return JsonErrorResponse(e)
 
 
@@ -122,7 +127,8 @@ def ping(request):
         })
     except Exception, e:
         # FIXME: return error details and log
-        logging.exception("Exception raised by proxy.ping()")
+        logging.exception("Exception raised by proxy.ping(). " +
+            "".join(Pyro4.util.getPyroTraceback()))
         return JsonErrorResponse(e)
 
 
@@ -135,7 +141,8 @@ def validate_connection(request):
         })
     except Exception, e:
         # FIXME: return error details and log
-        logging.exception("Exception raised by proxy.validate_connection()")
+        logging.exception("Exception raised by proxy.validate_connection(). " +
+            "".join(Pyro4.util.getPyroTraceback()))
         return JsonErrorResponse(e)
 
 
@@ -154,7 +161,8 @@ def pin_mode(request):
             return JsonResponse({'ok': False, 'error': 'Invalid mode: {0}'.format(mode)})
     except Exception, e:
         # FIXME: return error details and log
-        logging.exception("Exception raised by proxy.pin_mode()")
+        logging.exception("Exception raised by proxy.pin_mode(). " +
+            "".join(Pyro4.util.getPyroTraceback()))
         return JsonErrorResponse(e)
 
 
@@ -176,7 +184,8 @@ def digital_write(request):
             })
     except Exception, e:
         # FIXME: return error details and log
-        logging.exception("Exception raised by proxy.digital_write()")
+        logging.exception("Exception raised by proxy.digital_write(). " +
+            "".join(Pyro4.util.getPyroTraceback()))
         return JsonErrorResponse(e)
 
 
@@ -190,7 +199,8 @@ def analog_write(request):
         })
     except Exception, e:
         # FIXME: return error details and log
-        logging.exception("Exception raised by proxy.analog_write()")
+        logging.exception("Exception raised by proxy.analog_write(). " +
+            "".join(Pyro4.util.getPyroTraceback()))
         return JsonErrorResponse(e)
 
 
@@ -204,7 +214,8 @@ def analog_read(request):
         })
     except Exception, e:
         # FIXME: return error details and log
-        logging.exception("Exception raised by proxy.analog_read()")
+        logging.exception("Exception raised by proxy.analog_read(). " +
+            "".join(Pyro4.util.getPyroTraceback()))
         return JsonErrorResponse(e)
 
 
@@ -224,7 +235,8 @@ def digital_read(request):
             })
     except Exception, e:
         # FIXME: return error details and log
-        logging.exception("Exception raised by proxy.digital_read()")
+        logging.exception("Exception raised by proxy.digital_read(). " +
+            "".join(Pyro4.util.getPyroTraceback()))
         return JsonErrorResponse(e)
 
 
@@ -238,7 +250,8 @@ def delay(request):
         })
     except Exception, e:
         # FIXME: return error details and log
-        logging.exception("Exception raised by proxy.delay()")
+        logging.exception("Exception raised by proxy.delay(). " +
+            "".join(Pyro4.util.getPyroTraceback()))
         return JsonErrorResponse(e)
 
 
@@ -251,19 +264,19 @@ def get_free_memory(request):
         })
     except Exception, e:
         # FIXME: return error details and log
-        logging.exception("Exception raised by proxy.get_free_memory()")
+        logging.exception("Exception raised by proxy.get_free_memory(). " +
+            "".join(Pyro4.util.getPyroTraceback()))
         return JsonErrorResponse(e)
 
 
 def close(request):
-    global PROXY
     try:
         PROXY.close()
-        PROXY = None
         return JsonResponse({
             'ok': True,
         })
     except Exception, e:
         # FIXME: return error details and log
-        logging.exception("Exception raised by proxy.close()")
+        logging.exception("Exception raised by proxy.close(). " +
+            "".join(Pyro4.util.getPyroTraceback()))
         return JsonErrorResponse(e)

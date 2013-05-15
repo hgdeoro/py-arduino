@@ -17,16 +17,19 @@
 ##    along with PyArduinoProxy; see the file LICENSE.txt.
 ##-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
+import hmac
 import Pyro4
 
 from arduino_proxy.proxy import ArduinoProxy
 
 
 def main():
-    proxy = ArduinoProxy.create_emulator()
-    Pyro4.Daemon.serveSimple({proxy: "arduino_proxy.Proxy"}, port=61234, ns=False)
-    # FORMA DE URI -> uri_string = "PYRO:musicserver@musicbox.my.lan:9999"
-
+    Pyro4.config.HMAC_KEY = hmac.new('this-is-PyArduinoProxy').digest()
+    Pyro4.config.SOCK_REUSE = True
+    proxy = ArduinoProxy()
+    Pyro4.Daemon.serveSimple({proxy: "arduino_proxy.Proxy"},
+        host="localhost", port=61234, ns=False)
+    # FORMA DE URI -> uri_string = "PYRO:arduino_proxy.Proxy@localhost:61234"
 
 if __name__ == '__main__':
     main()

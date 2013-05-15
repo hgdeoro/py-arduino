@@ -18,13 +18,19 @@
 ##-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 import Pyro4
+import hmac
+
+from arduino_proxy.proxy import DEVICE_FOR_EMULATOR
 
 
 def main():
-    server = Pyro4.Proxy("PYRO:arduino_proxy.Proxy@127.0.0.1:61234")
-    print "Ping:"
-    server.ping()
-    print "Fin"
+    Pyro4.config.HMAC_KEY = hmac.new('this-is-PyArduinoProxy').digest()
+    arduino_proxy = Pyro4.Proxy("PYRO:arduino_proxy.Proxy@localhost:61234")
+    print "Calling proxy.connect()"
+    arduino_proxy.connect(DEVICE_FOR_EMULATOR)
+    print "Calling proxy.ping()"
+    ret = arduino_proxy.ping()
+    print "Ping returned: '{0}'. End.".format(ret)
 
 if __name__ == '__main__':
     main()

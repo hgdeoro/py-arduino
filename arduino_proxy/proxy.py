@@ -222,7 +222,9 @@ class ArduinoProxy(object): # pylint: disable=R0904
         except:
             self.storage = Storage()
 
-        # One, and only one of (self.serial_port, self.emulator) should be not None
+        # NOT TRUE: "one, and only one of (self.serial_port, self.emulator) should be not None"
+        # TRUE: the emulator creates a "mock" for the serial_port
+        # These are used to track connection status (connected/disconnected)
         self.serial_port = None
         self.emulator = None
 
@@ -250,23 +252,28 @@ class ArduinoProxy(object): # pylint: disable=R0904
         return proxy
 
     @synchronized(ARDUINO_PROXY_LOCK)
-    def connect(self):
+    def connect(self, tty=None, speed=None):
         """
         Estabishes serial connection to the Arduino, and returns the proxy instance.
         This allow the instantiation and connection in one line:
 
         >>> proxy = ArduinoProxy('/dev/ttyACM0').connect()
         """
-        assert self.tty is not None
         assert not self.is_connected()
+        if tty:
+            self.tty = tty
+        if speed:
+            self.speed = speed
+
+        assert self.tty is not None
 
         if self.tty == DEVICE_FOR_EMULATOR:
             self._connect_emulator()
 
         else:
             logger.debug("Opening serial port %s...", self.tty)
-            self.serial_port = serial.Serial(port=self.tty, baudrate=self.speed, bytesize=8, parity='N',
-                stopbits=1, timeout=self.timeout)
+            self.serial_port = serial.Serial(port=self.tty, baudrate=self.speed, bytesize=8,
+                parity='N', stopbits=1, timeout=self.timeout)
             # self.serial_port.open() - The port is opened when the instance is created!
             # This has no efect on Linux, but raises an exception on other os.
             if self.wait_after_open > 0:
@@ -282,17 +289,24 @@ class ArduinoProxy(object): # pylint: disable=R0904
 
     @synchronized(ARDUINO_PROXY_LOCK)
     def close(self):
-        """Closes the connection to the Arduino."""
-        self._assert_connected()
+        """
+        Closes the connection to the Arduino.
+        """
         if self.emulator:
             self.emulator.stop_running()
             logger.info("Running emulator... Will join the threads...")
             self.emulator.join()
             logger.info("Threads joined OK.")
             self.emulator = None
-        else:
-            self.serial_port.close()
             self.serial_port = None
+        else:
+            try:
+                self.serial_port.close()
+            except:
+                logger.exception("Error detected when trying to close serial port. "
+                    "Continuing anywat...")
+            self.serial_port = None
+        assert self.emulator is None and self.serial_port is None
 
     @synchronized(ARDUINO_PROXY_LOCK)
     def _assert_connected(self):
