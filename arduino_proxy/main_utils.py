@@ -29,7 +29,8 @@ from arduino_proxy import ArduinoProxy
 #    def add_options_callback_example(parser):
 #        parser.add_option("--initial-wait",
 #            action="store", dest="initial_wait", default=None,
-#            help="How many seconds wait before conect (workaround for auto-reset on connect bug).")
+#            help="How many seconds wait before conect " +\
+#                "(workaround for auto-reset on connect bug).")
 #
 
 

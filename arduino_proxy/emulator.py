@@ -152,7 +152,7 @@ class ArduinoEmulator(threading.Thread):
                 ' '.join(splitted[3:]))
             self.serial_connection.write("LWOK\n")
         elif splitted[0] == '_strAR': # streamingAnalogRead()
-            # If message sent to real Arduino is delayed, maybe some more data is sent from Arduino.
+            # If message sent to real Arduino is delayed, maybe some more data is sent from Arduino
             # splitted[1] -> pin
             # splitted[2] -> count
             for i in range(0, int(splitted[2])):
