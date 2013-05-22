@@ -2,7 +2,7 @@ import logging
 
 from django.db import models
 
-from arduino_proxy.storage import Storage
+from arduino_proxy.storage import Storage, default_label
 
 FallbackStorage = Storage()
 
@@ -13,6 +13,7 @@ class Pin(models.Model):
     pin = models.PositiveIntegerField()
     digital = models.BooleanField()
     label = models.CharField(max_length=64)
+    #pin_id = models.CharField(max_length=64, unique=True)
 
     def __unicode__(self):
         if self.digital:
@@ -30,18 +31,16 @@ class DjStorage():
         # Force access to the database, to raise exception if no DB exists
         Pin.objects.count()
 
+    def get_pin(self, pin, is_digital):
+        try:
+            return Pin.objects.get(pin=pin, digital=is_digital)
+        except Pin.DoesNotExist:
+            return Pin.objects.create(pin=pin, digital=is_digital,
+                label=default_label(pin, is_digital))
+
     def get_label(self, pin, is_digital):
         """
         Returns the label of the pin `pin`.
         `is_digital` is True for digital pins, False for analog
         """
-        try:
-            pin_obj = Pin.objects.get(pin=pin, digital=is_digital)
-            return pin_obj.label
-        except Pin.DoesNotExist:
-            default_label = FallbackStorage.get_label(pin, is_digital)
-            try:
-                pin_obj = Pin.objects.create(pin=pin, digital=is_digital, label=default_label)
-                return pin_obj.label
-            except:
-                return default_label
+        return self.get_pin(pin, is_digital).label

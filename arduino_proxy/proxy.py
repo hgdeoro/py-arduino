@@ -1458,22 +1458,24 @@ class ArduinoProxy(object): # pylint: disable=R0904
         # create 'structs' for each digital pin
         digital_pins_struct = []
         for dp in arduino_type_struct['digital_pins_items']:
+            pin_obj = self.storage.get_pin(dp, True)
             digital_pins_struct.append({
                 'pin': dp,
                 'digital': True,
                 'pwm': (dp in arduino_type_struct['pwm_pin_list']),
-                'label': self.storage.get_label(dp, True),
+                'label': pin_obj.label,
             })
         arduino_type_struct['digital_pins_struct'] = digital_pins_struct
 
         # create 'structs' for each analog pin
         analog_pins_struct = []
         for ap in arduino_type_struct['analog_pins_items']:
+            pin_obj = self.storage.get_pin(dp, False)
             analog_pins_struct.append({
                 'pin': ap,
                 'digital': True,
                 'pwm': False,
-                'label': self.storage.get_label(ap, False),
+                'label': pin_obj.label,
             })
         arduino_type_struct['analog_pins_struct'] = analog_pins_struct
 
