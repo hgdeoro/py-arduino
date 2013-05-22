@@ -21,17 +21,19 @@ import Pyro4
 import hmac
 import sys
 
+from arduino_proxy.proxy import DEVICE_FOR_EMULATOR
+
 
 def main():
     Pyro4.config.HMAC_KEY = hmac.new('this-is-PyArduinoProxy').digest()
     arduino_proxy = Pyro4.Proxy("PYRO:arduino_proxy.Proxy@localhost:61234")
-    print "Check connection status..."
-    connected = arduino_proxy.is_connected()
-    if not connected:
-        print "ERROR: ArduinoProxy isn't connected to an Arduino or to the emulator. "
-        print "See the 'connect' script."
-        sys.exit(1)
-    print "Calling proxy.ping()"
+    if len(sys.argv) > 1:
+        device = sys.argv[1]
+    else:
+        device = DEVICE_FOR_EMULATOR
+    print "Calling proxy.connect() - Connecting to {0}".format(device)
+    arduino_proxy.connect(device)
+    print "Calling proxy.ping() to check the connection"
     ret = arduino_proxy.ping()
     print "Ping returned: '{0}'. End.".format(ret)
 
