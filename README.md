@@ -5,13 +5,16 @@ PyArduinoProxy
 ![Architecture overview](/hgdeoro/py-arduino-proxy/raw/master/examples/architecture-overview.png "Architecture overview")
 -->
 
+**NOTE: this is v2 of PyArduinoProxy, the status of the project is currently 'work in progress'.**
+
 **PyArduinoProxy** is a **Python** library to communicate with **Arduinos**.
 [Mis articulos de PyArduinoProxy](http://blog.hgdeoro.com.ar/search/label/pyarduinoproxy "Mis articulos de PyArduinoProxy").
 
 It's a **low level tool**, very easy to **extend** (it is very easy to create a new method in ArduinoProxy class and attach this method to a Arduino function).
 The project has many **testing** utilities and the ability to see DEBUG messages, to facilitate the location of problems and subsequent solutions.
 
-A **web interface** is in progress, but fully functional. See the [Web-Interface wiki page](https://github.com/hgdeoro/py-arduino-proxy/wiki/Web-Interface) for instructions and screenshots.
+A new implementation of the **web interface** is in progress, based on uWSGI and Pyro, it's multithread, allow concurrent access
+and supports background tasks.
 
 *Unresolved issues: currently, there are problems when working with interrupts, since characters may be lost if an interrupt occurs while 
 reading the serial with Serial.read(). This is an inherent problem of serial communication of Arduino, but may be fixed in next versions of PyArduinoProxy
@@ -32,7 +35,7 @@ Web interface
 
 To launch the web server, run:
 
-    $ python -m arduino_proxy.webui --info
+    $ ./bin/run_uwsgi.sh
 
 connect your Arduino, go to [http://localhost:8080/connect](http://localhost:8080/connect),
 insert the serial device (something like /dev/ttyACM0)
