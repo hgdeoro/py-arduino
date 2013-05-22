@@ -27,10 +27,9 @@ import sys
 from StringIO import StringIO
 
 # Setup PYTHONPATH
-SRC_DIR = os.path.split(os.path.realpath(__file__))[0] # SRC_DIR/arduino_proxy/tests
-SRC_DIR = os.path.split(SRC_DIR)[0] # SRC_DIR/arduino_proxy
-SRC_DIR = os.path.split(SRC_DIR)[0] # SRC_DIR
-sys.path.append(os.path.abspath(SRC_DIR))
+BASE_DIR = os.path.split(os.path.realpath(__file__))[0] # BASE_DIR = XXX/arduino_proxy
+BASE_DIR = os.path.split(BASE_DIR)[0] # BASE_DIR = XXX
+sys.path.append(os.path.abspath(BASE_DIR))
 
 from arduino_proxy.proxy import ArduinoProxy, _unindent
 
@@ -146,8 +145,8 @@ def main(): # pylint: disable=R0914,R0912,R0915
     if not os.path.isdir(output_dir):
         raise(Exception("Output path isn't a directory! Path: %s" % output_dir))
     
-    c_input_filename = os.path.join(SRC_DIR, 'src-c', 'py_arduino_proxy.c')
-    h_input_filename = os.path.join(SRC_DIR, 'src-c', 'py_arduino_proxy.h')
+    c_input_filename = os.path.join(BASE_DIR, 'src-c', 'py_arduino_proxy.c')
+    h_input_filename = os.path.join(BASE_DIR, 'src-c', 'py_arduino_proxy.h')
     
     extra_source_filenames = [
         'arduino_type.h',
@@ -197,7 +196,7 @@ def main(): # pylint: disable=R0914,R0912,R0915
 
     # Coping extra source files
     for extra_filename in extra_source_filenames:
-        input_filename = os.path.join(SRC_DIR, 'src-c', extra_filename)
+        input_filename = os.path.join(BASE_DIR, 'src-c', extra_filename)
         output_filename = os.path.join(output_dir, extra_filename)
         logging.info("Copying to %s", output_filename)
         shutil.copyfile(input_filename, output_filename)

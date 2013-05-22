@@ -1,8 +1,8 @@
 #!/bin/bash
 
-BASEDIR="`dirname $0`/.."
+BASEDIR=$(cd $(dirname $0)/..; pwd)
 
-export PYTHONPATH=$BASEDIR/src
+export PYTHONPATH=$BASEDIR
 export BASEDIR
 
-python $BASEDIR/src/arduino_proxy/generate_sketch.py $*
+python $BASEDIR/arduino_proxy/generate_sketch.py $*
