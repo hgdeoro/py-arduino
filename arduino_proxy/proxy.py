@@ -1630,16 +1630,14 @@ class ArduinoProxy(object): # pylint: disable=R0904
     @synchronized(ARDUINO_PROXY_LOCK)
     def dht11_read(self, pin): # pylint: disable=C0103
         """
-        Proxy function for Arduino's **digitalRead()**.
-        Reads the value from a specified digital pin, either HIGH or LOW.
-        
-        See: http://arduino.cc/en/Reference/DigitalRead
+        Read the values of temperature and huminity of a DHT11.
+        See: http://playground.arduino.cc/main/DHT11Lib
         
         Parameters:
-            - pin (int): digital pin to read
+            - pin (int): digital pin where the sensor is connected
         
         Returns:
-            - Either ArduinoProxy.HIGH or ArduinoProxy.LOW
+            - tuple with temperature and humidity
         """
         # FIXME: add doc for exceptions
         self._assert_connected()
@@ -1687,6 +1685,129 @@ class ArduinoProxy(object): # pylint: disable=R0904
                 Serial.print("\\n");
                 return;
             }
+        """)
+
+    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+
+    @synchronized(ARDUINO_PROXY_LOCK)
+    def ds18x20_read(self, pin):
+        """
+        Read the values of temperature with a DS18x20 sensor.
+        See: http://playground.arduino.cc/main/DHT11Lib
+        
+        Parameters:
+            - pin (int): digital pin where the sensor is connected
+        
+        Returns:
+            - float, temperature in celcius
+        """
+        # FIXME: add doc for exceptions
+        self._assert_connected()
+        self._validate_digital_pin(pin)
+        cmd = "_ds18x20Rd\t%d" % (pin)
+
+        response = self.send_cmd(cmd) # raises CommandTimeout,InvalidCommand
+
+        splitted_response = response.split(",")
+        if splitted_response[0] == 'DS18X20_OK':
+            if len(splitted_response) == 2:
+                try:
+                    temp_celcius = float(splitted_response[1]) / 16.0
+                    return temp_celcius
+                except ValueError:
+                    raise(InvalidResponse("DS18X20_OK received, "
+                        "but data couldn't be transformed to int"))
+            else:
+                raise(InvalidResponse("DS18X20_OK received, but without data"))
+
+        raise(InvalidResponse(splitted_response[0]))
+
+    ds18x20_read.arduino_function_name = '_ds18x20Rd'
+    ds18x20_read.arduino_code = _unindent(12, """
+
+        #include "OneWire.h"
+
+        void _ds18x20Rd()
+        {
+            int pin = atoi(received_parameters[1]);
+            OneWire ds(pin);
+            byte i;
+            byte present = 0;
+            byte type_s;
+            byte data[12];
+            byte addr[8];
+            
+            if ( !ds.search(addr))
+            {
+                send_char_array_response("DS18X20_NO_MORE_ADDRESSES");
+                return;
+            }
+            
+            if (OneWire::crc8(addr, 7) != addr[7])
+            {
+                send_char_array_response("DS18X20_CRC_INVALID");
+                return;
+            }
+            
+            // the first ROM byte indicates which chip
+            switch (addr[0])
+            {
+                case 0x10:
+                    type_s = 1;
+                    break;
+                case 0x28:
+                    type_s = 0;
+                    break;
+                case 0x22:
+                    type_s = 0;
+                    break;
+                default:
+                    send_char_array_response("DS18X20_DEVICE_NOT_OF_FAMILY");
+                    return;
+            }
+            
+            ds.reset();
+            ds.select(addr);
+            ds.write(0x44, 1); // start conversion, with parasite power on at the end
+            
+            delay(1000);     // maybe 750ms is enough, maybe not
+            // we might do a ds.depower() here, but the reset will take care of it.
+            
+            present = ds.reset();
+            ds.select(addr);
+            ds.write(0xBE); // Read Scratchpad
+            
+            for ( i = 0; i < 9; i++) {           // we need 9 bytes
+                data[i] = ds.read();
+            }
+            
+            // Convert the data to actual temperature
+            // because the result is a 16 bit signed integer, it should
+            // be stored to an "int16_t" type, which is always 16 bits
+            // even when compiled on a 32 bit processor.
+            int16_t raw = (data[1] << 8) | data[0];
+            if (type_s) {
+                raw = raw << 3; // 9 bit resolution default
+                if (data[7] == 0x10) {
+                    // "count remain" gives full 12 bit resolution
+                    raw = (raw & 0xFFF0) + 12 - data[6];
+                }
+            } else {
+                byte cfg = (data[4] & 0x60);
+                // at lower res, the low bits are undefined, so let's zero them
+                if (cfg == 0x00) raw = raw & ~7;  // 9 bit resolution, 93.75 ms
+                else if (cfg == 0x20) raw = raw & ~3; // 10 bit res, 187.5 ms
+                else if (cfg == 0x40) raw = raw & ~1; // 11 bit res, 375 ms
+                //// default is 12 bit resolution, 750 ms conversion time
+            }
+            Serial.print("DS18X20_OK,");
+            Serial.print(raw);
+            Serial.print("\\n");
+            return;
+
+            //celsius = (float)raw / 16.0;
+            //fahrenheit = celsius * 1.8 + 32.0;
+        }
         """)
 
 ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
