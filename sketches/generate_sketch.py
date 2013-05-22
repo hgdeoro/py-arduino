@@ -26,12 +26,14 @@ import sys
 
 from StringIO import StringIO
 
-# Setup PYTHONPATH
-BASE_DIR = os.path.split(os.path.realpath(__file__))[0] # BASE_DIR = XXX/arduino_proxy
+BASE_DIR = os.path.split(os.path.realpath(__file__))[0] # BASE_DIR = XXX/sketches
 BASE_DIR = os.path.split(BASE_DIR)[0] # BASE_DIR = XXX
-sys.path.append(os.path.abspath(BASE_DIR))
 
-from arduino_proxy.proxy import ArduinoProxy, _unindent
+try:
+    from arduino_proxy.proxy import ArduinoProxy, _unindent
+except ImportError:
+    sys.path.append(os.path.abspath(BASE_DIR))
+    from arduino_proxy.proxy import ArduinoProxy, _unindent
 
 
 def generate_placeholder_values(proxy, options):
@@ -88,7 +90,7 @@ def replace_placeholder_values(placeholder_values, input_lines, output):
     """
     output.write(_unindent(8, """
         //
-        // THIS FILE WAS GENERATED AUTOMATICALLY WITH generate-pde.sh
+        // THIS FILE WAS GENERATED AUTOMATICALLY WITH 'sketches/generate_sketch.py'
         // WHICH IS PART OF THE PROJECT "PyArduinoProxy"
         //
     """))
@@ -128,22 +130,16 @@ def main(): # pylint: disable=R0914,R0912,R0915
     parser.add_option("--disable-debug-to-lcd",
         action="store_true", dest="disable_debug_to_lcd", default=False,
         help="Remove support for sending debug message to LCD. This'll shrink the sketch size.")
-    parser.add_option("--output-dir",
-        action="store", dest="output_dir", default="",
-        help="Output directory for genereated sketch. Default: 'pde' directory.")
     
-    (options, _) = parser.parse_args() # pylint: disable=W0612
-    
-    if options.output_dir:
-        output_dir = options.output_dir
-    else:
-        basedir = os.environ['BASEDIR']
-        output_dir = os.path.join(basedir, 'pde', 'py_arduino_proxy')
-        output_dir = os.path.abspath(output_dir)
-        logging.warn("Using default output directory: %s", output_dir)
-    
+    (options, args) = parser.parse_args() # pylint: disable=W0612
+
+    if len(args) != 1:
+        parser.error("Must specify the output directory")
+
+    output_dir = args[0]
     if not os.path.isdir(output_dir):
-        raise(Exception("Output path isn't a directory! Path: %s" % output_dir))
+        parser.error("The specified output directory isn't a directory! Path: {0}".format(
+            output_dir))
     
     c_input_filename = os.path.join(BASE_DIR, 'src-c', 'py_arduino_proxy.c')
     h_input_filename = os.path.join(BASE_DIR, 'src-c', 'py_arduino_proxy.h')

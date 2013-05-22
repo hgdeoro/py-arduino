@@ -1,6 +1,6 @@
 
 //
-// THIS FILE WAS GENERATED AUTOMATICALLY WITH generate-pde.sh
+// THIS FILE WAS GENERATED AUTOMATICALLY WITH 'sketches/generate_sketch.py'
 // WHICH IS PART OF THE PROJECT "PyArduinoProxy"
 //
     
