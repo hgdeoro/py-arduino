@@ -4,3 +4,6 @@ argparse==1.2.1
 distribute==0.6.34
 pyserial==2.6
 wsgiref==0.1.2
+Pyro4==4.18
+ipython==0.13.2
+uWSGI==1.9.9
