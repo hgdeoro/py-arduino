@@ -44,4 +44,14 @@ class Pin():
 class Storage():
 
     def get_pin(self, pin, is_digital):
+        """
+        Returns a Pin instance.
+        """
         return Pin(pin, is_digital, )
+
+    def get_pin_by_id(self, pin_id):
+        """
+        Returns the Pin instance identified by 'pin_id',
+        or None if no Pin exists with that identifier.
+        """
+        return None
