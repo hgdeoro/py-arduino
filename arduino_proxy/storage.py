@@ -45,10 +45,3 @@ class Storage():
 
     def get_pin(self, pin, is_digital):
         return Pin(pin, is_digital, )
-
-    def get_label(self, pin, is_digital):
-        """
-        Returns the label of the pin `pin`.
-        `is_digital` is True for digital pins, False for analog
-        """
-        return default_label(pin, is_digital)

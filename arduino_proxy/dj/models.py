@@ -37,10 +37,3 @@ class DjStorage():
         except Pin.DoesNotExist:
             return Pin.objects.create(pin=pin, digital=is_digital,
                 label=default_label(pin, is_digital))
-
-    def get_label(self, pin, is_digital):
-        """
-        Returns the label of the pin `pin`.
-        `is_digital` is True for digital pins, False for analog
-        """
-        return self.get_pin(pin, is_digital).label
