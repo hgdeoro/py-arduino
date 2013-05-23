@@ -18,37 +18,32 @@
 ##    along with PyArduinoProxy; see the file LICENSE.txt.
 ##-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-import os
-import sys
+from arduino_proxy.main_utils import default_main
 
-try:
-    from arduino_proxy.main_utils import default_main
-except ImportError:
-    # Setup PYTHONPATH
-    SRC_DIR = os.path.split(os.path.realpath(__file__))[0] # SRC_DIR=BIN_DIR
-    SRC_DIR = os.path.split(SRC_DIR)[0] # SRC_DIR=SRC_DIR/../
-    sys.path.append(os.path.abspath(SRC_DIR))
-    from arduino_proxy.main_utils import default_main
 
 def default_callback(value):
     print value
 
+
 def args_validator(parser, options, args): # pylint: disable=W0613
     if len(args) != 2:
         parser.error("must specified two argument: serial device and analog port")
+
 
 def add_options_callback(parser):
     parser.add_option("--loop",
         action="store_true", dest="loop", default=False,
         help="Keep reading and printing the values.")
 
-def main(callback):
-    options, args, proxy = default_main(optparse_usage=\
-        "usage: %prog [options] serial_device analog_port", args_validator=args_validator,
+
+def main(callback=default_callback):
+    options, args, proxy = default_main(
+        optparse_usage="usage: %prog [options] serial_device analog_port",
+        args_validator=args_validator,
         add_options_callback=add_options_callback)
-    
+
     analog_port = int(args[1])
-    
+
     try:
         while True:
             value = proxy.analogRead(analog_port)
@@ -63,4 +58,4 @@ def main(callback):
         proxy.close()
 
 if __name__ == '__main__':
-    main(default_callback)
+    main()
