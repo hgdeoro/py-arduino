@@ -203,8 +203,10 @@ class ArduinoProxy(object): # pylint: disable=R0904
         Parameters:
             - device name (serial port) to connect. May be None (and `connect` should be False)
             - speed: serial port speed.
-            - wait_after_open: this is needed because the Arduino resets itself when connecting the USB.
-            - timeout: default timeout (in seconds). Configure how many seconds we wait for a response.
+            - wait_after_open: this is needed because the Arduino resets itself when
+                connecting the USB.
+            - timeout: default timeout (in seconds). Configure how many seconds we
+                wait for a response.
             - call_validate_connection: call validateConnection() after opening the port.
             - connect: if the connection should be established
         """
@@ -379,7 +381,8 @@ class ArduinoProxy(object): # pylint: disable=R0904
         Waits for a response from the serial connection.
         
         Parameters:
-            - timeout (int): timeout in seconds to use (instead of the configured for this instance of ArduinoProxy).
+            - timeout (int): timeout in seconds to use (instead of the configured for this
+                instance of ArduinoProxy).
         
         Raises:
             - CommandTimeout if a timeout while reading is detected.
@@ -451,8 +454,8 @@ class ArduinoProxy(object): # pylint: disable=R0904
 
     #    def start_streaming(self, cmd, streamEndMark, timeout=None):
     #        """
-    #        Note: this is a **low level** method. The only situation you may need to call this method
-    #        is if you are creating new methods.
+    #        Note: this is a **low level** method. The only situation you may
+    #        need to call this method is if you are creating new methods.
     #
     #        Streaming: streamEndMark is set, the command is sent and the responses are read until
     #        we get string specified by 'streamEndMark'.
@@ -465,7 +468,8 @@ class ArduinoProxy(object): # pylint: disable=R0904
     #        # FIXME: streaming: check this implementation!
     #        # FIXME: streaming: do the transmation, check errors, etc!
     #
-    #        logger.debug("start_streaming() called. cmd: %r. streamEndMark: %r", cmd, streamEndMark)
+    #        logger.debug("start_streaming() called. cmd: %r. streamEndMark: %r",
+    #            cmd, streamEndMark)
     #
     #        self.serial_port.write(cmd)
     #        self.serial_port.write("\n")
@@ -496,12 +500,14 @@ class ArduinoProxy(object): # pylint: disable=R0904
         
         Parameters:
             - cmd: the command to send (string)
-            - expected_response: the response we expect from the Arduino. If response_transformer is
-                not None, the response is first transformed, and then compared to 'expected_response'.
-                If expected_response is a list or tuple, check that the response is one of its items.
+            - expected_response: the response we expect from the Arduino. If response_transformer
+                is not None, the response is first transformed, and then compared to
+                'expected_response'. If expected_response is a list or tuple,
+                check that the response is one of its items.
             - response_transformer: the method to call to transform. Must receive a string (the
                 valuerecieved from the Arduino).
-            - timeout (int): timeout in seconds to use (instead of the configured for this instance of ArduinoProxy).
+            - timeout (int): timeout in seconds to use (instead of the configured
+                for this instance of ArduinoProxy).
         
         Raises:
             - CommandTimeout: if a timeout is detected while reading response.
@@ -1008,8 +1014,8 @@ class ArduinoProxy(object): # pylint: disable=R0904
     @synchronized(ARDUINO_PROXY_LOCK)
     def watchInterrupt(self, interrupt, mode): # pylint: disable=C0103
         """
-        Begin to watch if an interrupt occurs. Use :func:`getInterruptMark` to check if an interrupt
-        actually occured.
+        Begin to watch if an interrupt occurs. Use :func:`getInterruptMark` to check if an
+        interrupt actually occured.
         
         Parameters:
             - interrupt: 0 or 1
@@ -1297,7 +1303,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
     @synchronized(ARDUINO_PROXY_LOCK)
-    def shiftOut(self, dataPin, clockPin, bitOrder, value, set_pin_mode=False): # pylint: disable=C0103,C0301,R0913
+    def shiftOut(self, dataPin, clockPin, bitOrder, value, set_pin_mode=False):
         """
         Proxy function for Arduino's **shiftOut()**.
         Shifts out a byte of data one bit at a time.
@@ -1308,7 +1314,8 @@ class ArduinoProxy(object): # pylint: disable=R0904
         Parameters:
             - dataPin (int): the pin on which to output each bit.
             - clockPin (int): the pin to toggle once the dataPin has been set to the correct value.
-            - bitOrder: which order to shift out the bits; either ArduinoProxy.LSBFIRST or ArduinoProxy.MSBFIRST.
+            - bitOrder: which order to shift out the bits; either ArduinoProxy.LSBFIRST
+                or ArduinoProxy.MSBFIRST.
             - value (int): the data to shift out.
         """
         self._assert_connected()
@@ -1327,7 +1334,8 @@ class ArduinoProxy(object): # pylint: disable=R0904
         if set_pin_mode:
             self.pinMode(dataPin, ArduinoProxy.OUTPUT)
             self.pinMode(clockPin, ArduinoProxy.OUTPUT)
-        return self.send_cmd("_sftO\t%d\t%d\t%d\t%d" % (dataPin, clockPin, bitOrder, value,), "SOOK")
+        return self.send_cmd("_sftO\t%d\t%d\t%d\t%d" % (dataPin,
+            clockPin, bitOrder, value,), "SOOK")
             # raises CommandTimeout,InvalidCommand,InvalidResponse
 
     shiftOut.arduino_function_name = '_sftO'
@@ -1576,7 +1584,8 @@ class ArduinoProxy(object): # pylint: disable=R0904
             - a generator that returns the read values.
         """
         self._assert_connected()
-        return self.send_streaming_cmd("_strAR\t%d\t%d" % (pin, count,), count, response_transformer=int)
+        return self.send_streaming_cmd("_strAR\t%d\t%d" % (pin, count,),
+            count, response_transformer=int)
             # raises CommandTimeout,InvalidCommand,InvalidResponse
 
     streamingAnalogRead.arduino_function_name = '_strAR'
@@ -1609,7 +1618,8 @@ class ArduinoProxy(object): # pylint: disable=R0904
             - a generator that returns the read values.
         """
         self._assert_connected()
-        return self.send_streaming_cmd("_strDR\t%d\t%d" % (pin, count,), count, response_transformer=int)
+        return self.send_streaming_cmd("_strDR\t%d\t%d" % (pin, count,),
+            count, response_transformer=int)
             # raises CommandTimeout,InvalidCommand,InvalidResponse
 
     streamingDigitalRead.arduino_function_name = '_strDR'
@@ -1654,7 +1664,8 @@ class ArduinoProxy(object): # pylint: disable=R0904
                 try:
                     return int(splitted_response[1]), int(splitted_response[2])
                 except ValueError:
-                    raise(InvalidResponse("DHTLIB_OK received, but data couldn't be transformed to int"))
+                    raise(InvalidResponse("DHTLIB_OK received, but data "
+                        "couldn't be transformed to int"))
             else:
                 raise(InvalidResponse("DHTLIB_OK received, but without data"))
 
