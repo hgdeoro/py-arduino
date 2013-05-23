@@ -13,7 +13,7 @@ uwsgi \
 	--processes=${UWSGI_PROCESSES:-1} --enable-threads \
 	--home=$BASEDIR/virtualenv \
 	--http=${UWSGI_HTTP:-127.0.0.1:8080} \
-	--python-path=$BASEDIR/PyArduinoProxy \
+	--python-path=$BASEDIR \
 	--static-map /static=$BASEDIR/arduino_proxy/dj/static \
 	--mule=$BASEDIR/arduino_proxy/pyroproxy/__main__.py \
 	$*
