@@ -9,16 +9,24 @@ import time
 import logging
 
 from arduino_proxy.proxy import ArduinoProxy
+from Pyro4.errors import CommunicationError
 
 logger = logging.getLogger(__name__)
 
 
 def main():
     Pyro4.config.HMAC_KEY = hmac.new('this-is-PyArduinoProxy').digest()
+    daemon = Pyro4.Proxy("PYRO:{0}@localhost:61234".format(
+        Pyro4.constants.DAEMON_NAME))
     arduino_proxy = Pyro4.Proxy("PYRO:arduino_proxy.Proxy@localhost:61234")
 
-    logger.info("Wait some time to let PyRO server start up")
-    time.sleep(5)
+    logger.info("Wait to let PyRO server start up")
+    while True:
+        try:
+            daemon.ping()
+            break
+        except CommunicationError:
+            time.sleep(1)
 
     logger.info("Wait until Arduino is connected...")
     while not arduino_proxy.is_connected():
