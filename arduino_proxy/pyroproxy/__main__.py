@@ -24,10 +24,17 @@ from arduino_proxy.proxy import ArduinoProxy
 
 
 def main():
+    """
+    Expose object using PyRO
+    """
     Pyro4.config.HMAC_KEY = hmac.new('this-is-PyArduinoProxy').digest()
     Pyro4.config.SOCK_REUSE = True
     proxy = ArduinoProxy()
-    Pyro4.Daemon.serveSimple({proxy: "arduino_proxy.Proxy"},
+    Pyro4.Daemon.serveSimple(
+        {
+            proxy: "arduino_proxy.Proxy",
+            proxy.storage: "arduino_proxy.Storage",
+        },
         host="localhost", port=61234, ns=False)
     # FORMA DE URI -> uri_string = "PYRO:arduino_proxy.Proxy@localhost:61234"
 
