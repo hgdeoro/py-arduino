@@ -28,10 +28,11 @@ def default_label(pin, is_digital):
 
 class Pin():
 
-    def __init__(self, pin=None, digital=False, label=None):
+    def __init__(self, pin=None, digital=False, label=None, enabled_in_web=True):
         self.pin = pin
         self.digital = digital
         self.label = label
+        self.enabled_in_web = enabled_in_web
 
         # Automatically set label if not provided
         if pin is not None and digital is not None and label is None:

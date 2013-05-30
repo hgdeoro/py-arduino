@@ -1453,11 +1453,13 @@ class ArduinoProxy(object): # pylint: disable=R0904
                 + digital
                 + pwm
                 + label
+                + enabled_in_web
             - analog_pins_struct
                 + pin (int)
                 + digital (bool)
                 + pwm (bool)
                 + label (str)
+                + enabled_in_web
         """
         arduino_type_struct = arduino_type_struct.copy()
         arduino_type_struct['digital_pins_items'] = range(0, arduino_type_struct['digital_pins'])
@@ -1472,6 +1474,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
                 'digital': True,
                 'pwm': (dp in arduino_type_struct['pwm_pin_list']),
                 'label': pin_obj.label,
+                'enabled_in_web': pin_obj.enabled_in_web,
             })
         arduino_type_struct['digital_pins_struct'] = digital_pins_struct
 
@@ -1484,6 +1487,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
                 'digital': True,
                 'pwm': False,
                 'label': pin_obj.label,
+                'enabled_in_web': pin_obj.enabled_in_web,
             })
         arduino_type_struct['analog_pins_struct'] = analog_pins_struct
 
