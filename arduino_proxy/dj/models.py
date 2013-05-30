@@ -14,7 +14,7 @@ class Pin(models.Model):
     digital = models.BooleanField()
     label = models.CharField(max_length=64,
         help_text="Descriptive text for a pin. Ej: 'Status Led'")
-    pin_id = models.CharField(max_length=64, unique=True, null=True,
+    pin_id = models.CharField(max_length=64, unique=True, null=True, blank=True,
         help_text="Unique identifier for internal use of a pin. Ej: 'status-led'")
     enabled_in_web = models.BooleanField(default=True)
 
