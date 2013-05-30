@@ -409,22 +409,28 @@
     
 	{% for pin_struct in enhanced_arduino_type.analog_pins_struct %}
     {% with pin=pin_struct.pin %}
-    <div>
-
-        <span id="pinA{{ pin }}_label" class="analog_pin_label" title="Click here to edit">{{ pin_struct.label }}</span>:
-
-        <!--
-            analogRead()
-        -->
-        <span class="pinA{{ pin }}_for_read">
-            <button id="pinA{{ pin }}_bt_analog_read" class="bt_analog_read">analogRead()</button>
-        </span>
-        
-        &nbsp;
-        
-        <span id="pinA{{ pin }}_status_text" class="pin_status_text"></span>
-        
-    </div>
+	    <div class="table-row">
+	
+			<div class="table-cell" style="text-align: right;">
+		        <span id="pinA{{ pin }}_label" class="analog_pin_label" title="Click here to edit">{{ pin_struct.label }}</span>:
+	        </div> <!-- END cell -->
+	
+	        <div class="table-cell">
+	
+		        <!--
+		            analogRead()
+		        -->
+		        <span class="pinA{{ pin }}_for_read">
+		            <button id="pinA{{ pin }}_bt_analog_read" class="bt_analog_read">analogRead()</button>
+		        </span>
+		        
+		        &nbsp;
+		        
+		        <span id="pinA{{ pin }}_status_text" class="pin_status_text"></span>
+	
+	        </div> <!-- END cell -->
+	        
+	    </div> <!-- END row -->
     {% endwith %}
 	{% endfor %}
 
