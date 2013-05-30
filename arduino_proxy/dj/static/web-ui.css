@@ -7,3 +7,14 @@ body {
 .ui-widget .ui-widget-header {
 	padding: 5px;
 }
+
+.table {
+	display:table;
+}
+.table-row {
+	display:table-row;
+}
+.table-cell {
+   display:table-cell;
+    padding: 0.4em;
+}

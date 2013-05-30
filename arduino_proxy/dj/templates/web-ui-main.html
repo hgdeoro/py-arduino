@@ -321,13 +321,36 @@
 	
     {# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #}
     
+    <div class="table">
+
+    <!-- A DIGITAL PIN -->
+
 	{% for pin_struct in enhanced_arduino_type.digital_pins_struct %}
 	{% with pin=pin_struct.pin %}
-	<div style="padding-bottom: 4px;">
+
+    <!-- {% comment %}
+
+	    pin_struct -> generado en `ArduinoProxy.enhanceArduinoTypeStruct()`
+			+ pin
+			+ digital
+			+ pwm
+			+ label
+			+ enabled_in_web
+    
+    {% endcomment %} -->
+
+	<div class="table-row">
+	
+	<div class="table-cell" style="text-align: right;">
+	   <span id="pin{{ pin }}_label" class="digital_pin_label" title="Click here to edit">{{ pin_struct.label }}</span>:
+	</div> <!-- END cell -->
+
+	<div class="table-cell">
+
 		<div>
 			
-			<span id="pin{{ pin }}_label" class="digital_pin_label" title="Click here to edit">{{ pin_struct.label }}</span>:
-            
+            {% if pin_struct.enabled_in_web %}
+
 			<!--
                 This buttons set the pin mode.
                 Always are visible.
@@ -356,7 +379,15 @@
 			&nbsp;
             
             <span id="pin{{ pin }}_status_text" class="pin_status_text"></span>
+
+            {% else %}
             
+            <span>
+                <button class="bt_digital_read">Deshabilitado</button>
+            </span>
+            
+            {% endif %}
+
 		</div>
 		
 		{% if pin in enhanced_arduino_type.pwm_pin_list %}
@@ -367,7 +398,10 @@
 			</div>
 		{% endif %}
 		
-	</div>
+    </div> <!-- END cell -->
+
+    </div> <!-- END row -->
+
 	{% endwith %}
 	{% endfor %}
 	
@@ -393,6 +427,8 @@
     </div>
     {% endwith %}
 	{% endfor %}
+
+    </div> <!-- END table -->
 
     {# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #}
 
