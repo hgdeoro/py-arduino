@@ -341,15 +341,19 @@
 			+ digital
 			+ pwm
 			+ label
-			+ enabled_in_web
+            + enabled_in_web
+            + pin_id
     
     {% endcomment %} -->
 
 	<div class="table-row">
 	
 		<div class="table-cell" style="text-align: right;">
-            <a href="{% url 'admin:dj_pin_change' pin_struct.pk %}" target="_blank"><span
-                id="pin{{ pin_struct.pin }}_label" class="digital_pin_label">{{ pin_struct.label }}</span></a>:
+            <div><a href="{% url 'admin:dj_pin_change' pin_struct.pk %}" target="_blank"><span
+                id="pin{{ pin_struct.pin }}_label" class="digital_pin_label">{{ pin_struct.label }}</span></a>:</div>
+            {% if pin_struct.pin_id %}
+                <div style="color: #555;"><em>{{ pin_struct.pin_id }}</em></div>
+            {% endif %}
 		</div> <!-- END cell -->
 
 		<div class="table-cell">
