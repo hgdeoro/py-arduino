@@ -28,7 +28,10 @@ def default_label(pin, is_digital):
 
 class Pin():
 
-    def __init__(self, pin=None, digital=False, label=None, enabled_in_web=True):
+    def __init__(self, pin=None, digital=False, label=None, enabled_in_web=True,
+        pin_id=None, pk=0):
+        self.pk = pk
+        self.pin_id = pin_id
         self.pin = pin
         self.digital = digital
         self.label = label

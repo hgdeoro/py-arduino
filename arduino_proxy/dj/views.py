@@ -66,7 +66,9 @@ def home(request):
 
 def connect(request):
     if request.method == 'GET':
-        return render(request, 'web-ui-connect.html', {})
+        return render(request, 'web-ui-connect.html', {
+            'serial_ports': PROXY.get_serial_ports(),
+        })
 
     if PROXY.is_connected():
         raise(Exception("ArduinoProxy is already connected"))

@@ -321,6 +321,10 @@ class ArduinoProxy(object): # pylint: disable=R0904
         # FIXME: self.serial_port is ALWAYS non-None if connected (even with emulator)
         return bool(self.emulator) or bool(self.serial_port)
 
+    def get_serial_ports(self, prefix='/dev/ttyACM'):
+        ports = [x[0] for x in comports() if x[0].startswith(prefix)]
+        return ports
+
     @synchronized(ARDUINO_PROXY_LOCK)
     def autoconnect(self):
         """
@@ -331,7 +335,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
             raise(ArduinoProxyException("The instance is already connected"))
 
         initial_tty = self.tty
-        for a_serial_port, _, _ in comports():
+        for a_serial_port in self.get_serial_ports():
             # TODO: this 'filtering' of devices should be done in a more extensible way
             if a_serial_port.startswith('/dev/ttyACM'):
                 logger.info("autoconnect(): trying to connect to %s", a_serial_port)

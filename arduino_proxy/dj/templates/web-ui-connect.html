@@ -35,13 +35,20 @@
 			<h2>Connect to the Arduino</h2>
 		</div>
 		<div class="ui-widget-content ui-corner-bottom">
-			<p>To establish a connection to the Arduino, insert the <strong>serial port</strong> device, the <strong>speed</strong>, and press "<strong>Connect</strong>".</p>
+			<p>To establish a connection to the Arduino, insert the <strong>serial port</strong> device,
+                the <strong>speed</strong>, and press "<strong>Connect</strong>".</p>
 			<div class="ui-form">
 			<form action="{% url 'connect' %}" method="post" class="ui-helper-clearfix">
 				<div style="float: left;">
 					<label for="f_serial_port" class="ui-helper-reset">Serial Port</label> 
 					<input type="text" name="serial_port" id="f_serial_port"/> 
-					-
+					{% if serial_ports %}
+					    ~ Autoconectar:
+						{% for port in serial_ports %}
+							<input type="submit" name="serial_port" value="{{ port }}" />
+                        {% endfor %}
+                    {% endif %}
+					~
 					<label for="f_speed" class="ui-helper-reset">Speed</label> 
 					<select name="speed" id="f_speed">
 						<option value="9600" selected="selected">9600</option>
