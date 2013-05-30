@@ -220,6 +220,8 @@
 					$(".pin" + pin + "_input_buttonset").buttonset();
 				}
 				
+				/*
+				// NOW WE USE A LINK IN THE LABEL
 				$(".digital_pin_label").click(function() {
 					var pin = getPinFromId($(this).attr('id'));
 					var newLabel = prompt("Enter new label for pin " + pin, $(this).html());
@@ -228,7 +230,10 @@
 						$($(this).html(newLabel));
 					}
 				});
+				*/
 
+			    /*
+			    // NOW WE USE A LINK IN THE LABEL
 				$(".analog_pin_label").click(function() {
 					var pin = getAnalogPinFromId($(this).attr('id'));
 					var newLabel = prompt("Enter new label for pin " + pin, $(this).html());
@@ -237,6 +242,7 @@
 						$($(this).html(newLabel));
 					}
 				});
+			    */
 				
 				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 				// *** Generic *** setup of components
@@ -326,11 +332,11 @@
     <!-- A DIGITAL PIN -->
 
 	{% for pin_struct in enhanced_arduino_type.digital_pins_struct %}
-	{% with pin=pin_struct.pin %}
 
     <!-- {% comment %}
 
 	    pin_struct -> generado en `ArduinoProxy.enhanceArduinoTypeStruct()`
+			+ pk
 			+ pin
 			+ digital
 			+ pwm
@@ -342,7 +348,8 @@
 	<div class="table-row">
 	
 		<div class="table-cell" style="text-align: right;">
-		   <span id="pin{{ pin }}_label" class="digital_pin_label" title="Click here to edit">{{ pin_struct.label }}</span>:
+            <a href="{% url 'admin:dj_pin_change' pin_struct.pk %}" target="_blank"><span
+                id="pin{{ pin_struct.pin }}_label" class="digital_pin_label">{{ pin_struct.label }}</span></a>:
 		</div> <!-- END cell -->
 
 		<div class="table-cell">
@@ -355,30 +362,30 @@
 		                This buttons set the pin mode.
 		                Always are visible.
 		            -->
-					<span class="pin{{ pin }}_mode_buttonset">
-						<input type="radio" id="pin{{ pin }}_mode_dis" name="pin{{ pin }}_mode" value="disabled" class="pin_mode_dis" checked="checked"/><label for="pin{{ pin }}_mode_dis">Disabled</label>
-						<input type="radio" id="pin{{ pin }}_mode_in"  name="pin{{ pin }}_mode" value="input"    class="pin_mode_in"/><label for="pin{{ pin }}_mode_in">INPUT</label>
-						<input type="radio" id="pin{{ pin }}_mode_out" name="pin{{ pin }}_mode" value="output"   class="pin_mode_out"/><label for="pin{{ pin }}_mode_out">OUTPUT</label>
+					<span class="pin{{ pin_struct.pin }}_mode_buttonset">
+						<input type="radio" id="pin{{ pin_struct.pin }}_mode_dis" name="pin{{ pin_struct.pin }}_mode" value="disabled" class="pin_mode_dis" checked="checked"/><label for="pin{{ pin_struct.pin }}_mode_dis">Disabled</label>
+						<input type="radio" id="pin{{ pin_struct.pin }}_mode_in"  name="pin{{ pin_struct.pin }}_mode" value="input"    class="pin_mode_in"/><label for="pin{{ pin_struct.pin }}_mode_in">INPUT</label>
+						<input type="radio" id="pin{{ pin_struct.pin }}_mode_out" name="pin{{ pin_struct.pin }}_mode" value="output"   class="pin_mode_out"/><label for="pin{{ pin_struct.pin }}_mode_out">OUTPUT</label>
 					</span>
 					
 					<!--
 		                digitalWrite()
 		            -->
-					<span class="pin{{ pin }}_output_buttonset pin{{ pin }}_for_write ui-helper-hidden">
-						<input type="radio" id="pin{{ pin }}_dw_lo" name="pin{{ pin }}_dw" class="pin_dw_lo"/><label for="pin{{ pin }}_dw_lo">LOW</label>
-						<input type="radio" id="pin{{ pin }}_dw_hi" name="pin{{ pin }}_dw" class="pin_dw_hi"/><label for="pin{{ pin }}_dw_hi">HIGH</label>
+					<span class="pin{{ pin_struct.pin }}_output_buttonset pin{{ pin_struct.pin }}_for_write ui-helper-hidden">
+						<input type="radio" id="pin{{ pin_struct.pin }}_dw_lo" name="pin{{ pin_struct.pin }}_dw" class="pin_dw_lo"/><label for="pin{{ pin_struct.pin }}_dw_lo">LOW</label>
+						<input type="radio" id="pin{{ pin_struct.pin }}_dw_hi" name="pin{{ pin_struct.pin }}_dw" class="pin_dw_hi"/><label for="pin{{ pin_struct.pin }}_dw_hi">HIGH</label>
 					</span>
 					
 					<!--
 		                digitalRead()
 		            -->
-					<span class="pin{{ pin }}_for_read ui-helper-hidden">
-						<button id="pin{{ pin }}_bt_digital_read" class="bt_digital_read">digitalRead()</button>
+					<span class="pin{{ pin_struct.pin }}_for_read ui-helper-hidden">
+						<button id="pin{{ pin_struct.pin }}_bt_digital_read" class="bt_digital_read">digitalRead()</button>
 					</span>
 					
 					&nbsp;
 		            
-		            <span id="pin{{ pin }}_status_text" class="pin_status_text"></span>
+		            <span id="pin{{ pin_struct.pin }}_status_text" class="pin_status_text"></span>
 	
 	            {% else %}
 	            
@@ -390,11 +397,11 @@
 	
 			</div>
 			
-			{% if pin in enhanced_arduino_type.pwm_pin_list %}
+			{% if pin_struct.pin in enhanced_arduino_type.pwm_pin_list %}
 				<!-- analogWrite() / PWM -->
-				<div class="pin{{ pin }}_for_write pwm_slide ui-helper-hidden" style="overflow: auto; width: 100%; padding-bottom: 10px;">
+				<div class="pin{{ pin_struct.pin }}_for_write pwm_slide ui-helper-hidden" style="overflow: auto; width: 100%; padding-bottom: 10px;">
 					<div style="float: left; padding-right: 20px;">analogWrite():</div>
-					<div style="width: 400px; float: left;"><div id="pin{{ pin }}_pwm_slider" class="pin_pwm_slider"></div></div>
+					<div style="width: 400px; float: left;"><div id="pin{{ pin_struct.pin }}_pwm_slider" class="pin_pwm_slider"></div></div>
 				</div>
 			{% endif %}
 			
@@ -402,36 +409,34 @@
 
     </div> <!-- END row -->
 
-	{% endwith %}
 	{% endfor %}
-	
+
     {# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #}
-    
+
 	{% for pin_struct in enhanced_arduino_type.analog_pins_struct %}
-    {% with pin=pin_struct.pin %}
 	    <div class="table-row">
-	
+
 			<div class="table-cell" style="text-align: right;">
-		        <span id="pinA{{ pin }}_label" class="analog_pin_label" title="Click here to edit">{{ pin_struct.label }}</span>:
+		        <a href="{% url 'admin:dj_pin_change' pin_struct.pk %}" target="_blank"><span
+                    id="pinA{{ pin_struct.pin }}_label" class="analog_pin_label">{{ pin_struct.label }}</span></a>:
 	        </div> <!-- END cell -->
-	
+
 	        <div class="table-cell">
 	
 		        <!--
 		            analogRead()
 		        -->
-		        <span class="pinA{{ pin }}_for_read">
-		            <button id="pinA{{ pin }}_bt_analog_read" class="bt_analog_read">analogRead()</button>
+		        <span class="pinA{{ pin_struct.pin }}_for_read">
+		            <button id="pinA{{ pin_struct.pin }}_bt_analog_read" class="bt_analog_read">analogRead()</button>
 		        </span>
 		        
 		        &nbsp;
 		        
-		        <span id="pinA{{ pin }}_status_text" class="pin_status_text"></span>
+		        <span id="pinA{{ pin_struct.pin }}_status_text" class="pin_status_text"></span>
 	
 	        </div> <!-- END cell -->
 	        
 	    </div> <!-- END row -->
-    {% endwith %}
 	{% endfor %}
 
     </div> <!-- END table -->
