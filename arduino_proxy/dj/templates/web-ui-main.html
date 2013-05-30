@@ -341,64 +341,64 @@
 
 	<div class="table-row">
 	
-	<div class="table-cell" style="text-align: right;">
-	   <span id="pin{{ pin }}_label" class="digital_pin_label" title="Click here to edit">{{ pin_struct.label }}</span>:
-	</div> <!-- END cell -->
+		<div class="table-cell" style="text-align: right;">
+		   <span id="pin{{ pin }}_label" class="digital_pin_label" title="Click here to edit">{{ pin_struct.label }}</span>:
+		</div> <!-- END cell -->
 
-	<div class="table-cell">
-
-		<div>
-			
-            {% if pin_struct.enabled_in_web %}
-
-			<!--
-                This buttons set the pin mode.
-                Always are visible.
-            -->
-			<span class="pin{{ pin }}_mode_buttonset">
-				<input type="radio" id="pin{{ pin }}_mode_dis" name="pin{{ pin }}_mode" value="disabled" class="pin_mode_dis" checked="checked"/><label for="pin{{ pin }}_mode_dis">Disabled</label>
-				<input type="radio" id="pin{{ pin }}_mode_in"  name="pin{{ pin }}_mode" value="input"    class="pin_mode_in"/><label for="pin{{ pin }}_mode_in">INPUT</label>
-				<input type="radio" id="pin{{ pin }}_mode_out" name="pin{{ pin }}_mode" value="output"   class="pin_mode_out"/><label for="pin{{ pin }}_mode_out">OUTPUT</label>
-			</span>
-			
-			<!--
-                digitalWrite()
-            -->
-			<span class="pin{{ pin }}_output_buttonset pin{{ pin }}_for_write ui-helper-hidden">
-				<input type="radio" id="pin{{ pin }}_dw_lo" name="pin{{ pin }}_dw" class="pin_dw_lo"/><label for="pin{{ pin }}_dw_lo">LOW</label>
-				<input type="radio" id="pin{{ pin }}_dw_hi" name="pin{{ pin }}_dw" class="pin_dw_hi"/><label for="pin{{ pin }}_dw_hi">HIGH</label>
-			</span>
-			
-			<!--
-                digitalRead()
-            -->
-			<span class="pin{{ pin }}_for_read ui-helper-hidden">
-				<button id="pin{{ pin }}_bt_digital_read" class="bt_digital_read">digitalRead()</button>
-			</span>
-			
-			&nbsp;
-            
-            <span id="pin{{ pin }}_status_text" class="pin_status_text"></span>
-
-            {% else %}
-            
-            <span>
-                <button class="bt_digital_read">Deshabilitado</button>
-            </span>
-            
-            {% endif %}
-
-		</div>
-		
-		{% if pin in enhanced_arduino_type.pwm_pin_list %}
-			<!-- analogWrite() / PWM -->
-			<div class="pin{{ pin }}_for_write pwm_slide ui-helper-hidden" style="overflow: auto; width: 100%; padding-bottom: 10px;">
-				<div style="float: left; padding-right: 20px;">analogWrite():</div>
-				<div style="width: 400px; float: left;"><div id="pin{{ pin }}_pwm_slider" class="pin_pwm_slider"></div></div>
+		<div class="table-cell">
+	
+			<div> <!-- this DIV is to have 2 divs in a single cell -->
+				
+	            {% if pin_struct.enabled_in_web %}
+	
+					<!--
+		                This buttons set the pin mode.
+		                Always are visible.
+		            -->
+					<span class="pin{{ pin }}_mode_buttonset">
+						<input type="radio" id="pin{{ pin }}_mode_dis" name="pin{{ pin }}_mode" value="disabled" class="pin_mode_dis" checked="checked"/><label for="pin{{ pin }}_mode_dis">Disabled</label>
+						<input type="radio" id="pin{{ pin }}_mode_in"  name="pin{{ pin }}_mode" value="input"    class="pin_mode_in"/><label for="pin{{ pin }}_mode_in">INPUT</label>
+						<input type="radio" id="pin{{ pin }}_mode_out" name="pin{{ pin }}_mode" value="output"   class="pin_mode_out"/><label for="pin{{ pin }}_mode_out">OUTPUT</label>
+					</span>
+					
+					<!--
+		                digitalWrite()
+		            -->
+					<span class="pin{{ pin }}_output_buttonset pin{{ pin }}_for_write ui-helper-hidden">
+						<input type="radio" id="pin{{ pin }}_dw_lo" name="pin{{ pin }}_dw" class="pin_dw_lo"/><label for="pin{{ pin }}_dw_lo">LOW</label>
+						<input type="radio" id="pin{{ pin }}_dw_hi" name="pin{{ pin }}_dw" class="pin_dw_hi"/><label for="pin{{ pin }}_dw_hi">HIGH</label>
+					</span>
+					
+					<!--
+		                digitalRead()
+		            -->
+					<span class="pin{{ pin }}_for_read ui-helper-hidden">
+						<button id="pin{{ pin }}_bt_digital_read" class="bt_digital_read">digitalRead()</button>
+					</span>
+					
+					&nbsp;
+		            
+		            <span id="pin{{ pin }}_status_text" class="pin_status_text"></span>
+	
+	            {% else %}
+	            
+		            <span>
+		                <button class="bt_digital_read">Deshabilitado</button>
+		            </span>
+	            
+	            {% endif %}
+	
 			</div>
-		{% endif %}
-		
-    </div> <!-- END cell -->
+			
+			{% if pin in enhanced_arduino_type.pwm_pin_list %}
+				<!-- analogWrite() / PWM -->
+				<div class="pin{{ pin }}_for_write pwm_slide ui-helper-hidden" style="overflow: auto; width: 100%; padding-bottom: 10px;">
+					<div style="float: left; padding-right: 20px;">analogWrite():</div>
+					<div style="width: 400px; float: left;"><div id="pin{{ pin }}_pwm_slider" class="pin_pwm_slider"></div></div>
+				</div>
+			{% endif %}
+			
+	    </div> <!-- END cell -->
 
     </div> <!-- END row -->
 
