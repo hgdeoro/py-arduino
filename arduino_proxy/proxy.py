@@ -32,6 +32,8 @@ import threading
 from serial.tools.list_ports import comports
 
 from arduino_proxy.storage import Storage
+from arduino_proxy.utils import synchronized, _unindent
+import copy
 
 try:
     from cStringIO import StringIO
@@ -40,93 +42,121 @@ except ImportError:
 
 logger = _logging.getLogger(__name__) # pylint: disable=C0103
 
-DEFAULT_SERIAL_SPEED = 9600
-
-ARDUINO_PROXY_LOCK = threading.RLock()
-
-# Device to use to launch an emulator instad of connecting to a real Arduino
-DEVICE_FOR_EMULATOR = '/dev/ARDUINO_EMULATOR'
-
 #===============================================================================
-# Values to write to pins, and read from pins
+# CONSTANTS - Values to write to pins, and read from pins
 #===============================================================================
-#define HIGH 0x1
-#define LOW  0x0
-HIGH = 0x01
-LOW = 0x00
+HIGH = 0x01 #define HIGH 0x1
+LOW = 0x00 #define LOW  0x0
 
 #===============================================================================
-# Pin modes
+# CONSTANTS - Pin modes
 #===============================================================================
-#define INPUT 0x0
-#define OUTPUT 0x1
-INPUT = 0x00
-OUTPUT = 0x01
+INPUT = 0x00 #define INPUT 0x0
+OUTPUT = 0x01 #define OUTPUT 0x1
 
 #===============================================================================
-# Bit
+# CONSTANTS - Bit
 #===============================================================================
-#define LSBFIRST 0
-#define MSBFIRST 1
-LSBFIRST = 0x00
-MSBFIRST = 0x01
+LSBFIRST = 0x00 #define LSBFIRST 0
+MSBFIRST = 0x01 #define MSBFIRST 1
 
 #===============================================================================
-# Interrupt
+# CONSTANTS - Interrupt
 #===============================================================================
 ATTACH_INTERRUPT_MODE_LOW = 'L'
 ATTACH_INTERRUPT_MODE_CHANGE = 'C'
 ATTACH_INTERRUPT_MODE_RISING = 'R'
 ATTACH_INTERRUPT_MODE_FALLING = 'F'
 
+#===============================================================================
+# CONSTANTS - Other
+#===============================================================================
 
-#class PinStatus(object):
-#    """
-#    Class to hold transient information of pin status.
-#    """
-#    def __init__(self, pin, digital=True, mode=):
+# Default serial speed
+DEFAULT_SERIAL_SPEED = 9600
 
+# Device to use to launch an emulator instad of connecting to a real Arduino
+DEVICE_FOR_EMULATOR = '/dev/ARDUINO_EMULATOR'
 
-def synchronized(lock):
-    '''Synchronization decorator.'''
+#===============================================================================
+# Locks
+#===============================================================================
 
-    def wrap(f):
-        def new_function(*args, **kw):
-            lock.acquire()
-            try:
-                return f(*args, **kw)
-            finally:
-                lock.release()
-        return new_function
-    return wrap
+ARDUINO_PROXY_LOCK = threading.RLock()
+STATUS_TRACKER_LOCK = threading.RLock()
 
 
-def _unindent(spaces, the_string):
-    lines = []
-    start = ' ' * spaces
-    for a_line in the_string.splitlines():
-        if a_line.startswith(start):
-            lines.append(a_line[spaces:])
-        else:
-            lines.append(a_line)
-    return '\n'.join(lines)
+class PinStatus(object):
+    """
+    Class to hold transient information of pin status.
+    The information we have here is from the point of view
+    of the ArduinoProxy, NOT the real Arduino.
+    """
+    def __init__(self, pin, digital, mode=None, read_value=None, written_value=None):
+        self.pin = pin
+        self.digital = digital
+        self.mode = mode # None == unknown
+        self.read_value = read_value # None == unknown
+        self.written_value = written_value # None == unknown
 
 
-class WrappedBoolean(object):
-    """Wraps a boolean, to emulate passing variables by reference"""
+class PinStatusTracker(object):
+    """Helper objecto to track status of all the pins"""
+    def __init__(self):
+        self.status = {}
 
-    def __init__(self, value):
-        assert value is True or value is False
-        self._value = value
+    @synchronized(STATUS_TRACKER_LOCK)
+    def get_pin_status(self, pin, digital):
+        key = (pin, digital,)
+        try:
+            return self.status[key]
+        except KeyError:
+            # Create default status
+            #  + default mode of Arduino pins is INPUT, except digital 13 (LED)
+            # Anyway, we use default values of 'mode' & 'value' -> `None`
+            status = PinStatus(pin, digital=digital)
+            self.status[key] = status
+            return status
 
-    def setTrue(self):
-        self._value = True
+    @synchronized(STATUS_TRACKER_LOCK)
+    def set_pin_mode(self, pin, digital, mode):
+        """
+        Set pin mode. `mode = None` implies we don't know the pin mode
+        (because an error was detected while trying to set te mode).
 
-    def setFalse(self):
-        self._value = False
+        This resets the value of `value`
+        """
+        assert mode in (INPUT, OUTPUT, None)
+        status = self.get_pin_status(pin, digital)
+        status.mode = mode
+        status.read_value = None
+        status.written_value = None
 
-    def get(self):
-        return self._value
+    @synchronized(STATUS_TRACKER_LOCK)
+    def set_pin_written_value(self, pin, digital, written_value):
+        """
+        Set the last value written. `value = None` implies we don't know the pin value
+        (because an error was detected while trying to send that value to Arduino).
+        """
+        status = self.get_pin_status(pin, digital)
+        status.written_value = written_value
+
+    @synchronized(STATUS_TRACKER_LOCK)
+    def set_pin_read_value(self, pin, digital, read_value):
+        """
+        Set the last read value. `value = None` implies we don't know the value read
+        (because an error was detected while trying to read that value to Arduino).
+        """
+        status = self.get_pin_status(pin, digital)
+        status.read_value = read_value
+
+    @synchronized(STATUS_TRACKER_LOCK)
+    def populate(self, arduino_type_struct):
+        for pin in range(1, arduino_type_struct['digital_pins'] + 1):
+            self.get_pin_status(pin, digital=True)
+        for pin in range(1, arduino_type_struct['analog_pins'] + 1):
+            self.get_pin_status(pin, digital=False)
+
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -233,6 +263,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         # For communicating with the computer, use one of these rates: 300, 1200, 2400, 4800,
         #    9600, 14400, 19200, 28800, 38400, 57600, or 115200.
         logger.debug("Instantiating ArduinoProxy('%s', %d)...", tty, speed)
+        self._arduino_type_struct_cache = None
         self.tty = tty
         self.speed = speed
         self.wait_after_open = wait_after_open
@@ -249,8 +280,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         # These are used to track connection status (connected/disconnected)
         self.serial_port = None
         self.emulator = None
-
-        self.pin_status = []
+        self.status_tracker = None
 
     def _connect_emulator(self, initial_input_buffer_contents=None):
         """Common method to be used from `create_emulator()` and `__init__()`"""
@@ -263,6 +293,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
         self.emulator = ArduinoEmulator(self.serial_port.get_other_side())
         self.emulator.start()
         self.validateConnection()
+        self.status_tracker = PinStatusTracker()
 
     @classmethod
     def create_emulator(cls, initial_input_buffer_contents=None):
@@ -309,6 +340,10 @@ class ArduinoProxy(object): # pylint: disable=R0904
             self.validateConnection()
 
         logger.debug("connect() OK")
+
+        self.status_tracker = PinStatusTracker()
+        self.status_tracker.populate(self.getArduinoTypeStruct())
+
         return self
 
     @synchronized(ARDUINO_PROXY_LOCK)
@@ -330,6 +365,8 @@ class ArduinoProxy(object): # pylint: disable=R0904
                 logger.exception("Error detected when trying to close serial port. "
                     "Continuing anywat...")
             self.serial_port = None
+
+        self.status_tracker = None
         assert self.emulator is None and self.serial_port is None
 
     @synchronized(ARDUINO_PROXY_LOCK)
@@ -632,7 +669,12 @@ class ArduinoProxy(object): # pylint: disable=R0904
             raise(InvalidArgument())
         cmd = "_pMd\t%d\t%d" % (pin, mode)
 
-        return self.send_cmd(cmd, expected_response="PM_OK")
+        try:
+            self.status_tracker.set_pin_mode(pin, digital=True, mode=mode)
+            return self.send_cmd(cmd, expected_response="PM_OK")
+        except:
+            self.status_tracker.set_pin_mode(pin, digital=True, mode=None)
+            raise
         # raises CommandTimeout,InvalidCommand,InvalidResponse
 
     pinMode.arduino_function_name = '_pMd'
@@ -671,7 +713,12 @@ class ArduinoProxy(object): # pylint: disable=R0904
         if not value in [LOW, HIGH]:
             raise(InvalidArgument("Invalid value for 'value' parameter."))
         cmd = "_dWrt\t%d\t%d" % (pin, value)
-        return self.send_cmd(cmd, expected_response="DW_OK")
+        try:
+            self.status_tracker.set_pin_written_value(pin, digital=True, written_value=value)
+            return self.send_cmd(cmd, expected_response="DW_OK")
+        except:
+            self.status_tracker.set_pin_written_value(pin, digital=True, written_value=None)
+            raise
         # raises CommandTimeout,InvalidCommand,InvalidResponse
 
     digitalWrite.arduino_function_name = '_dWrt'
@@ -710,17 +757,24 @@ class ArduinoProxy(object): # pylint: disable=R0904
         self._assert_connected()
         self._validate_digital_pin(pin)
         cmd = "_dRd\t%d" % (pin)
-        response = self.send_cmd(cmd) # raises CommandTimeout,InvalidCommand
+        try:
+            response = self.send_cmd(cmd) # raises CommandTimeout,InvalidCommand
+        except:
+            self.status_tracker.set_pin_read_value(pin, digital=True, read_value=None)
+            raise
 
         try:
             int_response = int(response)
         except ValueError:
+            self.status_tracker.set_pin_read_value(pin, digital=True, read_value=None)
             raise(InvalidResponse("The response couldn't be converted to int. Response: %s" % \
                 pprint.pformat(response)))
 
         if int_response in [HIGH, LOW]:
+            self.status_tracker.set_pin_read_value(pin, digital=True, read_value=int_response)
             return int_response
 
+        self.status_tracker.set_pin_read_value(pin, digital=True, read_value=None)
         raise(InvalidResponse("The response isn't HIGH (%d) nor LOW (%d). Response: %s" % (
             HIGH, LOW, int_response)))
 
@@ -761,11 +815,17 @@ class ArduinoProxy(object): # pylint: disable=R0904
         self._assert_connected()
         self._validate_analog_pin(pin)
         cmd = "_aRd\t%d" % (pin)
-        response = self.send_cmd(cmd, response_transformer=int)
+        try:
+            response = self.send_cmd(cmd, response_transformer=int)
+        except:
+            self.status_tracker.set_pin_read_value(pin, digital=False, read_value=None)
+            raise
 
         if response >= 0 and response <= 1023:
+            self.status_tracker.set_pin_read_value(pin, digital=False, read_value=response)
             return response
 
+        self.status_tracker.set_pin_read_value(pin, digital=False, read_value=None)
         raise(InvalidResponse("The response isn't in the valid range of 0-1023. " + \
             "Response: %d" % response))
 
@@ -800,8 +860,13 @@ class ArduinoProxy(object): # pylint: disable=R0904
             raise(InvalidArgument())
         cmd = "_aWrt\t%d\t%d" % (pin, value)
 
-        return self.send_cmd(cmd, expected_response="AW_OK")
-        # raises CommandTimeout,InvalidCommand,InvalidResponse
+        try:
+            self.status_tracker.set_pin_written_value(pin, digital=False, written_value=value)
+            return self.send_cmd(cmd, expected_response="AW_OK")
+            # raises CommandTimeout,InvalidCommand,InvalidResponse
+        except:
+            self.status_tracker.set_pin_written_value(pin, digital=False, written_value=None)
+            raise
 
     analogWrite.arduino_function_name = '_aWrt'
     analogWrite.arduino_code = _unindent(12, """
@@ -1416,6 +1481,10 @@ class ArduinoProxy(object): # pylint: disable=R0904
             - flash_size_bytes: FLASH size in bytes.
         """
         self._assert_connected()
+
+        if self._arduino_type_struct_cache is not None:
+            return copy.deepcopy(self._arduino_type_struct_cache)
+
         value = self.send_cmd("_gATS")
         splitted = [item for item in value.split() if item]
 
@@ -1448,7 +1517,9 @@ class ArduinoProxy(object): # pylint: disable=R0904
         arduino_type_struct['ram_size_bytes'] = arduino_type_struct['ram_size'] * 1024
 
         assert None not in arduino_type_struct.keys()
-        return arduino_type_struct
+
+        self._arduino_type_struct_cache = arduino_type_struct
+        return copy.deepcopy(self._arduino_type_struct_cache)
 
     getArduinoTypeStruct.arduino_function_name = '_gATS'
     getArduinoTypeStruct.arduino_code = _unindent(12, """
