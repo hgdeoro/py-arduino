@@ -19,7 +19,7 @@
 ##-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 from arduino_proxy.main_utils import default_main
-from arduino_proxy.proxy import ArduinoProxy
+from arduino_proxy.proxy import OUTPUT
 
 
 def args_validator(parser, options, args): # pylint: disable=W0613
@@ -37,7 +37,7 @@ def main():
     value = int(args[2])
 
     try:
-        proxy.pinMode(pwm_digital_port, ArduinoProxy.OUTPUT)
+        proxy.pinMode(pwm_digital_port, OUTPUT)
         proxy.analogWrite(pwm_digital_port, value)
     except KeyboardInterrupt:
         print ""

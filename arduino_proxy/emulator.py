@@ -25,7 +25,7 @@ import threading
 import time
 import weakref
 
-from arduino_proxy.proxy import ArduinoProxy
+from arduino_proxy.proxy import ArduinoProxy, HIGH, LOW
 
 logger = logging.getLogger(__name__) # pylint: disable=C0103
 
@@ -91,7 +91,7 @@ class ArduinoEmulator(threading.Thread):
             value = random.randint(0, 1023)
             self.serial_connection.write("%d\n" % value)
         elif splitted[0] == '_dRd':
-            value = [ArduinoProxy.HIGH, ArduinoProxy.LOW][random.randint(0, 1)]
+            value = [HIGH, LOW][random.randint(0, 1)]
             self.serial_connection.write("%d\n" % value)
         elif splitted[0] == '_dWrt':
             self.serial_connection.write("DW_OK\n")

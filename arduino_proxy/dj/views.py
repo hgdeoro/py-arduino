@@ -8,7 +8,8 @@ from django.http.response import HttpResponse, HttpResponseRedirect,\
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 
-from arduino_proxy.proxy import ArduinoProxy, DEVICE_FOR_EMULATOR
+from arduino_proxy.proxy import DEVICE_FOR_EMULATOR, LOW, HIGH,\
+    OUTPUT, INPUT
 from arduino_proxy.pyroproxy.utils import get_arduino_proxy_proxy, server_is_up
 
 
@@ -160,10 +161,10 @@ def pin_mode(request):
     mode = request.REQUEST.get('mode', None)
     try:
         if mode == 'output':
-            PROXY.pinMode(int(pin), ArduinoProxy.OUTPUT)
+            PROXY.pinMode(int(pin), OUTPUT)
             return JsonResponse({'ok': True, })
         elif mode == 'input':
-            PROXY.pinMode(int(pin), ArduinoProxy.INPUT)
+            PROXY.pinMode(int(pin), INPUT)
             return JsonResponse({'ok': True, })
         else:
             # FIXME: return error details and log
@@ -180,10 +181,10 @@ def digital_write(request):
     value = request.REQUEST.get('value', None)
     try:
         if value == 'low':
-            PROXY.digitalWrite(int(pin), ArduinoProxy.LOW)
+            PROXY.digitalWrite(int(pin), LOW)
             return JsonResponse({'ok': True, })
         elif value == 'high':
-            PROXY.digitalWrite(int(pin), ArduinoProxy.HIGH)
+            PROXY.digitalWrite(int(pin), HIGH)
             return JsonResponse({'ok': True, })
         else:
             # FIXME: return error details and log
@@ -232,9 +233,9 @@ def digital_read(request):
     pin = request.REQUEST.get('pin', None)
     try:
         value = PROXY.digitalRead(int(pin))
-        if value == ArduinoProxy.HIGH:
+        if value == HIGH:
             return JsonResponse({'ok': True, 'value': 1, })
-        elif value == ArduinoProxy.LOW:
+        elif value == LOW:
             return JsonResponse({'ok': True, 'value': 0, })
         else:
             # FIXME: return error details and log

@@ -29,7 +29,7 @@ sys.path.append(os.path.abspath(SRC_DIR))
 
 from arduino_proxy import ArduinoProxy, InvalidCommand, CommandTimeout, InvalidResponse
 from arduino_proxy.main_utils import default_main
-from arduino_proxy.proxy import NotConnected
+from arduino_proxy.proxy import NotConnected, HIGH, OUTPUT
 
 
 def main(): # pylint: disable=R0915
@@ -40,11 +40,11 @@ def main(): # pylint: disable=R0915
         print "disableDebug() -> %s" % str(proxy.disableDebug())
         print "validateConnection() -> %s" % str(proxy.validateConnection())
         print "ping() -> %s" % str(proxy.ping())
-        print "pinMode() -> %s" % str(proxy.pinMode(13, ArduinoProxy.OUTPUT))
+        print "pinMode() -> %s" % str(proxy.pinMode(13, OUTPUT))
         print "analogRead() -> %s" % str(proxy.analogRead(0))
         print "analogWrite() -> %s" % str(proxy.analogWrite(0, 128))
         print "digitalRead() -> %s" % str(proxy.digitalRead(0))
-        print "digitalWrite() -> %s" % str(proxy.digitalWrite(0, ArduinoProxy.HIGH))
+        print "digitalWrite() -> %s" % str(proxy.digitalWrite(0, HIGH))
         print "digitalRead() -> %s" % str(proxy.digitalRead(0))
         print "delay() -> %s" % str(proxy.delay(1))
         print "delayMicroseconds() -> %s" % str(proxy.delayMicroseconds(1))

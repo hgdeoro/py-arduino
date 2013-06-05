@@ -23,6 +23,7 @@ import os
 import sys
 import time
 import unittest
+from arduino_proxy.proxy import HIGH, LOW, OUTPUT, INPUT
 
 # Setup PYTHONPATH
 SRC_DIR = os.path.split(os.path.realpath(__file__))[0] # SRC_DIR/arduino_proxy/tests
@@ -84,21 +85,21 @@ class TestProxiedMethodsOfArduinoProxy(unittest.TestCase): # pylint: disable=R09
 
     def test_digital_read(self):
         response = self.proxy.digitalRead(99)
-        self.assertTrue(response in [ArduinoProxy.HIGH, ArduinoProxy.LOW])
+        self.assertTrue(response in [HIGH, LOW])
 
         # test with invalid arguments
         for an_arg in (None, 'something', Exception(), 1.1):
             self.assertRaises(InvalidArgument, self.proxy.digitalRead, an_arg)
 
     def test_digital_write(self):
-        self.proxy.digitalWrite(99, ArduinoProxy.HIGH)
-        self.proxy.digitalWrite(99, ArduinoProxy.LOW)
+        self.proxy.digitalWrite(99, HIGH)
+        self.proxy.digitalWrite(99, LOW)
 
         # test with invalid arguments
         for an_arg in (None, 'something', Exception(), 1.1):
             self.assertRaises(InvalidArgument, self.proxy.digitalWrite, 99, an_arg)
-            self.assertRaises(InvalidArgument, self.proxy.digitalWrite, an_arg, ArduinoProxy.HIGH)
-            self.assertRaises(InvalidArgument, self.proxy.digitalWrite, an_arg, ArduinoProxy.LOW)
+            self.assertRaises(InvalidArgument, self.proxy.digitalWrite, an_arg, HIGH)
+            self.assertRaises(InvalidArgument, self.proxy.digitalWrite, an_arg, LOW)
 
     def test_analog_write(self):
         for value in range(0, 256):
@@ -117,14 +118,14 @@ class TestProxiedMethodsOfArduinoProxy(unittest.TestCase): # pylint: disable=R09
             self.assertRaises(InvalidArgument, self.proxy.analogWrite, an_arg, 255)
 
     def test_pin_mode(self):
-        self.proxy.pinMode(99, ArduinoProxy.OUTPUT)
-        self.proxy.pinMode(99, ArduinoProxy.INPUT)
+        self.proxy.pinMode(99, OUTPUT)
+        self.proxy.pinMode(99, INPUT)
 
         # test with invalid arguments
         for an_arg in (None, 'something', Exception(), 1.1):
             self.assertRaises(InvalidArgument, self.proxy.pinMode, 99, an_arg)
-            self.assertRaises(InvalidArgument, self.proxy.pinMode, an_arg, ArduinoProxy.OUTPUT)
-            self.assertRaises(InvalidArgument, self.proxy.pinMode, an_arg, ArduinoProxy.INPUT)
+            self.assertRaises(InvalidArgument, self.proxy.pinMode, an_arg, OUTPUT)
+            self.assertRaises(InvalidArgument, self.proxy.pinMode, an_arg, INPUT)
 
     def test_delay(self):
         self.proxy.delay(0)

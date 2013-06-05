@@ -28,8 +28,9 @@ SRC_DIR = os.path.split(SRC_DIR)[0] # SRC_DIR=SRC_DIR/../
 SRC_DIR = os.path.join(SRC_DIR, 'src') # SRC_DIR
 sys.path.append(os.path.abspath(SRC_DIR))
 
-from arduino_proxy import ArduinoProxy
 from arduino_proxy.main_utils import default_main
+from arduino_proxy.proxy import OUTPUT, HIGH, LOW
+
 
 def args_validator(parser, options, args): # pylint: disable=W0613
     if len(args) != 2:
@@ -42,11 +43,11 @@ def main():
     digital_port = int(args[1])
     
     try:
-        proxy.pinMode(digital_port, ArduinoProxy.OUTPUT)
+        proxy.pinMode(digital_port, OUTPUT)
         while True:
-            proxy.digitalWrite(digital_port, ArduinoProxy.HIGH)
+            proxy.digitalWrite(digital_port, HIGH)
             time.sleep(0.5)
-            proxy.digitalWrite(digital_port, ArduinoProxy.LOW)
+            proxy.digitalWrite(digital_port, LOW)
             time.sleep(0.5)
     except KeyboardInterrupt:
         print ""

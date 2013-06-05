@@ -21,6 +21,7 @@
 import os
 import sys
 import traceback
+from arduino_proxy.proxy import INPUT, HIGH
 
 # Setup PYTHONPATH
 SRC_DIR = os.path.split(os.path.realpath(__file__))[0] # SRC_DIR/arduino_proxy/tests
@@ -49,11 +50,11 @@ def main():
         #    ATTACH_INTERRUPT_MODE_FALLING = 'F'
         
         print "proxy.pinMode()"
-        proxy.pinMode(2, ArduinoProxy.INPUT) # INT_0
+        proxy.pinMode(2, INPUT) # INT_0
         proxy.delay(200)
         
         print "proxy.digitalWrite(2,HIGH) -> pullup resistor"
-        proxy.digitalWrite(2, ArduinoProxy.HIGH) # INT_0 -> pullup resistor
+        proxy.digitalWrite(2, HIGH) # INT_0 -> pullup resistor
         proxy.delay(200)
         
         print "proxy.watchInterrupt(0) -> interrupt occurs when pin 2 become LOW."

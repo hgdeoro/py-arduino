@@ -30,6 +30,7 @@ import time
 import threading
 
 from serial.tools.list_ports import comports
+
 from arduino_proxy.storage import Storage
 
 try:
@@ -45,6 +46,29 @@ ARDUINO_PROXY_LOCK = threading.RLock()
 
 # Device to use to launch an emulator instad of connecting to a real Arduino
 DEVICE_FOR_EMULATOR = '/dev/ARDUINO_EMULATOR'
+
+#===============================================================================
+# Values to write to pins, and read from pins
+#===============================================================================
+#define HIGH 0x1
+#define LOW  0x0
+HIGH = 0x01
+LOW = 0x00
+
+#===============================================================================
+# Pin modes
+#===============================================================================
+#define INPUT 0x0
+#define OUTPUT 0x1
+INPUT = 0x00
+OUTPUT = 0x01
+
+
+#class PinStatus(object):
+#    """
+#    Class to hold transient information of pin status.
+#    """
+#    def __init__(self, pin, digital=True, mode=):
 
 
 def synchronized(lock):
@@ -168,16 +192,6 @@ class ArduinoProxy(object): # pylint: disable=R0904
     Proxy class for accessing Arduino.
     """
 
-    #define HIGH 0x1
-    #define LOW  0x0
-    HIGH = 0x01
-    LOW = 0x00
-
-    #define INPUT 0x0
-    #define OUTPUT 0x1
-    INPUT = 0x00
-    OUTPUT = 0x01
-
     #define LSBFIRST 0
     #define MSBFIRST 1
     LSBFIRST = 0x00
@@ -229,6 +243,8 @@ class ArduinoProxy(object): # pylint: disable=R0904
         # These are used to track connection status (connected/disconnected)
         self.serial_port = None
         self.emulator = None
+
+        self.pin_status = []
 
     def _connect_emulator(self, initial_input_buffer_contents=None):
         """Common method to be used from `create_emulator()` and `__init__()`"""
@@ -599,14 +615,14 @@ class ArduinoProxy(object): # pylint: disable=R0904
         
         Parameters:
             - pin (int): pin to configure
-            - mode: ArduinoProxy.INPUT or ArduinoProxy.OUTPUT
+            - mode: INPUT or OUTPUT
         """
         # TODO: The analog input pins can be used as digital pins, referred to as A0, A1, etc.
         # FIXME: validate pin and value
         # FIXME: add doc for parameters and exceptions
         self._assert_connected()
         self._validate_digital_pin(pin)
-        if not mode in [ArduinoProxy.INPUT, ArduinoProxy.OUTPUT]:
+        if not mode in [INPUT, OUTPUT]:
             raise(InvalidArgument())
         cmd = "_pMd\t%d\t%d" % (pin, mode)
 
@@ -640,13 +656,13 @@ class ArduinoProxy(object): # pylint: disable=R0904
         
         Parameters:
             - pin (int): pin to write
-            - value (ArduinoProxy.LOW or ArduinoProxy.HIGH): value to write
+            - value (LOW or HIGH): value to write
         """
         # FIXME: validate pin and value
         # FIXME: add doc for parameters and exceptions
         self._assert_connected()
         self._validate_digital_pin(pin)
-        if not value in [ArduinoProxy.LOW, ArduinoProxy.HIGH]:
+        if not value in [LOW, HIGH]:
             raise(InvalidArgument("Invalid value for 'value' parameter."))
         cmd = "_dWrt\t%d\t%d" % (pin, value)
         return self.send_cmd(cmd, expected_response="DW_OK")
@@ -682,7 +698,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
             - pin (int): digital pin to read
         
         Returns:
-            - Either ArduinoProxy.HIGH or ArduinoProxy.LOW
+            - Either HIGH or LOW
         """
         # FIXME: add doc for exceptions
         self._assert_connected()
@@ -696,11 +712,11 @@ class ArduinoProxy(object): # pylint: disable=R0904
             raise(InvalidResponse("The response couldn't be converted to int. Response: %s" % \
                 pprint.pformat(response)))
 
-        if int_response in [ArduinoProxy.HIGH, ArduinoProxy.LOW]:
+        if int_response in [HIGH, LOW]:
             return int_response
 
         raise(InvalidResponse("The response isn't HIGH (%d) nor LOW (%d). Response: %s" % (
-            ArduinoProxy.HIGH, ArduinoProxy.LOW, int_response)))
+            HIGH, LOW, int_response)))
 
     digitalRead.arduino_function_name = '_dRd'
     digitalRead.arduino_code = _unindent(12, """
@@ -1336,8 +1352,8 @@ class ArduinoProxy(object): # pylint: disable=R0904
         # FIXME: test detection of invalid parameters
 
         if set_pin_mode:
-            self.pinMode(dataPin, ArduinoProxy.OUTPUT)
-            self.pinMode(clockPin, ArduinoProxy.OUTPUT)
+            self.pinMode(dataPin, OUTPUT)
+            self.pinMode(clockPin, OUTPUT)
         return self.send_cmd("_sftO\t%d\t%d\t%d\t%d" % (dataPin,
             clockPin, bitOrder, value,), "SOOK")
             # raises CommandTimeout,InvalidCommand,InvalidResponse

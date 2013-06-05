@@ -19,16 +19,16 @@
 ##-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 from arduino_proxy.main_utils import default_main
-from arduino_proxy.proxy import ArduinoProxy
+from arduino_proxy.proxy import HIGH, LOW, INPUT
 
 
 def default_callback(value, options):
-    if value == ArduinoProxy.HIGH:
+    if value == HIGH:
         if options.numerical:
             print "1"
         else:
             print "HIGH"
-    elif value == ArduinoProxy.LOW:
+    elif value == LOW:
         if options.numerical:
             print "0"
         else:
@@ -60,7 +60,7 @@ def main(callback=default_callback):
     digital_port = int(args[1])
 
     try:
-        proxy.pinMode(digital_port, ArduinoProxy.INPUT)
+        proxy.pinMode(digital_port, INPUT)
         while True:
             value = proxy.digitalRead(digital_port)
             callback(value, options)

@@ -6,7 +6,7 @@ Created on May 22, 2013
 import time
 import logging
 
-from arduino_proxy.proxy import ArduinoProxy
+from arduino_proxy.proxy import LOW, HIGH, OUTPUT
 from arduino_proxy.pyroproxy.utils import get_arduino_proxy_proxy, \
     wait_for_server, get_arduino_storage_proxy
 
@@ -38,11 +38,11 @@ def main():
     logger.info("Connected! :-D")
 
     logger.info("Starting to blink")
-    arduino_proxy.pinMode(pin.pin, ArduinoProxy.OUTPUT)
+    arduino_proxy.pinMode(pin.pin, OUTPUT)
     while True:
-        arduino_proxy.digitalWrite(pin.pin, ArduinoProxy.HIGH)
+        arduino_proxy.digitalWrite(pin.pin, HIGH)
         time.sleep(1)
-        arduino_proxy.digitalWrite(pin.pin, ArduinoProxy.LOW)
+        arduino_proxy.digitalWrite(pin.pin, LOW)
         time.sleep(1)
 
 if __name__ == '__main__':

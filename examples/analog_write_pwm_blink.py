@@ -20,6 +20,7 @@
 
 import os
 import sys
+from arduino_proxy.proxy import OUTPUT
 
 # Setup PYTHONPATH
 SRC_DIR = os.path.split(os.path.realpath(__file__))[0] # SRC_DIR=EXAMPLE_DIR
@@ -27,22 +28,23 @@ SRC_DIR = os.path.split(SRC_DIR)[0] # SRC_DIR=SRC_DIR/../
 SRC_DIR = os.path.join(SRC_DIR, 'src') # SRC_DIR
 sys.path.append(os.path.abspath(SRC_DIR))
 
-from arduino_proxy import ArduinoProxy
 from arduino_proxy.main_utils import default_main
+
 
 def args_validator(parser, options, args): # pylint: disable=W0613
     if len(args) != 2:
         parser.error("must specified three argument: serial device, PWM digital port")
 
+
 def main():
-    options, args, proxy = default_main(optparse_usage=\
+    _, args, proxy = default_main(optparse_usage=\
         "usage: %prog [options] serial_device pwm_digital_port",
         args_validator=args_validator)
     
     pwm_digital_port = int(args[1])
     
     try:
-        proxy.pinMode(pwm_digital_port, ArduinoProxy.OUTPUT)
+        proxy.pinMode(pwm_digital_port, OUTPUT)
         while True:
             for value in range(0, 256):
                 proxy.analogWrite(pwm_digital_port, value)
