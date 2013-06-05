@@ -367,6 +367,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
             self.serial_port = None
 
         self.status_tracker = None
+        self._arduino_type_struct_cache = None
         assert self.emulator is None and self.serial_port is None
 
     @synchronized(ARDUINO_PROXY_LOCK)
