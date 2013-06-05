@@ -273,6 +273,7 @@ class ArduinoProxy(object): # pylint: disable=R0904
             from arduino_proxy.dj.models import DjStorage
             self.storage = DjStorage()
         except:
+            logger.exception("Django not available. Using dummy storage...")
             self.storage = Storage()
 
         # NOT TRUE: "one, and only one of (self.serial_port, self.emulator) should be not None"
