@@ -54,3 +54,16 @@ def wait_for_server(logger=_logger, sleep=1):
             return
         except CommunicationError:
             time.sleep(1)
+
+
+def server_is_up():
+    """
+    Returns True if Pyro server is reachable.
+    """
+    daemon = Pyro4.Proxy("PYRO:{0}@localhost:61234".format(
+        Pyro4.constants.DAEMON_NAME))
+    try:
+        daemon.ping()
+        return True
+    except CommunicationError:
+        return False

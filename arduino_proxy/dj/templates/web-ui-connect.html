@@ -30,6 +30,23 @@
 
     {% include "web-ui__top_error_message.html" %}
 
+    {% if show_start_pyroproxy_server_msg %}
+
+		    <div class="ui-widget">
+		        <div class="ui-widget-header ui-corner-top">
+		            <h2>Pyro Server not reachable</h2>
+		        </div>
+		        <div class="ui-widget-content ui-corner-bottom">
+                    <p>You must start the <strong>Pyro server</strong>.</p>
+                    <p>Try:</p>
+                    <pre>    $ python arduino_proxy/pyroproxy/server.py</pre>
+		        </div>
+               </div>
+
+			<p>&nbsp;</p>
+
+    {% else %}
+
 	<div class="ui-widget">
 		<div class="ui-widget-header ui-corner-top">
 			<h2>Connect to the Arduino</h2>
@@ -68,10 +85,10 @@
 	</div>
 	
 	<p>&nbsp;</p>
-	
+
 	<div class="ui-widget">
 		<div class="ui-widget-header ui-corner-top">
-			<h4>Arduino Emulator</h4>
+			<h2>Arduino Emulator</h2>
 		</div>
 		<div class="ui-widget-content ui-corner-bottom">
 			<p>You can start the web interface with an "Arduino emulator".</p>
@@ -85,6 +102,8 @@
 			</div>
 		</div>
 	</div>
+
+    {% endif %}
 	
     {% include "web-ui__footer.html" %}
     

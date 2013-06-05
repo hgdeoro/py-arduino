@@ -1,7 +1,6 @@
 import logging
 import json
 import Pyro4
-import hmac
 
 from django.shortcuts import render
 from django.http.response import HttpResponse, HttpResponseRedirect,\
@@ -10,11 +9,10 @@ from django.core.urlresolvers import reverse
 from django.contrib import messages
 
 from arduino_proxy.proxy import ArduinoProxy, DEVICE_FOR_EMULATOR
+from arduino_proxy.pyroproxy.utils import get_arduino_proxy_proxy, server_is_up
 
 
-# FIXME: for serious uses, creation of PROXY should be synchronized
-Pyro4.config.HMAC_KEY = hmac.new('this-is-PyArduinoProxy').digest()
-PROXY = Pyro4.Proxy("PYRO:arduino_proxy.Proxy@localhost:61234")
+PROXY = get_arduino_proxy_proxy()
 
 
 class JsonResponse(HttpResponse):
@@ -37,6 +35,9 @@ class JsonErrorResponse(HttpResponseServerError):
 
 
 def home(request):
+    if not server_is_up():
+        return HttpResponseRedirect(reverse('connect'))
+        
     if not PROXY.is_connected():
         return HttpResponseRedirect(reverse('connect'))
 
@@ -65,10 +66,16 @@ def home(request):
 
 
 def connect(request):
+
     if request.method == 'GET':
-        return render(request, 'web-ui-connect.html', {
-            'serial_ports': PROXY.get_serial_ports(),
-        })
+        if server_is_up():
+            return render(request, 'web-ui-connect.html', {
+                'serial_ports': PROXY.get_serial_ports(),
+            })
+        else:
+            return render(request, 'web-ui-connect.html', {
+                'show_start_pyroproxy_server_msg': True,
+            })
 
     if PROXY.is_connected():
         raise(Exception("ArduinoProxy is already connected"))
