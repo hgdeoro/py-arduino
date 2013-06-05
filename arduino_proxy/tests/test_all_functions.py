@@ -27,9 +27,9 @@ SRC_DIR = os.path.split(SRC_DIR)[0] # SRC_DIR/arduino_proxy
 SRC_DIR = os.path.split(SRC_DIR)[0] # SRC_DIR
 sys.path.append(os.path.abspath(SRC_DIR))
 
-from arduino_proxy import ArduinoProxy, InvalidCommand, CommandTimeout, InvalidResponse
+from arduino_proxy import InvalidCommand, CommandTimeout, InvalidResponse
 from arduino_proxy.main_utils import default_main
-from arduino_proxy.proxy import NotConnected, HIGH, OUTPUT
+from arduino_proxy.proxy import NotConnected, HIGH, OUTPUT, LSBFIRST
 
 
 def main(): # pylint: disable=R0915
@@ -50,7 +50,7 @@ def main(): # pylint: disable=R0915
         print "delayMicroseconds() -> %s" % str(proxy.delayMicroseconds(1))
         print "millis() -> %s " % str(proxy.millis())
         print "micros() -> %s" % str(proxy.micros())
-        print "shiftOut() -> %s" % str(proxy.shiftOut(10, 11, ArduinoProxy.LSBFIRST, 255,
+        print "shiftOut() -> %s" % str(proxy.shiftOut(10, 11, LSBFIRST, 255,
             set_pin_mode=True))
 
         #define RETURN_OK 0

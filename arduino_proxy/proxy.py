@@ -63,6 +63,22 @@ LOW = 0x00
 INPUT = 0x00
 OUTPUT = 0x01
 
+#===============================================================================
+# Bit
+#===============================================================================
+#define LSBFIRST 0
+#define MSBFIRST 1
+LSBFIRST = 0x00
+MSBFIRST = 0x01
+
+#===============================================================================
+# Interrupt
+#===============================================================================
+ATTACH_INTERRUPT_MODE_LOW = 'L'
+ATTACH_INTERRUPT_MODE_CHANGE = 'C'
+ATTACH_INTERRUPT_MODE_RISING = 'R'
+ATTACH_INTERRUPT_MODE_FALLING = 'F'
+
 
 #class PinStatus(object):
 #    """
@@ -191,16 +207,6 @@ class ArduinoProxy(object): # pylint: disable=R0904
     """
     Proxy class for accessing Arduino.
     """
-
-    #define LSBFIRST 0
-    #define MSBFIRST 1
-    LSBFIRST = 0x00
-    MSBFIRST = 0x01
-
-    ATTACH_INTERRUPT_MODE_LOW = 'L'
-    ATTACH_INTERRUPT_MODE_CHANGE = 'C'
-    ATTACH_INTERRUPT_MODE_RISING = 'R'
-    ATTACH_INTERRUPT_MODE_FALLING = 'F'
 
     INVALID_CMD = "INVALID_CMD"
     INVALID_PARAMETER = "INVALID_PARAMETER"
@@ -1048,10 +1054,10 @@ class ArduinoProxy(object): # pylint: disable=R0904
             raise(InvalidArgument("interrupt must be an integer"))
         if interrupt < 0 or interrupt > 1:
             raise(InvalidArgument("interrupt must be between 0 and 1"))
-        if not mode in [ArduinoProxy.ATTACH_INTERRUPT_MODE_LOW,
-                ArduinoProxy.ATTACH_INTERRUPT_MODE_CHANGE,
-                ArduinoProxy.ATTACH_INTERRUPT_MODE_RISING,
-                ArduinoProxy.ATTACH_INTERRUPT_MODE_FALLING]:
+        if not mode in [ATTACH_INTERRUPT_MODE_LOW,
+                ATTACH_INTERRUPT_MODE_CHANGE,
+                ATTACH_INTERRUPT_MODE_RISING,
+                ATTACH_INTERRUPT_MODE_FALLING]:
             raise(InvalidArgument("invalid mode: %s" % str(mode)))
 
         return self.send_cmd("_wI\t%d\t%s" % (interrupt, mode), expected_response="WI_OK")
@@ -1334,8 +1340,8 @@ class ArduinoProxy(object): # pylint: disable=R0904
         Parameters:
             - dataPin (int): the pin on which to output each bit.
             - clockPin (int): the pin to toggle once the dataPin has been set to the correct value.
-            - bitOrder: which order to shift out the bits; either ArduinoProxy.LSBFIRST
-                or ArduinoProxy.MSBFIRST.
+            - bitOrder: which order to shift out the bits; either LSBFIRST
+                or MSBFIRST.
             - value (int): the data to shift out.
         """
         self._assert_connected()
@@ -1345,9 +1351,9 @@ class ArduinoProxy(object): # pylint: disable=R0904
             raise(InvalidArgument("value must be an integer"))
         if value < 0 or value > 255:
             raise(InvalidArgument("value must be between 0 and 255"))
-        if not bitOrder in [ArduinoProxy.LSBFIRST, ArduinoProxy.MSBFIRST]:
-            raise(InvalidArgument("bitOrder must be ArduinoProxy.LSBFIRST or " + \
-                "ArduinoProxy.MSBFIRST"))
+        if not bitOrder in [LSBFIRST, MSBFIRST]:
+            raise(InvalidArgument("bitOrder must be LSBFIRST or " + \
+                "MSBFIRST"))
 
         # FIXME: test detection of invalid parameters
 
