@@ -52,6 +52,9 @@ def main(): # pylint: disable=R0915
         print "micros() -> %s" % str(proxy.micros())
         print "shiftOut() -> %s" % str(proxy.shiftOut(10, 11, LSBFIRST, 255,
             set_pin_mode=True))
+        print "getArduinoTypeStruct() -> %s" % str(proxy.getArduinoTypeStruct())
+        print "enhanceArduinoTypeStruct() -> %s" % str(proxy.enhanceArduinoTypeStruct(
+            proxy.getArduinoTypeStruct()))
 
         #define RETURN_OK 0
         #define READ_ONE_PARAM_NEW_LINE_FOUND 7
