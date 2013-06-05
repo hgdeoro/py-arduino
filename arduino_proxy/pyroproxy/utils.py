@@ -1,0 +1,56 @@
+##-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+##    PyArduinoProxy - Access your Arduino from Python
+##    Copyright (C) 2011-2012 - Horacio Guillermo de Oro <hgdeoro@gmail.com>
+##
+##    This file is part of PyArduinoProxy.
+##
+##    PyArduinoProxy is free software; you can redistribute it and/or modify
+##    it under the terms of the GNU General Public License as published by
+##    the Free Software Foundation version 2.
+##
+##    PyArduinoProxy is distributed in the hope that it will be useful,
+##    but WITHOUT ANY WARRANTY; without even the implied warranty of
+##    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+##    GNU General Public License version 2 for more details.
+##
+##    You should have received a copy of the GNU General Public License
+##    along with PyArduinoProxy; see the file LICENSE.txt.
+##-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+import Pyro4
+import hmac
+import logging
+import time
+from Pyro4.errors import CommunicationError
+
+_logger = logging.getLogger(__name__)
+
+
+def get_arduino_proxy_proxy():
+    """Returns a Pyro proxy of the ArduinoProxy instance"""
+    Pyro4.config.HMAC_KEY = hmac.new('this-is-PyArduinoProxy').digest()
+    return Pyro4.Proxy("PYRO:arduino_proxy.Proxy@localhost:61234")
+
+
+def get_arduino_storage_proxy():
+    """Returns a Pyro proxy of the Storage instance"""
+    Pyro4.config.HMAC_KEY = hmac.new('this-is-PyArduinoProxy').digest()
+    return Pyro4.Proxy("PYRO:arduino_proxy.Storage@localhost:61234")
+
+
+def wait_for_server(logger=_logger, sleep=1):
+    """
+    Waits until Pyro server is reachable.
+    Waits for `sleep` seconds between checks.
+    Logs messages using`logger`, could be `None` to disable logging.
+    """
+    daemon = Pyro4.Proxy("PYRO:{0}@localhost:61234".format(
+        Pyro4.constants.DAEMON_NAME))
+    if logger:
+        logger.info("Wait to let PyRO server start up")
+    while True:
+        try:
+            daemon.ping()
+            return
+        except CommunicationError:
+            time.sleep(1)
