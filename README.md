@@ -5,20 +5,19 @@ PyArduinoProxy
 ![Architecture overview](/hgdeoro/py-arduino-proxy/raw/master/examples/architecture-overview.png "Architecture overview")
 -->
 
-**NOTE: this is v2 of PyArduinoProxy, the status of the project is currently 'work in progress'.**
+**NOTE: this is v2 of PyArduinoProxy, the status of the project is currently 'work in progress' and this README isn't fully updated yet**
 
 **PyArduinoProxy** is a **Python** library to communicate with **Arduinos**.
 [Mis articulos de PyArduinoProxy](http://blog.hgdeoro.com.ar/search/label/pyarduinoproxy "Mis articulos de PyArduinoProxy").
 
-It's a **low level tool**, very easy to **extend** (it is very easy to create a new method in ArduinoProxy class and attach this method to a Arduino function).
+It's:
+
+ - a **low level tool**, very easy to use and **extend** (it is very easy to create a new method in ArduinoProxy class and attach this method to a Arduino function).
+ - a **service**, including a **web interface** and **background threads**, based on uWSGI and Pyro, it's multithread, allow concurrent access,
+    labeling of pins to facilitate the use.
+
 The project has many **testing** utilities and the ability to see DEBUG messages, to facilitate the location of problems and subsequent solutions.
 
-A new implementation of the **web interface** is in progress, based on uWSGI and Pyro, it's multithread, allow concurrent access
-and supports background tasks.
-
-*Unresolved issues: currently, there are problems when working with interrupts, since characters may be lost if an interrupt occurs while 
-reading the serial with Serial.read(). This is an inherent problem of serial communication of Arduino, but may be fixed in next versions of PyArduinoProxy
-if a work-around is found.*
 
 Installation
 ------------
@@ -111,7 +110,7 @@ License y copyright
 ===================
 
 PyArduinoProxy - Access your Arduino from Python
-Copyright (C) 2011-2012 - Horacio Guillermo de Oro <hgdeoro@gmail.com>
+Copyright (C) 2011-2013 - Horacio Guillermo de Oro <hgdeoro@gmail.com>
 
 PyArduinoProxy is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
