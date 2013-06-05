@@ -1,5 +1,18 @@
 from django.contrib import admin
+from django import forms
+
 from arduino_proxy.dj.models import Pin
+
+
+class PinFormAdmin(forms.ModelForm):
+
+    class Meta:
+        model = Pin
+
+    def clean_pin_idpin_id(self):
+        if not self.cleaned_data["pin_id"].strip():
+            return None
+        return self.cleaned_data["pin_id"]
 
 
 class PinAdmin(admin.ModelAdmin):

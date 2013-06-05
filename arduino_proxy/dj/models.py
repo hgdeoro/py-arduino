@@ -18,6 +18,11 @@ class Pin(models.Model):
         help_text="Unique identifier for internal use of a pin. Ej: 'status-led'")
     enabled_in_web = models.BooleanField(default=True)
 
+    def save(self, *args, **kwargs):
+        if self.pin_id is not None and len(self.pin_id.strip()) == 0:
+            self.pin_id = None
+        super(Pin, self).save(*args, **kwargs) # Call the "real" save() method.
+
     def __unicode__(self):
         if self.digital:
             ret = u"Digital pin #{0}".format(self.pin)
