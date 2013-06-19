@@ -5,10 +5,12 @@ PyArduinoProxy
 ![Architecture overview](/hgdeoro/py-arduino-proxy/raw/master/examples/architecture-overview.png "Architecture overview")
 -->
 
-**NOTE: this is v2 of PyArduinoProxy, the status of the project is currently 'work in progress' and this README isn't fully updated yet**
+**NOTE: this is v2 of PyArduinoProxy, the status of the project is currently 'WIP - work in progress' and this README isn't fully updated yet**
 
-**PyArduinoProxy** is a **Python** library to communicate with **Arduinos**.
+**PyArduinoProxy** is a **Python** library to communicate with **Arduino**.
+<!--
 [Mis articulos de PyArduinoProxy](http://blog.hgdeoro.com.ar/search/label/pyarduinoproxy "Mis articulos de PyArduinoProxy").
+-->
 
 It's:
 
@@ -16,21 +18,33 @@ It's:
  - a **service**, including a **web interface** and **background threads**, based on uWSGI and Pyro, it's multithread, allow concurrent access,
     labeling of pins to facilitate the use.
 
-The project has many **testing** utilities and the ability to see DEBUG messages, to facilitate the location of problems and subsequent solutions.
+The project has many **testing** utilities, an **emulator** and the ability to see DEBUG messages to facilitate the location of problems and subsequent solutions.
 
 
 Installation
 ------------
 
+To install, clone the Git repository, `cd` to the cloned directory and create a `virtualenv` (named `virtualenv`):
+
+    $ git clone https://github.com/hgdeoro/py-arduino-proxy.git
+    $ cd py-arduino-proxy/
+    $ virtualenv -p python2.7 virtualenv
+    $ . virtualenv/bin/activate
+    $ pip install -r requirements.txt
+
+<!--
 The recommended way to install PyArduinoProxy is using pip and/or virtualenv.
 
 1. Install PIP [manually](http://www.pip-installer.org/en/latest/installing.html "Install PIP"), or with your distribution's package manager (`sudo apt-get install python-pip` in Ubuntu), or create a [virtualenv](http://www.virtualenv.org/en/latest/ "Vitualenv Site").
 2. Run `pip install pyarduinoproxy`
+-->
 
 Web interface
 -------------
 
+<!--
 ![Architecture Web Application](/hgdeoro/py-arduino-proxy/raw/master/examples/architecture-overview-webapp.png)
+-->
 
 To launch the web server, run:
 
@@ -40,14 +54,14 @@ connect your Arduino, go to [http://localhost:8080/connect](http://localhost:808
 insert the serial device (something like /dev/ttyACM0)
 and clic 'Connect'. Here are some screenshots:
 
-[connect](/hgdeoro/py-arduino-proxy/raw/master/examples/arduino-proxy-web-interface-connect.png) and 
+[connect](https://raw.github.com/hgdeoro/py-arduino-proxy/raw/master/examples/arduino-proxy-web-interface-connect.png) and 
 
-[main page](/hgdeoro/py-arduino-proxy/raw/master/examples/arduino-proxy-web-interface-main.png).
+[main page](https://raw.github.com/hgdeoro/py-arduino-proxy/raw/master/examples/arduino-proxy-web-interface-main.png).
 
 Console
 -------
 
-![Architecture Console](/hgdeoro/py-arduino-proxy/raw/master/examples/architecture-overview-console.png)
+![Architecture Console](https://raw.github.com/hgdeoro/py-arduino-proxy/raw/master/examples/architecture-overview-console.png)
 
 To ping to the Arduino, make sure it's connected and run:
 
@@ -62,15 +76,15 @@ How it works
 
 First connect to the Arduino. 
 
-![Connect](/hgdeoro/py-arduino-proxy/raw/master/examples/arduino-proxy-connect.png "Connect")
+![Connect](https://raw.github.com/hgdeoro/py-arduino-proxy/raw/master/examples/arduino-proxy-connect.png "Connect")
 
 Once connected, we can execute the methods on the instance of ArduinoProxy. For example, to read a digital pin: 
 
-![Digital Read](/hgdeoro/py-arduino-proxy/raw/master/examples/arduino-proxy-digital-read.png "Digital Read")
+![Digital Read](https://raw.github.com/hgdeoro/py-arduino-proxy/raw/master/examples/arduino-proxy-digital-read.png "Digital Read")
 
 To set output HIGH on a digital pin: 
 
-![Digital Write](/hgdeoro/py-arduino-proxy/raw/master/examples/arduino-proxy-digital-write.png "Digital Write")
+![Digital Write](https://raw.github.com/hgdeoro/py-arduino-proxy/raw/master/examples/arduino-proxy-digital-write.png "Digital Write")
 
 Implemented methods  
 ------------------- 
@@ -90,6 +104,7 @@ The basic methods of Arduino are implemented. The following actions can be done 
 * Show messages on LCDs, based on the Hitachi HD44780 (or a compatible) chipset.
 * Read temperature and humidity with DHT11 sensors.
 
+<!--
 Videos!
 =======
 
@@ -98,6 +113,7 @@ Videos!
 * [Testing shiftOut and 8 LEDs with PyArduinoProxy](http://www.youtube.com/watch?v=_9MselaKcdU "Testing shiftOut and 8 LEDs with PyArduinoProxy")
 * [Writing a custom method in PyArduinoProxy](http://www.youtube.com/watch?v=2kgQpQqTVUU "Writing a custom method in PyArduinoProxy")
 * [Testing RGB leds with PyArduinoProxy UI](http://www.youtube.com/watch?v=yM1ZaTFAZwc "Testing RGB leds with PyArduinoProxy UI")
+-->
 
 <!--
 Python API
