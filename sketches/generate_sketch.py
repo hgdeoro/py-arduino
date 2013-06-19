@@ -35,6 +35,10 @@ except ImportError:
     sys.path.append(os.path.abspath(BASE_DIR))
     from arduino_proxy.proxy import ArduinoProxy, _unindent
 
+from arduino_proxy.proxy import ATTACH_INTERRUPT_MODE_LOW,\
+    ATTACH_INTERRUPT_MODE_CHANGE, ATTACH_INTERRUPT_MODE_RISING,\
+    ATTACH_INTERRUPT_MODE_FALLING
+
 
 def generate_placeholder_values(proxy, options):
     proxy_functions = proxy.get_proxy_functions()
@@ -67,10 +71,10 @@ def generate_placeholder_values(proxy, options):
         'INVALID_CMD': ArduinoProxy.INVALID_CMD,
         'INVALID_PARAMETER': ArduinoProxy.INVALID_PARAMETER,
         'UNSUPPORTED_CMD': ArduinoProxy.UNSUPPORTED_CMD,
-        'ATTACH_INTERRUPT_MODE_LOW': ArduinoProxy.ATTACH_INTERRUPT_MODE_LOW,
-        'ATTACH_INTERRUPT_MODE_CHANGE': ArduinoProxy.ATTACH_INTERRUPT_MODE_CHANGE,
-        'ATTACH_INTERRUPT_MODE_RISING': ArduinoProxy.ATTACH_INTERRUPT_MODE_RISING,
-        'ATTACH_INTERRUPT_MODE_FALLING': ArduinoProxy.ATTACH_INTERRUPT_MODE_FALLING,
+        'ATTACH_INTERRUPT_MODE_LOW': ATTACH_INTERRUPT_MODE_LOW,
+        'ATTACH_INTERRUPT_MODE_CHANGE': ATTACH_INTERRUPT_MODE_CHANGE,
+        'ATTACH_INTERRUPT_MODE_RISING': ATTACH_INTERRUPT_MODE_RISING,
+        'ATTACH_INTERRUPT_MODE_FALLING': ATTACH_INTERRUPT_MODE_FALLING,
         'PY_ARDUINO_PROXY_LCD_SUPPORT': 0,
         'PY_ARDUINO_PROXY_DEBUG_TO_LCD': 0,
     }
