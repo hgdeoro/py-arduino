@@ -52,16 +52,20 @@ To launch the web server, run:
 
 connect your Arduino, go to [http://localhost:8080/connect](http://localhost:8080/connect),
 insert the serial device (something like /dev/ttyACM0)
-and clic 'Connect'. Here are some screenshots:
+and clic 'Connect'.
 
-[connect](https://raw.github.com/hgdeoro/py-arduino-proxy/raw/master/examples/arduino-proxy-web-interface-connect.png) and 
+<!--
+Here are some screenshots:
 
-[main page](https://raw.github.com/hgdeoro/py-arduino-proxy/raw/master/examples/arduino-proxy-web-interface-main.png).
+![connect](https://raw.github.com/hgdeoro/py-arduino-proxy/master/examples/arduino-proxy-web-interface-connect.png) and 
+
+![main page](https://raw.github.com/hgdeoro/py-arduino-proxy/master/examples/arduino-proxy-web-interface-main.png).
+-->
 
 Console
 -------
 
-![Architecture Console](https://raw.github.com/hgdeoro/py-arduino-proxy/raw/master/examples/architecture-overview-console.png)
+![Architecture Console](https://raw.github.com/hgdeoro/py-arduino-proxy/master/examples/architecture-overview-console.png)
 
 To ping to the Arduino, make sure it's connected and run:
 
@@ -76,15 +80,15 @@ How it works
 
 First connect to the Arduino. 
 
-![Connect](https://raw.github.com/hgdeoro/py-arduino-proxy/raw/master/examples/arduino-proxy-connect.png "Connect")
+![Connect](https://raw.github.com/hgdeoro/py-arduino-proxy/master/examples/arduino-proxy-connect.png "Connect")
 
 Once connected, we can execute the methods on the instance of ArduinoProxy. For example, to read a digital pin: 
 
-![Digital Read](https://raw.github.com/hgdeoro/py-arduino-proxy/raw/master/examples/arduino-proxy-digital-read.png "Digital Read")
+![Digital Read](https://raw.github.com/hgdeoro/py-arduino-proxy/master/examples/arduino-proxy-digital-read.png "Digital Read")
 
 To set output HIGH on a digital pin: 
 
-![Digital Write](https://raw.github.com/hgdeoro/py-arduino-proxy/raw/master/examples/arduino-proxy-digital-write.png "Digital Write")
+![Digital Write](https://raw.github.com/hgdeoro/py-arduino-proxy/master/examples/arduino-proxy-digital-write.png "Digital Write")
 
 Implemented methods  
 ------------------- 
