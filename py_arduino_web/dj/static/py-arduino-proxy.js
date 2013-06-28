@@ -18,15 +18,15 @@
 //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 /*
- * This script defines the variable 'PyArduinoProxy', implementing
- * the 'module' pattern. PyArduinoProxy is the entry point for
+ * This script defines the variable 'JsArduino', implementing
+ * the 'module' pattern. JsArduino is the entry point for
  * interacting to the Python web server, and thus, to the Arduino.
  * 
- * To make it usable, you must call 'PyArduinoProxy.init()'.
+ * To make it usable, you must call 'JsArduino.init()'.
  * 
  */
 
-var PyArduinoProxy = function($) {
+var JsArduino = function($) {
 	
     /* Returns **somevar** is defined; otherwise, returns an empty dict */
 	function _ensure_dict(somevar) { if(somevar == undefined) return {}; else return somevar; }
@@ -600,7 +600,7 @@ var PyArduinoProxy = function($) {
 	}
 	
     /*
-     * These are the PUBLIC functions the 'PyArduinoProxy' implements.
+     * These are the PUBLIC functions the 'JsArduino' implements.
      */
 	return {
 		init: init,

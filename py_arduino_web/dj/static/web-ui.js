@@ -15,7 +15,7 @@ function attachGlobalAjaxError() {
 function ping() {
     $("#ping_result").html('waiting for response...');
     var start = new Date().getTime();
-    var value = PyArduinoProxy.ping();
+    var value = JsArduino.ping();
     var end = new Date().getTime();
     if(value) {
       $("#ping_result").html('PING OK - ' + (end-start) + ' ms');
@@ -29,7 +29,7 @@ function ping() {
  */
 function validateConnection() {
     $("#validate_connection_result").html('waiting for response...');
-    var value = PyArduinoProxy.validateConnection();
+    var value = JsArduino.validateConnection();
     if(value === false) {
         $("#validate_connection_result").html('ERROR');
     } else {
@@ -42,7 +42,7 @@ function validateConnection() {
  * Report errors using alert().
  */
 function closeProxy() {
-    var value = PyArduinoProxy.close();
+    var value = JsArduino.close();
     if(value === true) {
         window.location.replace("/");
     } else {

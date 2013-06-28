@@ -129,7 +129,6 @@ TODO (project rename + web thier)
 
 * rework web layer
 * setup.py
-* rename on `py_arduino_web/dj/*` PyArduinoProxy to PyArduinoJS, JjArduino or something else.
 
 TODO (project cleanup)
 ----------------------

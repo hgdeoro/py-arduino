@@ -60,19 +60,19 @@
 			}
             
 			function refreshPinUi(pin) {
-				if(PyArduinoProxy.globalData()['digital_pin_mode'][pin] == 'disabled') {
+				if(JsArduino.globalData()['digital_pin_mode'][pin] == 'disabled') {
 					setStatusTextOfPin(pin, '');
 					$('.pin' + pin + '_for_read').hide();
 					$('.pin' + pin + '_for_write').hide();
 					// TODO: finish this
 					
-				} else if(PyArduinoProxy.globalData()['digital_pin_mode'][pin] == 'input') {
+				} else if(JsArduino.globalData()['digital_pin_mode'][pin] == 'input') {
 					setStatusTextOfPin(pin, '');
 					$('.pin' + pin + '_for_read').show();
 					$('.pin' + pin + '_for_write').hide();
 					// TODO: finish this
 					
-				} else if(PyArduinoProxy.globalData()['digital_pin_mode'][pin] == 'output') {
+				} else if(JsArduino.globalData()['digital_pin_mode'][pin] == 'output') {
 					setStatusTextOfPin(pin, '');
 					$('.pin' + pin + '_for_read').hide();
 					$('.pin' + pin + '_for_write').show();
@@ -82,15 +82,15 @@
 					$('.pin' +  pin + '_output_buttonset').buttonset("refresh");
 					
 					// Move slider to 0
-					if (PyArduinoProxy.pinIsPwm(pin)) {
+					if (JsArduino.pinIsPwm(pin)) {
 						$('#pin' + pin + '_pwm_slider').slider("value", 0);
 					}
 					
 				} else {
-					alert("The mode for pin " + pin + " is invalid. Mode: '" + PyArduinoProxy.globalData()['digital_pin_mode'][pin] + "'");
+					alert("The mode for pin " + pin + " is invalid. Mode: '" + JsArduino.globalData()['digital_pin_mode'][pin] + "'");
 				}
 				
-				$('input:radio[name=pin' + pin + '_mode]').filter('[value=' + PyArduinoProxy.globalData()['digital_pin_mode'][pin] + ']').attr('checked', true);
+				$('input:radio[name=pin' + pin + '_mode]').filter('[value=' + JsArduino.globalData()['digital_pin_mode'][pin] + ']').attr('checked', true);
 				$('.pin' +  pin + '_mode_buttonset').buttonset("refresh");
 				
 			}
@@ -100,7 +100,7 @@
 			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 			
 			function pinMode(pin, mode) {
-				var ret = PyArduinoProxy.pinMode(pin, mode);
+				var ret = JsArduino.pinMode(pin, mode);
 				if(!ret) {
 					setStatusTextOfPin(pin, "Couldn't set pinMode()"); // FIXME: this message is overwritten
 				}
@@ -124,9 +124,9 @@
 					return;
 				}
 				
-				if(PyArduinoProxy.digitalWrite(pin, value)) {
+				if(JsArduino.digitalWrite(pin, value)) {
 					setStatusTextOfPin(pin, 'digitalWrite(): <b>' + value.toUpperCase() + '</b>');
-					if (PyArduinoProxy.pinIsPwm(pin)) {
+					if (JsArduino.pinIsPwm(pin)) {
 						$('#pin' + pin + '_pwm_slider').slider("value", slider_value);
 					}
 				} else {
@@ -140,7 +140,7 @@
 				$('input:radio[name=pin' + pin + '_dw]').attr('checked', false);
 				$('.pin' +  pin + '_output_buttonset').buttonset("refresh");
 				
-				if(PyArduinoProxy.analogWrite(pin, value)) {
+				if(JsArduino.analogWrite(pin, value)) {
 					setStatusTextOfPin(pin, 'PWM: ' + value);
 				} else {
 					setStatusTextOfPin(pin, "Couldn't analogWrite()");
@@ -148,7 +148,7 @@
 			}
 			
 			function digitalRead(pin) {
-				var value = PyArduinoProxy.digitalRead(pin);
+				var value = JsArduino.digitalRead(pin);
 				if(value == 0) {
 					setStatusTextOfPin(pin, 'digitalRead(): <b>LOW</b>');
 				} else if(value == 1) {
@@ -159,7 +159,7 @@
 			}
 
 			function analogRead(pin) {
-				var value = PyArduinoProxy.analogRead(pin);
+				var value = JsArduino.analogRead(pin);
 				if(value >= 0 && value <= 1023) {
 					setStatusTextOfAnalogPin(pin, 'analogRead(): <b>' + value + '</b>');
 				} else {
@@ -186,8 +186,8 @@
                 
 				// Now that AJAX errors are reported, we load the data...
 				
-				PyArduinoProxy.init();
-				PyArduinoProxy.disableJsExceptions();
+				JsArduino.init();
+				JsArduino.disableJsExceptions();
 				
 				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 				// Attach events to buttons
@@ -214,7 +214,7 @@
 				});
 				
 				var pin = 0;
-				for (pin=0; pin<PyArduinoProxy.globalData()['arduino_type_struct']['digital_pins']; pin++) {
+				for (pin=0; pin<JsArduino.globalData()['arduino_type_struct']['digital_pins']; pin++) {
 					$(".pin" + pin + "_mode_buttonset").buttonset();
 					$(".pin" + pin + "_output_buttonset").buttonset();
 					$(".pin" + pin + "_input_buttonset").buttonset();
