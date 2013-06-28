@@ -18,6 +18,10 @@
 ##-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 
+#===============================================================================
+# Interfaces & utils
+#===============================================================================
+
 def default_label(pin, is_digital):
     """Returns a default label for a pin"""
     if is_digital:
@@ -26,39 +30,7 @@ def default_label(pin, is_digital):
         return 'Analog pin #{0}'.format(pin)
 
 
-class Pin():
-
-    def __init__(self, pin=None, digital=False, label=None, enabled_in_web=True,
-        pin_id=None, pk=0):
-        self.pk = pk
-        self.pin_id = pin_id
-        self.pin = pin
-        self.digital = digital
-        self.label = label
-        self.enabled_in_web = enabled_in_web
-
-        # Automatically set label if not provided
-        if pin is not None and digital is not None and label is None:
-            if digital:
-                self.label = 'Digital pin #{0}'.format(pin)
-            else:
-                self.label = 'Analog pin #{0}'.format(pin)
-
-
-class Storage():
-
-    def get_pin(self, pin, is_digital):
-        """
-        Returns a Pin instance.
-        """
-        return Pin(pin, is_digital,)
-
-    def get_pin_by_id(self, pin_id):
-        """
-        Returns the Pin instance identified by 'pin_id',
-        or None if no Pin exists with that identifier.
-        """
-        return None
+class BaseStorage():
 
     def enhanceArduinoTypeStruct(self, arduino_type_struct):
         """
@@ -134,3 +106,42 @@ class Storage():
             })
 
         return arduino_type_struct
+
+
+#===============================================================================
+# Dummy implementations
+#===============================================================================
+
+class Pin():
+
+    def __init__(self, pin=None, digital=False, label=None, enabled_in_web=True,
+        pin_id=None, pk=0):
+        self.pk = pk
+        self.pin_id = pin_id
+        self.pin = pin
+        self.digital = digital
+        self.label = label
+        self.enabled_in_web = enabled_in_web
+
+        # Automatically set label if not provided
+        if pin is not None and digital is not None and label is None:
+            if digital:
+                self.label = 'Digital pin #{0}'.format(pin)
+            else:
+                self.label = 'Analog pin #{0}'.format(pin)
+
+
+class Storage(BaseStorage):
+
+    def get_pin(self, pin, is_digital):
+        """
+        Returns a Pin instance.
+        """
+        return Pin(pin, is_digital,)
+
+    def get_pin_by_id(self, pin_id):
+        """
+        Returns the Pin instance identified by 'pin_id',
+        or None if no Pin exists with that identifier.
+        """
+        return None
