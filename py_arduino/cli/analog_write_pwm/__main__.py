@@ -19,7 +19,7 @@
 ##-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 from py_arduino.main_utils import default_main
-from py_arduino.proxy import OUTPUT
+from py_arduino import OUTPUT
 
 
 def args_validator(parser, options, args): # pylint: disable=W0613

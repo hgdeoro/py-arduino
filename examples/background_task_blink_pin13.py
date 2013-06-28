@@ -6,7 +6,7 @@ Created on May 22, 2013
 import time
 import logging
 
-from py_arduino.proxy import OUTPUT, HIGH, LOW
+from py_arduino import OUTPUT, HIGH, LOW
 from py_arduino_web.pyroproxy.utils import get_arduino_pyro, \
     wait_for_server
 

@@ -14,5 +14,5 @@ pylint -d C0111,R0801 \
     scripts/generate-doc.sh \
     py_arduino/emulator.py \
     py_arduino/main_utils.py \
-    py_arduino/proxy.py \
+    py_arduino/arduino.py \
     $*

@@ -26,7 +26,7 @@ setup_pythonpath()
 
 from py_arduino import  InvalidCommand, PyArduinoException
 from py_arduino.main_utils import default_main
-from py_arduino.proxy import INPUT, HIGH, ATTACH_INTERRUPT_MODE_LOW
+from py_arduino import INPUT, HIGH, ATTACH_INTERRUPT_MODE_LOW
 
 
 def main():

@@ -24,7 +24,7 @@ setup_pythonpath()
 
 from py_arduino import InvalidCommand, CommandTimeout, InvalidResponse
 from py_arduino.main_utils import default_main
-from py_arduino.proxy import NotConnected, HIGH, OUTPUT, LSBFIRST
+from py_arduino import NotConnected, HIGH, OUTPUT, LSBFIRST
 
 
 def main():  # pylint: disable=R0915

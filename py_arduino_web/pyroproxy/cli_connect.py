@@ -19,7 +19,7 @@
 
 import sys
 
-from py_arduino.proxy import DEVICE_FOR_EMULATOR
+from py_arduino import DEVICE_FOR_EMULATOR
 
 from .utils import get_arduino_pyro
 

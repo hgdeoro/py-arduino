@@ -29,7 +29,7 @@ SRC_DIR = os.path.join(SRC_DIR, 'src') # SRC_DIR
 sys.path.append(os.path.abspath(SRC_DIR))
 
 from py_arduino.main_utils import default_main
-from py_arduino.proxy import OUTPUT, HIGH, LOW
+from py_arduino import OUTPUT, HIGH, LOW
 
 
 def args_validator(parser, options, args): # pylint: disable=W0613

@@ -22,7 +22,7 @@ import sys
 import time
 
 from py_arduino.main_utils import default_main
-from py_arduino.proxy import CommandTimeout
+from py_arduino import CommandTimeout
 
 
 def main():

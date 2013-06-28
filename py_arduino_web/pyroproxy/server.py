@@ -21,7 +21,7 @@ import os
 import hmac
 import Pyro4
 
-from py_arduino.proxy import PyArduino
+from py_arduino import PyArduino
 
 
 def main():

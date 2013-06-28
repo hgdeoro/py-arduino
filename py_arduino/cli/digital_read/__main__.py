@@ -19,7 +19,7 @@
 ##-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 from py_arduino.main_utils import default_main
-from py_arduino.proxy import HIGH, LOW, INPUT
+from py_arduino import HIGH, LOW, INPUT
 
 
 def default_callback(value, options):

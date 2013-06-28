@@ -11,7 +11,7 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-if 'ARDUINO_PROXY_USE_MEM_DB' in os.environ:
+if 'PY_ARDUINO_USE_MEM_DB' in os.environ:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3'

@@ -17,5 +17,13 @@
 ##    along with py-arduino; see the file LICENSE.txt.
 ##-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-from py_arduino.proxy import PyArduino, InvalidCommand, InvalidResponse, EmptyResponse, \
-    CommandTimeout, InvalidArgument, PyArduinoException
+from py_arduino.arduino import PyArduino, \
+    \
+    InvalidCommand, InvalidResponse, EmptyResponse, \
+    CommandTimeout, InvalidArgument, PyArduinoException, \
+    NotConnected, \
+    \
+    ATTACH_INTERRUPT_MODE_CHANGE, ATTACH_INTERRUPT_MODE_FALLING, \
+    ATTACH_INTERRUPT_MODE_LOW, ATTACH_INTERRUPT_MODE_RISING, \
+    DEFAULT_SERIAL_SPEED, DEVICE_FOR_EMULATOR, \
+    HIGH, LOW, INPUT, OUTPUT, LSBFIRST, MSBFIRST
