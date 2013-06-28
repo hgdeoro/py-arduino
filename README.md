@@ -58,6 +58,8 @@ To install the web application, follow the steps on `Installation (low level too
     $ pip install -r requirements-web.txt
     $ python -m py_arduino_web.dj.manage syncdb --noinput --migrate
 
+(that will create a Sqlite3 database at `~/py_arduino.sqlite`).
+
 To launch the web server, run:
 
     $ ./bin/run_uwsgi.sh
@@ -65,6 +67,10 @@ To launch the web server, run:
 connect your Arduino, go to [http://localhost:8080/](http://localhost:8080/),
 insert the serial device (something like /dev/ttyACM0)
 and clic 'Connect'.
+
+To use the Django Admin (to modify pin labels, etc.), you'll need to create an user:
+
+    $ python -m py_arduino_web.dj.manage createsuperuser
 
 
 <!--
