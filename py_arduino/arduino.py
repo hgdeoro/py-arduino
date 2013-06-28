@@ -1505,7 +1505,7 @@ class PyArduino(object):  # pylint: disable=R0904
 
     def enhanceArduinoTypeStruct(self, arduino_type_struct):
         """
-        Enhance the 'type struct' with utilities and user-friendly data.
+        Returns an enhanced copy of `arduino_type_struct` with user-friendlier data.
         Adds:
             - digital_pins_items -> list
             - analog_pins_items -> list

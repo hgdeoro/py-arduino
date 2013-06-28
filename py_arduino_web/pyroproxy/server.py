@@ -17,11 +17,13 @@
 ##    along with py-arduino; see the file LICENSE.txt.
 ##-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-import os
+import logging
 import hmac
+import os
 import Pyro4
 
 from py_arduino import PyArduino
+from py_arduino_web.storage import Storage
 
 
 def main():
@@ -29,15 +31,23 @@ def main():
     Expose object using PyRO
     """
     if "ENABLE_LOGGING" in os.environ:
-        import logging
         logging.basicConfig(level=logging.DEBUG)
     Pyro4.config.HMAC_KEY = hmac.new('this-is-py-arduino').digest()
     Pyro4.config.SOCK_REUSE = True
     arduino = PyArduino()
+    try:
+        from py_arduino_web.dj.models import DjStorage
+        storage = DjStorage()
+    except:
+        logging.error("-" * 80)
+        logging.exception("Couldn't import DjStorage")
+        logging.error("-" * 80)
+        storage = Storage()
+
     Pyro4.Daemon.serveSimple(
         {
-            arduino: "py_arduino.PyArduino",
-            arduino.storage: "py_arduino_web.Storage",
+            arduino: "py_arduino.arduino",
+            storage: "py_arduino_web.storage",
         },
         host="localhost", port=61234, ns=False)
     # FORMA DE URI -> uri_string = "PYRO:py_arduino.PyArduino@localhost:61234"

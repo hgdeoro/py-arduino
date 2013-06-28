@@ -10,10 +10,12 @@ from django.contrib import messages
 
 from py_arduino import DEVICE_FOR_EMULATOR, LOW, HIGH, \
     OUTPUT, INPUT
-from py_arduino_web.pyroproxy.utils import get_arduino_pyro, server_is_up
+from py_arduino_web.pyroproxy.utils import get_arduino_pyro, server_is_up,\
+    get_storage_pyro
 
 
 ARDUINO_PYRO = get_arduino_pyro()
+STORAGE_PYRO = get_storage_pyro()
 
 
 class JsonResponse(HttpResponse):
@@ -55,6 +57,7 @@ def home(request):
     # At this point, ARDUINO_PYRO exists and is valid
     arduino_type = ARDUINO_PYRO.getArduinoTypeStruct()
     enhanced_arduino_type = ARDUINO_PYRO.enhanceArduinoTypeStruct(arduino_type)
+    enhanced_arduino_type = STORAGE_PYRO.enhanceArduinoTypeStruct(enhanced_arduino_type)
     avr_cpu_type = ARDUINO_PYRO.getAvrCpuType()
 
     ctx = {

@@ -2,7 +2,7 @@ import logging
 
 from django.db import models
 
-from py_arduino_web.storage import Storage, default_label
+from py_arduino_web.storage import Storage, default_label, BaseStorage
 
 FallbackStorage = Storage()
 
@@ -36,7 +36,7 @@ class Pin(models.Model):
         unique_together = (('pin', 'digital',),)
 
 
-class DjStorage():
+class DjStorage(BaseStorage):
 
     def __init__(self):
         # Force access to the database, to raise exception if no DB exists
