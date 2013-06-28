@@ -30,14 +30,14 @@ BASE_DIR = os.path.split(os.path.realpath(__file__))[0]  # BASE_DIR = XXX/sketch
 BASE_DIR = os.path.split(BASE_DIR)[0]  # BASE_DIR = XXX
 
 try:
-    from py_arduino import PyArduino, _unindent
+    from py_arduino import PyArduino as tmp  # @UnusedImport
 except ImportError:
     sys.path.append(os.path.abspath(BASE_DIR))
-    from py_arduino import PyArduino, _unindent
 
-from py_arduino import ATTACH_INTERRUPT_MODE_LOW, \
+from py_arduino import PyArduino, ATTACH_INTERRUPT_MODE_LOW, \
     ATTACH_INTERRUPT_MODE_CHANGE, ATTACH_INTERRUPT_MODE_RISING, \
     ATTACH_INTERRUPT_MODE_FALLING
+from py_arduino.utils import _unindent
 
 
 def generate_placeholder_values(arduino, options):

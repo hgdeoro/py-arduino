@@ -22,7 +22,7 @@ from .utils import get_arduino_pyro
 
 def main():
     arduino = get_arduino_pyro()
-    print "Calling proxy.close()"
+    print "Calling arduino.close()"
     arduino.close()
 
 if __name__ == '__main__':

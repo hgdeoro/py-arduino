@@ -3,17 +3,17 @@ import json
 import Pyro4
 
 from django.shortcuts import render
-from django.http.response import HttpResponse, HttpResponseRedirect,\
+from django.http.response import HttpResponse, HttpResponseRedirect, \
     HttpResponseServerError
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 
-from py_arduino import DEVICE_FOR_EMULATOR, LOW, HIGH,\
+from py_arduino import DEVICE_FOR_EMULATOR, LOW, HIGH, \
     OUTPUT, INPUT
-from py_arduino.pyroproxy.utils import get_arduino_pyro, server_is_up
+from py_arduino_web.pyroproxy.utils import get_arduino_pyro, server_is_up
 
 
-PROXY = get_arduino_pyro()
+ARDUINO_PYRO = get_arduino_pyro()
 
 
 class JsonResponse(HttpResponse):
@@ -38,24 +38,24 @@ class JsonErrorResponse(HttpResponseServerError):
 def home(request):
     if not server_is_up():
         return HttpResponseRedirect(reverse('connect'))
-        
-    if not PROXY.is_connected():
+
+    if not ARDUINO_PYRO.is_connected():
         return HttpResponseRedirect(reverse('connect'))
 
     try:
-        PROXY.validateConnection()
+        ARDUINO_PYRO.validateConnection()
     except Exception, e:
         # FIXME: DESIGN: error hablder should be part of PyArduino, not web interface...
         #    if self.validate_connection_error_handler:
         #        self.validate_connection_error_handler()
-        PROXY.close()
+        ARDUINO_PYRO.close()
         messages.add_message(request, messages.ERROR, str(e))
         return HttpResponseRedirect(reverse('connect'))
 
-    # At this point, PROXY exists and is valid
-    arduino_type = PROXY.getArduinoTypeStruct()
-    enhanced_arduino_type = PROXY.enhanceArduinoTypeStruct(arduino_type)
-    avr_cpu_type = PROXY.getAvrCpuType()
+    # At this point, ARDUINO_PYRO exists and is valid
+    arduino_type = ARDUINO_PYRO.getArduinoTypeStruct()
+    enhanced_arduino_type = ARDUINO_PYRO.enhanceArduinoTypeStruct(arduino_type)
+    avr_cpu_type = ARDUINO_PYRO.getAvrCpuType()
 
     ctx = {
         'arduino_type': arduino_type,
@@ -71,14 +71,14 @@ def connect(request):
     if request.method == 'GET':
         if server_is_up():
             return render(request, 'web-ui-connect.html', {
-                'serial_ports': PROXY.get_serial_ports(),
+                'serial_ports': ARDUINO_PYRO.get_serial_ports(),
             })
         else:
             return render(request, 'web-ui-connect.html', {
                 'show_start_pyroproxy_server_msg': True,
             })
 
-    if PROXY.is_connected():
+    if ARDUINO_PYRO.is_connected():
         raise(Exception("PyArduino is already connected"))
 
     if 'connect_emulator' in request.REQUEST:
@@ -90,11 +90,11 @@ def connect(request):
 
     try:
         logging.info("Trying to connect to %s", serial_port)
-        PROXY.connect(tty=serial_port, speed=speed)
+        ARDUINO_PYRO.connect(tty=serial_port, speed=speed)
         return HttpResponseRedirect(reverse('home'))
     except Exception, e:
         try:
-            PROXY.close()
+            ARDUINO_PYRO.close()
         except:
             pass
         logging.error("Couldn't connect. " + "".join(Pyro4.util.getPyroTraceback()))
@@ -107,11 +107,11 @@ def get_avr_cpu_type(request):
     try:
         return JsonResponse({
             'ok': True,
-            'avrCpuType': PROXY.getAvrCpuType(),
+            'avrCpuType': ARDUINO_PYRO.getAvrCpuType(),
         })
     except Exception, e:
         # FIXME: return error details and log
-        logging.exception("Exception raised by proxy.getAvrCpuType(). " +
+        logging.exception("Exception raised by arduino.getAvrCpuType(). " +
             "".join(Pyro4.util.getPyroTraceback()))
         return JsonErrorResponse(e)
 
@@ -120,38 +120,38 @@ def get_arduino_type_struct(request):
     try:
         return JsonResponse({
             'ok': True,
-            'arduinoTypeStruct': PROXY.getArduinoTypeStruct(),
+            'arduinoTypeStruct': ARDUINO_PYRO.getArduinoTypeStruct(),
         })
     except Exception, e:
         # FIXME: return error details and log
-        logging.exception("Exception raised by proxy.getArduinoTypeStruct(). " +
+        logging.exception("Exception raised by arduino.getArduinoTypeStruct(). " +
             "".join(Pyro4.util.getPyroTraceback()))
         return JsonErrorResponse(e)
 
 
 def ping(request):
     try:
-        PROXY.ping()
+        ARDUINO_PYRO.ping()
         return JsonResponse({
             'ok': True,
         })
     except Exception, e:
         # FIXME: return error details and log
-        logging.exception("Exception raised by proxy.ping(). " +
+        logging.exception("Exception raised by arduino.ping(). " +
             "".join(Pyro4.util.getPyroTraceback()))
         return JsonErrorResponse(e)
 
 
 def validate_connection(request):
     try:
-        random_value = PROXY.validateConnection()
+        random_value = ARDUINO_PYRO.validateConnection()
         return JsonResponse({
             'ok': True,
             'random_value': random_value,
         })
     except Exception, e:
         # FIXME: return error details and log
-        logging.exception("Exception raised by proxy.validate_connection(). " +
+        logging.exception("Exception raised by arduino.validate_connection(). " +
             "".join(Pyro4.util.getPyroTraceback()))
         return JsonErrorResponse(e)
 
@@ -161,17 +161,17 @@ def pin_mode(request):
     mode = request.REQUEST.get('mode', None)
     try:
         if mode == 'output':
-            PROXY.pinMode(int(pin), OUTPUT)
+            ARDUINO_PYRO.pinMode(int(pin), OUTPUT)
             return JsonResponse({'ok': True, })
         elif mode == 'input':
-            PROXY.pinMode(int(pin), INPUT)
+            ARDUINO_PYRO.pinMode(int(pin), INPUT)
             return JsonResponse({'ok': True, })
         else:
             # FIXME: return error details and log
             return JsonResponse({'ok': False, 'error': 'Invalid mode: {0}'.format(mode)})
     except Exception, e:
         # FIXME: return error details and log
-        logging.exception("Exception raised by proxy.pin_mode(). " +
+        logging.exception("Exception raised by arduino.pin_mode(). " +
             "".join(Pyro4.util.getPyroTraceback()))
         return JsonErrorResponse(e)
 
@@ -181,10 +181,10 @@ def digital_write(request):
     value = request.REQUEST.get('value', None)
     try:
         if value == 'low':
-            PROXY.digitalWrite(int(pin), LOW)
+            ARDUINO_PYRO.digitalWrite(int(pin), LOW)
             return JsonResponse({'ok': True, })
         elif value == 'high':
-            PROXY.digitalWrite(int(pin), HIGH)
+            ARDUINO_PYRO.digitalWrite(int(pin), HIGH)
             return JsonResponse({'ok': True, })
         else:
             # FIXME: return error details and log
@@ -194,7 +194,7 @@ def digital_write(request):
             })
     except Exception, e:
         # FIXME: return error details and log
-        logging.exception("Exception raised by proxy.digital_write(). " +
+        logging.exception("Exception raised by arduino.digital_write(). " +
             "".join(Pyro4.util.getPyroTraceback()))
         return JsonErrorResponse(e)
 
@@ -203,13 +203,13 @@ def analog_write(request):
     pin = request.REQUEST.get('pin', None)
     value = request.REQUEST.get('value', None)
     try:
-        PROXY.analogWrite(int(pin), int(value))
+        ARDUINO_PYRO.analogWrite(int(pin), int(value))
         return JsonResponse({
             'ok': True,
         })
     except Exception, e:
         # FIXME: return error details and log
-        logging.exception("Exception raised by proxy.analog_write(). " +
+        logging.exception("Exception raised by arduino.analog_write(). " +
             "".join(Pyro4.util.getPyroTraceback()))
         return JsonErrorResponse(e)
 
@@ -217,14 +217,14 @@ def analog_write(request):
 def analog_read(request):
     pin = request.REQUEST.get('pin', None)
     try:
-        value = PROXY.analogRead(int(pin))
+        value = ARDUINO_PYRO.analogRead(int(pin))
         return JsonResponse({
             'ok': True,
             'value': value,
         })
     except Exception, e:
         # FIXME: return error details and log
-        logging.exception("Exception raised by proxy.analog_read(). " +
+        logging.exception("Exception raised by arduino.analog_read(). " +
             "".join(Pyro4.util.getPyroTraceback()))
         return JsonErrorResponse(e)
 
@@ -232,7 +232,7 @@ def analog_read(request):
 def digital_read(request):
     pin = request.REQUEST.get('pin', None)
     try:
-        value = PROXY.digitalRead(int(pin))
+        value = ARDUINO_PYRO.digitalRead(int(pin))
         if value == HIGH:
             return JsonResponse({'ok': True, 'value': 1, })
         elif value == LOW:
@@ -245,7 +245,7 @@ def digital_read(request):
             })
     except Exception, e:
         # FIXME: return error details and log
-        logging.exception("Exception raised by proxy.digital_read(). " +
+        logging.exception("Exception raised by arduino.digital_read(). " +
             "".join(Pyro4.util.getPyroTraceback()))
         return JsonErrorResponse(e)
 
@@ -254,13 +254,13 @@ def delay(request):
     # TODO: this wasn't tested when migrated to Django
     value = request.REQUEST.get('value', None)
     try:
-        PROXY.delay(int(value))
+        ARDUINO_PYRO.delay(int(value))
         return JsonResponse({
             'ok': True,
         })
     except Exception, e:
         # FIXME: return error details and log
-        logging.exception("Exception raised by proxy.delay(). " +
+        logging.exception("Exception raised by arduino.delay(). " +
             "".join(Pyro4.util.getPyroTraceback()))
         return JsonErrorResponse(e)
 
@@ -270,23 +270,23 @@ def get_free_memory(request):
     try:
         return JsonResponse({
             'ok': True,
-            'freeMemory': PROXY.getFreeMemory(),
+            'freeMemory': ARDUINO_PYRO.getFreeMemory(),
         })
     except Exception, e:
         # FIXME: return error details and log
-        logging.exception("Exception raised by proxy.get_free_memory(). " +
+        logging.exception("Exception raised by arduino.get_free_memory(). " +
             "".join(Pyro4.util.getPyroTraceback()))
         return JsonErrorResponse(e)
 
 
 def close(request):
     try:
-        PROXY.close()
+        ARDUINO_PYRO.close()
         return JsonResponse({
             'ok': True,
         })
     except Exception, e:
         # FIXME: return error details and log
-        logging.exception("Exception raised by proxy.close(). " +
+        logging.exception("Exception raised by arduino.close(). " +
             "".join(Pyro4.util.getPyroTraceback()))
         return JsonErrorResponse(e)

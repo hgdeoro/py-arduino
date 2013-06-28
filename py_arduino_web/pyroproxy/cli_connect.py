@@ -30,9 +30,9 @@ def main():
         device = sys.argv[1]
     else:
         device = DEVICE_FOR_EMULATOR
-    print "Calling proxy.connect() - Connecting to {0}".format(device)
+    print "Calling arduino.connect() - Connecting to {0}".format(device)
     arduino.connect(device)
-    print "Calling proxy.ping() to check the connection"
+    print "Calling arduino.ping() to check the connection"
     ret = arduino.ping()
     print "Ping returned: '{0}'. End.".format(ret)
 

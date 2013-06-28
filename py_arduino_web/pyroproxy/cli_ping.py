@@ -30,7 +30,7 @@ def main():
         print "ERROR: PyArduino isn't connected to an Arduino or to the emulator. "
         print "See the 'connect' script."
         sys.exit(1)
-    print "Calling proxy.ping()"
+    print "Calling arduino.ping()"
     ret = arduino.ping()
     print "Ping returned: '{0}'. End.".format(ret)
 

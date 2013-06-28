@@ -33,11 +33,11 @@ def main():
         logging.basicConfig(level=logging.DEBUG)
     Pyro4.config.HMAC_KEY = hmac.new('this-is-py-arduino').digest()
     Pyro4.config.SOCK_REUSE = True
-    proxy = PyArduino()
+    arduino = PyArduino()
     Pyro4.Daemon.serveSimple(
         {
-            proxy: "py_arduino.PyArduino",
-            proxy.storage: "py_arduino_web.Storage",
+            arduino: "py_arduino.PyArduino",
+            arduino.storage: "py_arduino_web.Storage",
         },
         host="localhost", port=61234, ns=False)
     # FORMA DE URI -> uri_string = "PYRO:py_arduino.PyArduino@localhost:61234"

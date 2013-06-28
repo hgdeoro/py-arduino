@@ -20,7 +20,7 @@
 
 struct arduino_type
 { 
-  // char board_name[16];   // use 'proxy.getAvrCpuType()' to the CPU name.
+  // char board_name[16];   // use 'arduino.getAvrCpuType()' to the CPU name.
   uint8_t analog_pins;      // how many analog pins
   uint8_t digital_pins;     // excl analog pins that can be used as digital ones
   uint16_t pwm_pins_bitmap; // bitmap of digital pin with PWM support

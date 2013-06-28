@@ -64,8 +64,8 @@
 					simpleLogConsoleClear();
 					eval(js_source);
                     try {
-                      var ram = proxy.globalData()['arduino_type_struct']['ram_size_bytes'];
-                      var free = proxy.getFreeMemory();
+                      var ram = arduino.globalData()['arduino_type_struct']['ram_size_bytes'];
+                      var free = arduino.getFreeMemory();
                       var pc = Math.floor((free/ram)*100);
                       simpleLogConsoleLogInfo("Script executed successfully - " + pc + "% ram free (" + free + " bytes free of " + ram + " bytes)");
                     } catch(err) {
@@ -91,7 +91,7 @@
 				JsArduino.init();
 				JsArduino.enableJsExceptions();
 				
-				proxy = JsArduino;
+				arduino = JsArduino;
 				
 				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 				// Attach events to buttons
@@ -105,7 +105,7 @@
 					validateConnection();
 				});
 				
-				$("#close_proxy_button").button().click(function() {
+				$("#close_arduino_button").button().click(function() {
 					closeProxy();
 				});
 				
@@ -194,7 +194,7 @@
         ::
 		<button id="ping_button" class="ui-priority-secondary">Ping</button> <span id="ping_result"></span>
 		<button id="validate_connection_button" class="ui-priority-secondary">Validate connection</button> <span id="validate_connection_result"></span>
-		<button id="close_proxy_button" class="ui-priority-secondary">Close</button> <span id="close_proxy_result"></span>
+		<button id="close_arduino_button" class="ui-priority-secondary">Close</button> <span id="close_arduino_result"></span>
         ::
 		<button id="execute_button" class="ui-priority-primary">Execute</button>
 		<button id="clear_log_console_button">Clear console</button>
@@ -203,7 +203,7 @@
 	<div id="js_code_editor_wrapper">
 		<textarea id="js_code_editor">
 simpleLogConsoleLogInfo("Will send ping to Arduino...");
-proxy.ping();
+arduino.ping();
 simpleLogConsoleLogInfo("Ping OK.");
 </textarea>
 	</div>
@@ -219,17 +219,17 @@ simpleLogConsoleLogInfo("Ping OK.");
 var pinToBlink = 13;
 
 simpleLogConsoleLogInfo("Setting pin " + pinToBlink + " as OUTPUT");
-proxy.pinMode(pinToBlink, OUTPUT);
+arduino.pinMode(pinToBlink, OUTPUT);
 
 if(! confirm("Start to blink?")) throw "stopping script";
 
 simpleLogConsoleLogInfo("Starting to blink");
 var i;
 for(i=0; i&lt;5; i++) {
-    proxy.digitalWrite(pinToBlink, HIGH);
-    proxy.delay(250);
-    proxy.digitalWrite(pinToBlink, LOW);
-    proxy.delay(250);
+    arduino.digitalWrite(pinToBlink, HIGH);
+    arduino.delay(250);
+    arduino.digitalWrite(pinToBlink, LOW);
+    arduino.delay(250);
 }</pre>
         </div>
 
@@ -241,7 +241,7 @@ for(i=0; i&lt;5; i++) {
  ***********************************************************************/
 
 function readTemp(analogPort) {
-    var value = proxy.analogRead(analogPort);
+    var value = arduino.analogRead(analogPort);
     var volt = (5.0/1024.0) * value;
     var kelvin = volt * 100;
     return (kelvin - 273); // return temp. in celcius
