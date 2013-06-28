@@ -25,7 +25,7 @@ from .utils import get_arduino_pyro
 banner = """
 
 ----------------------------------------------------------------------
-PyArduinoproxy
+py-arduino
 ----------------------------------------------------------------------
 
 Launching IPython shell... Enter 'quit()' to exit.

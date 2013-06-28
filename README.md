@@ -36,7 +36,7 @@ or against a real Arduino:
 The recommended way to install py-arduino is using pip and/or virtualenv.
 
 1. Install PIP [manually](http://www.pip-installer.org/en/latest/installing.html "Install PIP"), or with your distribution's package manager (`sudo apt-get install python-pip` in Ubuntu), or create a [virtualenv](http://www.virtualenv.org/en/latest/ "Vitualenv Site").
-2. Run `pip install pyarduinoproxy`
+2. Run `pip install py-arduino`
 -->
 
 
