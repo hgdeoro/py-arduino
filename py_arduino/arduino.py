@@ -243,7 +243,7 @@ class PyArduino(object):  # pylint: disable=R0904
     def __init__(self, tty=None, speed=DEFAULT_SERIAL_SPEED,
         wait_after_open=2, timeout=5, call_validate_connection=True):
         """
-        Creates a proxy instance, BUT DOESN'T CONNECT IT.
+        Creates a PyArduino instance, BUT DOESN'T CONNECT IT.
 
         If call_validate_connection is true, a call to validateConnection() is done, to ensures
         the created instance could communicate to Arduino after established the serial connection.
@@ -295,16 +295,16 @@ class PyArduino(object):  # pylint: disable=R0904
 
         You should NOT call to `connect()` on the returned instance.
         """
-        proxy = cls(tty=DEVICE_FOR_EMULATOR, wait_after_open=0, call_validate_connection=False)
-        proxy._connect_emulator(initial_input_buffer_contents=initial_input_buffer_contents)
-        return proxy
+        arduino = cls(tty=DEVICE_FOR_EMULATOR, wait_after_open=0, call_validate_connection=False)
+        arduino._connect_emulator(initial_input_buffer_contents=initial_input_buffer_contents)
+        return arduino
 
     def connect(self, tty=None, speed=None):
         """
-        Estabishes serial connection to the Arduino, and returns the proxy instance.
+        Estabishes serial connection to the Arduino, and returns the PyArduino instance.
         This allow the instantiation and connection in one line:
 
-        >>> proxy = PyArduino('/dev/ttyACM0').connect()
+        >>> arduino = PyArduino('/dev/ttyACM0').connect()
         """
         assert not self.is_connected()
         if tty:
@@ -366,7 +366,7 @@ class PyArduino(object):  # pylint: disable=R0904
             raise(NotConnected())
 
     def is_connected(self):
-        """Return whenever the proxy is connected"""
+        """Return whenever the PyArduino instance is connected"""
         # FIXME: self.serial_port is ALWAYS non-None if connected (even with emulator)
         return bool(self.emulator) or bool(self.serial_port)
 
@@ -619,13 +619,14 @@ class PyArduino(object):  # pylint: disable=R0904
 
     def get_proxy_functions(self):
         """
-        Returns a list of proxy functions. This is used internally to generate the sketch files.
+        Returns a list of PyArduino functions.
+        This is used internally to generate the sketch files.
         """
         # FIXME: this should be moved to the module (no need to be an instance method)
         all_attributes = [getattr(self, an_attribute_name) for an_attribute_name in dir(self)]
-        proxy_functions = [an_attribute for an_attribute in all_attributes
+        arduino_functions = [an_attribute for an_attribute in all_attributes
             if getattr(an_attribute, 'arduino_code', False)]
-        return proxy_functions
+        return arduino_functions
 
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
     ## HERE STARTS PROXIED FUNCTIONS
@@ -891,7 +892,7 @@ class PyArduino(object):  # pylint: disable=R0904
         Asserts that the current connection is valid, discarding any existing information in the
         buffer of the serial connection.
         
-        This method must be called to continue using a proxy instance after an error, specially
+        This method must be called to continue using a PyArduino instance after an error, specially
         on CommandTimeout errors (otherwise, if not called, the response for the timed out command
         will be read as a response of subsequent commands).
         
