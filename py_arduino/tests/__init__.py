@@ -20,7 +20,7 @@
 
 def setup_pythonpath():
     try:
-        from py_arduino import ArduinoProxy
+        from py_arduino import PyArduino
     except ImportError:
         import os
         import sys
@@ -28,4 +28,4 @@ def setup_pythonpath():
         PROJECT_DIR = os.path.split(PROJECT_DIR)[0]  # PROJECT_DIR/py_arduino
         PROJECT_DIR = os.path.split(PROJECT_DIR)[0]  # PROJECT_DIR
         sys.path.append(os.path.abspath(PROJECT_DIR))
-        from py_arduino import ArduinoProxy  # to force check
+        from py_arduino import PyArduino  # to force check

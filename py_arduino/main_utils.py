@@ -21,7 +21,7 @@ import glob
 import logging
 import optparse
 
-from py_arduino import ArduinoProxy
+from py_arduino import PyArduino
 
 #
 # Example for "add_options_callback" parameter of "default_main()":
@@ -49,8 +49,8 @@ def default_main(optparse_usage="usage: %prog [options] serial_device",
         add_options_callback=None, args_validator=default_args_validator,
         connect_only_if_device_specified=False):
     """
-    Utility method to help creation of programs around ArduinoProxy. This method configures logging
-    and initial wait, and creates the ArduinoProxy instance.
+    Utility method to help creation of programs around PyArduino. This method configures logging
+    and initial wait, and creates the PyArduino instance.
     
     Parameters:
         - add_options_callback: callback method to let the user of 'main_utils()' add options.
@@ -101,18 +101,18 @@ def default_main(optparse_usage="usage: %prog [options] serial_device",
         return options, args, None
     else:
         if options.initial_wait == 0:
-            proxy = ArduinoProxy(args[0], 9600, wait_after_open=0,
+            proxy = PyArduino(args[0], 9600, wait_after_open=0,
                 call_validate_connection=not(options.dont_call_validate_connection)).connect()
         else:
             if options.initial_wait is None:
                 logging.info("Waiting some seconds to let the Arduino reset...")
-                proxy = ArduinoProxy(args[0], 9600,
+                proxy = PyArduino(args[0], 9600,
                     call_validate_connection=not(options.dont_call_validate_connection)).connect()
             else:
                 initial_wait = int(options.initial_wait)
                 if initial_wait > 0:
                     logging.info("Waiting %d seconds to let the Arduino reset...", initial_wait)
-                proxy = ArduinoProxy(args[0], 9600, wait_after_open=initial_wait,
+                proxy = PyArduino(args[0], 9600, wait_after_open=initial_wait,
                     call_validate_connection=not(options.dont_call_validate_connection)).connect()
     
         if options.arduino_debug:

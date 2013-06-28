@@ -25,7 +25,7 @@ import threading
 import time
 import weakref
 
-from py_arduino.proxy import ArduinoProxy, HIGH, LOW
+from py_arduino.proxy import PyArduino, HIGH, LOW
 
 logger = logging.getLogger(__name__) # pylint: disable=C0103
 
@@ -58,12 +58,12 @@ class ArduinoEmulator(threading.Thread):
         for item in splitted_params:
             if len(item) > 16:
                 # READ_ONE_PARAM_ERROR_PARAMETER_TOO_LARGE = 2
-                self.serial_connection.write("%s 2\n" % ArduinoProxy.INVALID_CMD)
+                self.serial_connection.write("%s 2\n" % PyArduino.INVALID_CMD)
                 return False
         
         if len(splitted_params) > 10:
             # READ_PARAMETERS_ERROR_TOO_MANY_PARAMETERS = 3
-            self.serial_connection.write("%s 3\n" % ArduinoProxy.INVALID_CMD)
+            self.serial_connection.write("%s 3\n" % PyArduino.INVALID_CMD)
             return False
         
         return True
@@ -166,7 +166,7 @@ class ArduinoEmulator(threading.Thread):
             self.serial_connection.write("SR_OK\n")
         else:
             # FUNCTION_NOT_FOUND = 6
-            self.serial_connection.write("%s 6\n" % ArduinoProxy.INVALID_CMD)
+            self.serial_connection.write("%s 6\n" % PyArduino.INVALID_CMD)
             logger.error("run_cmd() - INVALID COMMAND: %s", pprint.pformat(cmd))
     
     def read_cmd(self):
@@ -204,7 +204,7 @@ class ArduinoEmulator(threading.Thread):
 class SerialConnectionMock(object):
     """
     Virtual serial connection. There are 2 endpoints.
-    The MASTER endpoint, on the PyArduinoProxy side,
+    The MASTER endpoint, on the PyArduino side,
     and the SLAVE endpoint, on the Arduino Emulator side.
     """
     def __init__(self, other_side=None, timeout=1, # pylint: disable=W0613

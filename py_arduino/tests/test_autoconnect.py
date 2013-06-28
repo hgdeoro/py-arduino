@@ -24,7 +24,7 @@ from . import setup_pythonpath
 
 setup_pythonpath()
 
-from py_arduino import ArduinoProxy
+from py_arduino import PyArduino
 
 
 def main(): # pylint: disable=R0915
@@ -33,7 +33,7 @@ def main(): # pylint: disable=R0915
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     logging.basicConfig(level=logging.DEBUG)
     print "Test autoconnect()"
-    proxy = ArduinoProxy()
+    proxy = PyArduino()
     proxy.autoconnect()
     proxy.ping()
     proxy.close()

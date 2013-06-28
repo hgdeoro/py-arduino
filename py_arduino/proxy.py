@@ -88,7 +88,7 @@ class PinStatus(object):
     """
     Class to hold transient information of pin status.
     The information we have here is from the point of view
-    of the ArduinoProxy, NOT the real Arduino.
+    of the PyArduino, NOT the real Arduino.
     """
     def __init__(self, pin, digital, mode=None, read_value=None, written_value=None):
         self.pin = pin
@@ -231,7 +231,7 @@ class NotConnected(PyArduinoException):
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-class ArduinoProxy(object):  # pylint: disable=R0904
+class PyArduino(object):  # pylint: disable=R0904
     """
     Proxy class for accessing Arduino.
     """
@@ -260,7 +260,7 @@ class ArduinoProxy(object):  # pylint: disable=R0904
         """
         # For communicating with the computer, use one of these rates: 300, 1200, 2400, 4800,
         #    9600, 14400, 19200, 28800, 38400, 57600, or 115200.
-        logger.debug("Instantiating ArduinoProxy('%s', %d)...", tty, speed)
+        logger.debug("Instantiating PyArduino('%s', %d)...", tty, speed)
         self._arduino_type_struct_cache = None
         self.tty = tty
         self.speed = speed
@@ -291,7 +291,7 @@ class ArduinoProxy(object):  # pylint: disable=R0904
     @classmethod
     def create_emulator(cls, initial_input_buffer_contents=None):
         """
-        Returns an instance of ArduinoProxy CONNECTED to the Arduino emulator.
+        Returns an instance of PyArduino CONNECTED to the Arduino emulator.
 
         You should NOT call to `connect()` on the returned instance.
         """
@@ -304,7 +304,7 @@ class ArduinoProxy(object):  # pylint: disable=R0904
         Estabishes serial connection to the Arduino, and returns the proxy instance.
         This allow the instantiation and connection in one line:
 
-        >>> proxy = ArduinoProxy('/dev/ttyACM0').connect()
+        >>> proxy = PyArduino('/dev/ttyACM0').connect()
         """
         assert not self.is_connected()
         if tty:
@@ -432,7 +432,7 @@ class ArduinoProxy(object):  # pylint: disable=R0904
         
         Parameters:
             - timeout (int): timeout in seconds to use (instead of the configured for this
-                instance of ArduinoProxy).
+                instance of PyArduino).
         
         Raises:
             - CommandTimeout if a timeout while reading is detected.
@@ -476,9 +476,9 @@ class ArduinoProxy(object):  # pylint: disable=R0904
 
     def _check_response_for_errors(self, response, cmd):  # pylint: disable=R0201
         splitted = [item for item in response.split() if item]
-        if splitted[0] == ArduinoProxy.INVALID_CMD:
+        if splitted[0] == PyArduino.INVALID_CMD:
             if len(splitted) == 1:
-                logger.warn("Received ArduinoProxy.INVALID_CMD, but without error code. " + \
+                logger.warn("Received PyArduino.INVALID_CMD, but without error code. " + \
                     "The command was: %s", pprint.pformat(cmd))
                 raise(InvalidCommand("Arduino responded with INVALID_CMD. " + \
                     "The command was: %s" % pprint.pformat(cmd)))
@@ -487,9 +487,9 @@ class ArduinoProxy(object):  # pylint: disable=R0904
                     "The command was: %s. Error code: %s" % (pprint.pformat(cmd), splitted[1]),
                     error_code=splitted[1]))
 
-        if splitted[0] == ArduinoProxy.INVALID_PARAMETER:
+        if splitted[0] == PyArduino.INVALID_PARAMETER:
             if len(splitted) == 1:
-                logger.warn("Received ArduinoProxy.INVALID_PARAMETER, but without error code. " + \
+                logger.warn("Received PyArduino.INVALID_PARAMETER, but without error code. " + \
                     "The command was: %s", pprint.pformat(cmd))
                 raise(InvalidParameter("Arduino responded with INVALID_PARAMETER. " + \
                     "The command was: %s" % pprint.pformat(cmd)))
@@ -498,7 +498,7 @@ class ArduinoProxy(object):  # pylint: disable=R0904
                     "The command was: %s. The invalid parameter is %s" % (pprint.pformat(cmd),
                     splitted[1]), error_param=splitted[1]))
 
-        if splitted[0] == ArduinoProxy.UNSUPPORTED_CMD:
+        if splitted[0] == PyArduino.UNSUPPORTED_CMD:
             raise(UnsupportedCommand("Arduino responded with UNSUPPORTED_CMD." + \
                 "The unsupported command is: %s" % splitted[1], error_param=splitted[1]))
 
@@ -556,7 +556,7 @@ class ArduinoProxy(object):  # pylint: disable=R0904
             - response_transformer: the method to call to transform. Must receive a string (the
                 valuerecieved from the Arduino).
             - timeout (int): timeout in seconds to use (instead of the configured
-                for this instance of ArduinoProxy).
+                for this instance of PyArduino).
         
         Raises:
             - CommandTimeout: if a timeout is detected while reading response.

@@ -27,18 +27,18 @@ from . import setup_pythonpath
 
 setup_pythonpath()
 
-from py_arduino import ArduinoProxy, InvalidArgument, InvalidResponse, InvalidCommand
+from py_arduino import PyArduino, InvalidArgument, InvalidResponse, InvalidCommand
 from py_arduino.proxy import HIGH, LOW, OUTPUT, INPUT
 
 logger = logging.getLogger(__name__) # pylint: disable=C0103
 
 
-class TestArduinoProxyWithInitialContentInSerialBuffer(unittest.TestCase): # pylint: disable=R0904
+class TestPyArduinoWithInitialContentInSerialBuffer(unittest.TestCase): # pylint: disable=R0904
     """
     Testcase for commands.
     """
     def setUp(self): # pylint: disable=C0103
-        self.proxy = ArduinoProxy.create_emulator(
+        self.proxy = PyArduino.create_emulator(
             initial_input_buffer_contents="** SOME TEXT **\n" * 5)
 
     def test_ping(self):
@@ -50,13 +50,13 @@ class TestArduinoProxyWithInitialContentInSerialBuffer(unittest.TestCase): # pyl
         self.proxy.close()
 
 
-class TestProxiedMethodsOfArduinoProxy(unittest.TestCase): # pylint: disable=R0904
+class TestProxiedMethodsOfPyArduino(unittest.TestCase): # pylint: disable=R0904
     """
     Testcase for commands.
     """
 
     def setUp(self): # pylint: disable=C0103
-        self.proxy = ArduinoProxy.create_emulator()
+        self.proxy = PyArduino.create_emulator()
 
     def test_ping(self):
         response = self.proxy.ping()
@@ -178,10 +178,10 @@ class TestProxiedMethodsOfArduinoProxy(unittest.TestCase): # pylint: disable=R09
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-class TestInternalsOfArduinoProxy(unittest.TestCase): # pylint: disable=R0904
+class TestInternalsOfPyArduino(unittest.TestCase): # pylint: disable=R0904
 
     def setUp(self): # pylint: disable=C0103
-        self.proxy = ArduinoProxy.create_emulator()
+        self.proxy = PyArduino.create_emulator()
 
     def test_send_cmd(self):
 
