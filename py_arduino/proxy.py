@@ -32,8 +32,7 @@ import threading
 
 from serial.tools.list_ports import comports
 
-# from py_arduino.storage import Storage
-from py_arduino.utils import  _unindent
+from py_arduino.utils import  _unindent, synchronized
 
 try:
     from cStringIO import StringIO
@@ -82,7 +81,6 @@ DEVICE_FOR_EMULATOR = '/dev/ARDUINO_EMULATOR'
 # Locks
 #===============================================================================
 
-ARDUINO_PROXY_LOCK = threading.RLock()
 STATUS_TRACKER_LOCK = threading.RLock()
 
 
@@ -269,12 +267,6 @@ class ArduinoProxy(object):  # pylint: disable=R0904
         self.wait_after_open = wait_after_open
         self.timeout = timeout
         self.call_validate_connection = call_validate_connection
-        try:
-            from py_arduino.dj.models import DjStorage
-            self.storage = DjStorage()
-        except:
-            logger.exception("Django not available. Using dummy storage...")
-            self.storage = Storage()
 
         # NOT TRUE: "one, and only one of (self.serial_port, self.emulator) should be not None"
         # TRUE: the emulator creates a "mock" for the serial_port
@@ -294,7 +286,7 @@ class ArduinoProxy(object):  # pylint: disable=R0904
         self.emulator = ArduinoEmulator(self.serial_port.get_other_side())
         self.emulator.start()
         self.validateConnection()
-        # self.status_tracker = PinStatusTracker()
+        self.status_tracker = PinStatusTracker()
 
     @classmethod
     def create_emulator(cls, initial_input_buffer_contents=None):
@@ -1517,17 +1509,13 @@ class ArduinoProxy(object):  # pylint: disable=R0904
             - digital_pins_items -> list
             - analog_pins_items -> list
             - digital_pins_struct -> list of dicts
-                + pin
-                + digital
-                + pwm
-                + label
-                + enabled_in_web
-            - analog_pins_struct
                 + pin (int)
                 + digital (bool)
                 + pwm (bool)
-                + label (str)
-                + enabled_in_web
+            - analog_pins_struct -> list of dicts
+                + pin (int)
+                + digital (bool)
+                + pwm (bool)
         """
         arduino_type_struct = arduino_type_struct.copy()
         arduino_type_struct['digital_pins_items'] = range(0, arduino_type_struct['digital_pins'])
@@ -1536,37 +1524,37 @@ class ArduinoProxy(object):  # pylint: disable=R0904
         # create 'structs' for each digital pin
         digital_pins_struct = []
         for dp in arduino_type_struct['digital_pins_items']:
-            d_pin_obj = self.storage.get_pin(dp, True)
+            # d_pin_obj = storage.get_pin(dp, True)
             d_pin_status = self.status_tracker.get_pin_status(dp, digital=True)
             digital_pins_struct.append({
-                'pk': d_pin_obj.pk,
+                # 'pk': d_pin_obj.pk,
                 'pin': dp,
                 'digital': True,
                 'pwm': (dp in arduino_type_struct['pwm_pin_list']),
-                'label': d_pin_obj.label,
-                'pin_id': d_pin_obj.pin_id,
-                'enabled_in_web': d_pin_obj.enabled_in_web,
+                # 'label': d_pin_obj.label,
+                # 'pin_id': d_pin_obj.pin_id,
+                # 'enabled_in_web': d_pin_obj.enabled_in_web,
                 'status.mode': d_pin_status.mode,
                 'status.read_value': d_pin_status.read_value,
                 'status.written_value': d_pin_status.written_value,
             })
         arduino_type_struct['digital_pins_struct'] = digital_pins_struct
         del dp
-        del d_pin_obj
+        # del d_pin_obj
 
         # create 'structs' for each analog pin
         analog_pins_struct = []
         for ap in arduino_type_struct['analog_pins_items']:
-            a_pin_obj = self.storage.get_pin(ap, False)
+            # a_pin_obj = storage.get_pin(ap, False)
             a_pin_status = self.status_tracker.get_pin_status(ap, digital=False)
             analog_pins_struct.append({
-                'pk': a_pin_obj.pk,
+                # 'pk': a_pin_obj.pk,
                 'pin': ap,
                 'digital': True,
                 'pwm': False,
-                'label': a_pin_obj.label,
-                'pin_id': a_pin_obj.pin_id,
-                'enabled_in_web': a_pin_obj.enabled_in_web,
+                # 'label': a_pin_obj.label,
+                # 'pin_id': a_pin_obj.pin_id,
+                # 'enabled_in_web': a_pin_obj.enabled_in_web,
                 'status.mode': a_pin_status.mode,
                 'status.read_value': a_pin_status.read_value,
                 'status.written_value': a_pin_status.written_value,
