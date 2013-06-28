@@ -34,7 +34,7 @@ SRC_DIR = os.path.split(SRC_DIR)[0] # SRC_DIR=SRC_DIR/../
 SRC_DIR = os.path.join(SRC_DIR, 'src') # SRC_DIR
 sys.path.append(os.path.abspath(SRC_DIR))
 
-from arduino_proxy import ArduinoProxy
+from py_arduino import PyArduino
 
 COUNT = 10
 
@@ -42,7 +42,7 @@ def main():
     if len(sys.argv) == 1:
         tty_device = os.environ['TTY_DEVICE']
         analog_port = os.environ['ANALOG_PORT']
-        proxy = ArduinoProxy(tty_device, 9600)
+        proxy = PyArduino(tty_device, 9600)
         sum = 0.0
         for i in range(0, COUNT):
             value = proxy.analogRead(int(analog_port))

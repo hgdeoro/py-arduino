@@ -54,7 +54,7 @@ PyArduino
 Launching IPython shell... Enter 'quit()' to exit.
 
 Available variables:
-    - proxy: the ArduinoProxy instance.
+    - proxy: the PyArduino instance.
     - options, args: parsed argument options.
 
 Example:

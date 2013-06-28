@@ -6,8 +6,8 @@ Created on May 22, 2013
 import time
 import logging
 
-from arduino_proxy.proxy import OUTPUT, HIGH, LOW
-from arduino_proxy.pyroproxy.utils import get_arduino_proxy_proxy,\
+from py_arduino.proxy import OUTPUT, HIGH, LOW
+from py_arduino.pyroproxy.utils import get_arduino_proxy_proxy,\
     wait_for_server
 
 logger = logging.getLogger(__name__)

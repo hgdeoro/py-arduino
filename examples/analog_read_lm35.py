@@ -27,7 +27,7 @@ SRC_DIR = os.path.split(SRC_DIR)[0] # SRC_DIR=SRC_DIR/../
 SRC_DIR = os.path.join(SRC_DIR, 'src') # SRC_DIR
 sys.path.append(os.path.abspath(SRC_DIR))
 
-from arduino_proxy.main_utils import default_main
+from py_arduino.main_utils import default_main
 
 def temp_calc_callback(value):
     print "%.2f" % ((5.0 * int(value) * 100.0)/1024.0)
