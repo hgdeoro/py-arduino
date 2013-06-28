@@ -58,7 +58,7 @@ def default_main(optparse_usage="usage: %prog [options] serial_device",
         - args_validator: method that validates the args.
     
     Returns:
-        - options, args, proxy
+        - options, args, arduino
     """
     parser = optparse.OptionParser(usage=optparse_usage)
     parser.add_option("--debug",
@@ -66,7 +66,8 @@ def default_main(optparse_usage="usage: %prog [options] serial_device",
         help="Configure logging to show debug messages.")
     parser.add_option("--arduino-debug",
         action="store_true", dest="arduino_debug", default=False,
-        help="Configure the proxy to debug all the comunication with Arduino (implies --info).")
+        help="Configure the PyArduino instance to debug all the " +
+            "comunication with Arduino (implies --info).")
     parser.add_option("--info",
         action="store_true", dest="info", default=False,
         help="Configure logging to show info messages.")
@@ -101,21 +102,21 @@ def default_main(optparse_usage="usage: %prog [options] serial_device",
         return options, args, None
     else:
         if options.initial_wait == 0:
-            proxy = PyArduino(args[0], 9600, wait_after_open=0,
+            arduino = PyArduino(args[0], 9600, wait_after_open=0,
                 call_validate_connection=not(options.dont_call_validate_connection)).connect()
         else:
             if options.initial_wait is None:
                 logging.info("Waiting some seconds to let the Arduino reset...")
-                proxy = PyArduino(args[0], 9600,
+                arduino = PyArduino(args[0], 9600,
                     call_validate_connection=not(options.dont_call_validate_connection)).connect()
             else:
                 initial_wait = int(options.initial_wait)
                 if initial_wait > 0:
                     logging.info("Waiting %d seconds to let the Arduino reset...", initial_wait)
-                proxy = PyArduino(args[0], 9600, wait_after_open=initial_wait,
+                arduino = PyArduino(args[0], 9600, wait_after_open=initial_wait,
                     call_validate_connection=not(options.dont_call_validate_connection)).connect()
     
         if options.arduino_debug:
-            proxy.enableDebug()
+            arduino.enableDebug()
     
-        return options, args, proxy
+        return options, args, arduino

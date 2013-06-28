@@ -27,14 +27,14 @@ from py_arduino import CommandTimeout
 
 def main():
 
-    _, _, proxy = default_main() # pylint: disable=W0612
+    _, _, arduino = default_main() # pylint: disable=W0612
     try:
         while True:
             sys.stdout.write("Ping sent...")
             sys.stdout.flush()
             start = time.time()
             try:
-                proxy.ping()
+                arduino.ping()
                 end = time.time()
                 sys.stdout.write(" OK - Time=%.3f ms\n" % ((end - start) * 1000))
                 sys.stdout.flush()
@@ -44,7 +44,7 @@ def main():
                 sys.stdout.flush()
     except KeyboardInterrupt:
         print ""
-        proxy.close()
+        arduino.close()
 
 
 if __name__ == '__main__':

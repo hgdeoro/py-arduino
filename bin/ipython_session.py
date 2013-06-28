@@ -52,11 +52,11 @@ PyArduino
 Launching IPython shell... Enter 'quit()' to exit.
 
 Available variables:
-    - proxy: the PyArduino instance.
+    - arduino: the PyArduino instance.
     - options, args: parsed argument options.
 
 Example:
-    >>> proxy.ping()
+    >>> arduino.ping()
     'PING_OK'
  
 """
@@ -64,7 +64,7 @@ Example:
 
 def main():
 
-    options, args, proxy = default_main()  # pylint: disable=W0612 @UnusedVariable
+    options, args, arduino = default_main()  # pylint: disable=W0612 @UnusedVariable
     cfg = Config()
     cfg.InteractiveShellEmbed.prompt_in1 = "PyArduino [\\#]> "
     cfg.InteractiveShellEmbed.prompt_out = "PyArduino [\\#]: "

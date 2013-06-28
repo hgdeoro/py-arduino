@@ -52,7 +52,7 @@ def add_options_callback(parser):
 
 
 def main(callback=default_callback):
-    options, args, proxy = default_main(
+    options, args, arduino = default_main(
         optparse_usage="usage: %prog [options] serial_device digital_port",
         args_validator=args_validator,
         add_options_callback=add_options_callback)
@@ -60,9 +60,9 @@ def main(callback=default_callback):
     digital_port = int(args[1])
 
     try:
-        proxy.pinMode(digital_port, INPUT)
+        arduino.pinMode(digital_port, INPUT)
         while True:
-            value = proxy.digitalRead(digital_port)
+            value = arduino.digitalRead(digital_port)
             callback(value, options)
             if not options.loop:
                 break
@@ -71,7 +71,7 @@ def main(callback=default_callback):
     except Exception:
         raise
     finally:
-        proxy.close()
+        arduino.close()
 
 
 if __name__ == '__main__':

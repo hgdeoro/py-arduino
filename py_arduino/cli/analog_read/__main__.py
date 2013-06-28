@@ -37,7 +37,7 @@ def add_options_callback(parser):
 
 
 def main(callback=default_callback):
-    options, args, proxy = default_main(
+    options, args, arduino = default_main(
         optparse_usage="usage: %prog [options] serial_device analog_port",
         args_validator=args_validator,
         add_options_callback=add_options_callback)
@@ -46,7 +46,7 @@ def main(callback=default_callback):
 
     try:
         while True:
-            value = proxy.analogRead(analog_port)
+            value = arduino.analogRead(analog_port)
             callback(value)
             if not options.loop:
                 break
@@ -55,7 +55,7 @@ def main(callback=default_callback):
     except Exception:
         raise
     finally:
-        proxy.close()
+        arduino.close()
 
 if __name__ == '__main__':
     main()
