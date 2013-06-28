@@ -23,6 +23,23 @@ To install, clone the Git repository, `cd` to the cloned directory and create a 
     $ . virtualenv/bin/activate
     $ pip install -r requirements.txt
 
+The, you need to upload the sketch __sketch__ from `sketches/py_arduino`, and you'll be ready to play with it, like:
+
+###### Read an analog pin
+
+    $ python -m py_arduino.cli.analog_read /dev/ttyACM0 0
+
+###### Ping the Arduino
+
+    $ python -m py_arduino.cli.ping /dev/ttyACM0
+
+###### Start an ipython session
+
+    $ pip install ipython
+    $ python -m py_arduino.cli.ipython /dev/ttyACM0
+
+### Running the tests
+
 To run the tests against the emulator (if you don't have an Arduino):
 
     $ python -m py_arduino.tests.test_all_functions /dev/ARDUINO_EMULATOR 
@@ -31,15 +48,6 @@ To run the tests against a real Arduino, you have to upload the __sketch__ (from
 
     $ python -m py_arduino.tests.test_all_functions /dev/ttyACM0 
 
-### Console
-
-To ping to the Arduino, make sure have uploaded the sketch and it's connected, and run:
-
-	$ python -m py_arduino.cli.ping --info /dev/ttyACM0 
-	INFO:root:Waiting some seconds to let the Arduino reset...
-	Ping sent... OK - Time=19.893 ms
-	Ping sent... OK - Time=22.675 ms
-	Ping sent... OK - Time=18.798 ms
 
 
 Installation (web application)
