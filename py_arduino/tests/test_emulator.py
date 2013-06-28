@@ -19,19 +19,16 @@
 ##-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 import logging
-import os
 import sys
 import time
 import unittest
-from py_arduino.proxy import HIGH, LOW, OUTPUT, INPUT
 
-# Setup PYTHONPATH
-SRC_DIR = os.path.split(os.path.realpath(__file__))[0] # SRC_DIR/arduino_proxy/tests
-SRC_DIR = os.path.split(SRC_DIR)[0] # SRC_DIR/arduino_proxy
-SRC_DIR = os.path.split(SRC_DIR)[0] # SRC_DIR
-sys.path.append(os.path.abspath(SRC_DIR))
+from . import setup_pythonpath
+
+setup_pythonpath()
 
 from py_arduino import ArduinoProxy, InvalidArgument, InvalidResponse, InvalidCommand
+from py_arduino.proxy import HIGH, LOW, OUTPUT, INPUT
 
 logger = logging.getLogger(__name__) # pylint: disable=C0103
 

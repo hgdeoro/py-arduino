@@ -23,6 +23,15 @@ To install, clone the Git repository, `cd` to the cloned directory and create a 
     $ . virtualenv/bin/activate
     $ pip install -r requirements.txt
 
+To run the tests against the emulator:
+
+    $ python -m py_arduino.tests.test_all_functions /dev/ARDUINO_EMULATOR 
+
+or against a real Arduino:
+
+    $ python -m py_arduino.tests.test_all_functions /dev/ttyACM0 
+
+
 <!--
 The recommended way to install py-arduino is using pip and/or virtualenv.
 

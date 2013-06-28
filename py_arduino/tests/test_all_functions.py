@@ -18,22 +18,17 @@
 ##    along with py-arduino; see the file LICENSE.txt.
 ##-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-import os
-import sys
+from . import setup_pythonpath
 
-# Setup PYTHONPATH
-SRC_DIR = os.path.split(os.path.realpath(__file__))[0] # SRC_DIR/arduino_proxy/tests
-SRC_DIR = os.path.split(SRC_DIR)[0] # SRC_DIR/arduino_proxy
-SRC_DIR = os.path.split(SRC_DIR)[0] # SRC_DIR
-sys.path.append(os.path.abspath(SRC_DIR))
+setup_pythonpath()
 
 from py_arduino import InvalidCommand, CommandTimeout, InvalidResponse
 from py_arduino.main_utils import default_main
 from py_arduino.proxy import NotConnected, HIGH, OUTPUT, LSBFIRST
 
 
-def main(): # pylint: disable=R0915
-    _, _, proxy = default_main() # pylint: disable=W0612
+def main():  # pylint: disable=R0915
+    _, _, proxy = default_main()  # pylint: disable=W0612
     try:
         print "getFreeMemory() -> %s" % str(proxy.getFreeMemory())
         print "enableDebug() -> %s" % str(proxy.enableDebug())

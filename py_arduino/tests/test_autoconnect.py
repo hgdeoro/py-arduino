@@ -19,14 +19,10 @@
 ##-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 import logging
-import os
-import sys
 
-# Setup PYTHONPATH
-SRC_DIR = os.path.split(os.path.realpath(__file__))[0] # SRC_DIR/arduino_proxy/tests
-SRC_DIR = os.path.split(SRC_DIR)[0] # SRC_DIR/arduino_proxy
-SRC_DIR = os.path.split(SRC_DIR)[0] # SRC_DIR
-sys.path.append(os.path.abspath(SRC_DIR))
+from . import setup_pythonpath
+
+setup_pythonpath()
 
 from py_arduino import ArduinoProxy
 

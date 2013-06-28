@@ -16,3 +16,16 @@
 ##    You should have received a copy of the GNU General Public License
 ##    along with py-arduino; see the file LICENSE.txt.
 ##-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+def setup_pythonpath():
+    try:
+        from py_arduino import ArduinoProxy
+    except ImportError:
+        import os
+        import sys
+        PROJECT_DIR = os.path.split(os.path.realpath(__file__))[0]  # PROJECT_DIR/py_arduino/tests
+        PROJECT_DIR = os.path.split(PROJECT_DIR)[0]  # PROJECT_DIR/py_arduino
+        PROJECT_DIR = os.path.split(PROJECT_DIR)[0]  # PROJECT_DIR
+        sys.path.append(os.path.abspath(PROJECT_DIR))
+        from py_arduino import ArduinoProxy  # to force check
