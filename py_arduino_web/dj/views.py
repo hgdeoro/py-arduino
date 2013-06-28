@@ -10,10 +10,10 @@ from django.contrib import messages
 
 from arduino_proxy.proxy import DEVICE_FOR_EMULATOR, LOW, HIGH,\
     OUTPUT, INPUT
-from arduino_proxy.pyroproxy.utils import get_arduino_proxy_proxy, server_is_up
+from arduino_proxy.pyroproxy.utils import get_arduino_pyro, server_is_up
 
 
-PROXY = get_arduino_proxy_proxy()
+PROXY = get_arduino_pyro()
 
 
 class JsonResponse(HttpResponse):

@@ -78,11 +78,9 @@ Console
 ![Architecture Console](https://raw.github.com/hgdeoro/py-arduino-proxy/master/examples/architecture-overview-console.png)
 -->
 
-TODO: migrate this instructions
-
 To ping to the Arduino, make sure it's connected and run:
 
-	$ python -m arduino_proxy.cli.ping --info /dev/ttyACM0 
+	$ python -m py_arduino.cli.ping --info /dev/ttyACM0 
 	INFO:root:Waiting some seconds to let the Arduino reset...
 	Ping sent... OK - Time=19.893 ms
 	Ping sent... OK - Time=22.675 ms

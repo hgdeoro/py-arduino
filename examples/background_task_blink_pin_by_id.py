@@ -7,7 +7,7 @@ import time
 import logging
 
 from py_arduino.proxy import LOW, HIGH, OUTPUT
-from py_arduino.pyroproxy.utils import get_arduino_proxy_proxy, \
+from py_arduino_web.pyroproxy.utils import get_arduino_pyro, \
     wait_for_server, get_arduino_storage_proxy
 
 logger = logging.getLogger(__name__)
@@ -17,7 +17,7 @@ PIN_ID = 'integrated-arduino-led'
 
 
 def main():
-    arduino = get_arduino_proxy_proxy()
+    arduino = get_arduino_pyro()
     storage = get_arduino_storage_proxy()
     wait_for_server(logger)
 

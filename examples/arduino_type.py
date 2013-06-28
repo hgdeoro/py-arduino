@@ -23,15 +23,15 @@ import sys
 import pprint
 
 # Setup PYTHONPATH
-SRC_DIR = os.path.split(os.path.realpath(__file__))[0] # SRC_DIR=EXAMPLE_DIR
-SRC_DIR = os.path.split(SRC_DIR)[0] # SRC_DIR=SRC_DIR/../
-SRC_DIR = os.path.join(SRC_DIR, 'src') # SRC_DIR
+SRC_DIR = os.path.split(os.path.realpath(__file__))[0]  # SRC_DIR=EXAMPLE_DIR
+SRC_DIR = os.path.split(SRC_DIR)[0]  # SRC_DIR=SRC_DIR/../
 sys.path.append(os.path.abspath(SRC_DIR))
 
 from py_arduino.main_utils import default_main
 
+
 def main():
-    options, args, proxy = default_main()
+    options, args, proxy = default_main()  # @UnusedVariable
     print "CPU: %s" % proxy.getAvrCpuType()
     pprint.pprint(proxy.getArduinoTypeStruct())
     proxy.close()

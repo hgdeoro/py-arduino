@@ -7,28 +7,28 @@ import time
 import logging
 
 from py_arduino.proxy import OUTPUT, HIGH, LOW
-from py_arduino.pyroproxy.utils import get_arduino_proxy_proxy,\
+from py_arduino_web.pyroproxy.utils import get_arduino_pyro, \
     wait_for_server
 
 logger = logging.getLogger(__name__)
 
 
 def main():
-     = get_arduino_proxy_proxy()
+    arduino = get_arduino_pyro()
     wait_for_server(logger)
 
     logger.info("Wait until Arduino is connected...")
-    while not .is_connected():
+    while not arduino.is_connected():
         time.sleep(1)
 
     logger.info("Connected! :-D")
 
     logger.info("Starting to blink")
-    .pinMode(13, OUTPUT)
+    arduino.pinMode(13, OUTPUT)
     while True:
-        .digitalWrite(13, HIGH)
+        arduino.digitalWrite(13, HIGH)
         time.sleep(1)
-        .digitalWrite(13, LOW)
+        arduino.digitalWrite(13, LOW)
         time.sleep(1)
 
 if __name__ == '__main__':

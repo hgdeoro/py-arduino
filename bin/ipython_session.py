@@ -34,15 +34,13 @@ except ImportError:
     raise
 
 try:
-    from arduino_proxy.main_utils import default_main
+    from py_arduino.main_utils import default_main
 except ImportError:
     # Setup PYTHONPATH
-    SRC_DIR = os.path.split(os.path.realpath(__file__))[0] # SRC_DIR=BIN_DIR
-    SRC_DIR = os.path.split(SRC_DIR)[0] # SRC_DIR=SRC_DIR/../
+    SRC_DIR = os.path.split(os.path.realpath(__file__))[0]  # SRC_DIR=BIN_DIR
+    SRC_DIR = os.path.split(SRC_DIR)[0]  # SRC_DIR=SRC_DIR/../
     sys.path.append(os.path.abspath(SRC_DIR))
-    from arduino_proxy.main_utils import default_main
-
-from arduino_proxy.proxy import CommandTimeout
+    from py_arduino.main_utils import default_main
 
 
 banner = """
@@ -63,12 +61,13 @@ Example:
  
 """
 
+
 def main():
 
-    options, args, proxy = default_main() # pylint: disable=W0612
+    options, args, proxy = default_main()  # pylint: disable=W0612 @UnusedVariable
     cfg = Config()
-    cfg.InteractiveShellEmbed.prompt_in1="PyArduino [\\#]> "
-    cfg.InteractiveShellEmbed.prompt_out="PyArduino [\\#]: "
+    cfg.InteractiveShellEmbed.prompt_in1 = "PyArduino [\\#]> "
+    cfg.InteractiveShellEmbed.prompt_out = "PyArduino [\\#]: "
 
     shell = InteractiveShellEmbed(config=cfg, banner2=banner)
     shell.user_ns = {}
