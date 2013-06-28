@@ -9,19 +9,19 @@
 #include "arduino_type.h"
 #include "dht11.h"
 
-#define PY_ARDUINO_PROXY_LCD_SUPPORT %(PY_ARDUINO_PROXY_LCD_SUPPORT)d // {***PLACEHOLDER***}
-#define PY_ARDUINO_PROXY_DEBUG_TO_LCD %(PY_ARDUINO_PROXY_DEBUG_TO_LCD)d // {***PLACEHOLDER***}
+#define PY_ARDUINO_LCD_SUPPORT %(PY_ARDUINO_LCD_SUPPORT)d // {***PLACEHOLDER***}
+#define PY_ARDUINO_DEBUG_TO_LCD %(PY_ARDUINO_DEBUG_TO_LCD)d // {***PLACEHOLDER***}
 
-#if PY_ARDUINO_PROXY_LCD_SUPPORT == 1
+#if PY_ARDUINO_LCD_SUPPORT == 1
 #include <LiquidCrystal.h>
 #endif
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// If PY_ARDUINO_PROXY_DEVEL is defined, the generated code
+// If PY_ARDUINO_DEVEL is defined, the generated code
 // is targeted to test and develop the sketch in a PC,
 // this means the code won't run on Arduino
 
-#define PY_ARDUINO_PROXY_DEVEL // removed when generating the sketch.
+#define PY_ARDUINO_DEVEL // removed when generating the sketch.
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // MAX_RECEIVED_PARAMETERS: max count of parameter received from Serial.
@@ -65,14 +65,14 @@ uint8_t check_mark_interrupt_1() { return detected_interrupts & 0x02; }
 
 uint8_t debug_enabled = 0;
 
-#if PY_ARDUINO_PROXY_LCD_SUPPORT == 1
-LiquidCrystal lcd = LiquidCrystal(PY_ARDUINO_PROXY_LCD_SUPPORT_rs,
-	PY_ARDUINO_PROXY_LCD_SUPPORT_enable, PY_ARDUINO_PROXY_LCD_SUPPORT_d4,
-	PY_ARDUINO_PROXY_LCD_SUPPORT_d5, PY_ARDUINO_PROXY_LCD_SUPPORT_d6,
-	PY_ARDUINO_PROXY_LCD_SUPPORT_d7);
+#if PY_ARDUINO_LCD_SUPPORT == 1
+LiquidCrystal lcd = LiquidCrystal(PY_ARDUINO_LCD_SUPPORT_rs,
+	PY_ARDUINO_LCD_SUPPORT_enable, PY_ARDUINO_LCD_SUPPORT_d4,
+	PY_ARDUINO_LCD_SUPPORT_d5, PY_ARDUINO_LCD_SUPPORT_d6,
+	PY_ARDUINO_LCD_SUPPORT_d7);
 #endif
 
-#ifndef PY_ARDUINO_PROXY_DEVEL
+#ifndef PY_ARDUINO_DEVEL
 	
 	%(proxied_function_source)s // {***PLACEHOLDER***}
 	
@@ -160,7 +160,7 @@ LiquidCrystal lcd = LiquidCrystal(PY_ARDUINO_PROXY_LCD_SUPPORT_rs,
 	
 #endif
 
-#ifdef PY_ARDUINO_PROXY_DEVEL // Taken from : wiring.h - Partial implementation of the Wiring API for the ATmega8. Part of Arduino - http://www.arduino.cc/
+#ifdef PY_ARDUINO_DEVEL // Taken from : wiring.h - Partial implementation of the Wiring API for the ATmega8. Part of Arduino - http://www.arduino.cc/
 
 #define HIGH 0x1
 #define LOW  0x0
@@ -203,7 +203,7 @@ void detachInterrupt(uint8_t interruptNum) { }
 
 #endif
 
-#ifdef PY_ARDUINO_PROXY_DEVEL
+#ifdef PY_ARDUINO_DEVEL
 	
 	void send_debug() { }
 	
@@ -429,7 +429,7 @@ proxied_function_ptr get_function_by_name(char* name) {
 void loop() {
 	uint8_t ret = read_parameters();
 	
-	#ifdef PY_ARDUINO_PROXY_DEVEL
+	#ifdef PY_ARDUINO_DEVEL
 	printf(" -> read_parameters(): %d\n", ret);
 	int i;
 	for(i=0; i<MAX_RECEIVED_PARAMETERS; i++) {
@@ -443,7 +443,7 @@ void loop() {
 		send_debug();
 		proxied_function_ptr function = get_function_by_name(received_parameters[0]);
 		if(function != NULL) {
-			#if PY_ARDUINO_PROXY_DEBUG_TO_LCD == 1
+			#if PY_ARDUINO_DEBUG_TO_LCD == 1
 			if(debug_enabled == 2) {
 				lcd.clear(); // lcd.setCursor(0, 0); // column, line
 				lcd.print(received_parameters[0]);
@@ -464,7 +464,7 @@ void loop() {
 		} else {
 			send_invalid_cmd_response(FUNCTION_NOT_FOUND);
 			
-			#if PY_ARDUINO_PROXY_DEBUG_TO_LCD == 1
+			#if PY_ARDUINO_DEBUG_TO_LCD == 1
 			if(debug_enabled == 2) {
 				lcd.clear(); // lcd.setCursor(0, 0); // column, line
 				lcd.print(received_parameters[0]);
@@ -480,7 +480,7 @@ void loop() {
 		send_debug();
 		send_invalid_cmd_response(ret);
 		
-		#if PY_ARDUINO_PROXY_DEBUG_TO_LCD == 1
+		#if PY_ARDUINO_DEBUG_TO_LCD == 1
 		if(debug_enabled == 2) {
 			lcd.clear(); // lcd.setCursor(0, 0); // column, line
 			lcd.print(received_parameters[0]);
@@ -495,7 +495,7 @@ void loop() {
 	} else {
 		send_debug();
 		send_invalid_cmd_response(UNEXPECTED_RESPONSE_FROM_READ_PARAMETERS);
-		#if PY_ARDUINO_PROXY_DEBUG_TO_LCD == 1
+		#if PY_ARDUINO_DEBUG_TO_LCD == 1
 		if(debug_enabled == 2) {
 			lcd.clear(); // lcd.setCursor(0, 0); // column, line
 			lcd.print(received_parameters[0]);
@@ -521,9 +521,9 @@ void setup() {
 
 	setup_serial();
 	
-	#if PY_ARDUINO_PROXY_LCD_SUPPORT == 1
-	lcd.begin(PY_ARDUINO_PROXY_LCD_SUPPORT_COLS,
-		PY_ARDUINO_PROXY_LCD_SUPPORT_ROWS);
+	#if PY_ARDUINO_LCD_SUPPORT == 1
+	lcd.begin(PY_ARDUINO_LCD_SUPPORT_COLS,
+		PY_ARDUINO_LCD_SUPPORT_ROWS);
 	lcd.clear();
 	lcd.print("PyArduino");
 	lcd.setCursor(0, 1); // column, line
@@ -531,7 +531,7 @@ void setup() {
 	#endif
 }
 
-#ifdef PY_ARDUINO_PROXY_DEVEL
+#ifdef PY_ARDUINO_DEVEL
 
 int main() {
 	setup();

@@ -1220,7 +1220,7 @@ class PyArduino(object):  # pylint: disable=R0904
     enableDebugToLcd.arduino_function_name = '_eDL'
     enableDebugToLcd.arduino_code = _unindent(12, """
             void _eDL() {
-                #if PY_ARDUINO_PROXY_LCD_SUPPORT == 1
+                #if PY_ARDUINO_LCD_SUPPORT == 1
                     debug_enabled = 2;
                     send_char_array_response("ENA");
                 #else
@@ -1311,7 +1311,7 @@ class PyArduino(object):  # pylint: disable=R0904
     lcdWrite.arduino_function_name = '_lcdW'
     lcdWrite.arduino_code = _unindent(12, """
             void _lcdW() {
-                #if PY_ARDUINO_PROXY_LCD_SUPPORT == 1
+                #if PY_ARDUINO_LCD_SUPPORT == 1
                     int col = atoi(received_parameters[1]);
                     int row = atoi(received_parameters[2]);
                     lcd.setCursor(col, row);
@@ -1348,7 +1348,7 @@ class PyArduino(object):  # pylint: disable=R0904
     lcdClear.arduino_function_name = '_lcdClr'
     lcdClear.arduino_code = _unindent(12, """
             void _lcdClr() {
-                #if PY_ARDUINO_PROXY_LCD_SUPPORT == 1
+                #if PY_ARDUINO_LCD_SUPPORT == 1
                     lcd.clear();
                     send_char_array_response("LCLROK");
                 #else

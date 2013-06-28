@@ -75,14 +75,14 @@ def generate_placeholder_values(proxy, options):
         'ATTACH_INTERRUPT_MODE_CHANGE': ATTACH_INTERRUPT_MODE_CHANGE,
         'ATTACH_INTERRUPT_MODE_RISING': ATTACH_INTERRUPT_MODE_RISING,
         'ATTACH_INTERRUPT_MODE_FALLING': ATTACH_INTERRUPT_MODE_FALLING,
-        'PY_ARDUINO_PROXY_LCD_SUPPORT': 0,
-        'PY_ARDUINO_PROXY_DEBUG_TO_LCD': 0,
+        'PY_ARDUINO_LCD_SUPPORT': 0,
+        'PY_ARDUINO_DEBUG_TO_LCD': 0,
     }
     
     if options.lcd:
-        placeholder_values['PY_ARDUINO_PROXY_LCD_SUPPORT'] = 1
+        placeholder_values['PY_ARDUINO_LCD_SUPPORT'] = 1
         if not options.disable_debug_to_lcd:
-            placeholder_values['PY_ARDUINO_PROXY_DEBUG_TO_LCD'] = 1
+            placeholder_values['PY_ARDUINO_DEBUG_TO_LCD'] = 1
     
     return placeholder_values
 
@@ -165,12 +165,12 @@ def main(): # pylint: disable=R0914,R0912,R0915
     c_file = open(c_input_filename, 'r')
     c_file_lines = [line.strip('\r\n') for line in c_file.readlines()]
     
-    # Remove 'PY_ARDUINO_PROXY_DEVEL' from C file
+    # Remove 'PY_ARDUINO_DEVEL' from C file
     for i in range(0, len(c_file_lines)):
         splitted = c_file_lines[i].split()
         if len(splitted) >= 3 and \
                 splitted[0] == '#define' and \
-                splitted[1] == 'PY_ARDUINO_PROXY_DEVEL' and \
+                splitted[1] == 'PY_ARDUINO_DEVEL' and \
                 splitted[2].startswith('//'):
             c_file_lines[i] = '// ' + c_file_lines[i]
             break
