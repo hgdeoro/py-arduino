@@ -5,17 +5,17 @@ py-arduino
 
 It consist of two layers:
 
- - a **low level tool**, very easy to use and **extend**,
+ - a **low level tool/library**, very easy to use and **extend**,
  - a **web application**, including a **web interface** and **background threads**, based on Django, uWSGI, Pyro: it's multithread, allow concurrent access,
     labeling of pins to facilitate the use, etc..
 
 The project has many **testing** utilities, a simple **emulator** and the ability to see DEBUG messages to facilitate the location of problems and subsequent solutions.
 
 
-Installation
-------------
+Installation (low level tool/library)
+=====================================
 
-To install, clone the Git repository, `cd` to the cloned directory and create a `virtualenv` (named `virtualenv`):
+To install, clone the Git repository, `cd` to the cloned directory and create a `virtualenv`:
 
     $ git clone https://github.com/hgdeoro/py-arduino.git
     $ cd py-arduino
@@ -23,37 +23,32 @@ To install, clone the Git repository, `cd` to the cloned directory and create a 
     $ . virtualenv/bin/activate
     $ pip install -r requirements.txt
 
-To run the tests against the emulator:
+To run the tests against the emulator (if you don't have an Arduino):
 
     $ python -m py_arduino.tests.test_all_functions /dev/ARDUINO_EMULATOR 
 
-or against a real Arduino:
+To run the tests against a real Arduino, you have to upload the __sketch__ (from `sketches/py_arduino`), an execute:
 
     $ python -m py_arduino.tests.test_all_functions /dev/ttyACM0 
 
+### Console
 
-<!--
-The recommended way to install py-arduino is using pip and/or virtualenv.
+To ping to the Arduino, make sure have uploaded the sketch and it's connected, and run:
 
-1. Install PIP [manually](http://www.pip-installer.org/en/latest/installing.html "Install PIP"), or with your distribution's package manager (`sudo apt-get install python-pip` in Ubuntu), or create a [virtualenv](http://www.virtualenv.org/en/latest/ "Vitualenv Site").
-2. Run `pip install py-arduino`
--->
-
-
-Low leve tool
--------------
-
-TODO: add low level example
+	$ python -m py_arduino.cli.ping --info /dev/ttyACM0 
+	INFO:root:Waiting some seconds to let the Arduino reset...
+	Ping sent... OK - Time=19.893 ms
+	Ping sent... OK - Time=22.675 ms
+	Ping sent... OK - Time=18.798 ms
 
 
-Web interface
--------------
+Installation (web application)
+==============================
 
-<!--
-![Architecture Web Application](/hgdeoro/py-arduino-proxy/raw/master/examples/architecture-overview-webapp.png)
--->
+To install the web application, follow the steps on `Installation (low level tool/library)`, and then:
 
-TODO: add instructions to install from `requirements-web.txt`
+    $ pip install -r requirements-web.txt
+    $ python -m py_arduino_web.dj.manage syncdb --noinput --migrate
 
 To launch the web server, run:
 
@@ -63,6 +58,7 @@ connect your Arduino, go to [http://localhost:8080/](http://localhost:8080/),
 insert the serial device (something like /dev/ttyACM0)
 and clic 'Connect'.
 
+
 <!--
 Here are some screenshots:
 
@@ -71,20 +67,14 @@ Here are some screenshots:
 ![main page](https://raw.github.com/hgdeoro/py-arduino-proxy/master/examples/arduino-proxy-web-interface-main.png).
 -->
 
-Console
--------
 
 <!--
-![Architecture Console](https://raw.github.com/hgdeoro/py-arduino-proxy/master/examples/architecture-overview-console.png)
+The recommended way to install py-arduino is using pip and/or virtualenv.
+
+1. Install PIP [manually](http://www.pip-installer.org/en/latest/installing.html "Install PIP"), or with your distribution's package manager (`sudo apt-get install python-pip` in Ubuntu), or create a [virtualenv](http://www.virtualenv.org/en/latest/ "Vitualenv Site").
+2. Run `pip install py-arduino`
 -->
 
-To ping to the Arduino, make sure it's connected and run:
-
-	$ python -m py_arduino.cli.ping --info /dev/ttyACM0 
-	INFO:root:Waiting some seconds to let the Arduino reset...
-	Ping sent... OK - Time=19.893 ms
-	Ping sent... OK - Time=22.675 ms
-	Ping sent... OK - Time=18.798 ms
 
 
 <!--
@@ -124,17 +114,13 @@ The basic methods of Arduino are implemented. The following actions can be done 
 * Read temperature and humidity with DHT11 sensors.
 
 
-TODO (project rename + web thier)
----------------------------------
-
-* rework web layer
-* setup.py
-
 TODO (project cleanup)
 ----------------------
 
 * migrate wiki to to docs/ and readthedocs
 * recreate sphinx files to build api docs
+* setup.py (to install from PIP)
+
 
 <!--
 Videos!
