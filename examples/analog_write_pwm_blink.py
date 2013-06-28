@@ -18,37 +18,36 @@
 ##    along with py-arduino; see the file LICENSE.txt.
 ##-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-import os
-import sys
+#
+# Run with:
+#
+# $ python -m examples.analog_write_pwm_blink --info /dev/ttyACM0 13
+#
+
 from py_arduino import OUTPUT
-
-# Setup PYTHONPATH
-SRC_DIR = os.path.split(os.path.realpath(__file__))[0] # SRC_DIR=EXAMPLE_DIR
-SRC_DIR = os.path.split(SRC_DIR)[0] # SRC_DIR=SRC_DIR/../
-SRC_DIR = os.path.join(SRC_DIR, 'src') # SRC_DIR
-sys.path.append(os.path.abspath(SRC_DIR))
-
 from py_arduino.main_utils import default_main
 
 
-def args_validator(parser, options, args): # pylint: disable=W0613
+def args_validator(parser, options, args):  # pylint: disable=W0613
     if len(args) != 2:
         parser.error("must specified three argument: serial device, PWM digital port")
 
 
 def main():
-    _, args, arduino = default_main(optparse_usage=\
-        "usage: %prog [options] serial_device pwm_digital_port",
+    USAGE = "usage: %prog [options] serial_device pwm_digital_port"
+    _, args, arduino = default_main(optparse_usage=USAGE,
         args_validator=args_validator)
-    
+
     pwm_digital_port = int(args[1])
-    
+
     try:
         arduino.pinMode(pwm_digital_port, OUTPUT)
         while True:
-            for value in range(0, 256):
+            print "Going from 0 to 255..."
+            for value in range(0, 256, 5):
                 arduino.analogWrite(pwm_digital_port, value)
-            for value in range(255, -1, -1):
+            print "Going from 255 to 0..."
+            for value in range(255, -1, -5):
                 arduino.analogWrite(pwm_digital_port, value)
     except KeyboardInterrupt:
         print ""
