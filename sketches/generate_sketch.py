@@ -145,8 +145,8 @@ def main(): # pylint: disable=R0914,R0912,R0915
         parser.error("The specified output directory isn't a directory! Path: {0}".format(
             output_dir))
     
-    c_input_filename = os.path.join(BASE_DIR, 'src-c', 'py_arduino_proxy.c')
-    h_input_filename = os.path.join(BASE_DIR, 'src-c', 'py_arduino_proxy.h')
+    c_input_filename = os.path.join(BASE_DIR, 'src-c', 'py_arduino.c')
+    h_input_filename = os.path.join(BASE_DIR, 'src-c', 'py_arduino.h')
     
     extra_source_filenames = [
         'arduino_type.h',
@@ -185,14 +185,14 @@ def main(): # pylint: disable=R0914,R0912,R0915
     replace_placeholder_values(placeholder_values, c_file_lines, output)
     
     # Writing .C/.INO file
-    output_file_c_filename = os.path.join(output_dir, 'py_arduino_proxy.ino')
+    output_file_c_filename = os.path.join(output_dir, 'py_arduino.ino')
     logging.info("Writing to %s", output_file_c_filename)
     output_file_c = open(output_file_c_filename, 'w')
     output_file_c.write(output.getvalue())
     output_file_c.close()
     
     # Coping .H file
-    output_file_h_filename = os.path.join(output_dir, 'py_arduino_proxy.h')
+    output_file_h_filename = os.path.join(output_dir, 'py_arduino.h')
     logging.info("Copying to %s", output_file_h_filename)
     shutil.copyfile(h_input_filename, output_file_h_filename)
 
