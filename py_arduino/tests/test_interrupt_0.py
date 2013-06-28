@@ -24,7 +24,7 @@ from . import setup_pythonpath
 
 setup_pythonpath()
 
-from py_arduino import  InvalidCommand, ArduinoProxyException
+from py_arduino import  InvalidCommand, PyArduinoException
 from py_arduino.main_utils import default_main
 from py_arduino.proxy import INPUT, HIGH, ATTACH_INTERRUPT_MODE_LOW
 
@@ -62,7 +62,7 @@ def main():
                     print " + INTERRUPT 0 has ocurred"
             except InvalidCommand:
                 print " + Ignoring InvalidCommand! This is normal when working with interrupts."
-            except ArduinoProxyException:
+            except PyArduinoException:
                 traceback.print_exc()
                 print "##"
                 print "## ERROR DETECTED!"

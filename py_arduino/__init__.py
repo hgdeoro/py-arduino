@@ -18,4 +18,4 @@
 ##-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 from py_arduino.proxy import ArduinoProxy, InvalidCommand, InvalidResponse, EmptyResponse, \
-    CommandTimeout, InvalidArgument, ArduinoProxyException
+    CommandTimeout, InvalidArgument, PyArduinoException

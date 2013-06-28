@@ -159,56 +159,56 @@ class PinStatusTracker(object):
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-class ArduinoProxyException(Exception):
+class PyArduinoException(Exception):
     """Base class for all the exception raised in the project."""
 
 
-class InvalidCommand(ArduinoProxyException):
+class InvalidCommand(PyArduinoException):
     """
     Raised when the Arduino reported an error in the command.
     """
 
     def __init__(self, msg, error_code=None):
-        ArduinoProxyException.__init__(self, msg)
+        PyArduinoException.__init__(self, msg)
         self.error_code = error_code
 
 
-class InvalidParameter(ArduinoProxyException):
+class InvalidParameter(PyArduinoException):
     """
     Raised when the Arduino reported an invalid parameter.
     """
 
     def __init__(self, msg, error_param=None):
-        ArduinoProxyException.__init__(self, msg)
+        PyArduinoException.__init__(self, msg)
         self.error_param = error_param
 
 
-class InvalidResponse(ArduinoProxyException):
+class InvalidResponse(PyArduinoException):
     """
     Raised when the response from the Arduino wasn't valid.
     """
 
 
-class EmptyResponse(ArduinoProxyException):
+class EmptyResponse(PyArduinoException):
     """
     Raised when the response from the Arduino was empty.
     """
 
 
-class CommandTimeout(ArduinoProxyException):
+class CommandTimeout(PyArduinoException):
     """
     Raised when a timeout occurs while waiting for Arduino's response.
     """
 
 
-class InvalidArgument(ArduinoProxyException):
+class InvalidArgument(PyArduinoException):
     """
     Raised when a method was called with invalid argument type or values.
     This is detected in Python, and thus no data was sent to the Arduino.
     """
 
 
-class UnsupportedCommand(ArduinoProxyException):
+class UnsupportedCommand(PyArduinoException):
     """
     Raised when there is no support for the given command in the Arduino.
     
@@ -218,11 +218,11 @@ class UnsupportedCommand(ArduinoProxyException):
     """
 
     def __init__(self, msg, error_param=None):
-        ArduinoProxyException.__init__(self, msg)
+        PyArduinoException.__init__(self, msg)
         self.error_param = error_param
 
 
-class NotConnected(ArduinoProxyException):
+class NotConnected(PyArduinoException):
     """
     Raised when a method that required a connection was called, but the
     instance wasn't connected.
@@ -380,7 +380,7 @@ class ArduinoProxy(object):  # pylint: disable=R0904
         Returns: True if connection was posible, False otherwise.
         """
         if self.is_connected():
-            raise(ArduinoProxyException("The instance is already connected"))
+            raise(PyArduinoException("The instance is already connected"))
 
         initial_tty = self.tty
         for a_serial_port in self.get_serial_ports():
