@@ -126,12 +126,18 @@ The basic methods of Arduino are implemented. The following actions can be done 
 * Read temperature and humidity with DHT11 sensors.
 
 
-TODO
-----
+TODO (project rename + web thier)
+---------------------------------
 
 * rework web layer
 * setup.py
 * rename on `py_arduino_web/dj/*` PyArduinoProxy to PyArduinoJS, JjArduino or something else.
+
+TODO (project cleanup)
+----------------------
+
+* migrate wiki to to docs/ and readthedocs
+* recreate sphinx files to build api docs
 
 <!--
 Videos!
