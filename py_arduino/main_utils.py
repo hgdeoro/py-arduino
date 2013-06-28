@@ -21,7 +21,7 @@ import glob
 import logging
 import optparse
 
-from arduino_proxy import ArduinoProxy
+from py_arduino import ArduinoProxy
 
 #
 # Example for "add_options_callback" parameter of "default_main()":

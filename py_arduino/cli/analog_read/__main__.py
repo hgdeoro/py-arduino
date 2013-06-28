@@ -18,7 +18,7 @@
 ##    along with py-arduino; see the file LICENSE.txt.
 ##-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-from arduino_proxy.main_utils import default_main
+from py_arduino.main_utils import default_main
 
 
 def default_callback(value):

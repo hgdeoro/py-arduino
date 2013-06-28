@@ -28,7 +28,7 @@ SRC_DIR = os.path.split(SRC_DIR)[0] # SRC_DIR/arduino_proxy
 SRC_DIR = os.path.split(SRC_DIR)[0] # SRC_DIR
 sys.path.append(os.path.abspath(SRC_DIR))
 
-from arduino_proxy import ArduinoProxy
+from py_arduino import ArduinoProxy
 
 
 def main(): # pylint: disable=R0915

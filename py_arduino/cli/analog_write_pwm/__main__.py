@@ -18,8 +18,8 @@
 ##    along with py-arduino; see the file LICENSE.txt.
 ##-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-from arduino_proxy.main_utils import default_main
-from arduino_proxy.proxy import OUTPUT
+from py_arduino.main_utils import default_main
+from py_arduino.proxy import OUTPUT
 
 
 def args_validator(parser, options, args): # pylint: disable=W0613

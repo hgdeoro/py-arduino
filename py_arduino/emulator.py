@@ -25,7 +25,7 @@ import threading
 import time
 import weakref
 
-from arduino_proxy.proxy import ArduinoProxy, HIGH, LOW
+from py_arduino.proxy import ArduinoProxy, HIGH, LOW
 
 logger = logging.getLogger(__name__) # pylint: disable=C0103
 

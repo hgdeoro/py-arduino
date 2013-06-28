@@ -21,8 +21,8 @@
 import sys
 import time
 
-from arduino_proxy.main_utils import default_main
-from arduino_proxy.proxy import CommandTimeout
+from py_arduino.main_utils import default_main
+from py_arduino.proxy import CommandTimeout
 
 
 def main():

@@ -27,9 +27,9 @@ SRC_DIR = os.path.split(SRC_DIR)[0] # SRC_DIR/arduino_proxy
 SRC_DIR = os.path.split(SRC_DIR)[0] # SRC_DIR
 sys.path.append(os.path.abspath(SRC_DIR))
 
-from arduino_proxy import InvalidCommand, CommandTimeout, InvalidResponse
-from arduino_proxy.main_utils import default_main
-from arduino_proxy.proxy import NotConnected, HIGH, OUTPUT, LSBFIRST
+from py_arduino import InvalidCommand, CommandTimeout, InvalidResponse
+from py_arduino.main_utils import default_main
+from py_arduino.proxy import NotConnected, HIGH, OUTPUT, LSBFIRST
 
 
 def main(): # pylint: disable=R0915
