@@ -125,6 +125,14 @@ The basic methods of Arduino are implemented. The following actions can be done 
 * Show messages on LCDs, based on the Hitachi HD44780 (or a compatible) chipset.
 * Read temperature and humidity with DHT11 sensors.
 
+
+TODO
+----
+
+* rework web layer
+* setup.py
+
+
 <!--
 Videos!
 =======
