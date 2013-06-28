@@ -131,7 +131,7 @@ TODO
 
 * rework web layer
 * setup.py
-
+* rename on `py_arduino_web/dj/*` PyArduinoProxy to PyArduinoJS, JjArduino or something else.
 
 <!--
 Videos!
