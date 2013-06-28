@@ -30,10 +30,10 @@ from py_arduino import INPUT, HIGH, ATTACH_INTERRUPT_MODE_LOW
 
 
 def main():
-    options, _, proxy = default_main() # pylint: disable=W0612
+    options, _, arduino = default_main() # pylint: disable=W0612
     try:
         if options.debug:
-            proxy.enableDebug()
+            arduino.enableDebug()
         
         #    LOW to trigger the interrupt whenever the pin is low,
         #    CHANGE to trigger the interrupt whenever the pin changes value
@@ -45,20 +45,20 @@ def main():
         #    ATTACH_INTERRUPT_MODE_RISING = 'R'
         #    ATTACH_INTERRUPT_MODE_FALLING = 'F'
         
-        print "proxy.pinMode()"
-        proxy.pinMode(2, INPUT) # INT_0
-        proxy.delay(200)
+        print "arduino.pinMode()"
+        arduino.pinMode(2, INPUT) # INT_0
+        arduino.delay(200)
         
-        print "proxy.digitalWrite(2,HIGH) -> pullup resistor"
-        proxy.digitalWrite(2, HIGH) # INT_0 -> pullup resistor
-        proxy.delay(200)
+        print "arduino.digitalWrite(2,HIGH) -> pullup resistor"
+        arduino.digitalWrite(2, HIGH) # INT_0 -> pullup resistor
+        arduino.delay(200)
         
-        print "proxy.watchInterrupt(0) -> interrupt occurs when pin 2 become LOW."
-        print " +", proxy.watchInterrupt(0, ATTACH_INTERRUPT_MODE_LOW)
+        print "arduino.watchInterrupt(0) -> interrupt occurs when pin 2 become LOW."
+        print " +", arduino.watchInterrupt(0, ATTACH_INTERRUPT_MODE_LOW)
         
         while True:
             try:
-                if proxy.getInterruptMark(0):
+                if arduino.getInterruptMark(0):
                     print " + INTERRUPT 0 has ocurred"
             except InvalidCommand:
                 print " + Ignoring InvalidCommand! This is normal when working with interrupts."
@@ -67,9 +67,9 @@ def main():
                 print "##"
                 print "## ERROR DETECTED!"
                 print "##"
-                print "validateConnection() -> %s" % str(proxy.validateConnection())
-                print "enableDebug() -> %s" % str(proxy.enableDebug())
-                print "ping() -> %s" % str(proxy.ping())
+                print "validateConnection() -> %s" % str(arduino.validateConnection())
+                print "enableDebug() -> %s" % str(arduino.enableDebug())
+                print "ping() -> %s" % str(arduino.ping())
                 print ""
                 print "Continuing..."
                 print ""
@@ -77,7 +77,7 @@ def main():
     except KeyboardInterrupt:
         print ""
     finally:
-        proxy.close()
+        arduino.close()
 
 if __name__ == '__main__':
     main()

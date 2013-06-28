@@ -28,37 +28,37 @@ from py_arduino.main_utils import default_main
 
 
 def main():
-    _, _, proxy = default_main() # pylint: disable=W0612
+    _, _, arduino = default_main() # pylint: disable=W0612
     try:
-        print "Clearing LCD", proxy.lcdClear()
+        print "Clearing LCD", arduino.lcdClear()
         raw_input("Press any key to continue...")
         
-        print "'Hello, world!' on row 0", proxy.lcdMessage("Hello, world!")
+        print "'Hello, world!' on row 0", arduino.lcdMessage("Hello, world!")
         raw_input("Press any key to continue...")
 
-        print "'Hello, world!' on row 1", proxy.lcdMessage(["", "Hello, world!"])
+        print "'Hello, world!' on row 1", arduino.lcdMessage(["", "Hello, world!"])
         raw_input("Press any key to continue...")
 
         print "'Hello, world!' on row 0, 'bye bye world' on line 1", \
-            proxy.lcdMessage(["Hello, world!", "bye bye world"])
+            arduino.lcdMessage(["Hello, world!", "bye bye world"])
         raw_input("Press any key to continue...")
         
         print "Filling screen with letters and numbers"
         for a_char in ['a', 'b', 'c', 'x', 'y', 'z']:
-            proxy.lcdMessage([a_char * 16, a_char * 16])
+            arduino.lcdMessage([a_char * 16, a_char * 16])
             time.sleep(0.1)
         raw_input("Press any key to continue...")
 
         print "Moving an @"
         for i in range(0, 32):
-            proxy.lcdWrite("@", i % 16, i / 16, clear_lcd=True) # msg, col, row
+            arduino.lcdWrite("@", i % 16, i / 16, clear_lcd=True) # msg, col, row
             time.sleep(0.2)
         #raw_input("Press any key to continue...")
 
     except KeyboardInterrupt:
         print ""
     finally:
-        proxy.close()
+        arduino.close()
 
 if __name__ == '__main__':
     main()

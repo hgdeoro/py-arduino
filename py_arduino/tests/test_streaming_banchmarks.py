@@ -28,7 +28,7 @@ from py_arduino.main_utils import default_main
 
 
 def main(): # pylint: disable=R0915
-    _, _, proxy = default_main() # pylint: disable=W0612
+    _, _, arduino = default_main() # pylint: disable=W0612
     analog_reads = (400, 1000,)
     try:
         #
@@ -37,13 +37,13 @@ def main(): # pylint: disable=R0915
         print "Initiating %d reads using analogRead()" % analog_reads[0]
         start_analogRead = datetime.now()
         for i in xrange(0, analog_reads[0]): #@UnusedVariable
-            proxy.analogRead(0)
+            arduino.analogRead(0)
         end_analogRead = datetime.now()
         analogRead_time = end_analogRead - start_analogRead
 
         print "Initiating %d reads using streamingAnalogRead()" % analog_reads[1]
         start_streamingAnalogRead = datetime.now()
-        for i in proxy.streamingAnalogRead(0, analog_reads[1]): #@UnusedVariable
+        for i in arduino.streamingAnalogRead(0, analog_reads[1]): #@UnusedVariable
             pass
         end_streamingAnalogRead = datetime.now()
         streamingAnalogRead_time = end_streamingAnalogRead - start_streamingAnalogRead
@@ -60,13 +60,13 @@ def main(): # pylint: disable=R0915
         print "Initiating %d reads using digitalRead()" % analog_reads[0]
         start_digitalRead = datetime.now()
         for i in xrange(0, analog_reads[0]): #@UnusedVariable
-            proxy.digitalRead(0)
+            arduino.digitalRead(0)
         end_digitalRead = datetime.now()
         digitalRead_time = end_digitalRead - start_digitalRead
 
         print "Initiating %d reads using streamingDigitalRead()" % analog_reads[1]
         start_streamingDigitalRead = datetime.now()
-        for i in proxy.streamingDigitalRead(0, analog_reads[1]): #@UnusedVariable
+        for i in arduino.streamingDigitalRead(0, analog_reads[1]): #@UnusedVariable
             pass
         end_streamingDigitalRead = datetime.now()
         streamingDigitalRead_time = end_streamingDigitalRead - start_streamingDigitalRead
@@ -82,7 +82,7 @@ def main(): # pylint: disable=R0915
     except Exception:
         raise
     finally:
-        proxy.close()
+        arduino.close()
 
 if __name__ == '__main__':
     main()

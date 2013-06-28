@@ -38,16 +38,16 @@ class TestPyArduinoWithInitialContentInSerialBuffer(unittest.TestCase): # pylint
     Testcase for commands.
     """
     def setUp(self): # pylint: disable=C0103
-        self.proxy = PyArduino.create_emulator(
+        self.arduino = PyArduino.create_emulator(
             initial_input_buffer_contents="** SOME TEXT **\n" * 5)
 
     def test_ping(self):
-        self.proxy.validateConnection()
-        response = self.proxy.ping()
+        self.arduino.validateConnection()
+        response = self.arduino.ping()
         self.assertEquals(response, 'PING_OK')
 
     def tearDown(self): # pylint: disable=C0103
-        self.proxy.close()
+        self.arduino.close()
 
 
 class TestProxiedMethodsOfPyArduino(unittest.TestCase): # pylint: disable=R0904
@@ -56,97 +56,97 @@ class TestProxiedMethodsOfPyArduino(unittest.TestCase): # pylint: disable=R0904
     """
 
     def setUp(self): # pylint: disable=C0103
-        self.proxy = PyArduino.create_emulator()
+        self.arduino = PyArduino.create_emulator()
 
     def test_ping(self):
-        response = self.proxy.ping()
+        response = self.arduino.ping()
         self.assertEquals(response, 'PING_OK')
 
     def test_multiping(self):
         for i in range(0, 10): # pylint: disable=W0612 @UnusedVariable
             start = time.time()
-            response = self.proxy.ping()
+            response = self.arduino.ping()
             end = time.time()
             self.assertEquals(response, 'PING_OK')
             logging.info("PING took %.2f ms", ((end - start) * 1000))
 
     def test_analog_read(self):
-        response = self.proxy.analogRead(5)
+        response = self.arduino.analogRead(5)
         self.assertTrue(type(response) is int)
         if response < 0 or response > 1023:
             self.fail("analogRead() returned invalid value: %d" % response)
 
         # test with invalid arguments
         for an_arg in (None, 'something', Exception(), 1.1):
-            self.assertRaises(InvalidArgument, self.proxy.analogRead, an_arg)
+            self.assertRaises(InvalidArgument, self.arduino.analogRead, an_arg)
 
     def test_digital_read(self):
-        response = self.proxy.digitalRead(99)
+        response = self.arduino.digitalRead(99)
         self.assertTrue(response in [HIGH, LOW])
 
         # test with invalid arguments
         for an_arg in (None, 'something', Exception(), 1.1):
-            self.assertRaises(InvalidArgument, self.proxy.digitalRead, an_arg)
+            self.assertRaises(InvalidArgument, self.arduino.digitalRead, an_arg)
 
     def test_digital_write(self):
-        self.proxy.digitalWrite(99, HIGH)
-        self.proxy.digitalWrite(99, LOW)
+        self.arduino.digitalWrite(99, HIGH)
+        self.arduino.digitalWrite(99, LOW)
 
         # test with invalid arguments
         for an_arg in (None, 'something', Exception(), 1.1):
-            self.assertRaises(InvalidArgument, self.proxy.digitalWrite, 99, an_arg)
-            self.assertRaises(InvalidArgument, self.proxy.digitalWrite, an_arg, HIGH)
-            self.assertRaises(InvalidArgument, self.proxy.digitalWrite, an_arg, LOW)
+            self.assertRaises(InvalidArgument, self.arduino.digitalWrite, 99, an_arg)
+            self.assertRaises(InvalidArgument, self.arduino.digitalWrite, an_arg, HIGH)
+            self.assertRaises(InvalidArgument, self.arduino.digitalWrite, an_arg, LOW)
 
     def test_analog_write(self):
         for value in range(0, 256):
-            self.proxy.analogWrite(99, value)
+            self.arduino.analogWrite(99, value)
 
         # test with invalid arguments
-        self.assertRaises(InvalidArgument, self.proxy.analogWrite, 99, -1)
-        self.assertRaises(InvalidArgument, self.proxy.analogWrite, 99, 256)
-        self.assertRaises(InvalidArgument, self.proxy.analogWrite, 99, 1000)
+        self.assertRaises(InvalidArgument, self.arduino.analogWrite, 99, -1)
+        self.assertRaises(InvalidArgument, self.arduino.analogWrite, 99, 256)
+        self.assertRaises(InvalidArgument, self.arduino.analogWrite, 99, 1000)
 
         for an_arg in (None, 'something', Exception(), 1.1):
-            self.assertRaises(InvalidArgument, self.proxy.analogWrite, 99, an_arg)
-            self.assertRaises(InvalidArgument, self.proxy.analogWrite, an_arg, 0)
-            self.assertRaises(InvalidArgument, self.proxy.analogWrite, an_arg, 1)
-            self.assertRaises(InvalidArgument, self.proxy.analogWrite, an_arg, 100)
-            self.assertRaises(InvalidArgument, self.proxy.analogWrite, an_arg, 255)
+            self.assertRaises(InvalidArgument, self.arduino.analogWrite, 99, an_arg)
+            self.assertRaises(InvalidArgument, self.arduino.analogWrite, an_arg, 0)
+            self.assertRaises(InvalidArgument, self.arduino.analogWrite, an_arg, 1)
+            self.assertRaises(InvalidArgument, self.arduino.analogWrite, an_arg, 100)
+            self.assertRaises(InvalidArgument, self.arduino.analogWrite, an_arg, 255)
 
     def test_pin_mode(self):
-        self.proxy.pinMode(99, OUTPUT)
-        self.proxy.pinMode(99, INPUT)
+        self.arduino.pinMode(99, OUTPUT)
+        self.arduino.pinMode(99, INPUT)
 
         # test with invalid arguments
         for an_arg in (None, 'something', Exception(), 1.1):
-            self.assertRaises(InvalidArgument, self.proxy.pinMode, 99, an_arg)
-            self.assertRaises(InvalidArgument, self.proxy.pinMode, an_arg, OUTPUT)
-            self.assertRaises(InvalidArgument, self.proxy.pinMode, an_arg, INPUT)
+            self.assertRaises(InvalidArgument, self.arduino.pinMode, 99, an_arg)
+            self.assertRaises(InvalidArgument, self.arduino.pinMode, an_arg, OUTPUT)
+            self.assertRaises(InvalidArgument, self.arduino.pinMode, an_arg, INPUT)
 
     def test_delay(self):
-        self.proxy.delay(0)
-        self.proxy.delay(99)
-        self.proxy.delayMicroseconds(0)
-        self.proxy.delayMicroseconds(99)
+        self.arduino.delay(0)
+        self.arduino.delay(99)
+        self.arduino.delayMicroseconds(0)
+        self.arduino.delayMicroseconds(99)
 
         # test with invalid arguments
         for an_arg in (None, 'something', Exception(), -1):
-            self.assertRaises(InvalidArgument, self.proxy.delay, an_arg)
-            self.assertRaises(InvalidArgument, self.proxy.delayMicroseconds, an_arg)
+            self.assertRaises(InvalidArgument, self.arduino.delay, an_arg)
+            self.assertRaises(InvalidArgument, self.arduino.delayMicroseconds, an_arg)
 
     def test_millis_micros(self):
-        self.assertTrue(self.proxy.millis() >= 0)
-        self.assertTrue(self.proxy.micros() >= 0)
+        self.assertTrue(self.arduino.millis() >= 0)
+        self.assertTrue(self.arduino.micros() >= 0)
 
     def test_disableDebug(self):
-        self.proxy.disableDebug()
+        self.arduino.disableDebug()
 
     def test_enableDebug(self):
-        self.proxy.enableDebug()
+        self.arduino.enableDebug()
 
     def test_getArduinoTypeStruct(self):
-        ard_type_st = self.proxy.getArduinoTypeStruct()
+        ard_type_st = self.arduino.getArduinoTypeStruct()
         self.assertTrue(ard_type_st['analog_pins'])
         self.assertTrue(ard_type_st['digital_pins'])
         self.assertTrue(ard_type_st['pwm_pins_bitmap'])
@@ -158,7 +158,7 @@ class TestProxiedMethodsOfPyArduino(unittest.TestCase): # pylint: disable=R0904
         self.assertTrue(ard_type_st['flash_size_bytes'])
         self.assertTrue(ard_type_st['ram_size_bytes'])
 
-        enhanced = self.proxy.enhanceArduinoTypeStruct(ard_type_st)
+        enhanced = self.arduino.enhanceArduinoTypeStruct(ard_type_st)
         self.assertTrue(enhanced['digital_pins_items'])
         self.assertTrue(enhanced['analog_pins_items'])
         self.assertTrue(enhanced['digital_pins_struct'])
@@ -170,10 +170,10 @@ class TestProxiedMethodsOfPyArduino(unittest.TestCase): # pylint: disable=R0904
         self.assertTrue(enhanced['analog_pins_struct'])
 
     def test_getAvrCpuType(self):
-        self.proxy.getAvrCpuType()
+        self.arduino.getAvrCpuType()
 
     def tearDown(self): # pylint: disable=C0103
-        self.proxy.close()
+        self.arduino.close()
 
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -181,7 +181,7 @@ class TestProxiedMethodsOfPyArduino(unittest.TestCase): # pylint: disable=R0904
 class TestInternalsOfPyArduino(unittest.TestCase): # pylint: disable=R0904
 
     def setUp(self): # pylint: disable=C0103
-        self.proxy = PyArduino.create_emulator()
+        self.arduino = PyArduino.create_emulator()
 
     def test_send_cmd(self):
 
@@ -201,24 +201,24 @@ class TestInternalsOfPyArduino(unittest.TestCase): # pylint: disable=R0904
             raise(Exception("Exception while transforming"))
 
         # send_cmd(self, cmd, expected_response=None, timeout=None, response_transformer=None):
-        self.proxy.send_cmd("_ms", response_transformer=int)
-        self.proxy.send_cmd("_ms", response_transformer=valid_transformer1)
-        self.proxy.send_cmd("_ms", response_transformer=valid_transformer2,
+        self.arduino.send_cmd("_ms", response_transformer=int)
+        self.arduino.send_cmd("_ms", response_transformer=valid_transformer1)
+        self.arduino.send_cmd("_ms", response_transformer=valid_transformer2,
             expected_response="RESPONSE_FROM_TRANSFORMER")
 
-        self.assertRaises(InvalidResponse, self.proxy.send_cmd, "_ms",
+        self.assertRaises(InvalidResponse, self.arduino.send_cmd, "_ms",
             response_transformer=invalid_transformer1)
-        self.assertRaises(InvalidResponse, self.proxy.send_cmd, "_ms",
+        self.assertRaises(InvalidResponse, self.arduino.send_cmd, "_ms",
             response_transformer=invalid_transformer2)
-        self.assertRaises(InvalidResponse, self.proxy.send_cmd, "_ms",
+        self.assertRaises(InvalidResponse, self.arduino.send_cmd, "_ms",
             response_transformer=invalid_transformer3)
 
-        self.assertRaises(InvalidResponse, self.proxy.send_cmd, "_ms", expected_response="X")
+        self.assertRaises(InvalidResponse, self.arduino.send_cmd, "_ms", expected_response="X")
 
-        self.assertRaises(InvalidCommand, self.proxy.send_cmd, "_INEXISTING_CMD")
+        self.assertRaises(InvalidCommand, self.arduino.send_cmd, "_INEXISTING_CMD")
 
     def tearDown(self): # pylint: disable=C0103
-        self.proxy.close()
+        self.arduino.close()
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

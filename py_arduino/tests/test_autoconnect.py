@@ -33,10 +33,10 @@ def main(): # pylint: disable=R0915
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     logging.basicConfig(level=logging.DEBUG)
     print "Test autoconnect()"
-    proxy = PyArduino()
-    proxy.autoconnect()
-    proxy.ping()
-    proxy.close()
+    arduino = PyArduino()
+    arduino.autoconnect()
+    arduino.ping()
+    arduino.close()
 
 
 if __name__ == '__main__':

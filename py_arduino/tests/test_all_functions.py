@@ -28,28 +28,28 @@ from py_arduino import NotConnected, HIGH, OUTPUT, LSBFIRST
 
 
 def main():  # pylint: disable=R0915
-    _, _, proxy = default_main()  # pylint: disable=W0612
+    _, _, arduino = default_main()  # pylint: disable=W0612
     try:
-        print "getFreeMemory() -> %s" % str(proxy.getFreeMemory())
-        print "enableDebug() -> %s" % str(proxy.enableDebug())
-        print "disableDebug() -> %s" % str(proxy.disableDebug())
-        print "validateConnection() -> %s" % str(proxy.validateConnection())
-        print "ping() -> %s" % str(proxy.ping())
-        print "pinMode() -> %s" % str(proxy.pinMode(13, OUTPUT))
-        print "analogRead() -> %s" % str(proxy.analogRead(0))
-        print "analogWrite() -> %s" % str(proxy.analogWrite(0, 128))
-        print "digitalRead() -> %s" % str(proxy.digitalRead(0))
-        print "digitalWrite() -> %s" % str(proxy.digitalWrite(0, HIGH))
-        print "digitalRead() -> %s" % str(proxy.digitalRead(0))
-        print "delay() -> %s" % str(proxy.delay(1))
-        print "delayMicroseconds() -> %s" % str(proxy.delayMicroseconds(1))
-        print "millis() -> %s " % str(proxy.millis())
-        print "micros() -> %s" % str(proxy.micros())
-        print "shiftOut() -> %s" % str(proxy.shiftOut(10, 11, LSBFIRST, 255,
+        print "getFreeMemory() -> %s" % str(arduino.getFreeMemory())
+        print "enableDebug() -> %s" % str(arduino.enableDebug())
+        print "disableDebug() -> %s" % str(arduino.disableDebug())
+        print "validateConnection() -> %s" % str(arduino.validateConnection())
+        print "ping() -> %s" % str(arduino.ping())
+        print "pinMode() -> %s" % str(arduino.pinMode(13, OUTPUT))
+        print "analogRead() -> %s" % str(arduino.analogRead(0))
+        print "analogWrite() -> %s" % str(arduino.analogWrite(0, 128))
+        print "digitalRead() -> %s" % str(arduino.digitalRead(0))
+        print "digitalWrite() -> %s" % str(arduino.digitalWrite(0, HIGH))
+        print "digitalRead() -> %s" % str(arduino.digitalRead(0))
+        print "delay() -> %s" % str(arduino.delay(1))
+        print "delayMicroseconds() -> %s" % str(arduino.delayMicroseconds(1))
+        print "millis() -> %s " % str(arduino.millis())
+        print "micros() -> %s" % str(arduino.micros())
+        print "shiftOut() -> %s" % str(arduino.shiftOut(10, 11, LSBFIRST, 255,
             set_pin_mode=True))
-        print "getArduinoTypeStruct() -> %s" % str(proxy.getArduinoTypeStruct())
-        print "enhanceArduinoTypeStruct() -> %s" % str(proxy.enhanceArduinoTypeStruct(
-            proxy.getArduinoTypeStruct()))
+        print "getArduinoTypeStruct() -> %s" % str(arduino.getArduinoTypeStruct())
+        print "enhanceArduinoTypeStruct() -> %s" % str(arduino.enhanceArduinoTypeStruct(
+            arduino.getArduinoTypeStruct()))
 
         #define RETURN_OK 0
         #define READ_ONE_PARAM_NEW_LINE_FOUND 7
@@ -62,7 +62,7 @@ def main():  # pylint: disable=R0915
 
         try:
             print "Check for READ_ONE_PARAM_ERROR_PARAMETER_TOO_LARGE"
-            proxy.send_cmd("laaaarge_meeeethod_" * 10)
+            arduino.send_cmd("laaaarge_meeeethod_" * 10)
             assert False, "The previous line should raise an exception!"
         except InvalidCommand, exception:
             # READ_ONE_PARAM_ERROR_PARAMETER_TOO_LARGE == 2
@@ -71,7 +71,7 @@ def main():  # pylint: disable=R0915
 
         try:
             print "Check for FUNCTION_NOT_FOUND"
-            proxy.send_cmd("_nonexisting\tp1\tp2\tp3\tp4\tp5\tp6\tp7\tp8\tp9")
+            arduino.send_cmd("_nonexisting\tp1\tp2\tp3\tp4\tp5\tp6\tp7\tp8\tp9")
             assert False, "The previous line should raise an exception!"
         except InvalidCommand, exception:
             # FUNCTION_NOT_FOUND == 6
@@ -80,27 +80,27 @@ def main():  # pylint: disable=R0915
 
         try:
             print "Check for READ_PARAMETERS_ERROR_TOO_MANY_PARAMETERS"
-            proxy.send_cmd("cmd\tp1\tp2\tp3\tp4\tp5\tp6\tp7\tp8\tp9\tp10")
+            arduino.send_cmd("cmd\tp1\tp2\tp3\tp4\tp5\tp6\tp7\tp8\tp9\tp10")
             assert False, "The previous line should raise an exception!"
         except InvalidCommand, exception:
             # READ_PARAMETERS_ERROR_TOO_MANY_PARAMETERS == 3
             print " +", exception
             assert exception.error_code == "3"
 
-        proxy.setTimeout(1)
+        arduino.setTimeout(1)
         print "delay(500)"
-        proxy.delay(500)
+        arduino.delay(500)
 
         print "delay(2000)"
-        proxy.delay(2000)
+        arduino.delay(2000)
 
         print "low level delay(500)"
-        ret = proxy.send_cmd("%s\t500" % (proxy.delay.arduino_function_name))
+        ret = arduino.send_cmd("%s\t500" % (arduino.delay.arduino_function_name))
         assert ret == "D_OK"
 
         print "low level delay(1500)"
         try:
-            proxy.send_cmd("%s\t1500" % (proxy.delay.arduino_function_name))
+            arduino.send_cmd("%s\t1500" % (arduino.delay.arduino_function_name))
             assert False, "The previous line should raise an exception!"
         except CommandTimeout, exception:
             print " +", exception.__class__
@@ -108,66 +108,66 @@ def main():  # pylint: disable=R0915
         try:
             # The INPUT buffer has the response from the timed-out delay()
             # Anything before a validateConnection() should fail.
-            print "ping() -> %s" % str(proxy.ping())
+            print "ping() -> %s" % str(arduino.ping())
             assert False, "The previous line should raise an exception!"
         except InvalidResponse, exception:
             pass
 
         print "Re-connecting after timeout. validateConnection() -> %s" % \
-            str(proxy.validateConnection())
+            str(arduino.validateConnection())
 
         # Now, the connection is valid again, ping() should work...
-        print "ping() -> %s" % str(proxy.ping())
+        print "ping() -> %s" % str(arduino.ping())
 
-        print "getFreeMemory() -> %s" % str(proxy.getFreeMemory())
+        print "getFreeMemory() -> %s" % str(arduino.getFreeMemory())
 
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # Test streaming
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         # Test streaming of analog values
-        for val in proxy.streamingAnalogRead(0, 10):
+        for val in arduino.streamingAnalogRead(0, 10):
             print "streamingAnalogRead() -> %s" % str(val)
 
         # Test streaming of analog values
-        for val in proxy.streamingDigitalRead(0, 10):
+        for val in arduino.streamingDigitalRead(0, 10):
             print "streamingDigitalRead() -> %s" % str(val)
 
-        print "validateConnection() -> %s" % str(proxy.validateConnection())
-        print "millis() -> %s " % str(proxy.millis())
+        print "validateConnection() -> %s" % str(arduino.validateConnection())
+        print "millis() -> %s " % str(arduino.millis())
         # Finished!
 
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # Test NotConnected/close()/re-connect()
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         print "Test close() and re-connect()"
-        assert proxy.is_connected()
-        proxy.close()
-        assert not proxy.is_connected()
+        assert arduino.is_connected()
+        arduino.close()
+        assert not arduino.is_connected()
 
         try:
-            proxy.ping()
+            arduino.ping()
         except NotConnected:
             pass
 
-        proxy.connect()
-        proxy.ping()
+        arduino.connect()
+        arduino.ping()
 
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # Test autoconnect()
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         print "Test autoconnect()"
-        proxy.close()
-        assert proxy.autoconnect()
-        proxy.ping()
+        arduino.close()
+        assert arduino.autoconnect()
+        arduino.ping()
 
     except KeyboardInterrupt:
         print ""
     except Exception:
         raise
     finally:
-        if proxy.is_connected():
-            proxy.close()
+        if arduino.is_connected():
+            arduino.close()
 
 
 if __name__ == '__main__':
