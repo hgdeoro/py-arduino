@@ -27,7 +27,7 @@ def main():
     print "Check connection status..."
     connected = arduino.is_connected()
     if not connected:
-        print "ERROR: ArduinoProxy isn't connected to an Arduino or to the emulator. "
+        print "ERROR: PyArduino isn't connected to an Arduino or to the emulator. "
         print "See the 'connect' script."
         sys.exit(1)
     print "Calling proxy.ping()"

@@ -21,7 +21,7 @@ import os
 import hmac
 import Pyro4
 
-from py_arduino.proxy import ArduinoProxy
+from py_arduino.proxy import PyArduino
 
 
 def main():
@@ -33,7 +33,7 @@ def main():
         logging.basicConfig(level=logging.DEBUG)
     Pyro4.config.HMAC_KEY = hmac.new('this-is-py-arduino').digest()
     Pyro4.config.SOCK_REUSE = True
-    proxy = ArduinoProxy()
+    proxy = PyArduino()
     Pyro4.Daemon.serveSimple(
         {
             proxy: "py_arduino.PyArduino",

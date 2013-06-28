@@ -28,7 +28,7 @@ _logger = logging.getLogger(__name__)
 
 
 def get_arduino_pyro():
-    """Returns a Pyro proxy of the ArduinoProxy instance"""
+    """Returns a Pyro proxy of the PyArduino instance"""
     Pyro4.config.HMAC_KEY = hmac.new('this-is-py-arduino').digest()
     return Pyro4.Proxy("PYRO:py_arduino.PyArduino@localhost:61234")
 

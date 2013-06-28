@@ -45,7 +45,7 @@ def home(request):
     try:
         PROXY.validateConnection()
     except Exception, e:
-        # FIXME: DESIGN: error hablder should be part of ArduinoProxy, not web interface...
+        # FIXME: DESIGN: error hablder should be part of PyArduino, not web interface...
         #    if self.validate_connection_error_handler:
         #        self.validate_connection_error_handler()
         PROXY.close()
@@ -79,7 +79,7 @@ def connect(request):
             })
 
     if PROXY.is_connected():
-        raise(Exception("ArduinoProxy is already connected"))
+        raise(Exception("PyArduino is already connected"))
 
     if 'connect_emulator' in request.REQUEST:
         serial_port = DEVICE_FOR_EMULATOR
@@ -190,7 +190,7 @@ def digital_write(request):
             # FIXME: return error details and log
             return JsonResponse({
                 'ok': False,
-                'error': 'ArduinoProxy returned an invalid value: {0}'.format(value)
+                'error': 'PyArduino returned an invalid value: {0}'.format(value)
             })
     except Exception, e:
         # FIXME: return error details and log
@@ -241,7 +241,7 @@ def digital_read(request):
             # FIXME: return error details and log
             return JsonResponse({
                 'ok': False,
-                'error': 'ArduinoProxy returned an invalid value: {0}'.json(value)
+                'error': 'PyArduino returned an invalid value: {0}'.json(value)
             })
     except Exception, e:
         # FIXME: return error details and log

@@ -95,7 +95,7 @@ First connect to the Arduino.
 
 ![Connect](https://raw.github.com/hgdeoro/py-arduino-proxy/master/examples/arduino-proxy-connect.png "Connect")
 
-Once connected, we can execute the methods on the instance of ArduinoProxy. For example, to read a digital pin: 
+Once connected, we can execute the methods on the instance of PyArduino. For example, to read a digital pin: 
 
 ![Digital Read](https://raw.github.com/hgdeoro/py-arduino-proxy/master/examples/arduino-proxy-digital-read.png "Digital Read")
 
