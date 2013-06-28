@@ -1,8 +1,8 @@
 //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-//    PyArduinoProxy - Access your Arduino from Python
+//    py-arduino - Access your Arduino from Python
 //    Copyright (C) 2011 - Horacio Guillermo de Oro <hgdeoro@gmail.com>
 //
-//    This file is part of PyArduinoProxy.
+//    This file is part of py-arduino.
 //
 //    PyArduinoProxy is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by

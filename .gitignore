@@ -1,4 +1,5 @@
 *.pyc
+*~
 PyArduinoProxy.e4p
 .eric4project
 /README.html

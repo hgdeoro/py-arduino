@@ -24,7 +24,7 @@ To install, clone the Git repository, `cd` to the cloned directory and create a 
     $ pip install -r requirements.txt
 
 <!--
-The recommended way to install PyArduinoProxy is using pip and/or virtualenv.
+The recommended way to install py-arduino is using pip and/or virtualenv.
 
 1. Install PIP [manually](http://www.pip-installer.org/en/latest/installing.html "Install PIP"), or with your distribution's package manager (`sudo apt-get install python-pip` in Ubuntu), or create a [virtualenv](http://www.virtualenv.org/en/latest/ "Vitualenv Site").
 2. Run `pip install pyarduinoproxy`
@@ -122,9 +122,9 @@ Videos!
 
 * [Web interface + emulator + analog pins](http://www.youtube.com/watch?v=fMhAJlvZQco "Web interface + emulator + analog pins")
 * [Web interface](http://www.youtube.com/watch?v=QE6UJSs3b6Q "Web interface")
-* [Testing shiftOut and 8 LEDs with PyArduinoProxy](http://www.youtube.com/watch?v=_9MselaKcdU "Testing shiftOut and 8 LEDs with PyArduinoProxy")
-* [Writing a custom method in PyArduinoProxy](http://www.youtube.com/watch?v=2kgQpQqTVUU "Writing a custom method in PyArduinoProxy")
-* [Testing RGB leds with PyArduinoProxy UI](http://www.youtube.com/watch?v=yM1ZaTFAZwc "Testing RGB leds with PyArduinoProxy UI")
+* [Testing shiftOut and 8 LEDs with py-arduino](http://www.youtube.com/watch?v=_9MselaKcdU "Testing shiftOut and 8 LEDs with py-arduino")
+* [Writing a custom method in py-arduino](http://www.youtube.com/watch?v=2kgQpQqTVUU "Writing a custom method in py-arduino")
+* [Testing RGB leds with py-arduino UI](http://www.youtube.com/watch?v=yM1ZaTFAZwc "Testing RGB leds with py-arduino UI")
 -->
 
 <!--
@@ -137,14 +137,14 @@ You can get some initial API documentation [here](http://www.hgdeoro.com.ar/~hor
 License y copyright
 ===================
 
-PyArduinoProxy - Access your Arduino from Python
+py-arduino - Access your Arduino from Python
 Copyright (C) 2011-2013 - Horacio Guillermo de Oro <hgdeoro@gmail.com>
 
-PyArduinoProxy is free software; you can redistribute it and/or modify
+py-arduino is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation version 2.
 
-PyArduinoProxy is distributed in the hope that it will be useful,
+py-arduino is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License version 2 for more details.
