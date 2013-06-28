@@ -95,7 +95,7 @@ def replace_placeholder_values(placeholder_values, input_lines, output):
     output.write(_unindent(8, """
         //
         // THIS FILE WAS GENERATED AUTOMATICALLY WITH 'sketches/generate_sketch.py'
-        // WHICH IS PART OF THE PROJECT "PyArduinoProxy"
+        // WHICH IS PART OF THE PROJECT "py-arduino"
         //
     """))
     output.write("\n\n")

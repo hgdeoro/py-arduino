@@ -22,7 +22,7 @@ import hmac
 
 
 def main():
-    Pyro4.config.HMAC_KEY = hmac.new('this-is-PyArduinoProxy').digest()
+    Pyro4.config.HMAC_KEY = hmac.new('this-is-py-arduino').digest()
     arduino_proxy = Pyro4.Proxy("PYRO:arduino_proxy.Proxy@localhost:61234")
     print "Calling proxy.close()"
     arduino_proxy.close()

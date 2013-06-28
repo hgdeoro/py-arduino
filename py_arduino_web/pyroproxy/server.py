@@ -31,7 +31,7 @@ def main():
     if "ENABLE_LOGGING" in os.environ:
         import logging
         logging.basicConfig(level=logging.DEBUG)
-    Pyro4.config.HMAC_KEY = hmac.new('this-is-PyArduinoProxy').digest()
+    Pyro4.config.HMAC_KEY = hmac.new('this-is-py-arduino').digest()
     Pyro4.config.SOCK_REUSE = True
     proxy = ArduinoProxy()
     Pyro4.Daemon.serveSimple(

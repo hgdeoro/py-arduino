@@ -23,7 +23,7 @@ import sys
 
 
 def main():
-    Pyro4.config.HMAC_KEY = hmac.new('this-is-PyArduinoProxy').digest()
+    Pyro4.config.HMAC_KEY = hmac.new('this-is-py-arduino').digest()
     arduino_proxy = Pyro4.Proxy("PYRO:arduino_proxy.Proxy@localhost:61234")
     print "Check connection status..."
     connected = arduino_proxy.is_connected()

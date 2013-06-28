@@ -42,7 +42,7 @@ Example:
 
 
 def main():
-    Pyro4.config.HMAC_KEY = hmac.new('this-is-PyArduinoProxy').digest()
+    Pyro4.config.HMAC_KEY = hmac.new('this-is-py-arduino').digest()
     proxy = Pyro4.Proxy("PYRO:arduino_proxy.Proxy@localhost:61234")
 
     try:
@@ -50,8 +50,8 @@ def main():
     except:
         pass
 
-    PromptManager.in_template = "PyArduinoProxy [\\#]> "
-    PromptManager.out_template = "PyArduinoProxy [\\#]: "
+    PromptManager.in_template = "PyArduino [\\#]> "
+    PromptManager.out_template = "PyArduino [\\#]: "
 
     shell = InteractiveShellEmbed(banner2=banner)
     shell.user_ns = {}

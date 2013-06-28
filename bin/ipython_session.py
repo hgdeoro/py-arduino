@@ -20,7 +20,6 @@
 
 import os
 import sys
-import time
 
 try:
     from IPython.config.loader import Config
@@ -49,7 +48,7 @@ from arduino_proxy.proxy import CommandTimeout
 banner = """
 
 ----------------------------------------------------------------------
-PyArduinoproxy
+PyArduino
 ----------------------------------------------------------------------
 
 Launching IPython shell... Enter 'quit()' to exit.
@@ -68,8 +67,8 @@ def main():
 
     options, args, proxy = default_main() # pylint: disable=W0612
     cfg = Config()
-    cfg.InteractiveShellEmbed.prompt_in1="PyArduinoProxy [\\#]> "
-    cfg.InteractiveShellEmbed.prompt_out="PyArduinoProxy [\\#]: "
+    cfg.InteractiveShellEmbed.prompt_in1="PyArduino [\\#]> "
+    cfg.InteractiveShellEmbed.prompt_out="PyArduino [\\#]: "
 
     shell = InteractiveShellEmbed(config=cfg, banner2=banner)
     shell.user_ns = {}

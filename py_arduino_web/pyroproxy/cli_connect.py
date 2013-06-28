@@ -25,7 +25,7 @@ from arduino_proxy.proxy import DEVICE_FOR_EMULATOR
 
 
 def main():
-    Pyro4.config.HMAC_KEY = hmac.new('this-is-PyArduinoProxy').digest()
+    Pyro4.config.HMAC_KEY = hmac.new('this-is-py-arduino').digest()
     arduino_proxy = Pyro4.Proxy("PYRO:arduino_proxy.Proxy@localhost:61234")
     if len(sys.argv) > 1:
         device = sys.argv[1]

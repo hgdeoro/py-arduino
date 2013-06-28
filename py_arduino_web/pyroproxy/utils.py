@@ -28,13 +28,13 @@ _logger = logging.getLogger(__name__)
 
 def get_arduino_proxy_proxy():
     """Returns a Pyro proxy of the ArduinoProxy instance"""
-    Pyro4.config.HMAC_KEY = hmac.new('this-is-PyArduinoProxy').digest()
+    Pyro4.config.HMAC_KEY = hmac.new('this-is-py-arduino').digest()
     return Pyro4.Proxy("PYRO:arduino_proxy.Proxy@localhost:61234")
 
 
 def get_arduino_storage_proxy():
     """Returns a Pyro proxy of the Storage instance"""
-    Pyro4.config.HMAC_KEY = hmac.new('this-is-PyArduinoProxy').digest()
+    Pyro4.config.HMAC_KEY = hmac.new('this-is-py-arduino').digest()
     return Pyro4.Proxy("PYRO:arduino_proxy.Storage@localhost:61234")
 
 
