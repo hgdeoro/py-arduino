@@ -1,24 +1,15 @@
-PyArduinoProxy
+py-arduino
 ==============
 
-<!--
-![Architecture overview](/hgdeoro/py-arduino-proxy/raw/master/examples/architecture-overview.png "Architecture overview")
--->
+**py-arduino** is a **Python** library to communicate with **Arduinos**.
 
-**NOTE: this is v2 of PyArduinoProxy, the status of the project is currently 'WIP - work in progress' and this README isn't fully updated yet**
+It consist of two layers:
 
-**PyArduinoProxy** is a **Python** library to communicate with **Arduino**.
-<!--
-[Mis articulos de PyArduinoProxy](http://blog.hgdeoro.com.ar/search/label/pyarduinoproxy "Mis articulos de PyArduinoProxy").
--->
+ - a **low level tool**, very easy to use and **extend**,
+ - a **web application**, including a **web interface** and **background threads**, based on Django, uWSGI, Pyro: it's multithread, allow concurrent access,
+    labeling of pins to facilitate the use, etc..
 
-It's:
-
- - a **low level tool**, very easy to use and **extend** (it is very easy to create a new method in ArduinoProxy class and attach this method to a Arduino function).
- - a **service**, including a **web interface** and **background threads**, based on uWSGI and Pyro, it's multithread, allow concurrent access,
-    labeling of pins to facilitate the use.
-
-The project has many **testing** utilities, an **emulator** and the ability to see DEBUG messages to facilitate the location of problems and subsequent solutions.
+The project has many **testing** utilities, a simple **emulator** and the ability to see DEBUG messages to facilitate the location of problems and subsequent solutions.
 
 
 Installation
@@ -26,8 +17,8 @@ Installation
 
 To install, clone the Git repository, `cd` to the cloned directory and create a `virtualenv` (named `virtualenv`):
 
-    $ git clone https://github.com/hgdeoro/py-arduino-proxy.git
-    $ cd py-arduino-proxy/
+    $ git clone https://github.com/hgdeoro/py-arduino.git
+    $ cd py-arduino
     $ virtualenv -p python2.7 virtualenv
     $ . virtualenv/bin/activate
     $ pip install -r requirements.txt
@@ -39,6 +30,13 @@ The recommended way to install PyArduinoProxy is using pip and/or virtualenv.
 2. Run `pip install pyarduinoproxy`
 -->
 
+
+Low leve tool
+-------------
+
+TODO: add low level example
+
+
 Web interface
 -------------
 
@@ -46,11 +44,13 @@ Web interface
 ![Architecture Web Application](/hgdeoro/py-arduino-proxy/raw/master/examples/architecture-overview-webapp.png)
 -->
 
+TODO: add instructions to install from `requirements-web.txt`
+
 To launch the web server, run:
 
     $ ./bin/run_uwsgi.sh
 
-connect your Arduino, go to [http://localhost:8080/connect](http://localhost:8080/connect),
+connect your Arduino, go to [http://localhost:8080/](http://localhost:8080/),
 insert the serial device (something like /dev/ttyACM0)
 and clic 'Connect'.
 
@@ -65,7 +65,11 @@ Here are some screenshots:
 Console
 -------
 
+<!--
 ![Architecture Console](https://raw.github.com/hgdeoro/py-arduino-proxy/master/examples/architecture-overview-console.png)
+-->
+
+TODO: migrate this instructions
 
 To ping to the Arduino, make sure it's connected and run:
 
@@ -75,6 +79,8 @@ To ping to the Arduino, make sure it's connected and run:
 	Ping sent... OK - Time=22.675 ms
 	Ping sent... OK - Time=18.798 ms
 
+
+<!--
 How it works 
 ------------
 
@@ -89,6 +95,8 @@ Once connected, we can execute the methods on the instance of ArduinoProxy. For 
 To set output HIGH on a digital pin: 
 
 ![Digital Write](https://raw.github.com/hgdeoro/py-arduino-proxy/master/examples/arduino-proxy-digital-write.png "Digital Write")
+-->
+
 
 Implemented methods  
 ------------------- 
