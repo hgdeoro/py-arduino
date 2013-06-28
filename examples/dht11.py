@@ -39,7 +39,7 @@ def add_options_callback(parser):
         help="Keep reading and printing the values.")
 
 def main():
-    options, args, proxy = default_main(optparse_usage=\
+    options, args, arduino = default_main(optparse_usage=\
         "usage: %prog [options] serial_device digital_port", args_validator=args_validator,
         add_options_callback=add_options_callback)
     
@@ -47,11 +47,11 @@ def main():
     
     try:
         while True:
-            temp, hum = proxy.dht11_read(digital_port)
+            temp, hum = arduino.dht11_read(digital_port)
             print "Temp: {0}C - Hum: {1}%".format(
                 temp, hum)
             if options.loop:
-                proxy.delay(500)
+                arduino.delay(500)
             else:
                 break
     except KeyboardInterrupt:
@@ -59,7 +59,7 @@ def main():
     except Exception:
         raise
     finally:
-        proxy.close()
+        arduino.close()
 
 if __name__ == '__main__':
     main()

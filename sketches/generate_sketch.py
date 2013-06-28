@@ -26,8 +26,8 @@ import sys
 
 from StringIO import StringIO
 
-BASE_DIR = os.path.split(os.path.realpath(__file__))[0] # BASE_DIR = XXX/sketches
-BASE_DIR = os.path.split(BASE_DIR)[0] # BASE_DIR = XXX
+BASE_DIR = os.path.split(os.path.realpath(__file__))[0]  # BASE_DIR = XXX/sketches
+BASE_DIR = os.path.split(BASE_DIR)[0]  # BASE_DIR = XXX
 
 try:
     from py_arduino import PyArduino, _unindent
@@ -35,39 +35,39 @@ except ImportError:
     sys.path.append(os.path.abspath(BASE_DIR))
     from py_arduino import PyArduino, _unindent
 
-from py_arduino import ATTACH_INTERRUPT_MODE_LOW,\
-    ATTACH_INTERRUPT_MODE_CHANGE, ATTACH_INTERRUPT_MODE_RISING,\
+from py_arduino import ATTACH_INTERRUPT_MODE_LOW, \
+    ATTACH_INTERRUPT_MODE_CHANGE, ATTACH_INTERRUPT_MODE_RISING, \
     ATTACH_INTERRUPT_MODE_FALLING
 
 
-def generate_placeholder_values(proxy, options):
-    proxy_functions = proxy.get_arduino_functions()
-    
-    if len(proxy_functions) != len(set([function.arduino_function_name for function in
-            proxy_functions])):
+def generate_placeholder_values(arduino, options):
+    arduino_functions = arduino.get_arduino_functions()
+
+    if len(arduino_functions) != len(set([function.arduino_function_name for function in
+            arduino_functions])):
         raise(Exception("There are duplicates arduino function names (that's defined " + \
             "function.arduino_function_name = 'something')"))
-    
+
     logging.info("Proxy functions:")
-    for function in proxy_functions:
+    for function in arduino_functions:
         logging.info(" + %s()", function.__name__)
-    
+
     proxied_function_source = StringIO()
     proxied_function_names = StringIO()
     proxied_function_ptrs = StringIO()
-    for function in proxy_functions:
+    for function in arduino_functions:
         proxied_function_source.write("\n")
         proxied_function_source.write(function.arduino_code)
         proxied_function_source.write("\n")
         proxied_function_names.write('"%s", ' % function.arduino_function_name)
         proxied_function_ptrs.write('%s, ' % function.arduino_function_name)
-    
+
     placeholder_values = {
-        'proxied_function_count': len(proxy_functions),
+        'proxied_function_count': len(arduino_functions),
         'proxied_function_names': proxied_function_names.getvalue(),
         'proxied_function_ptrs': proxied_function_ptrs.getvalue(),
         'proxied_function_source': proxied_function_source.getvalue(),
-        'serial_speed': proxy.speed,
+        'serial_speed': arduino.speed,
         'INVALID_CMD': PyArduino.INVALID_CMD,
         'INVALID_PARAMETER': PyArduino.INVALID_PARAMETER,
         'UNSUPPORTED_CMD': PyArduino.UNSUPPORTED_CMD,
@@ -78,12 +78,12 @@ def generate_placeholder_values(proxy, options):
         'PY_ARDUINO_LCD_SUPPORT': 0,
         'PY_ARDUINO_DEBUG_TO_LCD': 0,
     }
-    
+
     if options.lcd:
         placeholder_values['PY_ARDUINO_LCD_SUPPORT'] = 1
         if not options.disable_debug_to_lcd:
             placeholder_values['PY_ARDUINO_DEBUG_TO_LCD'] = 1
-    
+
     return placeholder_values
 
 
@@ -125,8 +125,8 @@ def replace_placeholder_values(placeholder_values, input_lines, output):
         output.write('\n')
 
 
-def main(): # pylint: disable=R0914,R0912,R0915
-    
+def main():  # pylint: disable=R0914,R0912,R0915
+
     parser = optparse.OptionParser()
     parser.add_option("--lcd",
         action="store_true", dest="lcd", default=False,
@@ -134,8 +134,8 @@ def main(): # pylint: disable=R0914,R0912,R0915
     parser.add_option("--disable-debug-to-lcd",
         action="store_true", dest="disable_debug_to_lcd", default=False,
         help="Remove support for sending debug message to LCD. This'll shrink the sketch size.")
-    
-    (options, args) = parser.parse_args() # pylint: disable=W0612
+
+    (options, args) = parser.parse_args()  # pylint: disable=W0612
 
     if len(args) != 1:
         parser.error("Must specify the output directory")
@@ -144,10 +144,10 @@ def main(): # pylint: disable=R0914,R0912,R0915
     if not os.path.isdir(output_dir):
         parser.error("The specified output directory isn't a directory! Path: {0}".format(
             output_dir))
-    
+
     c_input_filename = os.path.join(BASE_DIR, 'src-c', 'py_arduino.c')
     h_input_filename = os.path.join(BASE_DIR, 'src-c', 'py_arduino.h')
-    
+
     extra_source_filenames = [
         'arduino_type.h',
         'avr_cpunames.h',
@@ -156,15 +156,15 @@ def main(): # pylint: disable=R0914,R0912,R0915
         'OneWire.cpp',
         'OneWire.h',
     ]
-    
+
     logging.info("Template for .ino file: %s", c_input_filename)
     logging.info("Template for .h file: %s", h_input_filename)
     for a_file in extra_source_filenames:
         logging.info("Extra source file: %s", a_file)
-    
+
     c_file = open(c_input_filename, 'r')
     c_file_lines = [line.strip('\r\n') for line in c_file.readlines()]
-    
+
     # Remove 'PY_ARDUINO_DEVEL' from C file
     for i in range(0, len(c_file_lines)):
         splitted = c_file_lines[i].split()
@@ -174,23 +174,23 @@ def main(): # pylint: disable=R0914,R0912,R0915
                 splitted[2].startswith('//'):
             c_file_lines[i] = '// ' + c_file_lines[i]
             break
-    
-    proxy = PyArduino()
-    placeholder_values = generate_placeholder_values(proxy, options)
-    # proxy.close() # No need to close
+
+    arduino = PyArduino()
+    placeholder_values = generate_placeholder_values(arduino, options)
+    # arduino.close() # No need to close
 
     output = StringIO()
-    
+
     logging.info("Generating C/PDE file...")
     replace_placeholder_values(placeholder_values, c_file_lines, output)
-    
+
     # Writing .C/.INO file
     output_file_c_filename = os.path.join(output_dir, 'py_arduino.ino')
     logging.info("Writing to %s", output_file_c_filename)
     output_file_c = open(output_file_c_filename, 'w')
     output_file_c.write(output.getvalue())
     output_file_c.close()
-    
+
     # Coping .H file
     output_file_h_filename = os.path.join(output_dir, 'py_arduino.h')
     logging.info("Copying to %s", output_file_h_filename)
@@ -204,7 +204,7 @@ def main(): # pylint: disable=R0914,R0912,R0915
         shutil.copyfile(input_filename, output_filename)
 
     logging.info("Done!")
-    
+
 if __name__ == '__main__':
     FORMAT = '[%(levelname)-7s] %(message)s'
     logging.basicConfig(level=logging.INFO, format=FORMAT)

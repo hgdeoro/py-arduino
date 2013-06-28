@@ -37,25 +37,25 @@ def args_validator(parser, options, args): # pylint: disable=W0613
 
 
 def main():
-    _, args, proxy = default_main(optparse_usage=\
+    _, args, arduino = default_main(optparse_usage=\
         "usage: %prog [options] serial_device pwm_digital_port",
         args_validator=args_validator)
     
     pwm_digital_port = int(args[1])
     
     try:
-        proxy.pinMode(pwm_digital_port, OUTPUT)
+        arduino.pinMode(pwm_digital_port, OUTPUT)
         while True:
             for value in range(0, 256):
-                proxy.analogWrite(pwm_digital_port, value)
+                arduino.analogWrite(pwm_digital_port, value)
             for value in range(255, -1, -1):
-                proxy.analogWrite(pwm_digital_port, value)
+                arduino.analogWrite(pwm_digital_port, value)
     except KeyboardInterrupt:
         print ""
     except Exception:
         raise
     finally:
-        proxy.close()
+        arduino.close()
 
 if __name__ == '__main__':
     main()

@@ -37,24 +37,24 @@ def args_validator(parser, options, args): # pylint: disable=W0613
         parser.error("must specified two argument: serial device and digital port")
 
 def main():
-    options, args, proxy = default_main(optparse_usage=\
+    options, args, arduino = default_main(optparse_usage=\
         "usage: %prog [options] serial_device digital_port", args_validator=args_validator)
     
     digital_port = int(args[1])
     
     try:
-        proxy.pinMode(digital_port, OUTPUT)
+        arduino.pinMode(digital_port, OUTPUT)
         while True:
-            proxy.digitalWrite(digital_port, HIGH)
+            arduino.digitalWrite(digital_port, HIGH)
             time.sleep(0.5)
-            proxy.digitalWrite(digital_port, LOW)
+            arduino.digitalWrite(digital_port, LOW)
             time.sleep(0.5)
     except KeyboardInterrupt:
         print ""
     except Exception:
         raise
     finally:
-        proxy.close()
+        arduino.close()
 
 if __name__ == '__main__':
     main()

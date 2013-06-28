@@ -31,10 +31,10 @@ from py_arduino.main_utils import default_main
 
 
 def main():
-    options, args, proxy = default_main()  # @UnusedVariable
-    print "CPU: %s" % proxy.getAvrCpuType()
-    pprint.pprint(proxy.getArduinoTypeStruct())
-    proxy.close()
+    options, args, arduino = default_main()  # @UnusedVariable
+    print "CPU: %s" % arduino.getAvrCpuType()
+    pprint.pprint(arduino.getArduinoTypeStruct())
+    arduino.close()
 
 if __name__ == '__main__':
     main()

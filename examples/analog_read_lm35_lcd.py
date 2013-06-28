@@ -35,24 +35,24 @@ def args_validator(parser, options, args): # pylint: disable=W0613
         parser.error("must specified two argument: serial device and analog port")
 
 def main():
-    options, args, proxy = default_main(optparse_usage=\
+    options, args, arduino = default_main(optparse_usage=\
         "usage: %prog [options] serial_device analog_port", args_validator=args_validator)
     
     analog_port = int(args[1])
     
     try:
         while True:
-            value = proxy.analogRead(analog_port)
+            value = arduino.analogRead(analog_port)
             temp_in_c = ((5.0 * int(value) * 100.0)/1024.0)
             temp_in_f = ((temp_in_c * 9.0) / 5.0) + 32
-            proxy.lcdMessage(["Temperature/%d" % analog_port, "%.2fC %.2fF" % (temp_in_c, temp_in_f)])
+            arduino.lcdMessage(["Temperature/%d" % analog_port, "%.2fC %.2fF" % (temp_in_c, temp_in_f)])
             time.sleep(2)
     except KeyboardInterrupt:
         print ""
     except Exception:
         raise
     finally:
-        proxy.close()
+        arduino.close()
 
 if __name__ == '__main__':
     main()

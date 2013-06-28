@@ -42,10 +42,10 @@ def main():
     if len(sys.argv) == 1:
         tty_device = os.environ['TTY_DEVICE']
         analog_port = os.environ['ANALOG_PORT']
-        proxy = PyArduino(tty_device, 9600)
+        arduino = PyArduino(tty_device, 9600)
         sum = 0.0
         for i in range(0, COUNT):
-            value = proxy.analogRead(int(analog_port))
+            value = arduino.analogRead(int(analog_port))
             value = ((5.0 * value * 100.0)/1024.0)
             sum = sum + value
         value = sum/float(COUNT)

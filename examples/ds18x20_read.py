@@ -43,7 +43,7 @@ def add_options_callback(parser):
         help="Keep reading and printing the values.")
 
 def main(callback):
-    options, args, proxy = default_main(optparse_usage=\
+    options, args, arduino = default_main(optparse_usage=\
         "usage: %prog [options] serial_device digital_port", args_validator=args_validator,
         add_options_callback=add_options_callback)
     
@@ -51,7 +51,7 @@ def main(callback):
     
     try:
         while True:
-            value = proxy.ds18x20_read(digital_port)
+            value = arduino.ds18x20_read(digital_port)
             callback(value)
             if not options.loop:
                 break
@@ -60,7 +60,7 @@ def main(callback):
     except Exception:
         raise
     finally:
-        proxy.close()
+        arduino.close()
 
 if __name__ == '__main__':
     main(default_callback)
