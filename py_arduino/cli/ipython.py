@@ -17,9 +17,7 @@
 ##    You should have received a copy of the GNU General Public License
 ##    along with py-arduino; see the file LICENSE.txt.
 ##-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-
-import os
-import sys
+from IPython.core.prompts import PromptManager
 
 try:
     from IPython.config.loader import Config
@@ -33,20 +31,13 @@ except ImportError:
     print ""
     raise
 
-try:
-    from py_arduino.main_utils import default_main
-except ImportError:
-    # Setup PYTHONPATH
-    SRC_DIR = os.path.split(os.path.realpath(__file__))[0]  # SRC_DIR=BIN_DIR
-    SRC_DIR = os.path.split(SRC_DIR)[0]  # SRC_DIR=SRC_DIR/../
-    sys.path.append(os.path.abspath(SRC_DIR))
-    from py_arduino.main_utils import default_main
+from py_arduino.main_utils import default_main
 
 
 banner = """
 
 ----------------------------------------------------------------------
-PyArduino
+py-arduino
 ----------------------------------------------------------------------
 
 Launching IPython shell... Enter 'quit()' to exit.
@@ -65,11 +56,10 @@ Example:
 def main():
 
     options, args, arduino = default_main()  # pylint: disable=W0612 @UnusedVariable
-    cfg = Config()
-    cfg.InteractiveShellEmbed.prompt_in1 = "PyArduino [\\#]> "
-    cfg.InteractiveShellEmbed.prompt_out = "PyArduino [\\#]: "
+    PromptManager.in_template = "PyArduino [\\#]> "
+    PromptManager.out_template = "PyArduino [\\#]: "
 
-    shell = InteractiveShellEmbed(config=cfg, banner2=banner)
+    shell = InteractiveShellEmbed(banner2=banner)
     shell.user_ns = {}
     shell()
 
