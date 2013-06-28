@@ -41,7 +41,7 @@ from py_arduino import ATTACH_INTERRUPT_MODE_LOW,\
 
 
 def generate_placeholder_values(proxy, options):
-    proxy_functions = proxy.get_proxy_functions()
+    proxy_functions = proxy.get_arduino_functions()
     
     if len(proxy_functions) != len(set([function.arduino_function_name for function in
             proxy_functions])):

@@ -617,7 +617,7 @@ class PyArduino(object):  # pylint: disable=R0904
 
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
-    def get_proxy_functions(self):
+    def get_arduino_functions(self):
         """
         Returns a list of PyArduino functions.
         This is used internally to generate the sketch files.
