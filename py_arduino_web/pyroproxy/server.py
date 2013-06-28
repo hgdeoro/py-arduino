@@ -21,7 +21,7 @@ import os
 import hmac
 import Pyro4
 
-from arduino_proxy.proxy import ArduinoProxy
+from py_arduino.proxy import ArduinoProxy
 
 
 def main():
@@ -36,11 +36,11 @@ def main():
     proxy = ArduinoProxy()
     Pyro4.Daemon.serveSimple(
         {
-            proxy: "arduino_proxy.Proxy",
-            proxy.storage: "arduino_proxy.Storage",
+            proxy: "py_arduino.PyArduino",
+            proxy.storage: "py_arduino_web.Storage",
         },
         host="localhost", port=61234, ns=False)
-    # FORMA DE URI -> uri_string = "PYRO:arduino_proxy.Proxy@localhost:61234"
+    # FORMA DE URI -> uri_string = "PYRO:py_arduino.PyArduino@localhost:61234"
 
 if __name__ == '__main__':
     main()

@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django import forms
 
-from arduino_proxy.dj.models import Pin
+from py_arduino_web.dj.models import Pin
 
 
 class PinFormAdmin(forms.ModelForm):

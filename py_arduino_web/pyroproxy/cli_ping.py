@@ -17,22 +17,21 @@
 ##    along with py-arduino; see the file LICENSE.txt.
 ##-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-import Pyro4
-import hmac
 import sys
+
+from .utils import get_arduino_pyro
 
 
 def main():
-    Pyro4.config.HMAC_KEY = hmac.new('this-is-py-arduino').digest()
-    arduino_proxy = Pyro4.Proxy("PYRO:arduino_proxy.Proxy@localhost:61234")
+    arduino = get_arduino_pyro()
     print "Check connection status..."
-    connected = arduino_proxy.is_connected()
+    connected = arduino.is_connected()
     if not connected:
         print "ERROR: ArduinoProxy isn't connected to an Arduino or to the emulator. "
         print "See the 'connect' script."
         sys.exit(1)
     print "Calling proxy.ping()"
-    ret = arduino_proxy.ping()
+    ret = arduino.ping()
     print "Ping returned: '{0}'. End.".format(ret)
 
 if __name__ == '__main__':

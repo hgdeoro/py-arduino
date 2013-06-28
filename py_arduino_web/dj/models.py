@@ -2,7 +2,7 @@ import logging
 
 from django.db import models
 
-from arduino_proxy.storage import Storage, default_label
+from py_arduino_web.storage import Storage, default_label
 
 FallbackStorage = Storage()
 

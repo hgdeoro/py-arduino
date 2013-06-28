@@ -17,11 +17,10 @@
 ##    along with py-arduino; see the file LICENSE.txt.
 ##-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-import Pyro4
-import hmac
-
 from IPython.frontend.terminal.embed import InteractiveShellEmbed
 from IPython.core.prompts import PromptManager
+
+from .utils import get_arduino_pyro
 
 banner = """
 
@@ -32,21 +31,20 @@ PyArduinoproxy
 Launching IPython shell... Enter 'quit()' to exit.
 
 Available variables:
-    - proxy: the ArduinoProxy instance.
+    - arduino: the PyArduino instance.
 
 Example:
-    >>> proxy.ping()
+    >>> arduino.ping()
     'PING_OK'
  
 """
 
 
 def main():
-    Pyro4.config.HMAC_KEY = hmac.new('this-is-py-arduino').digest()
-    proxy = Pyro4.Proxy("PYRO:arduino_proxy.Proxy@localhost:61234")
+    arduino = get_arduino_pyro()
 
     try:
-        proxy.ping()
+        arduino.ping()
     except:
         pass
 

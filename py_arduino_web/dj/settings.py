@@ -22,7 +22,7 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': os.path.join(os.path.expanduser('~'), 'arduino_proxy.sqlite'),
+            'NAME': os.path.join(os.path.expanduser('~'), 'py_arduino.sqlite'),
         }
     }
 
@@ -105,13 +105,13 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     # Uncomment the next line for simple clickjacking protection:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'arduino_proxy.dj.middleware.PyroproxyConnectionMiddleware',
+    'py_arduino_web.dj.middleware.PyroproxyConnectionMiddleware',
 )
 
-ROOT_URLCONF = 'arduino_proxy.dj.urls'
+ROOT_URLCONF = 'py_arduino_web.dj.urls'
 
 # Python dotted path to the WSGI application used by Django's runserver.
-WSGI_APPLICATION = 'arduino_proxy.dj.wsgi.application'
+WSGI_APPLICATION = 'py_arduino_web.dj.wsgi.application'
 
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
@@ -131,7 +131,7 @@ INSTALLED_APPS = (
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
     'south',
-    'arduino_proxy.dj',
+    'py_arduino_web.dj',
 )
 
 # A sample logging configuration. The only tangible logging

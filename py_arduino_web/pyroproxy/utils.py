@@ -17,10 +17,11 @@
 ##    along with py-arduino; see the file LICENSE.txt.
 ##-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-import Pyro4
 import hmac
 import logging
 import time
+
+import Pyro4
 from Pyro4.errors import CommunicationError
 
 _logger = logging.getLogger(__name__)
@@ -29,13 +30,13 @@ _logger = logging.getLogger(__name__)
 def get_arduino_pyro():
     """Returns a Pyro proxy of the ArduinoProxy instance"""
     Pyro4.config.HMAC_KEY = hmac.new('this-is-py-arduino').digest()
-    return Pyro4.Proxy("PYRO:arduino_proxy.Proxy@localhost:61234")
+    return Pyro4.Proxy("PYRO:py_arduino.PyArduino@localhost:61234")
 
 
-def get_arduino_storage_proxy():
+def get_storage_proxy():
     """Returns a Pyro proxy of the Storage instance"""
     Pyro4.config.HMAC_KEY = hmac.new('this-is-py-arduino').digest()
-    return Pyro4.Proxy("PYRO:arduino_proxy.Storage@localhost:61234")
+    return Pyro4.Proxy("PYRO:py_arduino_web.Storage@localhost:61234")
 
 
 def wait_for_server(logger=_logger, sleep=1):

@@ -8,9 +8,9 @@ from django.http.response import HttpResponse, HttpResponseRedirect,\
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 
-from arduino_proxy.proxy import DEVICE_FOR_EMULATOR, LOW, HIGH,\
+from py_arduino.proxy import DEVICE_FOR_EMULATOR, LOW, HIGH,\
     OUTPUT, INPUT
-from arduino_proxy.pyroproxy.utils import get_arduino_pyro, server_is_up
+from py_arduino.pyroproxy.utils import get_arduino_pyro, server_is_up
 
 
 PROXY = get_arduino_pyro()

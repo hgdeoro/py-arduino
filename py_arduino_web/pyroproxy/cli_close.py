@@ -17,15 +17,13 @@
 ##    along with py-arduino; see the file LICENSE.txt.
 ##-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-import Pyro4
-import hmac
+from .utils import get_arduino_pyro
 
 
 def main():
-    Pyro4.config.HMAC_KEY = hmac.new('this-is-py-arduino').digest()
-    arduino_proxy = Pyro4.Proxy("PYRO:arduino_proxy.Proxy@localhost:61234")
+    arduino = get_arduino_pyro()
     print "Calling proxy.close()"
-    arduino_proxy.close()
+    arduino.close()
 
 if __name__ == '__main__':
     main()
