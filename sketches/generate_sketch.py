@@ -30,12 +30,12 @@ BASE_DIR = os.path.split(os.path.realpath(__file__))[0] # BASE_DIR = XXX/sketche
 BASE_DIR = os.path.split(BASE_DIR)[0] # BASE_DIR = XXX
 
 try:
-    from arduino_proxy.proxy import ArduinoProxy, _unindent
+    from py_arduino.proxy import PyArduino, _unindent
 except ImportError:
     sys.path.append(os.path.abspath(BASE_DIR))
-    from arduino_proxy.proxy import ArduinoProxy, _unindent
+    from py_arduino.proxy import PyArduino, _unindent
 
-from arduino_proxy.proxy import ATTACH_INTERRUPT_MODE_LOW,\
+from py_arduino.proxy import ATTACH_INTERRUPT_MODE_LOW,\
     ATTACH_INTERRUPT_MODE_CHANGE, ATTACH_INTERRUPT_MODE_RISING,\
     ATTACH_INTERRUPT_MODE_FALLING
 
@@ -68,9 +68,9 @@ def generate_placeholder_values(proxy, options):
         'proxied_function_ptrs': proxied_function_ptrs.getvalue(),
         'proxied_function_source': proxied_function_source.getvalue(),
         'serial_speed': proxy.speed,
-        'INVALID_CMD': ArduinoProxy.INVALID_CMD,
-        'INVALID_PARAMETER': ArduinoProxy.INVALID_PARAMETER,
-        'UNSUPPORTED_CMD': ArduinoProxy.UNSUPPORTED_CMD,
+        'INVALID_CMD': PyArduino.INVALID_CMD,
+        'INVALID_PARAMETER': PyArduino.INVALID_PARAMETER,
+        'UNSUPPORTED_CMD': PyArduino.UNSUPPORTED_CMD,
         'ATTACH_INTERRUPT_MODE_LOW': ATTACH_INTERRUPT_MODE_LOW,
         'ATTACH_INTERRUPT_MODE_CHANGE': ATTACH_INTERRUPT_MODE_CHANGE,
         'ATTACH_INTERRUPT_MODE_RISING': ATTACH_INTERRUPT_MODE_RISING,
@@ -175,7 +175,7 @@ def main(): # pylint: disable=R0914,R0912,R0915
             c_file_lines[i] = '// ' + c_file_lines[i]
             break
     
-    proxy = ArduinoProxy()
+    proxy = PyArduino()
     placeholder_values = generate_placeholder_values(proxy, options)
     # proxy.close() # No need to close
 

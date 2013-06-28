@@ -1,7 +1,7 @@
 
 //
 // THIS FILE WAS GENERATED AUTOMATICALLY WITH 'sketches/generate_sketch.py'
-// WHICH IS PART OF THE PROJECT "PyArduinoProxy"
+// WHICH IS PART OF THE PROJECT "py-arduino"
 //
     
 
@@ -960,7 +960,7 @@ void setup() {
 	lcd.begin(PY_ARDUINO_PROXY_LCD_SUPPORT_COLS,
 		PY_ARDUINO_PROXY_LCD_SUPPORT_ROWS);
 	lcd.clear();
-	lcd.print("PyArduinoProxy");
+	lcd.print("PyArduino");
 	lcd.setCursor(0, 1); // column, line
 	lcd.print("READY!");
 	#endif
