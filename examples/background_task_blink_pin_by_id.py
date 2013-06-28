@@ -17,7 +17,7 @@ PIN_ID = 'integrated-arduino-led'
 
 
 def main():
-    arduino_proxy = get_arduino_proxy_proxy()
+    arduino = get_arduino_proxy_proxy()
     storage = get_arduino_storage_proxy()
     wait_for_server(logger)
 
@@ -32,17 +32,17 @@ def main():
             continue
 
     logger.info("Wait until Arduino is connected...")
-    while not arduino_proxy.is_connected():
+    while not arduino.is_connected():
         time.sleep(1)
 
     logger.info("Connected! :-D")
 
     logger.info("Starting to blink")
-    arduino_proxy.pinMode(pin.pin, OUTPUT)
+    arduino.pinMode(pin.pin, OUTPUT)
     while True:
-        arduino_proxy.digitalWrite(pin.pin, HIGH)
+        arduino.digitalWrite(pin.pin, HIGH)
         time.sleep(1)
-        arduino_proxy.digitalWrite(pin.pin, LOW)
+        arduino.digitalWrite(pin.pin, LOW)
         time.sleep(1)
 
 if __name__ == '__main__':

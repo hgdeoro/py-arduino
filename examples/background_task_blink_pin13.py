@@ -14,21 +14,21 @@ logger = logging.getLogger(__name__)
 
 
 def main():
-    arduino_proxy = get_arduino_proxy_proxy()
+     = get_arduino_proxy_proxy()
     wait_for_server(logger)
 
     logger.info("Wait until Arduino is connected...")
-    while not arduino_proxy.is_connected():
+    while not .is_connected():
         time.sleep(1)
 
     logger.info("Connected! :-D")
 
     logger.info("Starting to blink")
-    arduino_proxy.pinMode(13, OUTPUT)
+    .pinMode(13, OUTPUT)
     while True:
-        arduino_proxy.digitalWrite(13, HIGH)
+        .digitalWrite(13, HIGH)
         time.sleep(1)
-        arduino_proxy.digitalWrite(13, LOW)
+        .digitalWrite(13, LOW)
         time.sleep(1)
 
 if __name__ == '__main__':
