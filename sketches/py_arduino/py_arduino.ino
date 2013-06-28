@@ -12,7 +12,7 @@
 
 #include "avr_cpunames.h"
 
-#include "py_arduino_proxy.h"
+#include "py_arduino.h"
 #include "arduino_type.h"
 #include "dht11.h"
 
