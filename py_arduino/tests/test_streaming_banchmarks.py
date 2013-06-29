@@ -20,62 +20,99 @@
 
 from datetime import datetime
 
+import cProfile
+
 from . import setup_pythonpath
 
 setup_pythonpath()
 
 from py_arduino.main_utils import default_main
 
+NON_STREAMING_READS = 400
+STREAMING_READS = 1000
 
-def main(): # pylint: disable=R0915
-    _, _, arduino = default_main() # pylint: disable=W0612
-    analog_reads = (400, 1000,)
+
+def nsar(arduino):
+    start_analogRead = datetime.now()
+    for i in xrange(0, NON_STREAMING_READS):  # @UnusedVariable
+        arduino.analogRead(0)
+    end_analogRead = datetime.now()
+    analogRead_time = end_analogRead - start_analogRead
+    return analogRead_time
+
+
+def sar(arduino):
+    start_streamingAnalogRead = datetime.now()
+    for i in arduino.streamingAnalogRead(0, STREAMING_READS):  # @UnusedVariable
+        pass
+    end_streamingAnalogRead = datetime.now()
+    streamingAnalogRead_time = end_streamingAnalogRead - start_streamingAnalogRead
+    return streamingAnalogRead_time
+
+
+def nsdr(arduino):
+    start_digitalRead = datetime.now()
+    for i in xrange(0, NON_STREAMING_READS):  # @UnusedVariable
+        arduino.digitalRead(0)
+    end_digitalRead = datetime.now()
+    digitalRead_time = end_digitalRead - start_digitalRead
+    return digitalRead_time
+
+
+def sdr(arduino):
+    start_streamingDigitalRead = datetime.now()
+    for i in arduino.streamingDigitalRead(0, STREAMING_READS):  # @UnusedVariable
+        pass
+    end_streamingDigitalRead = datetime.now()
+    streamingDigitalRead_time = end_streamingDigitalRead - start_streamingDigitalRead
+    return streamingDigitalRead_time
+
+
+def main():  # pylint: disable=R0915
+    _, _, arduino = default_main()  # pylint: disable=W0612
+
     try:
-        #
-        # streamingAnalogRead()
-        #
-        print "Initiating %d reads using analogRead()" % analog_reads[0]
-        start_analogRead = datetime.now()
-        for i in xrange(0, analog_reads[0]): #@UnusedVariable
-            arduino.analogRead(0)
-        end_analogRead = datetime.now()
-        analogRead_time = end_analogRead - start_analogRead
+        #=======================================================================
+        # arduino.analogRead
+        #=======================================================================
+        print " + read %d values using arduino.analogRead()..." % NON_STREAMING_READS
+        analogRead_time = nsar(arduino)
 
-        print "Initiating %d reads using streamingAnalogRead()" % analog_reads[1]
-        start_streamingAnalogRead = datetime.now()
-        for i in arduino.streamingAnalogRead(0, analog_reads[1]): #@UnusedVariable
-            pass
-        end_streamingAnalogRead = datetime.now()
-        streamingAnalogRead_time = end_streamingAnalogRead - start_streamingAnalogRead
+        #=======================================================================
+        # arduino.streamingAnalogRead()
+        #=======================================================================
+        print " + read %d values using arduino.streamingAnalogRead()" % STREAMING_READS
+        streamingAnalogRead_time = sar(arduino)
 
-        non_streaming = float(analog_reads[0]) / analogRead_time.total_seconds()
+        #=======================================================================
+        # Stats
+        #=======================================================================
+        non_streaming = float(NON_STREAMING_READS) / analogRead_time.total_seconds()
         streaming = float(1000.0) / streamingAnalogRead_time.total_seconds()
-        print "analogRead() -> %f reads per second" % non_streaming
-        print "streamingAnalogRead() ->  %f reads per second" % streaming
-        print "speedup: X%0.2f" % (streaming / non_streaming)
+        print " - arduino.analogRead() -> %f reads per second" % non_streaming
+        print " - arduino.streamingAnalogRead() ->  %f reads per second" % streaming
+        print "     +-> speedup: X%0.2f" % (streaming / non_streaming)
 
-        #
-        # streamingDigitalRead()
-        #
-        print "Initiating %d reads using digitalRead()" % analog_reads[0]
-        start_digitalRead = datetime.now()
-        for i in xrange(0, analog_reads[0]): #@UnusedVariable
-            arduino.digitalRead(0)
-        end_digitalRead = datetime.now()
-        digitalRead_time = end_digitalRead - start_digitalRead
+        #=======================================================================
+        # arduino.digitalRead()
+        #=======================================================================
+        print " + read %d values using arduino.digitalRead()" % NON_STREAMING_READS
+        digitalRead_time = nsdr(arduino)
 
-        print "Initiating %d reads using streamingDigitalRead()" % analog_reads[1]
-        start_streamingDigitalRead = datetime.now()
-        for i in arduino.streamingDigitalRead(0, analog_reads[1]): #@UnusedVariable
-            pass
-        end_streamingDigitalRead = datetime.now()
-        streamingDigitalRead_time = end_streamingDigitalRead - start_streamingDigitalRead
+        #=======================================================================
+        # arduino.streamingDigitalRead
+        #=======================================================================
+        print " + read %d values using arduino.streamingDigitalRead()" % STREAMING_READS
+        streamingDigitalRead_time = sdr(arduino)
 
-        non_streaming = float(analog_reads[0]) / digitalRead_time.total_seconds()
+        #=======================================================================
+        # Stats
+        #=======================================================================
+        non_streaming = float(NON_STREAMING_READS) / digitalRead_time.total_seconds()
         streaming = float(1000.0) / streamingDigitalRead_time.total_seconds()
-        print "digitalRead() -> %f reads per second" % non_streaming
-        print "streamingDigitalRead() ->  %f reads per second" % streaming
-        print "speedup: X%0.2f" % (streaming / non_streaming)
+        print " - arduino.digitalRead() -> %f reads per second" % non_streaming
+        print " - arduino.streamingDigitalRead() ->  %f reads per second" % streaming
+        print "     +-> speedup: X%0.2f" % (streaming / non_streaming)
 
     except KeyboardInterrupt:
         print ""
