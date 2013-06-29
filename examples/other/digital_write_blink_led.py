@@ -23,25 +23,27 @@ import sys
 import time
 
 # Setup PYTHONPATH
-SRC_DIR = os.path.split(os.path.realpath(__file__))[0] # SRC_DIR=EXAMPLE_DIR
-SRC_DIR = os.path.split(SRC_DIR)[0] # SRC_DIR=SRC_DIR/../
-SRC_DIR = os.path.join(SRC_DIR, 'src') # SRC_DIR
+SRC_DIR = os.path.split(os.path.realpath(__file__))[0]  # SRC_DIR=EXAMPLE_DIR
+SRC_DIR = os.path.split(SRC_DIR)[0]  # SRC_DIR=SRC_DIR/../
+SRC_DIR = os.path.join(SRC_DIR, 'src')  # SRC_DIR
 sys.path.append(os.path.abspath(SRC_DIR))
 
 from py_arduino.main_utils import default_main
 from py_arduino import OUTPUT, HIGH, LOW
 
 
-def args_validator(parser, options, args): # pylint: disable=W0613
+def args_validator(parser, options, args):  # pylint: disable=W0613
     if len(args) != 2:
         parser.error("must specified two argument: serial device and digital port")
 
+
 def main():
-    options, args, arduino = default_main(optparse_usage=\
-        "usage: %prog [options] serial_device digital_port", args_validator=args_validator)
-    
+    _, args, arduino = default_main(
+        optparse_usage="usage: %prog [options] serial_device digital_port",
+        args_validator=args_validator)
+
     digital_port = int(args[1])
-    
+
     try:
         arduino.pinMode(digital_port, OUTPUT)
         while True:

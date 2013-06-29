@@ -29,26 +29,27 @@ import os
 import sys
 
 # Setup PYTHONPATH
-SRC_DIR = os.path.split(os.path.realpath(__file__))[0] # SRC_DIR=EXAMPLE_DIR
-SRC_DIR = os.path.split(SRC_DIR)[0] # SRC_DIR=SRC_DIR/../
-SRC_DIR = os.path.join(SRC_DIR, 'src') # SRC_DIR
+SRC_DIR = os.path.split(os.path.realpath(__file__))[0]  # SRC_DIR=EXAMPLE_DIR
+SRC_DIR = os.path.split(SRC_DIR)[0]  # SRC_DIR=SRC_DIR/../
+SRC_DIR = os.path.join(SRC_DIR, 'src')  # SRC_DIR
 sys.path.append(os.path.abspath(SRC_DIR))
 
 from py_arduino import PyArduino
 
 COUNT = 10
 
+
 def main():
     if len(sys.argv) == 1:
         tty_device = os.environ['TTY_DEVICE']
         analog_port = os.environ['ANALOG_PORT']
         arduino = PyArduino(tty_device, 9600)
-        sum = 0.0
-        for i in range(0, COUNT):
+        acum = 0.0
+        for _ in range(0, COUNT):
             value = arduino.analogRead(int(analog_port))
-            value = ((5.0 * value * 100.0)/1024.0)
-            sum = sum + value
-        value = sum/float(COUNT)
+            value = ((5.0 * value * 100.0) / 1024.0)
+            acum = acum + value
+        value = acum / float(COUNT)
         print "temp.value %.2f" % value
     else:
         if sys.argv[1] == "config":

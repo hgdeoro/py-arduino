@@ -20,7 +20,6 @@
 from IPython.core.prompts import PromptManager
 
 try:
-    from IPython.config.loader import Config
     from IPython.frontend.terminal.embed import InteractiveShellEmbed
 except ImportError:
     print ""
