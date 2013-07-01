@@ -79,7 +79,6 @@ class BaseMain(object):
         self.add_options()
 
     def add_options(self):
-        # TODO: self.parser.option_list
         self.parser.add_option("--debug",
             action="store_true", dest="debug", default=False,
             help="Configure logging to show debug messages.")
