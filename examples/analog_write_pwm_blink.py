@@ -18,43 +18,50 @@
 ##    along with py-arduino; see the file LICENSE.txt.
 ##-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-#
-# Run with:
-#
-# $ python -m examples.analog_write_pwm_blink --info /dev/ttyACM0 13
-#
+"""
+#===============================================================================
+# EXAMPLE - Blinks a led using PWM
+#===============================================================================
+
+To run this example:
+
+    $ python -m examples.analog_write_pwm_blink /dev/ttyACM0 13
+
+or, if you want to see what's going on:
+
+    $ python -m examples.analog_write_pwm_blink --info /dev/ttyACM0 13
+
+or, if you want to see LOT of debug messages:
+
+    $ python -m examples.analog_write_pwm_blink --debug /dev/ttyACM0 13
+
+#===============================================================================
+# NOTE 1: remember to load the virtualenv before running this:
+#===============================================================================
+
+    $ . virtualenv/bin/activate
+
+"""
 
 from py_arduino import OUTPUT
-from py_arduino.main_utils import default_main
+from py_arduino.main_utils import BaseMain
 
 
-def args_validator(parser, options, args):  # pylint: disable=W0613
-    if len(args) != 2:
-        parser.error("must specified three argument: serial device, PWM digital port")
+class Main(BaseMain):
+    optparse_usage = BaseMain.optparse_usage + " pwm_digital_pin"
+    num_args = BaseMain.num_args + 1
 
+    def run(self, options, args, arduino):
+        pwm_digital_pin = int(args[1])  # args[0] -> serial port
 
-def main():
-    USAGE = "usage: %prog [options] serial_device pwm_digital_port"
-    _, args, arduino = default_main(optparse_usage=USAGE,
-        args_validator=args_validator)
-
-    pwm_digital_port = int(args[1])
-
-    try:
-        arduino.pinMode(pwm_digital_port, OUTPUT)
+        arduino.pinMode(pwm_digital_pin, OUTPUT)
         while True:
             print "Going from 0 to 255..."
             for value in range(0, 256, 5):
-                arduino.analogWrite(pwm_digital_port, value)
+                arduino.analogWrite(pwm_digital_pin, value)
             print "Going from 255 to 0..."
             for value in range(255, -1, -5):
-                arduino.analogWrite(pwm_digital_port, value)
-    except KeyboardInterrupt:
-        print ""
-    except Exception:
-        raise
-    finally:
-        arduino.close()
+                arduino.analogWrite(pwm_digital_pin, value)
 
 if __name__ == '__main__':
-    main()
+    Main().start()
