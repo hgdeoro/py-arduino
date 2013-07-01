@@ -17,9 +17,10 @@
 ##    You should have received a copy of the GNU General Public License
 ##    along with py-arduino; see the file LICENSE.txt.
 ##-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-from IPython.core.prompts import PromptManager
+
 
 try:
+    from IPython.core.prompts import PromptManager
     from IPython.frontend.terminal.embed import InteractiveShellEmbed
 except ImportError:
     print ""
@@ -30,8 +31,16 @@ except ImportError:
     print ""
     raise
 
-from py_arduino.main_utils import default_main
+from py_arduino.main_utils import BaseMain
 
+"""
+Start an interactive session.
+
+To execute this, run:
+
+    $ python -m py_arduino.cli.ipython --info /dev/ttyACM0
+
+"""
 
 banner = """
 
@@ -52,16 +61,16 @@ Example:
 """
 
 
-def main():
+class Main(BaseMain):
 
-    options, args, arduino = default_main()  # pylint: disable=W0612 @UnusedVariable
-    PromptManager.in_template = "PyArduino [\\#]> "
-    PromptManager.out_template = "PyArduino [\\#]: "
+    def run(self, options, args, arduino):
+        PromptManager.in_template = "PyArduino [\\#]> "
+        PromptManager.out_template = "PyArduino [\\#]: "
 
-    shell = InteractiveShellEmbed(banner2=banner)
-    shell.user_ns = {}
-    shell()
+        shell = InteractiveShellEmbed(banner2=banner)
+        shell.user_ns = {}
+        shell()
 
 
 if __name__ == '__main__':
-    main()
+    Main().start()
