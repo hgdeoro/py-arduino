@@ -20,12 +20,14 @@
 
 """
 #===============================================================================
-# EXAMPLE - Reads the temperature using a LM35 on analog pin 0
+# EXAMPLE - Reads the temperature using a LM35 (on analog pin 0 by default)
+#  The pin can be specified using --pin
 #===============================================================================
 
 To run this example:
 
     $ python -m examples.read_lm35 /dev/ttyACM0
+    $ python -m examples.read_lm35 --pin 3 /dev/ttyACM0
 
 or, if you want to see what's going on:
 
@@ -48,24 +50,29 @@ import logging
 from py_arduino import PyArduino
 from py_arduino.main_utils import BaseMain
 
-PIN = 0
-
 logger = logging.getLogger(__name__)
 
 
 class Main(BaseMain):
 
+    def add_options(self):
+        super(Main, self).add_options()
+        self.parser.add_option("--pin",
+            action="store", dest="pin", default=0, type="int",
+            help="Analog pin to read.")
+
     def run(self, options, args, arduino):
         assert isinstance(arduino, PyArduino)
         while True:
             # Load 11 values
-            values = [arduino.analogRead(PIN) for _ in range(0, 11)]
+            values = [arduino.analogRead(options.pin) for _ in range(0, 11)]
             # Use the MEDIAN
             value = values[(len(values) / 2)]
             # Do the math
             temp = (5.0 * value * 100.0) / 1024.0
             # Print
-            print("PIN {0} -> analog read: {1:4} -> Temp: {2:3.2f} C".format(PIN, value, temp))
+            print("PIN {0} -> analog read: {1:4} -> Temp: {2:3.2f} C".format(
+                options.pin, value, temp))
 
 if __name__ == '__main__':
     Main().start()
