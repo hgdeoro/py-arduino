@@ -20,21 +20,15 @@
 
 import traceback
 
-from . import setup_pythonpath
-
-setup_pythonpath()
-
-from py_arduino import  InvalidCommand, PyArduinoException
-from py_arduino.main_utils import default_main
-from py_arduino import INPUT, HIGH, ATTACH_INTERRUPT_MODE_LOW
+from py_arduino import  InvalidCommand, PyArduinoException, \
+    INPUT, HIGH, ATTACH_INTERRUPT_MODE_LOW
+from py_arduino.main_utils import BaseMain
 
 
-def main():
-    options, _, arduino = default_main() # pylint: disable=W0612
-    try:
-        if options.debug:
-            arduino.enableDebug()
-        
+class Main(BaseMain):
+
+    def run(self, options, args, arduino):
+
         #    LOW to trigger the interrupt whenever the pin is low,
         #    CHANGE to trigger the interrupt whenever the pin changes value
         #    RISING to trigger when the pin goes from low to high,
@@ -44,18 +38,18 @@ def main():
         #    ATTACH_INTERRUPT_MODE_CHANGE = 'C'
         #    ATTACH_INTERRUPT_MODE_RISING = 'R'
         #    ATTACH_INTERRUPT_MODE_FALLING = 'F'
-        
+
         print "arduino.pinMode()"
-        arduino.pinMode(2, INPUT) # INT_0
+        arduino.pinMode(2, INPUT)  # INT_0
         arduino.delay(200)
-        
+
         print "arduino.digitalWrite(2,HIGH) -> pullup resistor"
-        arduino.digitalWrite(2, HIGH) # INT_0 -> pullup resistor
+        arduino.digitalWrite(2, HIGH)  # INT_0 -> pullup resistor
         arduino.delay(200)
-        
+
         print "arduino.watchInterrupt(0) -> interrupt occurs when pin 2 become LOW."
         print " +", arduino.watchInterrupt(0, ATTACH_INTERRUPT_MODE_LOW)
-        
+
         while True:
             try:
                 if arduino.getInterruptMark(0):
@@ -73,11 +67,6 @@ def main():
                 print ""
                 print "Continuing..."
                 print ""
-                
-    except KeyboardInterrupt:
-        print ""
-    finally:
-        arduino.close()
 
 if __name__ == '__main__':
-    main()
+    Main().start()

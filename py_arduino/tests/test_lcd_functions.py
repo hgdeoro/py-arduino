@@ -20,19 +20,15 @@
 
 import time
 
-from . import setup_pythonpath
-
-setup_pythonpath()
-
-from py_arduino.main_utils import default_main
+from py_arduino.main_utils import BaseMain
 
 
-def main():
-    _, _, arduino = default_main() # pylint: disable=W0612
-    try:
+class Main(BaseMain):
+
+    def run(self, options, args, arduino):
         print "Clearing LCD", arduino.lcdClear()
         raw_input("Press any key to continue...")
-        
+
         print "'Hello, world!' on row 0", arduino.lcdMessage("Hello, world!")
         raw_input("Press any key to continue...")
 
@@ -42,7 +38,7 @@ def main():
         print "'Hello, world!' on row 0, 'bye bye world' on line 1", \
             arduino.lcdMessage(["Hello, world!", "bye bye world"])
         raw_input("Press any key to continue...")
-        
+
         print "Filling screen with letters and numbers"
         for a_char in ['a', 'b', 'c', 'x', 'y', 'z']:
             arduino.lcdMessage([a_char * 16, a_char * 16])
@@ -51,14 +47,9 @@ def main():
 
         print "Moving an @"
         for i in range(0, 32):
-            arduino.lcdWrite("@", i % 16, i / 16, clear_lcd=True) # msg, col, row
+            arduino.lcdWrite("@", i % 16, i / 16, clear_lcd=True)  # msg, col, row
             time.sleep(0.2)
         #raw_input("Press any key to continue...")
 
-    except KeyboardInterrupt:
-        print ""
-    finally:
-        arduino.close()
-
 if __name__ == '__main__':
-    main()
+    Main().start()

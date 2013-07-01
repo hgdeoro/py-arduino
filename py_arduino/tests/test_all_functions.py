@@ -18,18 +18,14 @@
 ##    along with py-arduino; see the file LICENSE.txt.
 ##-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-from . import setup_pythonpath
-
-setup_pythonpath()
-
-from py_arduino import InvalidCommand, CommandTimeout, InvalidResponse
-from py_arduino.main_utils import default_main
-from py_arduino import NotConnected, HIGH, OUTPUT, LSBFIRST
+from py_arduino import InvalidCommand, CommandTimeout, InvalidResponse, NotConnected, \
+    HIGH, OUTPUT, LSBFIRST
+from py_arduino.main_utils import  BaseMain
 
 
-def main():  # pylint: disable=R0915
-    _, _, arduino = default_main()  # pylint: disable=W0612
-    try:
+class Main(BaseMain):
+
+    def run(self, options, args, arduino):
         print "getFreeMemory() -> %s" % str(arduino.getFreeMemory())
         print "enableDebug() -> %s" % str(arduino.enableDebug())
         print "disableDebug() -> %s" % str(arduino.disableDebug())
@@ -161,14 +157,6 @@ def main():  # pylint: disable=R0915
         assert arduino.autoconnect()
         arduino.ping()
 
-    except KeyboardInterrupt:
-        print ""
-    except Exception:
-        raise
-    finally:
-        if arduino.is_connected():
-            arduino.close()
-
 
 if __name__ == '__main__':
-    main()
+    Main().start()

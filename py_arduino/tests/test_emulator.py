@@ -23,12 +23,8 @@ import sys
 import time
 import unittest
 
-from . import setup_pythonpath
-
-setup_pythonpath()
-
-from py_arduino import PyArduino, InvalidArgument, InvalidResponse, InvalidCommand
-from py_arduino import HIGH, LOW, OUTPUT, INPUT
+from py_arduino import PyArduino, InvalidArgument, InvalidResponse, InvalidCommand, \
+    HIGH, LOW, OUTPUT, INPUT
 
 logger = logging.getLogger(__name__) # pylint: disable=C0103
 

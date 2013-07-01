@@ -20,11 +20,7 @@
 
 from datetime import datetime
 
-from . import setup_pythonpath
-
-setup_pythonpath()
-
-from py_arduino.main_utils import default_main
+from py_arduino.main_utils import BaseMain
 
 NON_STREAMING_READS = 400
 STREAMING_READS = 1000
@@ -66,10 +62,9 @@ def sdr(arduino):
     return streamingDigitalRead_time
 
 
-def main():  # pylint: disable=R0915
-    _, _, arduino = default_main()  # pylint: disable=W0612
+class Main(BaseMain):
 
-    try:
+    def run(self, options, args, arduino):
         #=======================================================================
         # arduino.analogRead
         #=======================================================================
@@ -112,12 +107,5 @@ def main():  # pylint: disable=R0915
         print " - arduino.streamingDigitalRead() ->  %f reads per second" % streaming
         print "     +-> speedup: X%0.2f" % (streaming / non_streaming)
 
-    except KeyboardInterrupt:
-        print ""
-    except Exception:
-        raise
-    finally:
-        arduino.close()
-
 if __name__ == '__main__':
-    main()
+    Main().start()

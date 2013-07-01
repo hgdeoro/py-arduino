@@ -20,10 +20,6 @@
 
 import logging
 
-from . import setup_pythonpath
-
-setup_pythonpath()
-
 from py_arduino import PyArduino
 
 
