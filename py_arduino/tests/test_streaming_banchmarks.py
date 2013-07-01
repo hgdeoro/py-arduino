@@ -20,8 +20,6 @@
 
 from datetime import datetime
 
-import cProfile
-
 from . import setup_pythonpath
 
 setup_pythonpath()
