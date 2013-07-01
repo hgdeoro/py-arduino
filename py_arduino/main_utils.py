@@ -24,7 +24,7 @@ import optparse
 from py_arduino import PyArduino
 
 
-class BaseMain():
+class BaseMain(object):
     """
     Utility class to easilly extend and do stuff with PyArduino.
 
