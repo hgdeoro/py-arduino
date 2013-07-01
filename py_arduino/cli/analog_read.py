@@ -18,44 +18,27 @@
 ##    along with py-arduino; see the file LICENSE.txt.
 ##-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-from py_arduino.main_utils import default_main
+from py_arduino.main_utils import BaseMain
 
 
-def default_callback(value):
-    print value
+class Main(BaseMain):
+    optparse_usage = BaseMain.optparse_usage + " analog_pin"
+    num_args = BaseMain.num_args + 1
 
+    def add_options(self):
+        super(Main, self).add_options()
+        self.parser.add_option("--loop",
+            action="store_true", dest="loop", default=False,
+            help="Keep reading and printing the values.")
 
-def args_validator(parser, options, args): # pylint: disable=W0613
-    if len(args) != 2:
-        parser.error("must specified two argument: serial device and analog port")
+    def run(self, options, args, arduino):
+        analog_pin = int(args[1])
 
-
-def add_options_callback(parser):
-    parser.add_option("--loop",
-        action="store_true", dest="loop", default=False,
-        help="Keep reading and printing the values.")
-
-
-def main(callback=default_callback):
-    options, args, arduino = default_main(
-        optparse_usage="usage: %prog [options] serial_device analog_port",
-        args_validator=args_validator,
-        add_options_callback=add_options_callback)
-
-    analog_port = int(args[1])
-
-    try:
         while True:
-            value = arduino.analogRead(analog_port)
-            callback(value)
+            value = arduino.analogRead(analog_pin)
+            print value
             if not options.loop:
                 break
-    except KeyboardInterrupt:
-        print ""
-    except Exception:
-        raise
-    finally:
-        arduino.close()
 
 if __name__ == '__main__':
-    main()
+    Main().start()

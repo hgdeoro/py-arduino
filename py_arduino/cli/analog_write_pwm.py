@@ -18,34 +18,22 @@
 ##    along with py-arduino; see the file LICENSE.txt.
 ##-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-from py_arduino.main_utils import default_main
+
+from py_arduino.main_utils import BaseMain
 from py_arduino import OUTPUT
 
 
-def args_validator(parser, options, args): # pylint: disable=W0613
-    if len(args) != 3:
-        parser.error("must specified three argument: serial device, "
-            "PWM digital port and value")
+class Main(BaseMain):
+    optparse_usage = BaseMain.optparse_usage + " pwm_digital_pin value"
+    num_args = BaseMain.num_args + 2
 
-
-def main():
-    _, args, arduino = default_main(
-        optparse_usage="usage: %prog [options] serial_device pwm_digital_port value",
-        args_validator=args_validator)
-
-    pwm_digital_port = int(args[1])
-    value = int(args[2])
-
-    try:
-        arduino.pinMode(pwm_digital_port, OUTPUT)
-        arduino.analogWrite(pwm_digital_port, value)
-    except KeyboardInterrupt:
-        print ""
-    except Exception:
-        raise
-    finally:
-        arduino.close()
+    def run(self, options, args, arduino):
+        pwm_digital_pin = int(args[1])
+        value = int(args[2])
+        # TODO: check that digital pin supports PWM
+        arduino.pinMode(pwm_digital_pin, OUTPUT)
+        arduino.analogWrite(pwm_digital_pin, value)
 
 
 if __name__ == '__main__':
-    main()
+    BaseMain().start()
