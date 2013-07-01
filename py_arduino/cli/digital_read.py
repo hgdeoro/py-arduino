@@ -18,61 +18,42 @@
 ##    along with py-arduino; see the file LICENSE.txt.
 ##-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-from py_arduino.main_utils import default_main
+from py_arduino.main_utils import BaseMain
 from py_arduino import HIGH, LOW, INPUT
 
 
-def default_callback(value, options):
-    if value == HIGH:
-        if options.numerical:
-            print "1"
-        else:
-            print "HIGH"
-    elif value == LOW:
-        if options.numerical:
-            print "0"
-        else:
-            print "LOW"
-    else:
-        raise(Exception("Invalid value for a digital read: '%s'" % str(value)))
+class Main(BaseMain):
+    optparse_usage = BaseMain.optparse_usage + " digital_port"
+    num_args = BaseMain.num_args + 1
 
+    def add_options(self):
+        super(Main, self).add_options()
+        self.parser.add_option("--loop",
+            action="store_true", dest="loop", default=False,
+            help="Keep reading and printing the values.")
+        self.parser.add_option("--numerical",
+            action="store_true", dest="numerical", default=False,
+            help="Prints 1 or 0 instead of 'HIGH' and 'LOW'.")
 
-def args_validator(parser, options, args): # pylint: disable=W0613
-    if len(args) != 2:
-        parser.error("must specified two argument: serial device and digital port")
-
-
-def add_options_callback(parser):
-    parser.add_option("--loop",
-        action="store_true", dest="loop", default=False,
-        help="Keep reading and printing the values.")
-    parser.add_option("--numerical",
-        action="store_true", dest="numerical", default=False,
-        help="Prints 1 or 0 instead of 'HIGH' and 'LOW'.")
-
-
-def main(callback=default_callback):
-    options, args, arduino = default_main(
-        optparse_usage="usage: %prog [options] serial_device digital_port",
-        args_validator=args_validator,
-        add_options_callback=add_options_callback)
-
-    digital_port = int(args[1])
-
-    try:
-        arduino.pinMode(digital_port, INPUT)
+    def run(self, options, args, arduino):
+        digital_pin = int(args[1])
+        arduino.pinMode(digital_pin, INPUT)
         while True:
-            value = arduino.digitalRead(digital_port)
-            callback(value, options)
+            value = arduino.digitalRead(digital_pin)
+            if value == HIGH:
+                if options.numerical:
+                    print "1"
+                else:
+                    print "HIGH"
+            elif value == LOW:
+                if options.numerical:
+                    print "0"
+                else:
+                    print "LOW"
+            else:
+                raise(Exception("Invalid value for a digital read: '%s'" % str(value)))
             if not options.loop:
                 break
-    except KeyboardInterrupt:
-        print ""
-    except Exception:
-        raise
-    finally:
-        arduino.close()
-
 
 if __name__ == '__main__':
-    main()
+    Main().start()
