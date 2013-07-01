@@ -21,31 +21,35 @@
 import sys
 import time
 
-from py_arduino.main_utils import default_main
 from py_arduino import CommandTimeout
+from py_arduino.main_utils import BaseMain
+
+"""
+Ping to the Arduino until Ctrl+C is pressed.
+
+To execute this, run:
+
+    $ python -m py_arduino.cli.ping --info /dev/ttyACM0
+
+"""
 
 
-def main():
+class Main(BaseMain):
 
-    _, _, arduino = default_main() # pylint: disable=W0612
-    try:
+    def run(self, options, args, arduino):
         while True:
             sys.stdout.write("Ping sent...")
             sys.stdout.flush()
-            start = time.time()
             try:
+                start = time.time()
                 arduino.ping()
                 end = time.time()
-                sys.stdout.write(" OK - Time=%.3f ms\n" % ((end - start) * 1000))
+                sys.stdout.write(" OK - Time={0:.3f} ms\n".format((end - start) * 1000))
                 sys.stdout.flush()
                 time.sleep(1)
             except CommandTimeout:
                 sys.stdout.write(" timeout\n")
                 sys.stdout.flush()
-    except KeyboardInterrupt:
-        print ""
-        arduino.close()
-
 
 if __name__ == '__main__':
-    main()
+    Main().start()
