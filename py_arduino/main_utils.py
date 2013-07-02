@@ -62,13 +62,6 @@ class BaseMain(object):
     num_args = 1
 
     """
-    - args_validator
-        List of argument validator
-    """
-    # FIXME: check if this actually works!!!!!
-    args_validator = []
-
-    """
     - auto_close
         Automatically close the PyArduino (also ignores KeyboardInterrupt)
     """
@@ -104,19 +97,35 @@ class BaseMain(object):
         """
         raise(NotImplementedError())
 
+    def validate(self, options, args):
+        """
+        Additional validations could be added to subclass, but
+        remember to call this first.
+        You can use `self.parser.error()` to raise errors.
+
+        #===============================================================================
+        # Example:
+        #===============================================================================
+        #    class MyMain(BaseMain):
+        #
+        #        def validate(self, options, args):
+        #            super(MyMain, self).validate(options, args)
+        #            MORE VALIDATIONS HERE
+        #            MORE VALIDATIONS HERE
+        #            MORE VALIDATIONS HERE
+        #===============================================================================
+
+        """
+        if len(args) < self.num_args:
+            self.parser.error("must specify the serial device (like /dev/ttyACM0). "
+                "Serial devices that looks like "
+                "Arduinos: %s." % ', '.join(glob.glob('/dev/ttyACM*')))
+
     def start(self):
         (options, args) = self.parser.parse_args()
+        self.validate(options, args)
 
-        if self.args_validator:
-            # @@@ BAD @@@ -> will pass 'self' as first parameter
-            for validator in self.args_validator:
-                validator(self.parser, options, args)
-        else:
-            if len(args) < self.num_args:
-                self.parser.error("must specify the serial device (like /dev/ttyACM0). "
-                    "Serial devices that looks like "
-                    "Arduinos: %s." % ', '.join(glob.glob('/dev/ttyACM*')))
-
+        # setup logging
         if options.debug:
             logging.basicConfig(level=logging.DEBUG)
         elif options.info or options.arduino_debug:
@@ -141,6 +150,7 @@ class BaseMain(object):
             arduino = PyArduino(args[0], 9600, wait_after_open=initial_wait,
                 call_validate_connection=not(options.dont_call_validate_connection)).connect()
 
+        # enable debugging if required
         if options.arduino_debug:
             arduino.enableDebug()
 
