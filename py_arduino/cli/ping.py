@@ -25,11 +25,19 @@ from py_arduino import CommandTimeout
 from py_arduino.main_utils import BaseMain
 
 """
-Ping to the Arduino until Ctrl+C is pressed.
+#===============================================================================
+# Ping to the Arduino until Ctrl+C is pressed.
+#===============================================================================
 
 To execute this, run:
 
     $ python -m py_arduino.cli.ping --info /dev/ttyACM0
+
+#===============================================================================
+# NOTE: remember to load the virtualenv before running this:
+#===============================================================================
+
+    $ . virtualenv/bin/activate
 
 """
 

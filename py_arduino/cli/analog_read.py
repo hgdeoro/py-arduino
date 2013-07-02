@@ -20,6 +20,28 @@
 
 from py_arduino.main_utils import BaseMain
 
+"""
+#===============================================================================
+# <<Reads the value from the specified analog pin>>
+#     (from http://arduino.cc/en/Reference/AnalogRead)
+#===============================================================================
+
+To read the value of analog pin 3 one time:
+
+    $ python -m py_arduino.cli.analog_read /dev/ttyACM0 3
+
+To read the value of analog pni 3 for ever (ie: until Ctrl+C):
+
+    $ python -m py_arduino.cli.analog_read --loop /dev/ttyACM0 3
+
+#===============================================================================
+# NOTE: remember to load the virtualenv before running this:
+#===============================================================================
+
+    $ . virtualenv/bin/activate
+
+"""
+
 
 class Main(BaseMain):
     optparse_usage = BaseMain.optparse_usage + " analog_pin"

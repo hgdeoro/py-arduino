@@ -19,6 +19,27 @@
 ##-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 
+"""
+#===============================================================================
+# Start an IPython interactive session.
+#===============================================================================
+
+To execute this, run:
+
+    $ python -m py_arduino.cli.ipython --info /dev/ttyACM0
+
+You will need ipython installed in the virtualenv. You may need to run:
+
+    $ pip install ipython
+
+#===============================================================================
+# NOTE: remember to load the virtualenv before running this:
+#===============================================================================
+
+    $ . virtualenv/bin/activate
+
+"""
+
 try:
     from IPython.core.prompts import PromptManager
     from IPython.frontend.terminal.embed import InteractiveShellEmbed
@@ -32,15 +53,6 @@ except ImportError:
     raise
 
 from py_arduino.main_utils import BaseMain
-
-"""
-Start an interactive session.
-
-To execute this, run:
-
-    $ python -m py_arduino.cli.ipython --info /dev/ttyACM0
-
-"""
 
 banner = """
 

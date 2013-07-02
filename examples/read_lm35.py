@@ -27,6 +27,9 @@
 To run this example:
 
     $ python -m examples.read_lm35 /dev/ttyACM0
+
+or, if you connected the LM35 in other pin:
+
     $ python -m examples.read_lm35 --pin 3 /dev/ttyACM0
 
 or, if you want to see what's going on:

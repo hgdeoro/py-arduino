@@ -21,6 +21,28 @@
 from py_arduino.main_utils import BaseMain
 from py_arduino import HIGH, LOW, INPUT
 
+"""
+#===============================================================================
+# <<Reads the value from a specified digital pin, either HIGH or LOW>>
+#     (http://arduino.cc/en/Reference/DigitalRead)
+#===============================================================================
+
+To read the value of digital pin 5 one time:
+
+    $ python -m py_arduino.cli.digital_read /dev/ttyACM0 5
+
+To print 0 or 1 instead of LOW or HIGH:
+
+    $ python -m py_arduino.cli.digital_read --numerical /dev/ttyACM0 5
+
+#===============================================================================
+# NOTE: remember to load the virtualenv before running this:
+#===============================================================================
+
+    $ . virtualenv/bin/activate
+
+"""
+
 
 class Main(BaseMain):
     optparse_usage = BaseMain.optparse_usage + " digital_port"

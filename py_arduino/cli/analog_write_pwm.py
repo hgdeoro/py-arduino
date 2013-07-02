@@ -22,6 +22,24 @@
 from py_arduino.main_utils import BaseMain
 from py_arduino import OUTPUT
 
+"""
+#===============================================================================
+# <<Writes an analog value (PWM wave) to a pin>>
+#     (from http://arduino.cc/en/Reference/analogWrite)
+#===============================================================================
+
+To write 128 to pin 3:
+
+    $ python -m py_arduino.cli.analog_write_pwm /dev/ttyACM0 3 128
+
+#===============================================================================
+# NOTE: remember to load the virtualenv before running this:
+#===============================================================================
+
+    $ . virtualenv/bin/activate
+
+"""
+
 
 class Main(BaseMain):
     optparse_usage = BaseMain.optparse_usage + " pwm_digital_pin value"
@@ -36,4 +54,4 @@ class Main(BaseMain):
 
 
 if __name__ == '__main__':
-    BaseMain().start()
+    Main().start()
