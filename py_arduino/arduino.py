@@ -283,12 +283,12 @@ class PyArduino(object):  # pylint: disable=R0904
 
     def _connect_emulator(self, initial_input_buffer_contents=None):
         """Common method to be used from `create_emulator()` and `__init__()`"""
-        from py_arduino.emulator import SerialConnectionMock, ArduinoEmulator
+        from py_arduino.emulator import SerialConnectionArduinoEmulator, ArduinoEmulator
         if initial_input_buffer_contents:
-            self.serial_port = SerialConnectionMock(
+            self.serial_port = SerialConnectionArduinoEmulator(
                 initial_in_buffer_contents=initial_input_buffer_contents)
         else:
-            self.serial_port = SerialConnectionMock()
+            self.serial_port = SerialConnectionArduinoEmulator()
         self.emulator = ArduinoEmulator(self.serial_port.get_other_side())
         self.emulator.start()
         self.validateConnection()

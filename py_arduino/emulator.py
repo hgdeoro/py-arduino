@@ -201,9 +201,9 @@ class ArduinoEmulator(threading.Thread):
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-class SerialConnectionMock(object):
+class SerialConnectionArduinoEmulator(object):
     """
-    Virtual serial connection. There are 2 endpoints.
+    Virtual serial connection to the Arduino Emulator. There are 2 endpoints.
     The MASTER endpoint, on the PyArduino side,
     and the SLAVE endpoint, on the Arduino Emulator side.
     """
@@ -216,16 +216,16 @@ class SerialConnectionMock(object):
             self.slave_of = weakref.ref(other_side)
             self.timeout = other_side.timeout
             self._lock = other_side._lock # pylint: disable=W0212
-            self.logger = logging.getLogger('SerialConnectionMock.ARDUINO')
+            self.logger = logging.getLogger('SerialConnectionArduinoEmulator.ARDUINO')
         else:
             # other_side == None -> Python side (MASTER)
             self._out_buffer = initial_out_buffer_contents
             self._in_buffer = initial_in_buffer_contents
             self.timeout = timeout
             self._lock = threading.RLock()
-            self.master_of = SerialConnectionMock(other_side=self)
+            self.master_of = SerialConnectionArduinoEmulator(other_side=self)
             self.slave_of = None
-            self.logger = logging.getLogger('SerialConnectionMock.PYTHON')
+            self.logger = logging.getLogger('SerialConnectionArduinoEmulator.PYTHON')
     
     def get_other_side(self):
         if self.master_of:
@@ -300,6 +300,6 @@ class SerialConnectionMock(object):
         return self.timeout
     
     def __str__(self):
-        return "SerialConnectionMock\n" + \
+        return "SerialConnectionArduinoEmulator\n" + \
                     " + in_buffer: %s\n" % pprint.pformat(self._in_buffer) + \
                     " + out_buffer: %s\n" % pprint.pformat(self._out_buffer)
