@@ -21,7 +21,7 @@ import glob
 import logging
 import optparse
 
-from py_arduino import PyArduino
+from py_arduino.arduino import PyArduino
 
 
 class BaseMain(object):

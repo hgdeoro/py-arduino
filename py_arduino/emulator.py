@@ -25,7 +25,7 @@ import threading
 import time
 import weakref
 
-from py_arduino import PyArduino, HIGH, LOW
+from py_arduino import HIGH, LOW, INVALID_CMD
 
 INITIAL_OUT_BUFFER_CONTENTS = ''
 
@@ -57,12 +57,12 @@ class ArduinoEmulator(threading.Thread):
         for item in splitted_params:
             if len(item) > 16:
                 # READ_ONE_PARAM_ERROR_PARAMETER_TOO_LARGE = 2
-                self.serial_connection.write("%s 2\n" % PyArduino.INVALID_CMD)
+                self.serial_connection.write("%s 2\n" % INVALID_CMD)
                 return False
 
         if len(splitted_params) > 10:
             # READ_PARAMETERS_ERROR_TOO_MANY_PARAMETERS = 3
-            self.serial_connection.write("%s 3\n" % PyArduino.INVALID_CMD)
+            self.serial_connection.write("%s 3\n" % INVALID_CMD)
             return False
 
         return True
@@ -165,7 +165,7 @@ class ArduinoEmulator(threading.Thread):
             self.serial_connection.write("SR_OK\n")
         else:
             # FUNCTION_NOT_FOUND = 6
-            self.serial_connection.write("%s 6\n" % PyArduino.INVALID_CMD)
+            self.serial_connection.write("%s 6\n" % INVALID_CMD)
             self.logger.error("run_cmd() - INVALID COMMAND: %s", pprint.pformat(cmd))
 
     def read_cmd(self):

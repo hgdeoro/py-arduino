@@ -30,13 +30,15 @@ BASE_DIR = os.path.split(os.path.realpath(__file__))[0]  # BASE_DIR = XXX/sketch
 BASE_DIR = os.path.split(BASE_DIR)[0]  # BASE_DIR = XXX
 
 try:
-    from py_arduino import PyArduino as tmp  # @UnusedImport
+    from py_arduino.arduino import PyArduino as tmp  # @UnusedImport
 except ImportError:
     sys.path.append(os.path.abspath(BASE_DIR))
 
-from py_arduino import PyArduino, ATTACH_INTERRUPT_MODE_LOW, \
+from py_arduino import ATTACH_INTERRUPT_MODE_LOW, \
     ATTACH_INTERRUPT_MODE_CHANGE, ATTACH_INTERRUPT_MODE_RISING, \
-    ATTACH_INTERRUPT_MODE_FALLING
+    ATTACH_INTERRUPT_MODE_FALLING, INVALID_CMD, INVALID_PARAMETER,\
+    UNSUPPORTED_CMD
+from py_arduino.arduino import PyArduino
 from py_arduino.utils import _unindent
 
 
@@ -68,9 +70,9 @@ def generate_placeholder_values(arduino, options):
         'proxied_function_ptrs': proxied_function_ptrs.getvalue(),
         'proxied_function_source': proxied_function_source.getvalue(),
         'serial_speed': arduino.speed,
-        'INVALID_CMD': PyArduino.INVALID_CMD,
-        'INVALID_PARAMETER': PyArduino.INVALID_PARAMETER,
-        'UNSUPPORTED_CMD': PyArduino.UNSUPPORTED_CMD,
+        'INVALID_CMD': INVALID_CMD,
+        'INVALID_PARAMETER': INVALID_PARAMETER,
+        'UNSUPPORTED_CMD': UNSUPPORTED_CMD,
         'ATTACH_INTERRUPT_MODE_LOW': ATTACH_INTERRUPT_MODE_LOW,
         'ATTACH_INTERRUPT_MODE_CHANGE': ATTACH_INTERRUPT_MODE_CHANGE,
         'ATTACH_INTERRUPT_MODE_RISING': ATTACH_INTERRUPT_MODE_RISING,

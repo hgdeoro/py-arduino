@@ -23,9 +23,9 @@ import sys
 import time
 import unittest
 
-from py_arduino import PyArduino, InvalidArgument, InvalidResponse, InvalidCommand, \
-    HIGH, LOW, OUTPUT, INPUT
-from py_arduino.arduino import DEVICE_FOR_EMULATOR
+from py_arduino import InvalidArgument, InvalidResponse, InvalidCommand, \
+    HIGH, LOW, OUTPUT, INPUT, DEVICE_FOR_EMULATOR
+from py_arduino.arduino import PyArduino
 from py_arduino import emulator
 
 logger = logging.getLogger(__name__)  # pylint: disable=C0103

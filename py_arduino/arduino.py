@@ -30,52 +30,24 @@ import serial
 import time
 import threading
 
-from serial.tools.list_ports import comports
-
-from py_arduino.utils import  _unindent, synchronized
-
 try:
     from cStringIO import StringIO
 except ImportError:
     from StringIO import StringIO
 
+from serial.tools.list_ports import comports
+
+from py_arduino import INPUT, OUTPUT, DEVICE_FOR_EMULATOR, \
+    ATTACH_INTERRUPT_MODE_LOW, ATTACH_INTERRUPT_MODE_CHANGE, \
+    ATTACH_INTERRUPT_MODE_RISING, ATTACH_INTERRUPT_MODE_FALLING, LSBFIRST, \
+    MSBFIRST, DEFAULT_SERIAL_SPEED, LOW, HIGH, NotConnected, PyArduinoException, \
+    InvalidArgument, InvalidResponse, InvalidCommand, InvalidParameter, \
+    UnsupportedCommand, CommandTimeout, INVALID_CMD, INVALID_PARAMETER, \
+    UNSUPPORTED_CMD
+from py_arduino.utils import  _unindent, synchronized
+from py_arduino.emulator import SerialConnectionArduinoEmulator
+
 logger = _logging.getLogger(__name__)  # pylint: disable=C0103
-
-#===============================================================================
-# CONSTANTS - Values to write to pins, and read from pins
-#===============================================================================
-HIGH = 0x01  # define HIGH 0x1
-LOW = 0x00  # define LOW  0x0
-
-#===============================================================================
-# CONSTANTS - Pin modes
-#===============================================================================
-INPUT = 0x00  # define INPUT 0x0
-OUTPUT = 0x01  # define OUTPUT 0x1
-
-#===============================================================================
-# CONSTANTS - Bit
-#===============================================================================
-LSBFIRST = 0x00  # define LSBFIRST 0
-MSBFIRST = 0x01  # define MSBFIRST 1
-
-#===============================================================================
-# CONSTANTS - Interrupt
-#===============================================================================
-ATTACH_INTERRUPT_MODE_LOW = 'L'
-ATTACH_INTERRUPT_MODE_CHANGE = 'C'
-ATTACH_INTERRUPT_MODE_RISING = 'R'
-ATTACH_INTERRUPT_MODE_FALLING = 'F'
-
-#===============================================================================
-# CONSTANTS - Other
-#===============================================================================
-
-# Default serial speed
-DEFAULT_SERIAL_SPEED = 9600
-
-# Device to use to launch an emulator instad of connecting to a real Arduino
-DEVICE_FOR_EMULATOR = '/dev/ARDUINO_EMULATOR'
 
 #===============================================================================
 # Locks
@@ -165,86 +137,10 @@ class PinStatusTracker(object):
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-class PyArduinoException(Exception):
-    """Base class for all the exception raised in the project."""
-
-
-class InvalidCommand(PyArduinoException):
-    """
-    Raised when the Arduino reported an error in the command.
-    """
-
-    def __init__(self, msg, error_code=None):
-        PyArduinoException.__init__(self, msg)
-        self.error_code = error_code
-
-
-class InvalidParameter(PyArduinoException):
-    """
-    Raised when the Arduino reported an invalid parameter.
-    """
-
-    def __init__(self, msg, error_param=None):
-        PyArduinoException.__init__(self, msg)
-        self.error_param = error_param
-
-
-class InvalidResponse(PyArduinoException):
-    """
-    Raised when the response from the Arduino wasn't valid.
-    """
-
-
-class EmptyResponse(PyArduinoException):
-    """
-    Raised when the response from the Arduino was empty.
-    """
-
-
-class CommandTimeout(PyArduinoException):
-    """
-    Raised when a timeout occurs while waiting for Arduino's response.
-    """
-
-
-class InvalidArgument(PyArduinoException):
-    """
-    Raised when a method was called with invalid argument type or values.
-    This is detected in Python, and thus no data was sent to the Arduino.
-    """
-
-
-class UnsupportedCommand(PyArduinoException):
-    """
-    Raised when there is no support for the given command in the Arduino.
-    
-    Raised when lcdWrite() is used, but the uploaded program to the Arduino wans't generated with
-    support for LCD. This means that the command is valid, but the program in the Arduino lacks
-    the functionality to run it.
-    """
-
-    def __init__(self, msg, error_param=None):
-        PyArduinoException.__init__(self, msg)
-        self.error_param = error_param
-
-
-class NotConnected(PyArduinoException):
-    """
-    Raised when a method that required a connection was called, but the
-    instance wasn't connected.
-    """
-
-## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
 class PyArduino(object):  # pylint: disable=R0904
     """
     Class to access the Arduino.
     """
-
-    INVALID_CMD = "INVALID_CMD"
-    INVALID_PARAMETER = "INVALID_PARAMETER"
-    UNSUPPORTED_CMD = "UNSUPPORTED_CMD"
 
     def __init__(self, tty=None, speed=DEFAULT_SERIAL_SPEED,
         wait_after_open=2, timeout=5, call_validate_connection=True):
@@ -285,7 +181,6 @@ class PyArduino(object):  # pylint: disable=R0904
         if self.tty == DEVICE_FOR_EMULATOR:
             # FIXME: move import to module level
             # FIXME: fix INITIAL_OUT_BUFFER_CONTENTS (no longer works after refactor of emulator)
-            from py_arduino.emulator import SerialConnectionArduinoEmulator
             return SerialConnectionArduinoEmulator()
         else:
             logger.debug("Opening serial port %s...", self.tty)
@@ -453,9 +348,9 @@ class PyArduino(object):  # pylint: disable=R0904
 
     def _check_response_for_errors(self, response, cmd):  # pylint: disable=R0201
         splitted = [item for item in response.split() if item]
-        if splitted[0] == PyArduino.INVALID_CMD:
+        if splitted[0] == INVALID_CMD:
             if len(splitted) == 1:
-                logger.warn("Received PyArduino.INVALID_CMD, but without error code. " + \
+                logger.warn("Received INVALID_CMD, but without error code. " + \
                     "The command was: %s", pprint.pformat(cmd))
                 raise(InvalidCommand("Arduino responded with INVALID_CMD. " + \
                     "The command was: %s" % pprint.pformat(cmd)))
@@ -464,9 +359,9 @@ class PyArduino(object):  # pylint: disable=R0904
                     "The command was: %s. Error code: %s" % (pprint.pformat(cmd), splitted[1]),
                     error_code=splitted[1]))
 
-        if splitted[0] == PyArduino.INVALID_PARAMETER:
+        if splitted[0] == INVALID_PARAMETER:
             if len(splitted) == 1:
-                logger.warn("Received PyArduino.INVALID_PARAMETER, but without error code. " + \
+                logger.warn("Received INVALID_PARAMETER, but without error code. " + \
                     "The command was: %s", pprint.pformat(cmd))
                 raise(InvalidParameter("Arduino responded with INVALID_PARAMETER. " + \
                     "The command was: %s" % pprint.pformat(cmd)))
@@ -475,7 +370,7 @@ class PyArduino(object):  # pylint: disable=R0904
                     "The command was: %s. The invalid parameter is %s" % (pprint.pformat(cmd),
                     splitted[1]), error_param=splitted[1]))
 
-        if splitted[0] == PyArduino.UNSUPPORTED_CMD:
+        if splitted[0] == UNSUPPORTED_CMD:
             raise(UnsupportedCommand("Arduino responded with UNSUPPORTED_CMD." + \
                 "The unsupported command is: %s" % splitted[1], error_param=splitted[1]))
 

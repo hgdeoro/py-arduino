@@ -22,7 +22,7 @@ import hmac
 import os
 import Pyro4
 
-from py_arduino import PyArduino
+from py_arduino.arduino import PyArduino
 from py_arduino_web.storage import Storage
 
 

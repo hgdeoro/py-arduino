@@ -20,7 +20,7 @@
 
 import logging
 
-from py_arduino import PyArduino
+from py_arduino.arduino import PyArduino
 
 
 def main(): # pylint: disable=R0915

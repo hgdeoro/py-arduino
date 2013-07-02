@@ -50,7 +50,7 @@ or, if you want to see LOT of debug messages:
 
 import logging
 
-from py_arduino import PyArduino
+from py_arduino.arduino import PyArduino
 from py_arduino.main_utils import BaseMain
 
 logger = logging.getLogger(__name__)
