@@ -239,7 +239,7 @@ class NotConnected(PyArduinoException):
 
 class PyArduino(object):  # pylint: disable=R0904
     """
-    Proxy class for accessing Arduino.
+    Class to access the Arduino.
     """
 
     INVALID_CMD = "INVALID_CMD"
@@ -274,36 +274,29 @@ class PyArduino(object):  # pylint: disable=R0904
         self.timeout = timeout
         self.call_validate_connection = call_validate_connection
 
-        # NOT TRUE: "one, and only one of (self.serial_port, self.emulator) should be not None"
-        # TRUE: the emulator creates a "mock" for the serial_port
-        # These are used to track connection status (connected/disconnected)
         self.serial_port = None
-        self.emulator = None
         self.status_tracker = None
 
-    def _connect_emulator(self, initial_input_buffer_contents=None):
-        """Common method to be used from `create_emulator()` and `__init__()`"""
-        from py_arduino.emulator import SerialConnectionArduinoEmulator, ArduinoEmulator
-        if initial_input_buffer_contents:
-            self.serial_port = SerialConnectionArduinoEmulator(
-                initial_in_buffer_contents=initial_input_buffer_contents)
+    def _get_serial_port(self):
+        """
+        Returns a real serial port object, or a virtual serial port
+        connceted to an instance of ArduinoEmulator if tty is DEVICE_FOR_EMULATOR.
+        """
+        if self.tty == DEVICE_FOR_EMULATOR:
+            # FIXME: move import to module level
+            # FIXME: fix INITIAL_OUT_BUFFER_CONTENTS (no longer works after refactor of emulator)
+            from py_arduino.emulator import SerialConnectionArduinoEmulator
+            return SerialConnectionArduinoEmulator()
         else:
-            self.serial_port = SerialConnectionArduinoEmulator()
-        self.emulator = ArduinoEmulator(self.serial_port.get_other_side())
-        self.emulator.start()
-        self.validateConnection()
-        self.status_tracker = PinStatusTracker()
-
-    @classmethod
-    def create_emulator(cls, initial_input_buffer_contents=None):
-        """
-        Returns an instance of PyArduino CONNECTED to the Arduino emulator.
-
-        You should NOT call to `connect()` on the returned instance.
-        """
-        arduino = cls(tty=DEVICE_FOR_EMULATOR, wait_after_open=0, call_validate_connection=False)
-        arduino._connect_emulator(initial_input_buffer_contents=initial_input_buffer_contents)
-        return arduino
+            logger.debug("Opening serial port %s...", self.tty)
+            serial_port = serial.Serial(port=self.tty, baudrate=self.speed, bytesize=8,
+                parity='N', stopbits=1, timeout=self.timeout)
+            # self.serial_port.open() - The port is opened when the instance is created!
+            # This has no efect on Linux, but raises an exception on other os.
+            if self.wait_after_open > 0:
+                logger.debug("Open OK. Now waiting for Arduino's reset")
+                time.sleep(self.wait_after_open)
+            return serial_port
 
     def connect(self, tty=None, speed=None):
         """
@@ -320,18 +313,7 @@ class PyArduino(object):  # pylint: disable=R0904
 
         assert self.tty is not None
 
-        if self.tty == DEVICE_FOR_EMULATOR:
-            self._connect_emulator()
-
-        else:
-            logger.debug("Opening serial port %s...", self.tty)
-            self.serial_port = serial.Serial(port=self.tty, baudrate=self.speed, bytesize=8,
-                parity='N', stopbits=1, timeout=self.timeout)
-            # self.serial_port.open() - The port is opened when the instance is created!
-            # This has no efect on Linux, but raises an exception on other os.
-            if self.wait_after_open > 0:
-                logger.debug("Open OK. Now waiting for Arduino's reset")
-                time.sleep(self.wait_after_open)
+        self.serial_port = self._get_serial_port()
 
         if self.call_validate_connection:
             logger.debug("Calling validateConnection()...")
@@ -348,24 +330,14 @@ class PyArduino(object):  # pylint: disable=R0904
         """
         Closes the connection to the Arduino.
         """
-        if self.emulator:
-            self.emulator.stop_running()
-            logger.info("Running emulator... Will join the threads...")
-            self.emulator.join()
-            logger.info("Threads joined OK.")
-            self.emulator = None
-            self.serial_port = None
-        else:
-            try:
-                self.serial_port.close()
-            except:
-                logger.exception("Error detected when trying to close serial port. "
-                    "Continuing anywat...")
-            self.serial_port = None
-
+        try:
+            self.serial_port.close()
+        except:
+            logger.exception("Error detected when trying to close serial port. "
+                "Continuing anyway...")
+        self.serial_port = None
         self.status_tracker = None
         self._arduino_type_struct_cache = None
-        assert self.emulator is None and self.serial_port is None
 
     def _assert_connected(self):
         if not self.is_connected():
@@ -373,8 +345,7 @@ class PyArduino(object):  # pylint: disable=R0904
 
     def is_connected(self):
         """Return whenever the PyArduino instance is connected"""
-        # FIXME: self.serial_port is ALWAYS non-None if connected (even with emulator)
-        return bool(self.emulator) or bool(self.serial_port)
+        return bool(self.serial_port)
 
     def get_serial_ports(self, prefix='/dev/ttyACM'):
         ports = [x[0] for x in comports() if x[0].startswith(prefix)]

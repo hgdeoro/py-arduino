@@ -25,41 +25,47 @@ import unittest
 
 from py_arduino import PyArduino, InvalidArgument, InvalidResponse, InvalidCommand, \
     HIGH, LOW, OUTPUT, INPUT
+from py_arduino.arduino import DEVICE_FOR_EMULATOR
+from py_arduino import emulator
 
-logger = logging.getLogger(__name__) # pylint: disable=C0103
+logger = logging.getLogger(__name__)  # pylint: disable=C0103
 
 
-class TestPyArduinoWithInitialContentInSerialBuffer(unittest.TestCase): # pylint: disable=R0904
+class TestPyArduinoWithInitialContentInSerialBuffer(unittest.TestCase):  # pylint: disable=R0904
     """
     Testcase for commands.
     """
-    def setUp(self): # pylint: disable=C0103
-        self.arduino = PyArduino.create_emulator(
-            initial_input_buffer_contents="** SOME TEXT **\n" * 5)
+    def setUp(self):  # pylint: disable=C0103
+        self._INITIAL_OUT_BUFFER_CONTENTS = emulator.INITIAL_OUT_BUFFER_CONTENTS
+        emulator.INITIAL_OUT_BUFFER_CONTENTS = "** SOME TEXT **\n" * 5
+        self.arduino = PyArduino(tty=DEVICE_FOR_EMULATOR, call_validate_connection=False)
+        self.arduino.connect()
 
     def test_ping(self):
         self.arduino.validateConnection()
         response = self.arduino.ping()
         self.assertEquals(response, 'PING_OK')
 
-    def tearDown(self): # pylint: disable=C0103
+    def tearDown(self):  # pylint: disable=C0103
+        emulator.INITIAL_OUT_BUFFER_CONTENTS = self._INITIAL_OUT_BUFFER_CONTENTS
         self.arduino.close()
 
 
-class TestProxiedMethodsOfPyArduino(unittest.TestCase): # pylint: disable=R0904
+class TestProxiedMethodsOfPyArduino(unittest.TestCase):  # pylint: disable=R0904
     """
     Testcase for commands.
     """
 
-    def setUp(self): # pylint: disable=C0103
-        self.arduino = PyArduino.create_emulator()
+    def setUp(self):  # pylint: disable=C0103
+        self.arduino = PyArduino(tty=DEVICE_FOR_EMULATOR)
+        self.arduino.connect()
 
     def test_ping(self):
         response = self.arduino.ping()
         self.assertEquals(response, 'PING_OK')
 
     def test_multiping(self):
-        for i in range(0, 10): # pylint: disable=W0612 @UnusedVariable
+        for i in range(0, 10):  # pylint: disable=W0612 @UnusedVariable
             start = time.time()
             response = self.arduino.ping()
             end = time.time()
@@ -168,32 +174,33 @@ class TestProxiedMethodsOfPyArduino(unittest.TestCase): # pylint: disable=R0904
     def test_getAvrCpuType(self):
         self.arduino.getAvrCpuType()
 
-    def tearDown(self): # pylint: disable=C0103
+    def tearDown(self):  # pylint: disable=C0103
         self.arduino.close()
 
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-class TestInternalsOfPyArduino(unittest.TestCase): # pylint: disable=R0904
+class TestInternalsOfPyArduino(unittest.TestCase):  # pylint: disable=R0904
 
-    def setUp(self): # pylint: disable=C0103
-        self.arduino = PyArduino.create_emulator()
+    def setUp(self):  # pylint: disable=C0103
+        self.arduino = PyArduino(tty=DEVICE_FOR_EMULATOR)
+        self.arduino.connect()
 
     def test_send_cmd(self):
 
         def valid_transformer1(arg1):
             return arg1
 
-        def valid_transformer2(arg1): # pylint: disable=W0613
+        def valid_transformer2(arg1):  # pylint: disable=W0613
             return "RESPONSE_FROM_TRANSFORMER"
 
         def invalid_transformer1():
             pass
 
-        def invalid_transformer2(arg1, arg2): # pylint: disable=W0613
+        def invalid_transformer2(arg1, arg2):  # pylint: disable=W0613
             pass
 
-        def invalid_transformer3(arg1): # pylint: disable=W0613
+        def invalid_transformer3(arg1):  # pylint: disable=W0613
             raise(Exception("Exception while transforming"))
 
         # send_cmd(self, cmd, expected_response=None, timeout=None, response_transformer=None):
@@ -213,7 +220,7 @@ class TestInternalsOfPyArduino(unittest.TestCase): # pylint: disable=R0904
 
         self.assertRaises(InvalidCommand, self.arduino.send_cmd, "_INEXISTING_CMD")
 
-    def tearDown(self): # pylint: disable=C0103
+    def tearDown(self):  # pylint: disable=C0103
         self.arduino.close()
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
