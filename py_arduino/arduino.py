@@ -89,6 +89,12 @@ class PinStatus(object):
     Class to hold transient information of pin status.
     The information we have here is from the point of view
     of the PyArduino, NOT the real Arduino.
+
+    Note: since the communication isn't "transactional", when some
+    errors occurs, we don't know if the change was made in the Arduino.
+    For example, we digitalWrite() on a PIN, but we got a timeout: we
+    don't know if the write was done. This could be done having the
+    'pin status' in the Arduino (maybe in some future version).
     """
     def __init__(self, pin, digital, mode=None, read_value=None, written_value=None):
         self.pin = pin
