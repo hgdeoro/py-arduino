@@ -27,9 +27,6 @@ import weakref
 
 from py_arduino import PyArduino, HIGH, LOW
 
-logger = logging.getLogger(__name__)  # pylint: disable=C0103
-
-
 INITIAL_OUT_BUFFER_CONTENTS = ''
 
 
@@ -40,13 +37,12 @@ class ArduinoEmulator(threading.Thread):
     Reads commands from serial console and responds.
     """
 
-    logger = logging.getLogger('ArduinoEmulator')
-
     def __init__(self, serial_connection):
         threading.Thread.__init__(self)
         self.daemon = True
         self.serial_connection = serial_connection
         self.running = True
+        self.logger = logging.getLogger('ArduinoEmulator')
 
     def _validate_parameters(self, splitted_params):
         """
@@ -82,7 +78,7 @@ class ArduinoEmulator(threading.Thread):
             except:
                 return default_value
 
-        logger.info("run_cmd() - cmd: %s", pprint.pformat(cmd))
+        self.logger.info("run_cmd() - cmd: %s", pprint.pformat(cmd))
         splitted = cmd.split()
 
         if not self._validate_parameters(splitted):
@@ -170,13 +166,13 @@ class ArduinoEmulator(threading.Thread):
         else:
             # FUNCTION_NOT_FOUND = 6
             self.serial_connection.write("%s 6\n" % PyArduino.INVALID_CMD)
-            logger.error("run_cmd() - INVALID COMMAND: %s", pprint.pformat(cmd))
+            self.logger.error("run_cmd() - INVALID COMMAND: %s", pprint.pformat(cmd))
 
     def read_cmd(self):
         buff = ''
         while self.running:
             a_char = self.serial_connection.read()
-            logger.debug("self.serial_connection.read() - a_char: %s", pprint.pformat(a_char))
+            self.logger.debug("self.serial_connection.read() - a_char: %s", pprint.pformat(a_char))
             if a_char == '':  # timeout
                 time.sleep(0.001)
                 continue
@@ -190,13 +186,13 @@ class ArduinoEmulator(threading.Thread):
         return ''
 
     def run(self):
-        ArduinoEmulator.logger.info("run() started!")
+        self.logger.info("run() started!")
         while self.running:
-            ArduinoEmulator.logger.debug("self.running == True")
+            self.logger.debug("self.running == True")
             cmd = self.read_cmd()
             self.run_cmd(cmd)
 
-        ArduinoEmulator.logger.info("run() finished!")
+        self.logger.info("run() finished!")
 
     def stop_running(self):
         self.running = False
