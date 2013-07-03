@@ -97,6 +97,12 @@ class BaseMain(object):
         """
         raise(NotImplementedError())
 
+    def get_device(self, options, args):
+        """
+        Returns the device to use. By default, return the first argument.
+        """
+        return args[0]
+
     def validate(self, options, args):
         """
         Additional validations could be added to subclass, but
@@ -133,21 +139,22 @@ class BaseMain(object):
         else:
             logging.basicConfig(level=logging.ERROR)
 
-        logging.info("Creating PyArduino instance - serial: %s - speed: %s", args[0], 9600)
+        serial_device = self.get_device(options, args)
+        logging.info("Creating PyArduino instance - serial: %s - speed: %s", serial_device, 9600)
         if options.initial_wait == 0:
-            arduino = PyArduino(args[0], 9600, wait_after_open=0,
+            arduino = PyArduino(serial_device, 9600, wait_after_open=0,
                 call_validate_connection=not(options.dont_call_validate_connection)).connect()
         elif options.initial_wait is None:
             # TODO: move this logging to PyArduino
             logging.info("Waiting some seconds to let the Arduino reset...")
-            arduino = PyArduino(args[0], 9600,
+            arduino = PyArduino(serial_device, 9600,
                 call_validate_connection=not(options.dont_call_validate_connection)).connect()
         else:
             initial_wait = int(options.initial_wait)
             if initial_wait > 0:
                 # TODO: move this logging to PyArduino
                 logging.info("Waiting %d seconds to let the Arduino reset...", initial_wait)
-            arduino = PyArduino(args[0], 9600, wait_after_open=initial_wait,
+            arduino = PyArduino(serial_device, 9600, wait_after_open=initial_wait,
                 call_validate_connection=not(options.dont_call_validate_connection)).connect()
 
         # enable debugging if required
