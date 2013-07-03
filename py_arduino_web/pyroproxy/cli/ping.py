@@ -29,8 +29,8 @@ class Main(BasePyroMain):
         while True:
             sys.stdout.write("Ping sent...")
             sys.stdout.flush()
+            start = time.time()
             try:
-                start = time.time()
                 arduino.ping()
                 end = time.time()
                 sys.stdout.write(" OK - Time={0:.3f} ms\n".format((end - start) * 1000))
@@ -38,10 +38,13 @@ class Main(BasePyroMain):
                 time.sleep(1)
             except KeyboardInterrupt:
                 raise
-            except: # CommandTimeout
+            except:  # CommandTimeout
                 # TODO: check with PYRO if original exceptoin was CommandTimeout
                 sys.stdout.write(" error\n")
                 sys.stdout.flush()
+                end = time.time()
+                if (end - start) < 0.5:
+                    time.sleep(0.5)
 
 if __name__ == '__main__':
     Main().start()
