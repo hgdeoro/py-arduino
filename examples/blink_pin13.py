@@ -43,7 +43,6 @@ or, if you want to see LOT of debug messages:
 
 """
 
-import logging
 import time
 
 from py_arduino import OUTPUT
@@ -51,8 +50,6 @@ from py_arduino.main_utils import BaseMain
 from py_arduino.arduino import PyArduino, HIGH, LOW
 
 PIN = 13
-
-logger = logging.getLogger(__name__)
 
 
 class Main(BaseMain):
