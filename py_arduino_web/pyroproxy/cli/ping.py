@@ -17,23 +17,31 @@
 ##    along with py-arduino; see the file LICENSE.txt.
 ##-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
+import sys
+import time
+
 from py_arduino_web.pyroproxy.utils import BasePyroMain
 
 
 class Main(BasePyroMain):
 
     def run(self, options, args, arduino):
-        print "Check connection status..."
-        connected = arduino.is_connected()
-
-        if not connected:
-            print "ERROR: PyArduino isn't connected to an Arduino or to the emulator. "
-            print "See the 'connect' script."
-            return
-
-        print "Calling arduino.ping()"
-        ret = arduino.ping()
-        print "Ping returned: '{0}'. End.".format(ret)
+        while True:
+            sys.stdout.write("Ping sent...")
+            sys.stdout.flush()
+            try:
+                start = time.time()
+                arduino.ping()
+                end = time.time()
+                sys.stdout.write(" OK - Time={0:.3f} ms\n".format((end - start) * 1000))
+                sys.stdout.flush()
+                time.sleep(1)
+            except KeyboardInterrupt:
+                raise
+            except: # CommandTimeout
+                # TODO: check with PYRO if original exceptoin was CommandTimeout
+                sys.stdout.write(" error\n")
+                sys.stdout.flush()
 
 if __name__ == '__main__':
     Main().start()
