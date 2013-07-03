@@ -5,8 +5,8 @@
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
     <title>{% if page.title }%} - {{page.title}}{% endif %}</title>
     
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <link rel="stylesheet" href="{{ site.url }}/stylesheets/styles.css">
+    <link rel="stylesheet" href="{{ site.url }}/stylesheets/pygment_trac.css">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -17,6 +17,14 @@
       <header>
         <h1>py-arduino</h1>
         <p>Access Arduino from Python</p>
+	<h3>Examples - Low level</h3>
+	<p>
+		<a href="{{ site.url }}/examples/temperature-sensing-with-lm35.html">Temperature sensing (LM35)</a>
+	</p>
+	<h3>Examples - Web Application</h3>
+	<p>
+		<a href="#">TODO</a>
+	</p>
         <p class="view"><a href="http://github.com/hgdeoro/py-arduino">View the Project on GitHub <small>hgdeoro/py-arduino</small></a></p>
         <ul>
           <li><a href="https://github.com/hgdeoro/py-arduino/zipball/master">Download <strong>ZIP File</strong></a></li>
@@ -32,6 +40,6 @@
         <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
       </footer>
     </div>
-    <script src="javascripts/scale.fix.js"></script>
+    <script src="{{ site.url }}/javascripts/scale.fix.js"></script>
   </body>
 </html>
