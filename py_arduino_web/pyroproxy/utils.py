@@ -24,6 +24,7 @@ import time
 
 import Pyro4
 from Pyro4.errors import CommunicationError
+import sys
 
 _logger = logging.getLogger(__name__)
 
@@ -46,6 +47,7 @@ def wait_for_server(logger=_logger, sleep=1):
     Waits for `sleep` seconds between checks.
     Logs messages using`logger`, could be `None` to disable logging.
     """
+    Pyro4.config.HMAC_KEY = hmac.new('this-is-py-arduino').digest()
     daemon = Pyro4.Proxy("PYRO:{0}@localhost:61234".format(
         Pyro4.constants.DAEMON_NAME))
     if logger:
@@ -62,6 +64,7 @@ def server_is_up():
     """
     Returns True if Pyro server is reachable.
     """
+    Pyro4.config.HMAC_KEY = hmac.new('this-is-py-arduino').digest()
     daemon = Pyro4.Proxy("PYRO:{0}@localhost:61234".format(
         Pyro4.constants.DAEMON_NAME))
     try:
@@ -80,6 +83,8 @@ class BasePyroMain(object):
     Base class to create scrpits from `pyroproxy.cli.*`
     """
 
+    logger = logging.getLogger('BasePyroMain')
+
     def __init__(self):
         self.parser = optparse.OptionParser()
         self.add_options()
@@ -91,6 +96,9 @@ class BasePyroMain(object):
         self.parser.add_option("--info",
             action="store_true", dest="info", default=False,
             help="Configure logging to show info messages.")
+        self.parser.add_option("--check-pyro-server",
+            action="store_true", dest="check_pyro_server", default=False,
+            help="Check if PyRO server is reachable, exit if it isn't reachable.")
 
     def run(self, options, args, arduino):
         """
@@ -110,7 +118,10 @@ class BasePyroMain(object):
         else:
             logging.basicConfig(level=logging.ERROR)
 
-        # FIXME: check if PyRO server is reacheable
+        if options.check_pyro_server:
+            if not server_is_up():
+                print "ERROR: PyRO server isn't reachable"
+                sys.exit(1)
 
         arduino = get_arduino_pyro()
         try:
