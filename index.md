@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Welcome
+title: Welcome to py-arduino
 ---
 
 ## Welcome to py-arduino
@@ -13,4 +13,3 @@ It consist of two layers:
  - a **web application**, including a **web interface** and **background threads**, based on Django, uWSGI, Pyro: it's multithread, allow concurrent access, labeling of pins to facilitate the use, etc..
 
 The project has many **testing** utilities, a simple **emulator** and the ability to see DEBUG messages to facilitate the location of problems and subsequent solutions.
- 
