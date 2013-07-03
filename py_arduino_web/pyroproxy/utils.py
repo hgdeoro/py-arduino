@@ -113,4 +113,10 @@ class BasePyroMain(object):
         # FIXME: check if PyRO server is reacheable
 
         arduino = get_arduino_pyro()
-        return self.run(options, args, arduino)
+        try:
+            return self.run(options, args, arduino)
+        except KeyboardInterrupt:
+            print ""
+            return None
+        except Exception:
+            raise
