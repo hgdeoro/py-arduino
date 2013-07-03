@@ -63,9 +63,19 @@ class Main(BaseMain):
         self.parser.add_option("--pin",
             action="store", dest="pin", default=0, type="int",
             help="Analog pin to read.")
+        self.parser.add_option("--loop",
+            action="store_true", dest="loop", default=False,
+            help="Keep reading and printing the values.")
+        self.parser.add_option("--csv",
+            action="store_true", dest="csv", default=False,
+            help="Print values in CSV format.")
 
     def run(self, options, args, arduino):
         assert isinstance(arduino, PyArduino)
+        if options.csv:
+            # If CSV, print header
+            print "pin,analog_read,temperature_celcius"
+
         while True:
             # Load 11 values
             values = [arduino.analogRead(options.pin) for _ in range(0, 11)]
@@ -73,9 +83,17 @@ class Main(BaseMain):
             value = values[(len(values) / 2)]
             # Do the math
             temp = (5.0 * value * 100.0) / 1024.0
+
             # Print
-            print("PIN {0} -> analog read: {1:4} -> Temp: {2:3.2f} C".format(
-                options.pin, value, temp))
+            if options.csv:
+                print("{0},{1},{2:3.2f}".format(options.pin, value, temp))
+            else:
+                print("PIN {0} -> analog read: {1:4} -> Temp: {2:3.2f} C".format(
+                    options.pin, value, temp))
+
+            # Break the loop if --loop was not specified
+            if not options.loop:
+                break
 
 if __name__ == '__main__':
     Main().start()
