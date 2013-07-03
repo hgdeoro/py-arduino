@@ -17,7 +17,7 @@
 ##    along with py-arduino; see the file LICENSE.txt.
 ##-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-from .utils import get_arduino_pyro
+from py_arduino_web.pyroproxy.utils import get_arduino_pyro
 
 
 def main():

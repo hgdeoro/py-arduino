@@ -19,7 +19,7 @@
 
 import sys
 
-from .utils import get_arduino_pyro
+from py_arduino_web.pyroproxy.utils import get_arduino_pyro
 
 
 def main():

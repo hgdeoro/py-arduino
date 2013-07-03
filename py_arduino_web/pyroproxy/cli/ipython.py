@@ -20,7 +20,8 @@
 from IPython.frontend.terminal.embed import InteractiveShellEmbed
 from IPython.core.prompts import PromptManager
 
-from .utils import get_arduino_pyro
+from py_arduino_web.pyroproxy.utils import get_arduino_pyro
+
 
 banner = """
 
