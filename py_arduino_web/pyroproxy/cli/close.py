@@ -20,11 +20,11 @@
 from py_arduino_web.pyroproxy.utils import BasePyroMain
 
 
-class BasePyroMain(BasePyroMain):
+class Main(BasePyroMain):
 
     def run(self, options, args, arduino):
         print "Calling arduino.close()"
         arduino.close()
 
 if __name__ == '__main__':
-    BasePyroMain().start()
+    Main().start()

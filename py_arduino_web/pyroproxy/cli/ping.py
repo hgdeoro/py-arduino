@@ -20,7 +20,7 @@
 from py_arduino_web.pyroproxy.utils import BasePyroMain
 
 
-class BasePyroMain(BasePyroMain):
+class Main(BasePyroMain):
 
     def run(self, options, args, arduino):
         print "Check connection status..."
@@ -36,4 +36,4 @@ class BasePyroMain(BasePyroMain):
         print "Ping returned: '{0}'. End.".format(ret)
 
 if __name__ == '__main__':
-    BasePyroMain().start()
+    Main().start()

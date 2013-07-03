@@ -41,7 +41,7 @@ Example:
 """
 
 
-class BasePyroMain(BasePyroMain):
+class Main(BasePyroMain):
 
     def run(self, options, args, arduino):
         try:
@@ -57,4 +57,4 @@ class BasePyroMain(BasePyroMain):
         shell()
 
 if __name__ == '__main__':
-    BasePyroMain().start()
+    Main().start()

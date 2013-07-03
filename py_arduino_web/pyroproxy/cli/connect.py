@@ -21,7 +21,7 @@ from py_arduino import DEVICE_FOR_EMULATOR
 from py_arduino_web.pyroproxy.utils import BasePyroMain
 
 
-class BasePyroMain(BasePyroMain):
+class Main(BasePyroMain):
 
     def run(self, options, args, arduino):
         if len(args) > 1:
@@ -37,4 +37,4 @@ class BasePyroMain(BasePyroMain):
         print "Ping returned: '{0}'. End.".format(ret)
 
 if __name__ == '__main__':
-    BasePyroMain().start()
+    Main().start()
