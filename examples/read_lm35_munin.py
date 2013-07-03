@@ -23,6 +23,63 @@
 # EXAMPLE - Reads the temperature using a LM35 (to be used from Munin)
 #===============================================================================
 
+#===============================================================================
+# Run on Munin
+#===============================================================================
+
+You'll need to link the shell script to the Munin plugins directory:
+
+    $ sudo ln -s /path/to/py-arduino/examples/read_lm35_munin.sh read_lm35_munin_pin0
+
+And configure the plugin:
+
+    $ sudo vim /etc/munin/plugin-conf.d/read_lm35_munin
+
+    [read_lm35_munin*]
+    user user-to-run
+    env.PYTHONPATH /path/to/py-arduino
+    env.PY_ARDUINO_VIRTUALENV /path/to/virtualenv
+    env.TTY_DEVICE /dev/ttyACM0
+    env.PIN 0
+
+Restart the Munin node:
+
+    $ sudo service munin-node restart
+
+You can check for errors in the log file:
+
+    $ sudo tail -f /var/log/munin/munin-node.log
+
+To test with munin-run:
+
+    $ sudo munin-run read_lm35_munin_pin0
+
+Or, if you have telnet and know the Munin protocol:
+
+    $ telnet localhost 4949
+    > Trying 127.0.0.1...
+    > Connected to localhost.
+    > Escape character is '^]'.
+    > # munin node at acer
+    list
+    > cpu cpuspeed df (...) read_lm35_munin_pin0 (...)
+    config read_lm35_munin_pin0
+    > graph_title Temperature
+    > graph_args --vertical-label Temperature in C
+    > graph_category Arduino
+    > temp.label Temperature in C
+    > temp.type GAUGE
+    > .
+    fetch read_lm35_munin_pin0
+    > temp.value 21.48
+    > .
+    quit
+    > Connection closed by foreign host.
+
+#===============================================================================
+# Test from the cli
+#===============================================================================
+
 To run the 'config' action of Munin:
 
     $ env PYTHONPATH=/path/to/py-arduino \
@@ -72,10 +129,10 @@ class Main(BaseMain):
             action="store", dest="graph_title", default="Temperature",
             help="Graph title")
         self.parser.add_option("--graph-category",
-            action="store", dest="graph_category", default="Arduino",
+            action="store", dest="graph_category", default="py-arduino",
             help="Graph category")
         self.parser.add_option("--graph-label",
-            action="store", dest="graph_label", default="Temperature in C",
+            action="store", dest="graph_label", default="Temperature",
             help="Graph label")
 
     def run(self, options, args, arduino):
