@@ -30,7 +30,7 @@ from py_arduino import OUTPUT
 
 To write 128 to pin 3:
 
-    $ python -m py_arduino.cli.analog_write_pwm /dev/ttyACM0 3 128
+    $ python -m py_arduino.cli.analog_write /dev/ttyACM0 3 128
 
 #===============================================================================
 # NOTE: remember to load the virtualenv before running this:
