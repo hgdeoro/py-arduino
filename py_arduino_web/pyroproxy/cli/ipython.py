@@ -20,7 +20,7 @@
 from IPython.frontend.terminal.embed import InteractiveShellEmbed
 from IPython.core.prompts import PromptManager
 
-from py_arduino_web.pyroproxy.utils import get_arduino_pyro
+from py_arduino_web.pyroproxy.utils import BasePyroMain
 
 
 banner = """
@@ -41,20 +41,20 @@ Example:
 """
 
 
-def main():
-    arduino = get_arduino_pyro()
+class BasePyroMain(BasePyroMain):
 
-    try:
-        arduino.ping()
-    except:
-        pass
+    def run(self, options, args, arduino):
+        try:
+            arduino.ping()
+        except:
+            pass
 
-    PromptManager.in_template = "PyArduino [\\#]> "
-    PromptManager.out_template = "PyArduino [\\#]: "
+        PromptManager.in_template = "PyArduino [\\#]> "
+        PromptManager.out_template = "PyArduino [\\#]: "
 
-    shell = InteractiveShellEmbed(banner2=banner)
-    shell.user_ns = {}
-    shell()
+        shell = InteractiveShellEmbed(banner2=banner)
+        shell.user_ns = {}
+        shell()
 
 if __name__ == '__main__':
-    main()
+    BasePyroMain().start()

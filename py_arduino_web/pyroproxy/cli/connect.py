@@ -17,23 +17,24 @@
 ##    along with py-arduino; see the file LICENSE.txt.
 ##-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-import sys
-
 from py_arduino import DEVICE_FOR_EMULATOR
-from py_arduino_web.pyroproxy.utils import get_arduino_pyro
+from py_arduino_web.pyroproxy.utils import BasePyroMain
 
 
-def main():
-    arduino = get_arduino_pyro()
-    if len(sys.argv) > 1:
-        device = sys.argv[1]
-    else:
-        device = DEVICE_FOR_EMULATOR
-    print "Calling arduino.connect() - Connecting to {0}".format(device)
-    arduino.connect(device)
-    print "Calling arduino.ping() to check the connection"
-    ret = arduino.ping()
-    print "Ping returned: '{0}'. End.".format(ret)
+class BasePyroMain(BasePyroMain):
+
+    def run(self, options, args, arduino):
+        if len(args) > 1:
+            device = args[1]
+        else:
+            device = DEVICE_FOR_EMULATOR
+
+        print "Calling arduino.connect() - Connecting to {0}".format(device)
+        arduino.connect(device)
+
+        print "Calling arduino.ping() to check the connection"
+        ret = arduino.ping()
+        print "Ping returned: '{0}'. End.".format(ret)
 
 if __name__ == '__main__':
-    main()
+    BasePyroMain().start()

@@ -17,13 +17,14 @@
 ##    along with py-arduino; see the file LICENSE.txt.
 ##-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-from py_arduino_web.pyroproxy.utils import get_arduino_pyro
+from py_arduino_web.pyroproxy.utils import BasePyroMain
 
 
-def main():
-    arduino = get_arduino_pyro()
-    print "Calling arduino.close()"
-    arduino.close()
+class BasePyroMain(BasePyroMain):
+
+    def run(self, options, args, arduino):
+        print "Calling arduino.close()"
+        arduino.close()
 
 if __name__ == '__main__':
-    main()
+    BasePyroMain().start()

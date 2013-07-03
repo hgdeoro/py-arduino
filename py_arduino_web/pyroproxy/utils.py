@@ -19,6 +19,7 @@
 
 import hmac
 import logging
+import optparse
 import time
 
 import Pyro4
@@ -68,3 +69,48 @@ def server_is_up():
         return True
     except CommunicationError:
         return False
+
+
+#===============================================================================
+# PyroMain
+#===============================================================================
+
+class BasePyroMain(object):
+    """
+    Base class to create scrpits from `pyroproxy.cli.*`
+    """
+
+    def __init__(self):
+        self.parser = optparse.OptionParser()
+        self.add_options()
+
+    def add_options(self):
+        self.parser.add_option("--debug",
+            action="store_true", dest="debug", default=False,
+            help="Configure logging to show debug messages.")
+        self.parser.add_option("--info",
+            action="store_true", dest="info", default=False,
+            help="Configure logging to show info messages.")
+
+    def run(self, options, args, arduino):
+        """
+        To be overriden in subclass.
+        Do not call this method directly! You must call `start()`.
+        """
+        raise(NotImplementedError())
+
+    def start(self):
+        (options, args) = self.parser.parse_args()
+
+        # setup logging
+        if options.debug:
+            logging.basicConfig(level=logging.DEBUG)
+        elif options.info:
+            logging.basicConfig(level=logging.INFO)
+        else:
+            logging.basicConfig(level=logging.ERROR)
+
+        # FIXME: check if PyRO server is reacheable
+
+        arduino = get_arduino_pyro()
+        return self.run(options, args, arduino)
