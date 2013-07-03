@@ -25,15 +25,15 @@
 
 To run this example:
 
-    $ python -m examples.analog_write_pwm_blink /dev/ttyACM0 13
+    $ python -m examples.blink_pin_pwm /dev/ttyACM0 13
 
 or, if you want to see what's going on:
 
-    $ python -m examples.analog_write_pwm_blink --info /dev/ttyACM0 13
+    $ python -m examples.blink_pin_pwm --info /dev/ttyACM0 13
 
 or, if you want to see LOT of debug messages:
 
-    $ python -m examples.analog_write_pwm_blink --debug /dev/ttyACM0 13
+    $ python -m examples.blink_pin_pwm --debug /dev/ttyACM0 13
 
 #===============================================================================
 # NOTE 1: remember to load the virtualenv before running this:
