@@ -96,9 +96,10 @@ class BasePyroMain(object):
         self.parser.add_option("--info",
             action="store_true", dest="info", default=False,
             help="Configure logging to show info messages.")
-        self.parser.add_option("--check-pyro-server",
-            action="store_true", dest="check_pyro_server", default=False,
-            help="Check if PyRO server is reachable, exit if it isn't reachable.")
+        self.parser.add_option("--dont-check-pyro-server",
+            action="store_true", dest="dont_check_pyro_server", default=False,
+            help="Don't check if PyRO server is reachable (by default, "
+            "a check is done and we exit if the server isn't reachable.)")
 
     def run(self, options, args, arduino):
         """
@@ -118,7 +119,7 @@ class BasePyroMain(object):
         else:
             logging.basicConfig(level=logging.ERROR)
 
-        if options.check_pyro_server:
+        if not options.dont_check_pyro_server:
             if not server_is_up():
                 print "ERROR: PyRO server isn't reachable"
                 sys.exit(1)
