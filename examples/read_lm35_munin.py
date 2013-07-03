@@ -29,7 +29,8 @@
 
 You'll need to link the shell script to the Munin plugins directory:
 
-    $ sudo ln -s /path/to/py-arduino/examples/read_lm35_munin.sh read_lm35_munin_pin0
+    $ sudo ln -s /path/to/py-arduino/examples/read_lm35_munin.sh \
+        /etc/munin/plugins/read_lm35_munin_pin0
 
 And configure the plugin:
 
