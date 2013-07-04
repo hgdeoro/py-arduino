@@ -7,6 +7,7 @@ title: Sensing temperature with LM35
 
 ### What you need
 
+ - Arduino + py-arduino
  - LM35
  - wires
 
