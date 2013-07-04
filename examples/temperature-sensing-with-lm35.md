@@ -15,13 +15,14 @@ title: Sensing temperature with LM35
 
 ### How to run the example
 
-##### Load virtualenv:
+##### Go to py-arduino directory and activate the virtualenv
 
-    $ . virtualenv/bin/activate
+    ~/$  cd py-arduino
+    ~/py-arduino$  . virtualenv/bin/activate
 
 ##### Launch the example:
 
-    $ python -m examples.read_lm35_basic /dev/ttyACM0
+    ~/py-arduino$ python -m examples.read_lm35_basic /dev/ttyACM0
 
 
 ![LM35](lm35-console.jpg "Sensing temperature with LM35")

@@ -3,30 +3,29 @@ layout: default
 title: How to install py-arduino
 ---
 
-## Install from GitHub
+## Install from GitHub in 4 steps
 
-#### Clone the repository
+#### Step 1: clone the repository & cd to it
 
-    ~/$  git clone https://github.com/hgdeoro/py-arduino.git
+    ~/$ git clone https://github.com/hgdeoro/py-arduino.git
+    ~/$ cd py-arduino
+    ~/py-arduino$
 
-#### cd to it
+#### Step 2: create a virtualenv & install required libraries
 
-    ~/$  cd py-arduino
+    ~/py-arduino$ virtualenv -p python2.7 virtualenv
+    ~/py-arduino$ . virtualenv/bin/activate
+    (virtualenv)~/py-arduino$ pip install -r requirements.txt
+    (virtualenv)~/py-arduino$
 
-#### Install virtualenv & required libraries
-
-    ~/py-arduino$  virtualenv -p python2.7 virtualenv
-    ~/py-arduino$  . virtualenv/bin/activate
-    (virtualenv)~/py-arduino$  pip install -r requirements.txt
-
-#### Open the sketch and upload
+#### Step 3: open the sketch and upload
 
 Open the sketch at `py-arduino/sketches/py_arduino/py_arduino.ino`,
 verify and upload to Arduino.
 
 ![Arduino sketch](install-sketch.jpg "Arduino sketch")
 
-#### Test it
+#### Step 4: test it
 
     (virtualenv)~/py-arduino$  python -m py_arduino.cli.ping /dev/ttyACM0
     Ping sent... OK - Time=18.295 ms
@@ -37,7 +36,7 @@ verify and upload to Arduino.
 
 ## A note about virtualenv
 
-You must activate the virtualenv to use py-arduino, using something like:
+You must activate the [virtualenv](http://www.virtualenv.org) to use py-arduino, using something like:
 
 `source /path/to/py-arduino/virtualenv/bin/activate`
 
@@ -49,26 +48,8 @@ or
 
 After activating the virtualenv, your prompt will chage: a __(virtualenv)__ will be prepended.
 
-## ImportError: No module named serial
+#### Common problems
 
-    ~/py-arduino$ python -m py_arduino.cli.ping /dev/ttyACM0 
-    Traceback (most recent call last):
-      File "/usr/lib/python2.7/runpy.py", line 162, in _run_module_as_main
-        "__main__", fname, loader, pkg_name)
-      File "/usr/lib/python2.7/runpy.py", line 72, in _run_code
-        exec code in run_globals
-      File "/mnt/seguro/home/horacio/python/py-arduino/py_arduino/cli/ping.py", line 25, in <module>
-        from py_arduino.main_utils import BaseMain
-      File "py_arduino/main_utils.py", line 24, in <module>
-        from py_arduino.arduino import PyArduino
-      File "py_arduino/arduino.py", line 29, in <module>
-        import serial
-    ImportError: No module named serial
-
-If you got the error `ImportError: No module named serial`, this could be because:
-
- + you forgot to activate the virtualenv -> `source /path/to/py-arduino/virtualenv/bin/activate`
- + you forgot to install the dependencies -> `pip install -r requirements.txt`
-
-See above for the details.
+If you have problems, check <a href="{{ site.baseurl }}/docs/common-problems/">Common problems</a>,
+<a href="https://github.com/hgdeoro/py-arduino/issues">file a bug</a> or contact me.
 
