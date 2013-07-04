@@ -100,6 +100,9 @@ class BasePyroMain(object):
             action="store_true", dest="dont_check_pyro_server", default=False,
             help="Don't check if PyRO server is reachable (by default, "
             "a check is done and we exit if the server isn't reachable.)")
+        self.parser.add_option("--wait-until-connected",
+            action="store_true", dest="wait_until_pyro_server_is_up", default=False,
+            help="Wait until the PyRO server is up")
 
     def run(self, options, args, arduino):
         """
@@ -123,6 +126,9 @@ class BasePyroMain(object):
             if not server_is_up():
                 print "ERROR: PyRO server isn't reachable"
                 sys.exit(1)
+
+        if options.wait_until_pyro_server_is_up:
+            wait_for_server()
 
         arduino = get_arduino_pyro()
         try:
