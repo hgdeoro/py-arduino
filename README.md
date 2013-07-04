@@ -74,6 +74,8 @@ To run the tests against a real Arduino, you have to upload the __sketch__ (from
 Installation (web application)
 ==============================
 
+ * Note: this instructions will be shortly moved to [http://hgdeoro.github.io/py-arduino/](http://hgdeoro.github.io/py-arduino/)
+
 To install the web application, follow the steps on `Installation (low level tool/library)`, and then:
 
     $ pip install -r requirements-web.txt
