@@ -12,10 +12,10 @@ It consist of two layers:
 The project has many **testing** utilities, a simple **emulator** and the ability to see DEBUG messages to facilitate the location of problems and subsequent solutions.
 
 
-Installation (low level tool/library)
-=====================================
+Quick installation instructions (low level tool/library)
+========================================================
 
-To install, clone the Git repository, `cd` to the cloned directory and create a `virtualenv`:
+Quick instructions ([see full install instructions and other documentation here](http://hgdeoro.github.io/py-arduino/))
 
     $ git clone https://github.com/hgdeoro/py-arduino.git
     $ cd py-arduino
@@ -23,21 +23,11 @@ To install, clone the Git repository, `cd` to the cloned directory and create a 
     $ . virtualenv/bin/activate
     $ pip install -r requirements.txt
 
-The, you need to upload the sketch __sketch__ from `sketches/py_arduino`, and you'll be ready to play with it, like:
-
-###### Read an analog pin
-
-    $ python -m py_arduino.cli.analog_read /dev/ttyACM0 0
-
-###### Ping the Arduino
+Then upload the __sketch__ from `sketches/py_arduino`, and test:
 
     $ python -m py_arduino.cli.ping /dev/ttyACM0
 
-###### Start an ipython session
-
-    $ pip install ipython
-    $ python -m py_arduino.cli.ipython /dev/ttyACM0
-
+<!--
 ### Running the tests
 
 To run the tests against the emulator (if you don't have an Arduino):
@@ -47,7 +37,7 @@ To run the tests against the emulator (if you don't have an Arduino):
 To run the tests against a real Arduino, you have to upload the __sketch__ (from `sketches/py_arduino`), an execute:
 
     $ python -m py_arduino.tests.test_all_functions /dev/ttyACM0 
-
+-->
 
 
 Installation (web application)
@@ -114,19 +104,23 @@ Implemented methods
 
 The basic methods of Arduino are implemented. The following actions can be done from Python: 
 
-* Check communication with Arduino (ping) 
 * pinMode()
 * digitalRead()
 * digitalWrite()
 * analogRead()
 * analogWrite()
-* Get the value returned by millis() and micro()
-* Run delay() and delayMicroseconds()
-* watchInterrupt() and getInterruptMark() to work with interrupts
+* millis(), micro()
+* delay(), delayMicroseconds()
 * shiftOut()
-* Show messages on LCDs, based on the Hitachi HD44780 (or a compatible) chipset.
-* Read temperature and humidity with DHT11 sensors.
 
+and some extra methods:
+
+* ping() to check communication with Arduino
+* getFreeMemory() returns free Arduino memory
+* watchInterrupt() and getInterruptMark() to work with interrupts (WIP)
+* lcdMessage(), lcdWrite() lcdClear() show messages on LCDs, based on the Hitachi HD44780 (or a compatible) chipset
+* dht11_read() read temperature and humidity with DHT11 sensor
+* ds18x20_read() read temperature with DS18x20 sensor
 
 TODO (project cleanup)
 ----------------------
