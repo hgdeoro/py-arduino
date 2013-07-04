@@ -51,6 +51,14 @@ and write a `LOW` first, and then a `HIGH`.
 
 ![IPython - Use onboard LED on pin 13](ipython-pin-13.jpg) 
 
+Here is a short video showing how to use ipython, and how to
+dim the onboard LED of Arduino using PWM.
+
+<iframe width="420" height="315" src="//www.youtube.com/embed/NnJ5dJzpBpU"
+	frameborder="0" allowfullscreen></iframe>
+
+<p></p>
+
 ## analog_read
 
 TODO: add documentation! But you can see the
