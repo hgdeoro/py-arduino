@@ -19,6 +19,8 @@ title: Common problems
         import serial
     ImportError: No module named serial
 
+![ImportError: No module named serial](import-error-no-module-named-serial.jpg)
+
 This could happen because:
 
  1. you forgot to install the dependencies
