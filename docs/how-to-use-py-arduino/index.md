@@ -5,14 +5,17 @@ title: How to use py_arduino.cli.*
 
 ## How to use py_arduino.cli.* after install
 
-You can start using py-arduino from the command line interface (__cli__) without actually writing Python code. There are scripts to:
+You can start using py-arduino from the command line interface (__cli__) without actually
+writing Python code
+(see the <a href="{{ site.baseurl }}/docs/py-arduino-cli-reference/">reference</a>
+for furder information). There are scripts to:
 
- + __ping__: to check the connectivity to the Arduino
- + __ipython__: to start an interactive session
- + __analog_read__
- + __analog_write__
- + __digital_read__
- + __digital_write__
+ + __ping__: Check the connectivity to the Arduino
+ + __ipython__: Start an IPython interactive session
+ + __analog_read__: _Reads the value from the specified analog pin_
+ + __analog_write__: _Writes an analog value (PWM wave) to a pin_
+ + __digital_read__: _Reads the value from a specified digital pin, either HIGH or LOW_
+ + __digital_write__: _Write a HIGH or a LOW value to a digital pin_
 
 To use these scripts, you need to:
 
