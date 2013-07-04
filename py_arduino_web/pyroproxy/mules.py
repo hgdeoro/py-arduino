@@ -24,6 +24,16 @@ from py_arduino import HIGH, INPUT, LOW
 from py_arduino_web.pyroproxy.utils import BasePyroMain
 
 
+"""
+#===============================================================================
+# Example - How to use MuleDigitalPinMonitor
+#===============================================================================
+
+See `examples/bg_log_change_on_digital_pin_a.py`
+
+"""
+
+
 class MuleDigitalPinMonitor(BasePyroMain):
 
     pin = None
@@ -49,6 +59,20 @@ class MuleDigitalPinMonitor(BasePyroMain):
         arduino.pinMode(self.pin, INPUT)
         arduino.digitalWrite(self.pin, HIGH)
 
+    def bg_loop(self, options, args, arduino):
+        last_value = arduino.digitalRead(self.pin)
+        while True:
+            value = arduino.digitalRead(self.pin)
+            if value != last_value:
+                # Value changed
+                last_value = value
+                self.value_changed(value)
+                time.sleep(self.wait_after_change)
+            else:
+                # Value hasn't changed
+                if self.wait_if_nothing_changed:
+                    time.sleep(self.wait_if_nothing_changed)
+
     def run(self, options, args, arduino):
         self.logger.info("Starting on pin: %s", self.pin)
         if self.pin is None:
@@ -73,18 +97,7 @@ class MuleDigitalPinMonitor(BasePyroMain):
         ## loop()
 
         try:
-            last_value = arduino.digitalRead(self.pin)
-            while True:
-                value = arduino.digitalRead(self.pin)
-                if value != last_value:
-                    # Value changed
-                    last_value = value
-                    self.value_changed(value)
-                    time.sleep(self.wait_after_change)
-                else:
-                    # Value hasn't changed
-                    if self.wait_if_nothing_changed:
-                        time.sleep(self.wait_if_nothing_changed)
+            self.bg_loop(options, args, arduino)
         except:
             self.logger.exception("Error detected in loop")
             return
