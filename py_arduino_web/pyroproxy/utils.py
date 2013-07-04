@@ -20,11 +20,11 @@
 import hmac
 import logging
 import optparse
+import sys
 import time
 
 import Pyro4
 from Pyro4.errors import CommunicationError
-import sys
 
 _logger = logging.getLogger(__name__)
 
