@@ -22,6 +22,6 @@ title: Common problems
 This could happen because:
 
  1. you forgot to install the dependencies
-    + See <a href="{{ site.baseurl }}/docs/how-to-install-py-arduino/">How to install py-arduino</a>
+    + See <a href="{{ site.baseurl }}/docs/how-to-install-py-arduino/">How to install py-arduino</a>.
  2. you forgot to activate the virtualenv
-    + See <a href="{{ site.baseurl }}/docs/how-to-install-py-arduino/">How to install py-arduino</a>
+    + See <a href="{{ site.baseurl }}/docs/how-to-use-py-arduino/">How to use py_arduino.cli.*</a>.

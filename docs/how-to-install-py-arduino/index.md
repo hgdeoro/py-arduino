@@ -11,12 +11,18 @@ title: How to install py-arduino
     ~/$ cd py-arduino
     ~/py-arduino$
 
+![Clone the repo](clone-github.jpg)
+
 #### Step 2: create a virtualenv & install required libraries
 
     ~/py-arduino$ virtualenv -p python2.7 virtualenv
     ~/py-arduino$ . virtualenv/bin/activate
     (virtualenv)~/py-arduino$ pip install -r requirements.txt
     (virtualenv)~/py-arduino$
+
+![Create a virtualenv](install-virtualenv.jpg)
+
+![Install required libraries](install-reqs.jpg)
 
 #### Step 3: open the sketch and upload
 
@@ -34,19 +40,19 @@ verify and upload to Arduino.
     ^C
     (virtualenv)~/py-arduino$
 
-## A note about virtualenv
+![Test it](test.jpg)
 
-You must activate the [virtualenv](http://www.virtualenv.org) to use py-arduino, using something like:
 
-`source /path/to/py-arduino/virtualenv/bin/activate`
 
-or
 
-`. /path/to/py-arduino/virtualenv/bin/activate`
 
-(note the __space__ between the __.__ and the path to __activate__).
+#### Use it!
 
-After activating the virtualenv, your prompt will chage: a __(virtualenv)__ will be prepended.
+See: <a href="{{ site.baseurl }}/docs/how-to-use-py-arduino/">How to use py_arduino.cli.*</a>.
+
+
+
+
 
 #### Common problems
 
