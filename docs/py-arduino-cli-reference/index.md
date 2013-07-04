@@ -5,6 +5,8 @@ title: py_arduino.cli.* Reference
 
 # py_arduino.cli.*: Reference
 
+You can see the source code [here](https://github.com/hgdeoro/py-arduino/tree/master/py_arduino/cli).
+
 ## ping
 
 To check the connectivity to the Arduino
@@ -51,16 +53,20 @@ and write a `LOW` first, and then a `HIGH`.
 
 ## analog_read
 
-TODO
+TODO: add documentation! But you can see the
+[source code](https://github.com/hgdeoro/py-arduino/blob/master/py_arduino/cli/analog_read.py).
 
 ## analog_write
 
-TODO
+TODO: add documentation! But you can see the
+[source code](https://github.com/hgdeoro/py-arduino/blob/master/py_arduino/cli/analog_write.py).
 
 ## digital_read
 
-TODO
+TODO: add documentation! But you can see the
+[source code](https://github.com/hgdeoro/py-arduino/blob/master/py_arduino/cli/digital_read.py).
 
 ## digital_write
 
-TODO
+TODO: add documentation! But you can see the
+[source code](https://github.com/hgdeoro/py-arduino/blob/master/py_arduino/cli/digital_write.py).
