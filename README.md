@@ -12,6 +12,37 @@ It consist of two layers:
 The project has many **testing** utilities, a simple **emulator** and the ability to see DEBUG messages to facilitate the location of problems and subsequent solutions.
 
 
+Implemented methods  
+===================
+
+
+The basic methods of Arduino are implemented. The following actions can be done from Python: 
+
+* pinMode()
+* digitalRead()
+* digitalWrite()
+* analogRead()
+* analogWrite()
+* millis(), micro()
+* delay(), delayMicroseconds()
+* shiftOut()
+
+and some extra methods:
+
+* ping() to check communication with Arduino
+* getFreeMemory() returns free Arduino memory
+* autoconnect() to automatically connect to any available serial port
+* validateConnection() to recover after communications problems
+* lcdMessage(), lcdWrite() lcdClear() show messages on LCDs, based on the Hitachi HD44780 (or a compatible) chipset
+* dht11_read() read temperature and humidity with DHT11 sensor
+* ds18x20_read() read temperature with DS18x20 sensor
+* enableDebug(), disableDebug(), enableDebugToLcd() to show debug messages
+* getAvrCpuType(), getArduinoTypeStruct() to get information about the Arduino
+* watchInterrupt(), getInterruptMark() to work with interrupts (Prototype/Work In Progress)
+* streamingAnalogRead(), streamingDigitalRead() eficientlly receive much values (Prototype/Work In Progress)
+
+
+
 Quick installation instructions (low level tool/library)
 ========================================================
 
@@ -98,35 +129,11 @@ To set output HIGH on a digital pin:
 ![Digital Write](https://raw.github.com/hgdeoro/py-arduino-proxy/master/examples/arduino-proxy-digital-write.png "Digital Write")
 -->
 
-
-Implemented methods  
-------------------- 
-
-The basic methods of Arduino are implemented. The following actions can be done from Python: 
-
-* pinMode()
-* digitalRead()
-* digitalWrite()
-* analogRead()
-* analogWrite()
-* millis(), micro()
-* delay(), delayMicroseconds()
-* shiftOut()
-
-and some extra methods:
-
-* ping() to check communication with Arduino
-* getFreeMemory() returns free Arduino memory
-* watchInterrupt() and getInterruptMark() to work with interrupts (WIP)
-* lcdMessage(), lcdWrite() lcdClear() show messages on LCDs, based on the Hitachi HD44780 (or a compatible) chipset
-* dht11_read() read temperature and humidity with DHT11 sensor
-* ds18x20_read() read temperature with DS18x20 sensor
-
 TODO (project cleanup)
 ----------------------
 
-* migrate wiki to to docs/ and readthedocs
-* recreate sphinx files to build api docs
+* migrate wiki and docs to hgdeoro.github.io/py-arduino
+* build api docs
 * setup.py (to install from PIP)
 
 
