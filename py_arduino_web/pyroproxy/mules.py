@@ -17,6 +17,7 @@
 ##    along with py-arduino; see the file LICENSE.txt.
 ##-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
+import datetime
 import time
 import subprocess
 
@@ -24,17 +25,12 @@ from py_arduino import HIGH, INPUT, LOW
 from py_arduino_web.pyroproxy.utils import BasePyroMain
 
 
-"""
-#===============================================================================
-# Example - How to use MuleDigitalPinMonitor
-#===============================================================================
-
-See `examples/bg_log_change_on_digital_pin_a.py`
-
-"""
-
-
 class MuleDigitalPinMonitor(BasePyroMain):
+    """
+    TODO: add documentation
+
+    Example: See `examples/bg_log_change_on_digital_pin_a.py`
+    """
 
     pin = None
     script_on_high = None
@@ -48,14 +44,18 @@ class MuleDigitalPinMonitor(BasePyroMain):
             wait_until_pyro_server_is_up=True)
 
     def value_changed(self, new_value):
+        self.logger.debug("Value changed: %s", new_value)
         if new_value == HIGH:
             if self.script_on_high:
+                self.logger.debug("Calling script: %s", self.script_on_high)
                 subprocess.call(self.script_on_high, shell=True)
         if new_value == LOW:
             if self.script_on_low:
+                self.logger.debug("Calling script: %s", self.script_on_low)
                 subprocess.call(self.script_on_low, shell=True)
 
     def bg_setup(self, options, args, arduino):
+        self.logger.debug("Setting pinMode() on %s", self.pin)
         arduino.pinMode(self.pin, INPUT)
         arduino.digitalWrite(self.pin, HIGH)
 
@@ -101,3 +101,51 @@ class MuleDigitalPinMonitor(BasePyroMain):
         except:
             self.logger.exception("Error detected in loop")
             return
+
+
+class MuleDigitalPinMonitorWithBounceControl(MuleDigitalPinMonitor):
+    """
+    TODO: add documentation
+
+    Example: See `examples/bg_log_change_on_digital_pin_with_bounce_control.py`
+    """
+
+    bounce_control_time = 2.0  # in seconds
+
+    def bg_loop(self, options, args, arduino):
+        bounce_control_start = None
+        last_value = arduino.digitalRead(self.pin)
+        self.logger.debug("Initial value: %s", last_value)
+
+        while True:
+            new_value = arduino.digitalRead(self.pin)
+            self.logger.debug("Read value: %s", new_value)
+
+            if new_value != last_value:
+                #===============================================================
+                # Value changed
+                #===============================================================
+                if bounce_control_start is None:
+                    bounce_control_start = datetime.datetime.now()
+                    self.logger.debug("Starting bounce control: %s -> %s", last_value, new_value)
+
+                time_diff = (datetime.datetime.now() - bounce_control_start).total_seconds()
+                if time_diff > self.bounce_control_time:
+                    # We must 'commit' the change
+                    self.logger.debug("New value wasn't a bouce! It's the same after %s secs. "
+                        "Taking new value: %s", time_diff, new_value)
+                    last_value = new_value
+                    self.value_changed(new_value)
+                    bounce_control_start = None  # reset bounce control
+
+                time.sleep(self.wait_after_change)
+
+            else:
+                #===============================================================
+                # Value hasn't changed
+                #===============================================================
+                if bounce_control_start is not None:
+                    self.logger.debug("Ignored change in value (bounce control)")
+                    bounce_control_start = None  # reset bounce control
+                if self.wait_if_nothing_changed:
+                    time.sleep(self.wait_if_nothing_changed)
