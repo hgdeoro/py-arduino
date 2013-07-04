@@ -6,6 +6,7 @@
     <title>{% if page.title }%} - {{page.title}}{% endif %}</title>
     
     <link rel="stylesheet" href="{{ site.baseurl }}/stylesheets/styles.css">
+    <link rel="stylesheet" href="{{ site.baseurl }}/stylesheets/custom.css">
     <link rel="stylesheet" href="{{ site.baseurl }}/stylesheets/pygment_trac.css">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <!--[if lt IE 9]>
@@ -15,16 +16,25 @@
   <body>
     <div class="wrapper">
       <header>
-        <h1>py-arduino</h1>
-        <p>Access Arduino from Python</p>
-	<h3>Examples - Low level</h3>
-	<p>
+        <p class="view"><a href="{{ site.baseurl }}/">py-arduino <small>Access Arduino from Python</small></a></p>
+
+	<h4>Documents</h4>
+	<div>
+		<a href="{{ site.baseurl }}/how-to-install.html">How to install py-arduino</a>
+	</div>
+
+	<h4>Examples - Low level</h4>
+	<div>
 		<a href="{{ site.baseurl }}/examples/temperature-sensing-with-lm35.html">Temperature sensing (LM35)</a>
-	</p>
-	<h3>Examples - Web Application</h3>
-	<p>
+	</div>
+
+	<h4>Examples - Web Application</h4>
+	<div>
 		<a href="#">TODO</a>
-	</p>
+	</div>
+
+	---
+
         <p class="view"><a href="http://github.com/hgdeoro/py-arduino">View the Project on GitHub <small>hgdeoro/py-arduino</small></a></p>
         <ul>
           <li><a href="https://github.com/hgdeoro/py-arduino/zipball/master">Download <strong>ZIP File</strong></a></li>
