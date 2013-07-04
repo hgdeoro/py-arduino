@@ -29,7 +29,7 @@ class MuleDigitalPinMonitor(BasePyroMain):
     """
     TODO: add documentation
 
-    Example: See `examples/bg_log_change_on_digital_pin_a.py`
+    Example: See `examples/bg_log_change_on_digital_pin.py`
     """
 
     pin = None
@@ -61,12 +61,14 @@ class MuleDigitalPinMonitor(BasePyroMain):
 
     def bg_loop(self, options, args, arduino):
         last_value = arduino.digitalRead(self.pin)
+        self.logger.debug("Initial value: %s", last_value)
         while True:
-            value = arduino.digitalRead(self.pin)
-            if value != last_value:
+            new_value = arduino.digitalRead(self.pin)
+            self.logger.debug("Read value: %s", new_value)
+            if new_value != last_value:
                 # Value changed
-                last_value = value
-                self.value_changed(value)
+                last_value = new_value
+                self.value_changed(new_value)
                 time.sleep(self.wait_after_change)
             else:
                 # Value hasn't changed
@@ -81,6 +83,7 @@ class MuleDigitalPinMonitor(BasePyroMain):
             time.sleep(60 * 60)
 
         if not arduino.is_connected():
+            self.logger.debug("Arduino is not connected...")
             while not arduino.is_connected():
                 self.logger.info("Waiting until connected...")
                 time.sleep(5)
@@ -89,6 +92,7 @@ class MuleDigitalPinMonitor(BasePyroMain):
         ## setup()
 
         try:
+            self.logger.debug("Calling self.bg_setup()")
             self.bg_setup(options, args, arduino)
         except:
             self.logger.exception("Error detected when called bg_setup()")
@@ -97,6 +101,7 @@ class MuleDigitalPinMonitor(BasePyroMain):
         ## loop()
 
         try:
+            self.logger.debug("Calling self.bg_loop()")
             self.bg_loop(options, args, arduino)
         except:
             self.logger.exception("Error detected in loop")
