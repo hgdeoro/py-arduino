@@ -31,7 +31,23 @@ To check the connectivity to the Arduino
 
 ## ipython
 
-To start an interactive session
+Start an IPython interactive session.
+
+    $ python -m py_arduino.cli.ipython /dev/ttyACM0
+
+To use this, you'll need to install _ipython_ with:
+
+    $ pip install ipython
+
+Here you can see the interactive session with a customized message.
+The sessions starts with the Arduino connected.
+
+![IPython](ipython.jpg) 
+
+In this example, we import some constants, set the PIN 13 to `OUTPUT` mode,
+and write a `LOW` first, and then a `HIGH`.
+
+![IPython - Use onboard LED on pin 13](ipython-pin-13.jpg) 
 
 ## analog_read
 
