@@ -36,7 +36,7 @@ except ImportError:
 
 from py_arduino import ATTACH_INTERRUPT_MODE_LOW, \
     ATTACH_INTERRUPT_MODE_CHANGE, ATTACH_INTERRUPT_MODE_RISING, \
-    ATTACH_INTERRUPT_MODE_FALLING, INVALID_CMD, INVALID_PARAMETER,\
+    ATTACH_INTERRUPT_MODE_FALLING, INVALID_CMD, INVALID_PARAMETER, \
     UNSUPPORTED_CMD
 from py_arduino.arduino import PyArduino
 from py_arduino.utils import _unindent
@@ -157,6 +157,17 @@ def main():  # pylint: disable=R0914,R0912,R0915
         'dht11.h',
         'OneWire.cpp',
         'OneWire.h',
+        # Ethernet
+        'ethernet/dhcp.cpp',
+        'ethernet/dns.cpp',
+        'ethernet/enc28j60.cpp',
+        'ethernet/enc28j60.h',
+        'ethernet/EtherCard.cpp',
+        'ethernet/EtherCard.h',
+        'ethernet/net.h',
+        'ethernet/tcpip.cpp',
+        'ethernet/udpserver.cpp',
+        'ethernet/webutil.cpp',
     ]
 
     logging.info("Template for .ino file: %s", c_input_filename)
@@ -201,7 +212,7 @@ def main():  # pylint: disable=R0914,R0912,R0915
     # Coping extra source files
     for extra_filename in extra_source_filenames:
         input_filename = os.path.join(BASE_DIR, 'src-c', extra_filename)
-        output_filename = os.path.join(output_dir, extra_filename)
+        output_filename = os.path.join(output_dir, os.path.split(extra_filename)[1])
         logging.info("Copying to %s", output_filename)
         shutil.copyfile(input_filename, output_filename)
 
