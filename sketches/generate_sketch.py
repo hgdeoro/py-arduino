@@ -51,17 +51,34 @@ def generate_placeholder_values(arduino, options):
         raise(Exception("There are duplicates arduino function names (that's defined " + \
             "function.arduino_function_name = 'something')"))
 
-    logging.info("Proxy functions:")
-    for function in arduino_functions:
-        logging.info(" + %s()", function.__name__)
-
-    proxied_function_source = StringIO()
+    proxied_function_source = StringIO() # Arduino function's sources
+    proxied_function_headers = StringIO() # To add in the header (#includes, etc.)
+    proxied_function_globals = StringIO() # Global variables
+    proxied_function_setup = StringIO() # To run in Arduino's setup()
     proxied_function_names = StringIO()
     proxied_function_ptrs = StringIO()
+
+    logging.info("Generating functions:")
     for function in arduino_functions:
+        logging.info(" + %s()", function.__name__)
         proxied_function_source.write("\n")
         proxied_function_source.write(function.arduino_code)
         proxied_function_source.write("\n")
+        if hasattr(function, 'arduino_header'):
+            logging.info("     - arduino_header")
+            proxied_function_headers.write("\n")
+            proxied_function_headers.write(function.arduino_header)
+            proxied_function_headers.write("\n")
+        if hasattr(function, 'arduino_globals'):
+            logging.info("     - arduino_globals")
+            proxied_function_globals.write("\n")
+            proxied_function_globals.write(function.arduino_globals)
+            proxied_function_globals.write("\n")
+        if hasattr(function, 'arduino_setup'):
+            logging.info("     - arduino_setup")
+            proxied_function_setup.write("\n")
+            proxied_function_setup.write(function.arduino_setup)
+            proxied_function_setup.write("\n")
         proxied_function_names.write('"%s", ' % function.arduino_function_name)
         proxied_function_ptrs.write('%s, ' % function.arduino_function_name)
 
@@ -70,6 +87,9 @@ def generate_placeholder_values(arduino, options):
         'proxied_function_names': proxied_function_names.getvalue(),
         'proxied_function_ptrs': proxied_function_ptrs.getvalue(),
         'proxied_function_source': proxied_function_source.getvalue(),
+        'proxied_function_headers': proxied_function_headers.getvalue(),
+        'proxied_function_globals': proxied_function_globals.getvalue(),
+        'proxied_function_setup': proxied_function_setup.getvalue(),
         'serial_speed': arduino.speed,
         'INVALID_CMD': INVALID_CMD,
         'INVALID_PARAMETER': INVALID_PARAMETER,
@@ -78,14 +98,7 @@ def generate_placeholder_values(arduino, options):
         'ATTACH_INTERRUPT_MODE_CHANGE': ATTACH_INTERRUPT_MODE_CHANGE,
         'ATTACH_INTERRUPT_MODE_RISING': ATTACH_INTERRUPT_MODE_RISING,
         'ATTACH_INTERRUPT_MODE_FALLING': ATTACH_INTERRUPT_MODE_FALLING,
-        'PY_ARDUINO_LCD_SUPPORT': 0,
-        'PY_ARDUINO_DEBUG_TO_LCD': 0,
     }
-
-    if options.lcd:
-        placeholder_values['PY_ARDUINO_LCD_SUPPORT'] = 1
-        if not options.disable_debug_to_lcd:
-            placeholder_values['PY_ARDUINO_DEBUG_TO_LCD'] = 1
 
     return placeholder_values
 
@@ -182,7 +195,6 @@ def main():  # pylint: disable=R0914,R0912,R0915
 
     arduino = PyArduino()
     placeholder_values = generate_placeholder_values(arduino, options)
-    # arduino.close() # No need to close
 
     output = StringIO()
 

@@ -8,13 +8,6 @@
 #include "py_arduino.h"
 #include "arduino_type.h"
 
-#define PY_ARDUINO_LCD_SUPPORT %(PY_ARDUINO_LCD_SUPPORT)d // {***PLACEHOLDER***}
-#define PY_ARDUINO_DEBUG_TO_LCD %(PY_ARDUINO_DEBUG_TO_LCD)d // {***PLACEHOLDER***}
-
-#if PY_ARDUINO_LCD_SUPPORT == 1
-#include <LiquidCrystal.h>
-#endif
-
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // If PY_ARDUINO_DEVEL is defined, the generated code
 // is targeted to test and develop the sketch in a PC,
@@ -51,6 +44,11 @@ char* received_parameters[MAX_RECEIVED_PARAMETERS] = { 0 };
 #define ATTACH_INTERRUPT_MODE_RISING '%(ATTACH_INTERRUPT_MODE_RISING)s' // {***PLACEHOLDER***}
 #define ATTACH_INTERRUPT_MODE_FALLING '%(ATTACH_INTERRUPT_MODE_FALLING)s' // {***PLACEHOLDER***}
 
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Dynamically generated headers inclusions
+
+%(proxied_function_headers)s // {***PLACEHOLDER***}
+
 volatile uint8_t detected_interrupts = 0x00;
 
 void set_mark_interrupt_0() { detected_interrupts = detected_interrupts | 0x01; }
@@ -64,12 +62,10 @@ uint8_t check_mark_interrupt_1() { return detected_interrupts & 0x02; }
 
 uint8_t debug_enabled = 0;
 
-#if PY_ARDUINO_LCD_SUPPORT == 1
-LiquidCrystal lcd = LiquidCrystal(PY_ARDUINO_LCD_SUPPORT_rs,
-	PY_ARDUINO_LCD_SUPPORT_enable, PY_ARDUINO_LCD_SUPPORT_d4,
-	PY_ARDUINO_LCD_SUPPORT_d5, PY_ARDUINO_LCD_SUPPORT_d6,
-	PY_ARDUINO_LCD_SUPPORT_d7);
-#endif
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Dynamically generated global variables
+
+%(proxied_function_globals)s // {***PLACEHOLDER***}
 
 #ifndef PY_ARDUINO_DEVEL
 	
@@ -86,7 +82,7 @@ LiquidCrystal lcd = LiquidCrystal(PY_ARDUINO_LCD_SUPPORT_rs,
 	void setup_serial() {
 		Serial.begin(%(serial_speed)d); // {***PLACEHOLDER***}
 	}
-	
+
 	void wait_start() {
 		digitalWrite(PIN_START_BUTTON, HIGH); // turn on pullup resistors
 		int state = HIGH;
@@ -442,35 +438,37 @@ void loop() {
 		send_debug();
 		proxied_function_ptr function = get_function_by_name(received_parameters[0]);
 		if(function != NULL) {
-			#if PY_ARDUINO_DEBUG_TO_LCD == 1
-			if(debug_enabled == 2) {
-				lcd.clear(); // lcd.setCursor(0, 0); // column, line
-				lcd.print(received_parameters[0]);
-				
-				lcd.setCursor(0, 1); // column, line
-				int i;
-				for(i=1; i<MAX_RECEIVED_PARAMETERS; i++) {
-					if(received_parameters[i] != NULL) {
-						lcd.print(received_parameters[i]);
-						lcd.print(" ");
-					}
-				}
-			}
-			#endif
+//          2013-07-10 -- Making LCD support optional
+//          #if PY_ARDUINO_DEBUG_TO_LCD == 1
+//			if(debug_enabled == 2) {
+//				lcd.clear(); // lcd.setCursor(0, 0); // column, line
+//				lcd.print(received_parameters[0]);
+//				
+//				lcd.setCursor(0, 1); // column, line
+//				int i;
+//				for(i=1; i<MAX_RECEIVED_PARAMETERS; i++) {
+//					if(received_parameters[i] != NULL) {
+//						lcd.print(received_parameters[i]);
+//						lcd.print(" ");
+//					}
+//				}
+//			}
+//			#endif
 			
 			(function)();
 			
 		} else {
 			send_invalid_cmd_response(FUNCTION_NOT_FOUND);
 			
-			#if PY_ARDUINO_DEBUG_TO_LCD == 1
-			if(debug_enabled == 2) {
-				lcd.clear(); // lcd.setCursor(0, 0); // column, line
-				lcd.print(received_parameters[0]);
-				lcd.setCursor(0, 1); // column, line
-				lcd.print("ERR:invalid cmd");
-			}
-			#endif
+//          2013-07-10 -- Making LCD support optional
+//			#if PY_ARDUINO_DEBUG_TO_LCD == 1
+//			if(debug_enabled == 2) {
+//				lcd.clear(); // lcd.setCursor(0, 0); // column, line
+//				lcd.print(received_parameters[0]);
+//				lcd.setCursor(0, 1); // column, line
+//				lcd.print("ERR:invalid cmd");
+//			}
+//			#endif
 		}
 	} else if(ret == READ_ONE_PARAM_EMPTY_RESPONSE) {
 		delay(10);
@@ -479,29 +477,31 @@ void loop() {
 		send_debug();
 		send_invalid_cmd_response(ret);
 		
-		#if PY_ARDUINO_DEBUG_TO_LCD == 1
-		if(debug_enabled == 2) {
-			lcd.clear(); // lcd.setCursor(0, 0); // column, line
-			lcd.print(received_parameters[0]);
-			lcd.setCursor(0, 1); // column, line
-			if(ret == READ_ONE_PARAM_ERROR_PARAMETER_TOO_LARGE)
-				lcd.print("ERR:param large");
-			else
-				lcd.print("ERR:many params");
-		}
-		#endif
+//     2013-07-10 -- Making LCD support optional
+//		#if PY_ARDUINO_DEBUG_TO_LCD == 1
+//		if(debug_enabled == 2) {
+//			lcd.clear(); // lcd.setCursor(0, 0); // column, line
+//			lcd.print(received_parameters[0]);
+//			lcd.setCursor(0, 1); // column, line
+//			if(ret == READ_ONE_PARAM_ERROR_PARAMETER_TOO_LARGE)
+//				lcd.print("ERR:param large");
+//			else
+//				lcd.print("ERR:many params");
+//		}
+//		#endif
 		
 	} else {
 		send_debug();
 		send_invalid_cmd_response(UNEXPECTED_RESPONSE_FROM_READ_PARAMETERS);
-		#if PY_ARDUINO_DEBUG_TO_LCD == 1
-		if(debug_enabled == 2) {
-			lcd.clear(); // lcd.setCursor(0, 0); // column, line
-			lcd.print(received_parameters[0]);
-			lcd.setCursor(0, 1); // column, line
-			lcd.print("ERR:unexp resp");
-		}
-		#endif
+//     2013-07-10 -- Making LCD support optional
+//		#if PY_ARDUINO_DEBUG_TO_LCD == 1
+//		if(debug_enabled == 2) {
+//			lcd.clear(); // lcd.setCursor(0, 0); // column, line
+//			lcd.print(received_parameters[0]);
+//			lcd.setCursor(0, 1); // column, line
+//			lcd.print("ERR:unexp resp");
+//		}
+//		#endif
 	}
 }
 
@@ -519,15 +519,12 @@ void setup() {
 	wait_start();
 
 	setup_serial();
-	
-	#if PY_ARDUINO_LCD_SUPPORT == 1
-	lcd.begin(PY_ARDUINO_LCD_SUPPORT_COLS,
-		PY_ARDUINO_LCD_SUPPORT_ROWS);
-	lcd.clear();
-	lcd.print("PyArduino");
-	lcd.setCursor(0, 1); // column, line
-	lcd.print("READY!");
-	#endif
+
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	// Dynamically generated code to execute on setup()
+
+	%(proxied_function_setup)s // {***PLACEHOLDER***}
+
 }
 
 #ifdef PY_ARDUINO_DEVEL

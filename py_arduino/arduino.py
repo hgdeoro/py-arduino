@@ -1203,6 +1203,54 @@ class PyArduino(object):  # pylint: disable=R0904
             }
         """)
 
+    lcdWrite.arduino_header = textwrap.dedent("""
+
+            // If you want to disable LCD support once the sketch file is generated,
+            // you can define PY_ARDUINO_LCD_SUPPORT = 0
+
+            #define PY_ARDUINO_LCD_SUPPORT 1
+            #define PY_ARDUINO_DEBUG_TO_LCD 0
+
+            #if PY_ARDUINO_LCD_SUPPORT == 1
+                #include <LiquidCrystal.h>
+                #define PY_ARDUINO_LCD_SUPPORT_COLS  16
+                #define PY_ARDUINO_LCD_SUPPORT_ROWS   2
+                #define PY_ARDUINO_LCD_SUPPORT_rs     7
+                #define PY_ARDUINO_LCD_SUPPORT_enable 6
+                #define PY_ARDUINO_LCD_SUPPORT_d4     5
+                #define PY_ARDUINO_LCD_SUPPORT_d5     4
+                #define PY_ARDUINO_LCD_SUPPORT_d6     3
+                #define PY_ARDUINO_LCD_SUPPORT_d7     2
+            #endif
+
+        """)
+
+    lcdWrite.arduino_globals = textwrap.dedent("""
+        #if PY_ARDUINO_LCD_SUPPORT == 1
+            LiquidCrystal lcd = LiquidCrystal(
+                PY_ARDUINO_LCD_SUPPORT_rs,
+                PY_ARDUINO_LCD_SUPPORT_enable,
+                PY_ARDUINO_LCD_SUPPORT_d4,
+                PY_ARDUINO_LCD_SUPPORT_d5,
+                PY_ARDUINO_LCD_SUPPORT_d6,
+                PY_ARDUINO_LCD_SUPPORT_d7
+            );
+        #endif
+        """)
+
+    lcdWrite.arduino_setup = textwrap.dedent("""
+        #if PY_ARDUINO_LCD_SUPPORT == 1
+            lcd.begin(
+                PY_ARDUINO_LCD_SUPPORT_COLS,
+                PY_ARDUINO_LCD_SUPPORT_ROWS
+            );
+            lcd.clear();
+            lcd.print("PyArduino");
+            lcd.setCursor(0, 1); // column, line
+            lcd.print("READY!");
+        #endif
+        """)
+
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
     def lcdClear(self):  # pylint: disable=C0103
