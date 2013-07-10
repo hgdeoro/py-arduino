@@ -7,7 +7,6 @@
 
 #include "py_arduino.h"
 #include "arduino_type.h"
-#include "dht11.h"
 
 #define PY_ARDUINO_LCD_SUPPORT %(PY_ARDUINO_LCD_SUPPORT)d // {***PLACEHOLDER***}
 #define PY_ARDUINO_DEBUG_TO_LCD %(PY_ARDUINO_DEBUG_TO_LCD)d // {***PLACEHOLDER***}

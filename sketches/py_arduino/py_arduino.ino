@@ -14,7 +14,6 @@
 
 #include "py_arduino.h"
 #include "arduino_type.h"
-#include "dht11.h"
 
 // >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
 #define PY_ARDUINO_LCD_SUPPORT 0 // {***PLACEHOLDER***}
@@ -141,6 +140,9 @@ void _dMs() {
 }
 
 
+
+
+#include "dht11.h"
 
 void _dht11Rd() {
     int pin = atoi(received_parameters[1]);

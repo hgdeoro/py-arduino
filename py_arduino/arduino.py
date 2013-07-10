@@ -1614,6 +1614,9 @@ class PyArduino(object):  # pylint: disable=R0904
 
     dht11_read.arduino_function_name = '_dht11Rd'
     dht11_read.arduino_code = textwrap.dedent("""
+
+            #include "dht11.h"
+
             void _dht11Rd() {
                 int pin = atoi(received_parameters[1]);
                 dht11 DHT11;
@@ -1646,7 +1649,7 @@ class PyArduino(object):  # pylint: disable=R0904
     def ds18x20_read(self, pin):
         """
         Read the values of temperature with a DS18x20 sensor.
-        See: http://playground.arduino.cc/main/DHT11Lib
+        See: http://playground.arduino.cc/Learning/OneWire
         
         Parameters:
             - pin (int): digital pin where the sensor is connected
