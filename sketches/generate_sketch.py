@@ -62,21 +62,25 @@ def generate_placeholder_values(arduino, options):
     for function in arduino_functions:
         logging.info(" + %s()", function.__name__)
         proxied_function_source.write("\n")
+        proxied_function_source.write("// sources for {0}()\n".format(function.__name__))
         proxied_function_source.write(function.arduino_code)
         proxied_function_source.write("\n")
         if hasattr(function, 'arduino_header'):
             logging.info("     - arduino_header")
             proxied_function_headers.write("\n")
+            proxied_function_headers.write("// headers for {0}()\n".format(function.__name__))
             proxied_function_headers.write(function.arduino_header)
             proxied_function_headers.write("\n")
         if hasattr(function, 'arduino_globals'):
             logging.info("     - arduino_globals")
             proxied_function_globals.write("\n")
+            proxied_function_globals.write("// globals for {0}()\n".format(function.__name__))
             proxied_function_globals.write(function.arduino_globals)
             proxied_function_globals.write("\n")
         if hasattr(function, 'arduino_setup'):
             logging.info("     - arduino_setup")
             proxied_function_setup.write("\n")
+            proxied_function_setup.write("// setup code for {0}()\n".format(function.__name__))
             proxied_function_setup.write(function.arduino_setup)
             proxied_function_setup.write("\n")
         proxied_function_names.write('"%s", ' % function.arduino_function_name)

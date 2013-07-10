@@ -1204,10 +1204,8 @@ class PyArduino(object):  # pylint: disable=R0904
         """)
 
     lcdWrite.arduino_header = textwrap.dedent("""
-
             // If you want to disable LCD support once the sketch file is generated,
             // you can define PY_ARDUINO_LCD_SUPPORT = 0
-
             #define PY_ARDUINO_LCD_SUPPORT 1
 
             #if PY_ARDUINO_LCD_SUPPORT == 1
@@ -1221,7 +1219,6 @@ class PyArduino(object):  # pylint: disable=R0904
                 #define PY_ARDUINO_LCD_SUPPORT_d6     3
                 #define PY_ARDUINO_LCD_SUPPORT_d7     2
             #endif
-
         """)
 
     lcdWrite.arduino_globals = textwrap.dedent("""
@@ -1661,9 +1658,6 @@ class PyArduino(object):  # pylint: disable=R0904
 
     dht11_read.arduino_function_name = '_dht11Rd'
     dht11_read.arduino_code = textwrap.dedent("""
-
-            #include "dht11.h"
-
             void _dht11Rd() {
                 int pin = atoi(received_parameters[1]);
                 dht11 DHT11;
@@ -1689,6 +1683,10 @@ class PyArduino(object):  # pylint: disable=R0904
                 Serial.print("\\n");
                 return;
             }
+        """)
+
+    dht11_read.arduino_header = textwrap.dedent("""
+            #include "dht11.h"
         """)
 
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
@@ -1727,9 +1725,6 @@ class PyArduino(object):  # pylint: disable=R0904
 
     ds18x20_read.arduino_function_name = '_ds18x20Rd'
     ds18x20_read.arduino_code = textwrap.dedent("""
-
-        #include "OneWire.h"
-
         void _ds18x20Rd()
         {
             int pin = atoi(received_parameters[1]);
@@ -1811,6 +1806,10 @@ class PyArduino(object):  # pylint: disable=R0904
             //celsius = (float)raw / 16.0;
             //fahrenheit = celsius * 1.8 + 32.0;
         }
+        """)
+
+    ds18x20_read.arduino_header = textwrap.dedent("""
+        #include "OneWire.h"
         """)
 
 ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~

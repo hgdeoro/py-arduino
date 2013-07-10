@@ -1,6 +1,6 @@
 
 //
-// THIS FILE WAS GENERATED AUTOMATICALLY on 2013-07-10 01:08:10.619012
+// THIS FILE WAS GENERATED AUTOMATICALLY on 2013-07-10 01:16:39.227545
 // WITH 'sketches/generate_sketch.py'
 // WHICH IS PART OF THE PROJECT "py-arduino"
 //
@@ -48,11 +48,20 @@ char* received_parameters[MAX_RECEIVED_PARAMETERS] = { 0 };
 
 // >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
 
+// headers for dht11_read()
 
+#include "dht11.h"
+
+
+// headers for ds18x20_read()
+
+#include "OneWire.h"
+
+
+// headers for lcdWrite()
 
 // If you want to disable LCD support once the sketch file is generated,
 // you can define PY_ARDUINO_LCD_SUPPORT = 0
-
 #define PY_ARDUINO_LCD_SUPPORT 1
 
 #if PY_ARDUINO_LCD_SUPPORT == 1
@@ -66,7 +75,6 @@ char* received_parameters[MAX_RECEIVED_PARAMETERS] = { 0 };
     #define PY_ARDUINO_LCD_SUPPORT_d6     3
     #define PY_ARDUINO_LCD_SUPPORT_d7     2
 #endif
-
 
  // {***PLACEHOLDER***}
 
@@ -88,6 +96,7 @@ uint8_t debug_enabled = 0;
 
 // >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
 
+// globals for lcdWrite()
 
 #if PY_ARDUINO_LCD_SUPPORT == 1
     LiquidCrystal lcd = LiquidCrystal(
@@ -102,8 +111,12 @@ uint8_t debug_enabled = 0;
 
  // {***PLACEHOLDER***}
 
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Dynamically generated source of functions
+
 // >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
 	
+// sources for analogRead()
 
 void _aRd() {
     int pin = atoi(received_parameters[1]);
@@ -113,6 +126,7 @@ void _aRd() {
 }
 
 
+// sources for analogWrite()
 
 void _aWrt() {
     int pin = atoi(received_parameters[1]);
@@ -128,6 +142,7 @@ void _aWrt() {
 }
 
 
+// sources for delay()
 
 void _dy() {
     int value = atoi(received_parameters[1]);
@@ -142,6 +157,7 @@ void _dy() {
 }
 
 
+// sources for delayMicroseconds()
 
 void _dMs() {
     int value = atoi(received_parameters[1]);
@@ -156,9 +172,7 @@ void _dMs() {
 }
 
 
-
-
-#include "dht11.h"
+// sources for dht11_read()
 
 void _dht11Rd() {
     int pin = atoi(received_parameters[1]);
@@ -187,6 +201,7 @@ void _dht11Rd() {
 }
 
 
+// sources for digitalRead()
 
 void _dRd() {
     int pin = atoi(received_parameters[1]);
@@ -196,6 +211,7 @@ void _dRd() {
 }
 
 
+// sources for digitalWrite()
 
 void _dWrt() {
     int pin = atoi(received_parameters[1]);
@@ -211,6 +227,7 @@ void _dWrt() {
 }
 
 
+// sources for disableDebug()
 
 void _dD() {
     debug_enabled = 0;
@@ -218,9 +235,7 @@ void _dD() {
 }
 
 
-
-
-#include "OneWire.h"
+// sources for ds18x20_read()
 
 void _ds18x20Rd()
 {
@@ -305,6 +320,7 @@ void _ds18x20Rd()
 }
 
 
+// sources for enableDebug()
 
 void _eD() {
     debug_enabled = 1;
@@ -312,6 +328,7 @@ void _eD() {
 }
 
 
+// sources for enableDebugToLcd()
 
 void _eDL() {
     #if PY_ARDUINO_LCD_SUPPORT == 1
@@ -323,6 +340,7 @@ void _eDL() {
 }
 
 
+// sources for getArduinoTypeStruct()
 
 void _gATS() {
     Serial.print(this_arduino_type.analog_pins, DEC);
@@ -340,18 +358,21 @@ void _gATS() {
 }
 
 
+// sources for getAvrCpuType()
 
 void _gACT() {
     send_char_array_response(_AVR_CPU_NAME_);
 }
 
 
+// sources for getFreeMemory()
 
 void _gFM() {
     send_int_response(freeMemory());
 }
 
 
+// sources for getInterruptMark()
 
 void _gIM() {
     int interrupt = atoi(received_parameters[1]);
@@ -378,6 +399,7 @@ void _gIM() {
 }
 
 
+// sources for lcdClear()
 
 void _lcdClr() {
     #if PY_ARDUINO_LCD_SUPPORT == 1
@@ -389,6 +411,7 @@ void _lcdClr() {
 }
 
 
+// sources for lcdWrite()
 
 void _lcdW() {
     #if PY_ARDUINO_LCD_SUPPORT == 1
@@ -411,6 +434,7 @@ void _lcdW() {
 }
 
 
+// sources for micros()
 
 void _mc() {
     send_debug();
@@ -419,6 +443,7 @@ void _mc() {
 }
 
 
+// sources for millis()
 
 void _ms() {
     send_debug();
@@ -427,6 +452,7 @@ void _ms() {
 }
 
 
+// sources for pinMode()
 
 void _pMd() {
     int pin = atoi(received_parameters[1]);
@@ -441,12 +467,14 @@ void _pMd() {
 }
 
 
+// sources for ping()
 
 void _ping() {
     send_char_array_response("PING_OK");
 }
 
 
+// sources for shiftOut()
 
 void _sftO() {
     int dataPin = atoi(received_parameters[1]);
@@ -458,6 +486,7 @@ void _sftO() {
 }
 
 
+// sources for streamingAnalogRead()
 
 void _strAR() {
     int pin = atoi(received_parameters[1]);
@@ -472,6 +501,7 @@ void _strAR() {
 }
 
 
+// sources for streamingDigitalRead()
 
 void _strDR() {
     int pin = atoi(received_parameters[1]);
@@ -486,12 +516,14 @@ void _strDR() {
 }
 
 
+// sources for validateConnection()
 
 void _vCnt() {
     send_char_array_response(received_parameters[1]);
 }
 
 
+// sources for watchInterrupt()
 
 void _wI() {
     int mode;
@@ -779,6 +811,32 @@ proxied_function_ptr get_function_by_name(char* name) {
 	return NULL;
 }
 
+void setup() {
+
+	setup_serial();
+
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	// Dynamically generated code to execute on setup()
+
+// >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
+	
+// setup code for lcdWrite()
+
+#if PY_ARDUINO_LCD_SUPPORT == 1
+    lcd.begin(
+        PY_ARDUINO_LCD_SUPPORT_COLS,
+        PY_ARDUINO_LCD_SUPPORT_ROWS
+    );
+    lcd.clear();
+    lcd.print("PyArduino");
+    lcd.setCursor(0, 1); // column, line
+    lcd.print("READY!");
+#endif
+
+ // {***PLACEHOLDER***}
+
+}
+
 void loop() {
 	uint8_t ret = read_parameters();
 	
@@ -804,29 +862,4 @@ void loop() {
 		send_debug();
 		send_invalid_cmd_response(UNEXPECTED_RESPONSE_FROM_READ_PARAMETERS);
 	}
-}
-
-void setup() {
-	
-	setup_serial();
-
-	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	// Dynamically generated code to execute on setup()
-
-// >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
-	
-
-#if PY_ARDUINO_LCD_SUPPORT == 1
-    lcd.begin(
-        PY_ARDUINO_LCD_SUPPORT_COLS,
-        PY_ARDUINO_LCD_SUPPORT_ROWS
-    );
-    lcd.clear();
-    lcd.print("PyArduino");
-    lcd.setCursor(0, 1); // column, line
-    lcd.print("READY!");
-#endif
-
- // {***PLACEHOLDER***}
-
 }
