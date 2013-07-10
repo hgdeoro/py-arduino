@@ -3,7 +3,7 @@
 // THIS FILE WAS GENERATED AUTOMATICALLY WITH 'sketches/generate_sketch.py'
 // WHICH IS PART OF THE PROJECT "py-arduino"
 //
-    
+
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -96,50 +96,50 @@ void _aRd() {
     send_int_response(value);
     return;
 }
-        
+
 
 
 void _aWrt() {
     int pin = atoi(received_parameters[1]);
     int value = atoi(received_parameters[2]);
-    
+
     if(value < 0 || value > 255) {
         send_invalid_parameter_response(1); // received_parameters[2]
         return;
     }
-    
+
     analogWrite(pin, value);
     send_char_array_response("AW_OK");
 }
-        
+
 
 
 void _dy() {
     int value = atoi(received_parameters[1]);
-    
+
     if(value < 0) {
         send_invalid_parameter_response(0); // received_parameters[1]
         return;
     }
-    
+
     delay(value);
     send_char_array_response("D_OK");
 }
-        
+
 
 
 void _dMs() {
     int value = atoi(received_parameters[1]);
-    
+
     if(value < 0) {
         send_invalid_parameter_response(0); // received_parameters[1]
         return;
     }
-    
+
     delayMicroseconds(value);
     send_char_array_response("DMS_OK");
 }
-        
+
 
 
 void _dht11Rd() {
@@ -167,7 +167,7 @@ void _dht11Rd() {
     Serial.print("\n");
     return;
 }
-        
+
 
 
 void _dRd() {
@@ -176,123 +176,123 @@ void _dRd() {
     send_int_response(value);
     return;
 }
-        
+
 
 
 void _dWrt() {
     int pin = atoi(received_parameters[1]);
     int value = atoi(received_parameters[2]);
-    
+
     if(value != HIGH && value != LOW) {
         send_invalid_parameter_response(1); // received_parameters[2]
         return;
     }
-    
+
     digitalWrite(pin, value);
     send_char_array_response("DW_OK");
 }
-        
+
 
 
 void _dD() {
     debug_enabled = 0;
     send_char_array_response("DIS");
 }
-        
 
 
 
-        #include "OneWire.h"
 
-        void _ds18x20Rd()
-        {
-int pin = atoi(received_parameters[1]);
-OneWire ds(pin);
-byte i;
-byte present = 0;
-byte type_s;
-byte data[12];
-byte addr[8];
+#include "OneWire.h"
 
-if ( !ds.search(addr))
+void _ds18x20Rd()
 {
-    send_char_array_response("DS18X20_NO_MORE_ADDRESSES");
-    return;
-}
+    int pin = atoi(received_parameters[1]);
+    OneWire ds(pin);
+    byte i;
+    byte present = 0;
+    byte type_s;
+    byte data[12];
+    byte addr[8];
 
-if (OneWire::crc8(addr, 7) != addr[7])
-{
-    send_char_array_response("DS18X20_CRC_INVALID");
-    return;
-}
-
-// the first ROM byte indicates which chip
-switch (addr[0])
-{
-    case 0x10:
-        type_s = 1;
-        break;
-    case 0x28:
-        type_s = 0;
-        break;
-    case 0x22:
-        type_s = 0;
-        break;
-    default:
-        send_char_array_response("DS18X20_DEVICE_NOT_OF_FAMILY");
+    if ( !ds.search(addr))
+    {
+        send_char_array_response("DS18X20_NO_MORE_ADDRESSES");
         return;
-}
-
-ds.reset();
-ds.select(addr);
-ds.write(0x44, 1); // start conversion, with parasite power on at the end
-
-delay(1000);     // maybe 750ms is enough, maybe not
-// we might do a ds.depower() here, but the reset will take care of it.
-
-present = ds.reset();
-ds.select(addr);
-ds.write(0xBE); // Read Scratchpad
-
-for ( i = 0; i < 9; i++) {           // we need 9 bytes
-    data[i] = ds.read();
-}
-
-// Convert the data to actual temperature
-// because the result is a 16 bit signed integer, it should
-// be stored to an "int16_t" type, which is always 16 bits
-// even when compiled on a 32 bit processor.
-int16_t raw = (data[1] << 8) | data[0];
-if (type_s) {
-    raw = raw << 3; // 9 bit resolution default
-    if (data[7] == 0x10) {
-        // "count remain" gives full 12 bit resolution
-        raw = (raw & 0xFFF0) + 12 - data[6];
     }
-} else {
-    byte cfg = (data[4] & 0x60);
-    // at lower res, the low bits are undefined, so let's zero them
-    if (cfg == 0x00) raw = raw & ~7;  // 9 bit resolution, 93.75 ms
-    else if (cfg == 0x20) raw = raw & ~3; // 10 bit res, 187.5 ms
-    else if (cfg == 0x40) raw = raw & ~1; // 11 bit res, 375 ms
-    //// default is 12 bit resolution, 750 ms conversion time
-}
-Serial.print("DS18X20_OK,");
-Serial.print(raw);
-Serial.print("\n");
-return;
 
-//celsius = (float)raw / 16.0;
-//fahrenheit = celsius * 1.8 + 32.0;
+    if (OneWire::crc8(addr, 7) != addr[7])
+    {
+        send_char_array_response("DS18X20_CRC_INVALID");
+        return;
+    }
+
+    // the first ROM byte indicates which chip
+    switch (addr[0])
+    {
+        case 0x10:
+            type_s = 1;
+            break;
+        case 0x28:
+            type_s = 0;
+            break;
+        case 0x22:
+            type_s = 0;
+            break;
+        default:
+            send_char_array_response("DS18X20_DEVICE_NOT_OF_FAMILY");
+            return;
+    }
+
+    ds.reset();
+    ds.select(addr);
+    ds.write(0x44, 1); // start conversion, with parasite power on at the end
+
+    delay(1000);     // maybe 750ms is enough, maybe not
+    // we might do a ds.depower() here, but the reset will take care of it.
+
+    present = ds.reset();
+    ds.select(addr);
+    ds.write(0xBE); // Read Scratchpad
+
+    for ( i = 0; i < 9; i++) {           // we need 9 bytes
+        data[i] = ds.read();
+    }
+
+    // Convert the data to actual temperature
+    // because the result is a 16 bit signed integer, it should
+    // be stored to an "int16_t" type, which is always 16 bits
+    // even when compiled on a 32 bit processor.
+    int16_t raw = (data[1] << 8) | data[0];
+    if (type_s) {
+        raw = raw << 3; // 9 bit resolution default
+        if (data[7] == 0x10) {
+            // "count remain" gives full 12 bit resolution
+            raw = (raw & 0xFFF0) + 12 - data[6];
         }
-        
+    } else {
+        byte cfg = (data[4] & 0x60);
+        // at lower res, the low bits are undefined, so let's zero them
+        if (cfg == 0x00) raw = raw & ~7;  // 9 bit resolution, 93.75 ms
+        else if (cfg == 0x20) raw = raw & ~3; // 10 bit res, 187.5 ms
+        else if (cfg == 0x40) raw = raw & ~1; // 11 bit res, 375 ms
+        //// default is 12 bit resolution, 750 ms conversion time
+    }
+    Serial.print("DS18X20_OK,");
+    Serial.print(raw);
+    Serial.print("\n");
+    return;
+
+    //celsius = (float)raw / 16.0;
+    //fahrenheit = celsius * 1.8 + 32.0;
+}
+
 
 
 void _eD() {
     debug_enabled = 1;
     send_char_array_response("ENA");
 }
-        
+
 
 
 void _eDL() {
@@ -303,7 +303,7 @@ void _eDL() {
         send_unsupported_cmd_response();
     #endif
 }
-        
+
 
 
 void _gATS() {
@@ -320,19 +320,19 @@ void _gATS() {
     Serial.print(this_arduino_type.ram_size, DEC);
     Serial.print("\n");
 }
-        
+
 
 
 void _gACT() {
     send_char_array_response(_AVR_CPU_NAME_);
 }
-        
+
 
 
 void _gFM() {
     send_int_response(freeMemory());
 }
-        
+
 
 
 void _gIM() {
@@ -358,7 +358,7 @@ void _gIM() {
         return;
     }
 }
-        
+
 
 
 void _lcdClr() {
@@ -369,7 +369,7 @@ void _lcdClr() {
         send_unsupported_cmd_response();
     #endif
 }
-        
+
 
 
 void _lcdW() {
@@ -391,7 +391,7 @@ void _lcdW() {
         send_unsupported_cmd_response();
     #endif
 }
-        
+
 
 
 void _mc() {
@@ -399,7 +399,7 @@ void _mc() {
     Serial.print(micros());
     Serial.print("\n");
 }
-        
+
 
 
 void _ms() {
@@ -407,7 +407,7 @@ void _ms() {
     Serial.print(millis());
     Serial.print("\n");
 }
-        
+
 
 
 void _pMd() {
@@ -421,13 +421,13 @@ void _pMd() {
     pinMode(pin, mode);
     send_char_array_response("PM_OK");
 }
-        
+
 
 
 void _ping() {
     send_char_array_response("PING_OK");
 }
-        
+
 
 
 void _sftO() {
@@ -438,7 +438,7 @@ void _sftO() {
     shiftOut(dataPin, clockPin, bitOrder, value);
     send_char_array_response("SOOK");
 }
-        
+
 
 
 void _strAR() {
@@ -452,7 +452,7 @@ void _strAR() {
     }
     send_char_array_response("SR_OK"); // streaming read ok
 }
-        
+
 
 
 void _strDR() {
@@ -466,13 +466,13 @@ void _strDR() {
     }
     send_char_array_response("SR_OK"); // streaming read ok
 }
-        
+
 
 
 void _vCnt() {
     send_char_array_response(received_parameters[1]);
 }
-        
+
 
 
 void _wI() {
@@ -501,7 +501,7 @@ void _wI() {
         return;
     }
 }
-        
+
  // {***PLACEHOLDER***}
 	
 	// PROXIED_FUNCTION_COUNT: how many proxied functions we have

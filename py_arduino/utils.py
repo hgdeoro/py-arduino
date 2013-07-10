@@ -18,17 +18,6 @@
 ##-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 
-def _unindent(spaces, the_string):
-    lines = []
-    start = ' ' * spaces
-    for a_line in the_string.splitlines():
-        if a_line.startswith(start):
-            lines.append(a_line[spaces:])
-        else:
-            lines.append(a_line)
-    return '\n'.join(lines)
-
-
 class WrappedBoolean(object):
     """Wraps a boolean, to emulate passing variables by reference"""
 

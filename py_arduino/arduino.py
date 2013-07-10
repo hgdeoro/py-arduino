@@ -19,9 +19,6 @@
 
 # pylint: disable=C0302
 
-# TODO: _unindent() could be a annotation
-# TODO: use textwrap.dedent() instead of _unindent()
-
 import copy
 import logging as _logging
 import math
@@ -30,6 +27,7 @@ import random
 import serial
 import time
 import threading
+import textwrap
 
 try:
     from cStringIO import StringIO
@@ -45,7 +43,7 @@ from py_arduino import INPUT, OUTPUT, DEVICE_FOR_EMULATOR, \
     InvalidArgument, InvalidResponse, InvalidCommand, InvalidParameter, \
     UnsupportedCommand, CommandTimeout, INVALID_CMD, INVALID_PARAMETER, \
     UNSUPPORTED_CMD
-from py_arduino.utils import  _unindent, synchronized
+from py_arduino.utils import  synchronized
 from py_arduino.emulator import SerialConnectionArduinoEmulator
 
 logger = _logging.getLogger(__name__)  # pylint: disable=C0103
@@ -536,7 +534,7 @@ class PyArduino(object):  # pylint: disable=R0904
         # raises CommandTimeout,InvalidCommand,InvalidResponse
 
     pinMode.arduino_function_name = '_pMd'
-    pinMode.arduino_code = _unindent(12, """
+    pinMode.arduino_code = textwrap.dedent("""
             void _pMd() {
                 int pin = atoi(received_parameters[1]);
                 int mode = atoi(received_parameters[2]);
@@ -579,7 +577,7 @@ class PyArduino(object):  # pylint: disable=R0904
         # raises CommandTimeout,InvalidCommand,InvalidResponse
 
     digitalWrite.arduino_function_name = '_dWrt'
-    digitalWrite.arduino_code = _unindent(12, """
+    digitalWrite.arduino_code = textwrap.dedent("""
             void _dWrt() {
                 int pin = atoi(received_parameters[1]);
                 int value = atoi(received_parameters[2]);
@@ -635,7 +633,7 @@ class PyArduino(object):  # pylint: disable=R0904
             HIGH, LOW, int_response)))
 
     digitalRead.arduino_function_name = '_dRd'
-    digitalRead.arduino_code = _unindent(12, """
+    digitalRead.arduino_code = textwrap.dedent("""
             void _dRd() {
                 int pin = atoi(received_parameters[1]);
                 int value = digitalRead(pin);
@@ -685,7 +683,7 @@ class PyArduino(object):  # pylint: disable=R0904
             "Response: %d" % response))
 
     analogRead.arduino_function_name = '_aRd'
-    analogRead.arduino_code = _unindent(12, """
+    analogRead.arduino_code = textwrap.dedent("""
             void _aRd() {
                 int pin = atoi(received_parameters[1]);
                 int value = analogRead(pin);
@@ -723,7 +721,7 @@ class PyArduino(object):  # pylint: disable=R0904
             raise
 
     analogWrite.arduino_function_name = '_aWrt'
-    analogWrite.arduino_code = _unindent(12, """
+    analogWrite.arduino_code = textwrap.dedent("""
             void _aWrt() {
                 int pin = atoi(received_parameters[1]);
                 int value = atoi(received_parameters[2]);
@@ -752,7 +750,7 @@ class PyArduino(object):  # pylint: disable=R0904
         # raises CommandTimeout,InvalidCommand,InvalidResponse
 
     ping.arduino_function_name = '_ping'
-    ping.arduino_code = _unindent(12, """
+    ping.arduino_code = textwrap.dedent("""
             void _ping() {
                 send_char_array_response("PING_OK");
             }
@@ -798,7 +796,7 @@ class PyArduino(object):  # pylint: disable=R0904
         return response
 
     validateConnection.arduino_function_name = '_vCnt'
-    validateConnection.arduino_code = _unindent(12, """
+    validateConnection.arduino_code = textwrap.dedent("""
             void _vCnt() {
                 send_char_array_response(received_parameters[1]);
             }
@@ -839,7 +837,7 @@ class PyArduino(object):  # pylint: disable=R0904
         return response
 
     delay.arduino_function_name = '_dy'
-    delay.arduino_code = _unindent(12, """
+    delay.arduino_code = textwrap.dedent("""
             void _dy() {
                 int value = atoi(received_parameters[1]);
                 
@@ -885,7 +883,7 @@ class PyArduino(object):  # pylint: disable=R0904
             # raises CommandTimeout,InvalidCommand,InvalidResponse
 
     delayMicroseconds.arduino_function_name = '_dMs'
-    delayMicroseconds.arduino_code = _unindent(12, """
+    delayMicroseconds.arduino_code = textwrap.dedent("""
             void _dMs() {
                 int value = atoi(received_parameters[1]);
                 
@@ -914,7 +912,7 @@ class PyArduino(object):  # pylint: disable=R0904
         # raises CommandTimeout,InvalidCommand,InvalidResponse
 
     millis.arduino_function_name = '_ms'
-    millis.arduino_code = _unindent(12, """
+    millis.arduino_code = textwrap.dedent("""
             void _ms() {
                 send_debug();
                 Serial.print(millis());
@@ -938,7 +936,7 @@ class PyArduino(object):  # pylint: disable=R0904
         # raises CommandTimeout,InvalidCommand,InvalidResponse
 
     micros.arduino_function_name = '_mc'
-    micros.arduino_code = _unindent(12, """
+    micros.arduino_code = textwrap.dedent("""
             void _mc() {
                 send_debug();
                 Serial.print(micros());
@@ -976,7 +974,7 @@ class PyArduino(object):  # pylint: disable=R0904
                                             # raises CommandTimeout,InvalidCommand,InvalidResponse
 
     watchInterrupt.arduino_function_name = '_wI'
-    watchInterrupt.arduino_code = _unindent(12, """
+    watchInterrupt.arduino_code = textwrap.dedent("""
             void _wI() {
                 int mode;
                 if(received_parameters[2][0] == ATTACH_INTERRUPT_MODE_LOW) {
@@ -1034,7 +1032,7 @@ class PyArduino(object):  # pylint: disable=R0904
         return bool(ret == "GIM_ON")
 
     getInterruptMark.arduino_function_name = '_gIM'
-    getInterruptMark.arduino_code = _unindent(12, """
+    getInterruptMark.arduino_code = textwrap.dedent("""
             void _gIM() {
                 int interrupt = atoi(received_parameters[1]);
                 if (interrupt == 0) {
@@ -1073,7 +1071,7 @@ class PyArduino(object):  # pylint: disable=R0904
             # raises CommandTimeout,InvalidCommand,InvalidResponse
 
     enableDebug.arduino_function_name = '_eD'
-    enableDebug.arduino_code = _unindent(12, """
+    enableDebug.arduino_code = textwrap.dedent("""
             void _eD() {
                 debug_enabled = 1;
                 send_char_array_response("ENA");
@@ -1092,7 +1090,7 @@ class PyArduino(object):  # pylint: disable=R0904
             # raises CommandTimeout,InvalidCommand,InvalidResponse
 
     enableDebugToLcd.arduino_function_name = '_eDL'
-    enableDebugToLcd.arduino_code = _unindent(12, """
+    enableDebugToLcd.arduino_code = textwrap.dedent("""
             void _eDL() {
                 #if PY_ARDUINO_LCD_SUPPORT == 1
                     debug_enabled = 2;
@@ -1114,7 +1112,7 @@ class PyArduino(object):  # pylint: disable=R0904
             # raises CommandTimeout,InvalidCommand,InvalidResponse
 
     disableDebug.arduino_function_name = '_dD'
-    disableDebug.arduino_code = _unindent(12, """
+    disableDebug.arduino_code = textwrap.dedent("""
             void _dD() {
                 debug_enabled = 0;
                 send_char_array_response("DIS");
@@ -1183,7 +1181,7 @@ class PyArduino(object):  # pylint: disable=R0904
             # raises CommandTimeout,InvalidCommand,InvalidResponse
 
     lcdWrite.arduino_function_name = '_lcdW'
-    lcdWrite.arduino_code = _unindent(12, """
+    lcdWrite.arduino_code = textwrap.dedent("""
             void _lcdW() {
                 #if PY_ARDUINO_LCD_SUPPORT == 1
                     int col = atoi(received_parameters[1]);
@@ -1220,7 +1218,7 @@ class PyArduino(object):  # pylint: disable=R0904
             # raises CommandTimeout,InvalidCommand,InvalidResponse
 
     lcdClear.arduino_function_name = '_lcdClr'
-    lcdClear.arduino_code = _unindent(12, """
+    lcdClear.arduino_code = textwrap.dedent("""
             void _lcdClr() {
                 #if PY_ARDUINO_LCD_SUPPORT == 1
                     lcd.clear();
@@ -1269,7 +1267,7 @@ class PyArduino(object):  # pylint: disable=R0904
             # raises CommandTimeout,InvalidCommand,InvalidResponse
 
     shiftOut.arduino_function_name = '_sftO'
-    shiftOut.arduino_code = _unindent(12, """
+    shiftOut.arduino_code = textwrap.dedent("""
             void _sftO() {
                 int dataPin = atoi(received_parameters[1]);
                 int clockPin = atoi(received_parameters[2]);
@@ -1293,7 +1291,7 @@ class PyArduino(object):  # pylint: disable=R0904
             # raises CommandTimeout,InvalidCommand,InvalidResponse
 
     getAvrCpuType.arduino_function_name = '_gACT'
-    getAvrCpuType.arduino_code = _unindent(12, """
+    getAvrCpuType.arduino_code = textwrap.dedent("""
             void _gACT() {
                 send_char_array_response(_AVR_CPU_NAME_);
             }
@@ -1359,7 +1357,7 @@ class PyArduino(object):  # pylint: disable=R0904
         return copy.deepcopy(self._arduino_type_struct_cache)
 
     getArduinoTypeStruct.arduino_function_name = '_gATS'
-    getArduinoTypeStruct.arduino_code = _unindent(12, """
+    getArduinoTypeStruct.arduino_code = textwrap.dedent("""
             void _gATS() {
                 Serial.print(this_arduino_type.analog_pins, DEC);
                 Serial.print(" ");
@@ -1448,7 +1446,7 @@ class PyArduino(object):  # pylint: disable=R0904
             # raises CommandTimeout,InvalidCommand,InvalidResponse
 
     getFreeMemory.arduino_function_name = '_gFM'
-    getFreeMemory.arduino_code = _unindent(12, """
+    getFreeMemory.arduino_code = textwrap.dedent("""
             void _gFM() {
                 send_int_response(freeMemory());
             }
@@ -1534,7 +1532,7 @@ class PyArduino(object):  # pylint: disable=R0904
             # raises CommandTimeout,InvalidCommand,InvalidResponse
 
     streamingAnalogRead.arduino_function_name = '_strAR'
-    streamingAnalogRead.arduino_code = _unindent(12, """
+    streamingAnalogRead.arduino_code = textwrap.dedent("""
             void _strAR() {
                 int pin = atoi(received_parameters[1]);
                 int count = atoi(received_parameters[2]);
@@ -1567,7 +1565,7 @@ class PyArduino(object):  # pylint: disable=R0904
             # raises CommandTimeout,InvalidCommand,InvalidResponse
 
     streamingDigitalRead.arduino_function_name = '_strDR'
-    streamingDigitalRead.arduino_code = _unindent(12, """
+    streamingDigitalRead.arduino_code = textwrap.dedent("""
             void _strDR() {
                 int pin = atoi(received_parameters[1]);
                 int count = atoi(received_parameters[2]);
@@ -1615,7 +1613,7 @@ class PyArduino(object):  # pylint: disable=R0904
         raise(InvalidResponse(splitted_response[0]))
 
     dht11_read.arduino_function_name = '_dht11Rd'
-    dht11_read.arduino_code = _unindent(12, """
+    dht11_read.arduino_code = textwrap.dedent("""
             void _dht11Rd() {
                 int pin = atoi(received_parameters[1]);
                 dht11 DHT11;
@@ -1678,7 +1676,7 @@ class PyArduino(object):  # pylint: disable=R0904
         raise(InvalidResponse(splitted_response[0]))
 
     ds18x20_read.arduino_function_name = '_ds18x20Rd'
-    ds18x20_read.arduino_code = _unindent(12, """
+    ds18x20_read.arduino_code = textwrap.dedent("""
 
         #include "OneWire.h"
 

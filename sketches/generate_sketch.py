@@ -23,6 +23,7 @@ import optparse
 import os
 import shutil
 import sys
+import textwrap
 
 from StringIO import StringIO
 
@@ -39,7 +40,6 @@ from py_arduino import ATTACH_INTERRUPT_MODE_LOW, \
     ATTACH_INTERRUPT_MODE_FALLING, INVALID_CMD, INVALID_PARAMETER,\
     UNSUPPORTED_CMD
 from py_arduino.arduino import PyArduino
-from py_arduino.utils import _unindent
 
 
 def generate_placeholder_values(arduino, options):
@@ -94,7 +94,7 @@ def replace_placeholder_values(placeholder_values, input_lines, output):
     For each elemento of 'input_lines', replace the values, and write
     the generated lines to 'output' (an StringIO instance).
     """
-    output.write(_unindent(8, """
+    output.write(textwrap.dedent("""
         //
         // THIS FILE WAS GENERATED AUTOMATICALLY WITH 'sketches/generate_sketch.py'
         // WHICH IS PART OF THE PROJECT "py-arduino"
