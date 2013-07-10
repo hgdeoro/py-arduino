@@ -29,31 +29,31 @@ Implemented methods
 
 The basic methods of Arduino are implemented. The following actions can be done from Python: 
 
-* pinMode()
-* digitalRead()
-* digitalWrite()
-* analogRead()
-* analogWrite()
-* millis(), micro()
-* delay(), delayMicroseconds()
-* shiftOut()
+* `pinMode()`
+* `digitalRead()`
+* `digitalWrite()`
+* `analogRead()`
+* `analogWrite()`
+* `millis()`, `micro()`
+* `delay()`, delayMicroseconds()`
+* `shiftOut()`
 
 There are other extra methods:
 
-* ping() to check communication with Arduino
-* getFreeMemory() returns free Arduino memory
-* autoconnect() to automatically connect to any available serial port
-* validateConnection() to recover after communications problems
-* watchInterrupt(), getInterruptMark() to work with interrupts (Prototype/Work In Progress)
-* enableDebug(), disableDebug(), enableDebugToLcd() to show debug messages
-* getAvrCpuType(), getArduinoTypeStruct() to get information about the Arduino
-* streamingAnalogRead(), streamingDigitalRead() eficientlly receive much values (Prototype/Work In Progress)
+* `ping()` to check communication with Arduino
+* `getFreeMemory()` returns free Arduino memory
+* `autoconnect()` to automatically connect to any available serial port
+* `validateConnection()` to recover after communications problems
+* `watchInterrupt()`, `getInterruptMark()` to work with interrupts (Prototype/Work In Progress)
+* `enableDebug()`, `disableDebug()`, `enableDebugToLcd()` to show debug messages
+* `getAvrCpuType()`, `getArduinoTypeStruct()` to get information about the Arduino
+* `streamingAnalogRead()`, `streamingDigitalRead()` eficientlly receive much values (Prototype/Work In Progress)
 
 And support for:
 
-* lcdMessage(), lcdWrite() lcdClear() show messages on LCDs, based on the Hitachi HD44780 (or a compatible) chipset
-* dht11_read() read temperature and humidity with DHT11 sensor
-* ds18x20_read() read temperature with DS18x20 sensor
+* `lcdMessage()`, `lcdWrite()`, `lcdClear()` show messages on LCDs, based on the Hitachi HD44780 (or a compatible) chipset
+* `dht11_read()` read temperature and humidity with DHT11 sensor
+* `ds18x20_read()` read temperature with DS18x20 sensor
 
 
 Quick installation instructions (low level tool/library)
