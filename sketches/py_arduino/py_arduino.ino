@@ -1,6 +1,7 @@
 
 //
-// THIS FILE WAS GENERATED AUTOMATICALLY WITH 'sketches/generate_sketch.py'
+// THIS FILE WAS GENERATED AUTOMATICALLY on 2013-07-10 00:02:34.260620
+// WITH 'sketches/generate_sketch.py'
 // WHICH IS PART OF THE PROJECT "py-arduino"
 //
 

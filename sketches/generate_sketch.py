@@ -18,6 +18,7 @@
 ##    along with py-arduino; see the file LICENSE.txt.
 ##-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
+import datetime
 import logging
 import optparse
 import os
@@ -96,10 +97,12 @@ def replace_placeholder_values(placeholder_values, input_lines, output):
     """
     output.write(textwrap.dedent("""
         //
-        // THIS FILE WAS GENERATED AUTOMATICALLY WITH 'sketches/generate_sketch.py'
+        // THIS FILE WAS GENERATED AUTOMATICALLY on {0}
+        // WITH 'sketches/generate_sketch.py'
         // WHICH IS PART OF THE PROJECT "py-arduino"
         //
-    """))
+    """.format(str(datetime.datetime.now()))))
+
     output.write("\n\n")
     for line in input_lines:
         splitted = line.split()
