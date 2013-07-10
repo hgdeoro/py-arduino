@@ -1,6 +1,6 @@
 
 //
-// THIS FILE WAS GENERATED AUTOMATICALLY on 2013-07-10 00:52:12.132930
+// THIS FILE WAS GENERATED AUTOMATICALLY on 2013-07-10 00:58:32.667004
 // WITH 'sketches/generate_sketch.py'
 // WHICH IS PART OF THE PROJECT "py-arduino"
 //
@@ -67,7 +67,6 @@ char* received_parameters[MAX_RECEIVED_PARAMETERS] = { 0 };
 // you can define PY_ARDUINO_LCD_SUPPORT = 0
 
 #define PY_ARDUINO_LCD_SUPPORT 1
-#define PY_ARDUINO_DEBUG_TO_LCD 0
 
 #if PY_ARDUINO_LCD_SUPPORT == 1
     #include <LiquidCrystal.h>
@@ -912,37 +911,12 @@ void loop() {
 		send_debug();
 		proxied_function_ptr function = get_function_by_name(received_parameters[0]);
 		if(function != NULL) {
-//          2013-07-10 -- Making LCD support optional
-//          #if PY_ARDUINO_DEBUG_TO_LCD == 1
-//			if(debug_enabled == 2) {
-//				lcd.clear(); // lcd.setCursor(0, 0); // column, line
-//				lcd.print(received_parameters[0]);
-//				
-//				lcd.setCursor(0, 1); // column, line
-//				int i;
-//				for(i=1; i<MAX_RECEIVED_PARAMETERS; i++) {
-//					if(received_parameters[i] != NULL) {
-//						lcd.print(received_parameters[i]);
-//						lcd.print(" ");
-//					}
-//				}
-//			}
-//			#endif
 			
 			(function)();
 			
 		} else {
 			send_invalid_cmd_response(FUNCTION_NOT_FOUND);
 			
-//          2013-07-10 -- Making LCD support optional
-//			#if PY_ARDUINO_DEBUG_TO_LCD == 1
-//			if(debug_enabled == 2) {
-//				lcd.clear(); // lcd.setCursor(0, 0); // column, line
-//				lcd.print(received_parameters[0]);
-//				lcd.setCursor(0, 1); // column, line
-//				lcd.print("ERR:invalid cmd");
-//			}
-//			#endif
 		}
 	} else if(ret == READ_ONE_PARAM_EMPTY_RESPONSE) {
 		delay(10);
@@ -951,31 +925,9 @@ void loop() {
 		send_debug();
 		send_invalid_cmd_response(ret);
 		
-//     2013-07-10 -- Making LCD support optional
-//		#if PY_ARDUINO_DEBUG_TO_LCD == 1
-//		if(debug_enabled == 2) {
-//			lcd.clear(); // lcd.setCursor(0, 0); // column, line
-//			lcd.print(received_parameters[0]);
-//			lcd.setCursor(0, 1); // column, line
-//			if(ret == READ_ONE_PARAM_ERROR_PARAMETER_TOO_LARGE)
-//				lcd.print("ERR:param large");
-//			else
-//				lcd.print("ERR:many params");
-//		}
-//		#endif
-		
 	} else {
 		send_debug();
 		send_invalid_cmd_response(UNEXPECTED_RESPONSE_FROM_READ_PARAMETERS);
-//     2013-07-10 -- Making LCD support optional
-//		#if PY_ARDUINO_DEBUG_TO_LCD == 1
-//		if(debug_enabled == 2) {
-//			lcd.clear(); // lcd.setCursor(0, 0); // column, line
-//			lcd.print(received_parameters[0]);
-//			lcd.setCursor(0, 1); // column, line
-//			lcd.print("ERR:unexp resp");
-//		}
-//		#endif
 	}
 }
 

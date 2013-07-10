@@ -1209,7 +1209,6 @@ class PyArduino(object):  # pylint: disable=R0904
             // you can define PY_ARDUINO_LCD_SUPPORT = 0
 
             #define PY_ARDUINO_LCD_SUPPORT 1
-            #define PY_ARDUINO_DEBUG_TO_LCD 0
 
             #if PY_ARDUINO_LCD_SUPPORT == 1
                 #include <LiquidCrystal.h>

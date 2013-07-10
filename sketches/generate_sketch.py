@@ -146,13 +146,6 @@ def replace_placeholder_values(placeholder_values, input_lines, output):
 def main():  # pylint: disable=R0914,R0912,R0915
 
     parser = optparse.OptionParser()
-    parser.add_option("--lcd",
-        action="store_true", dest="lcd", default=False,
-        help="Generate sketch with support for LCD.")
-    parser.add_option("--disable-debug-to-lcd",
-        action="store_true", dest="disable_debug_to_lcd", default=False,
-        help="Remove support for sending debug message to LCD. This'll shrink the sketch size.")
-
     (options, args) = parser.parse_args()  # pylint: disable=W0612
 
     if len(args) != 1:
