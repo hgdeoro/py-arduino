@@ -19,9 +19,9 @@ test without actually having an Arduino connected.
 
 * Python methods named around Arduino's methods
 * Handles connections timeouts
-* Can recover after timeouts and connection's troubles <!-- TODO: add link to validateConnection() -->
-* Easy to extend <!-- TODO: add link to docs -->
-* Easy to debug (with `--arduino-debug`, which dumps all the data transmitted to/from Arduino) <!-- TODO: add link to docs -->
+* Can recover after timeouts and connection's troubles - see: `validateConnection()`
+* Easy to extend
+* Easy to debug (with `--arduino-debug`, which dumps all the data transmitted to/from Arduino)
 * Growing [documentation](http://hgdeoro.github.io/py-arduino/)
 
 Implemented methods  
