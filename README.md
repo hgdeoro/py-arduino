@@ -1,20 +1,31 @@
 py-arduino
 ==============
 
-**py-arduino** is a **Python** library to communicate with **Arduinos**.
+**py-arduino** is a **Python** tool/library to communicate with **Arduino**
+through USB (serial port), plus a web application on top of it.
 
-It consist of two layers:
+The **low level tool** is simple to use and extend, only requires `pyserial`.
+Many scripts are included to let you quickly start using it (see `py_arduino.cli.*`).
 
- - a **low level tool/library**, very easy to use and **extend**,
- - a **web application**, including a **web interface** and **background threads**, based on Django, uWSGI, Pyro: it's multithread, allow concurrent access,
-    labeling of pins to facilitate the use, etc..
+The **web application** allows read and write to pins from a web page,
+easily implement _background tasks_, manages the concurrent access to the Arduino
+(from the web interface, background tasks, cron, command line, etc.), and more...
+It uses Django, PyRO and uWSGI.
 
-The project has many **testing** utilities, a simple **emulator** and the ability to see DEBUG messages to facilitate the location of problems and subsequent solutions.
+The project has some **testing** utilities, and an **emulator**, to allow make some
+test without actually having an Arduino connected.
 
+## Other characteristics
+
+* Python methods named around Arduino's methods
+* Handles connections timeouts
+* Can recover after timeouts and connection's troubles <!-- TODO: add link to validateConnection() -->
+* Easy to extend <!-- TODO: add link to docs -->
+* Easy to debug (with `--arduino-debug`, which dumps all the data transmitted to/from Arduino) <!-- TODO: add link to docs -->
+* Growing [documentation](http://hgdeoro.github.io/py-arduino/)
 
 Implemented methods  
 ===================
-
 
 The basic methods of Arduino are implemented. The following actions can be done from Python: 
 
