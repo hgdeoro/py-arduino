@@ -1,6 +1,6 @@
 
 //
-// THIS FILE WAS GENERATED AUTOMATICALLY on 2013-07-10 00:58:32.667004
+// THIS FILE WAS GENERATED AUTOMATICALLY on 2013-07-10 01:03:11.162033
 // WITH 'sketches/generate_sketch.py'
 // WHICH IS PART OF THE PROJECT "py-arduino"
 //
@@ -37,12 +37,6 @@ char* received_parameters[MAX_RECEIVED_PARAMETERS] = { 0 };
 // parameter may have.
 
 #define TEMPORARY_ARRAY_SIZE 24
-
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Default pin for blinking and for using as 'start'.
-
-#define PIN_ONBOARD_LED 13  // DIGITAL
-#define PIN_START_BUTTON 12 // DIGITAL
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Interrupts
@@ -553,17 +547,6 @@ void _wI() {
 		Serial.begin(9600); // {***PLACEHOLDER***}
 	}
 
-	void wait_start() {
-		digitalWrite(PIN_START_BUTTON, HIGH); // turn on pullup resistors
-		int state = HIGH;
-		while(digitalRead(PIN_START_BUTTON) == LOW) {
-			digitalWrite(PIN_ONBOARD_LED, state); // turn the onboard led ON/OFF
-			state = !state;
-			delay(100);
-		}
-		digitalWrite(PIN_ONBOARD_LED, HIGH); // turn the onboard led ON
-	}
-	
 	void send_int_response(int value) {
 		Serial.print(value, DEC);
 		Serial.print("\n");
@@ -702,8 +685,6 @@ void detachInterrupt(uint8_t interruptNum) { }
 	void send_invalid_cmd_response(int error_code) {
 		printf("send_invalid_cmd_response(error_code=%d)\n", error_code);
 	}
-	
-	void wait_start() { }
 	
 	void setup_serial() { }
 	
@@ -932,18 +913,7 @@ void loop() {
 }
 
 void setup() {
-	// Pin 13 has an LED connected on most Arduino boards.
-	pinMode(PIN_ONBOARD_LED, OUTPUT);
 	
-	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	// From Arduino's docs: Arduino (Atmega) pins default to inputs,
-	// so they don't need to be explicitly declared as inputs with pinMode(). 
-	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	
-	// pinMode(PIN_START_BUTTON, INPUT);
-
-	wait_start();
-
 	setup_serial();
 
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
