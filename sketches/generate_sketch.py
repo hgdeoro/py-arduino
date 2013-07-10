@@ -176,16 +176,6 @@ def main():  # pylint: disable=R0914,R0912,R0915
     c_file = open(c_input_filename, 'r')
     c_file_lines = [line.strip('\r\n') for line in c_file.readlines()]
 
-    # Remove 'PY_ARDUINO_DEVEL' from C file
-    for i in range(0, len(c_file_lines)):
-        splitted = c_file_lines[i].split()
-        if len(splitted) >= 3 and \
-                splitted[0] == '#define' and \
-                splitted[1] == 'PY_ARDUINO_DEVEL' and \
-                splitted[2].startswith('//'):
-            c_file_lines[i] = '// ' + c_file_lines[i]
-            break
-
     arduino = PyArduino()
     placeholder_values = generate_placeholder_values(arduino, options)
 

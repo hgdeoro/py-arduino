@@ -9,13 +9,6 @@
 #include "arduino_type.h"
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// If PY_ARDUINO_DEVEL is defined, the generated code
-// is targeted to test and develop the sketch in a PC,
-// this means the code won't run on Arduino
-
-#define PY_ARDUINO_DEVEL // removed when generating the sketch.
-
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // MAX_RECEIVED_PARAMETERS: max count of parameter received from Serial.
 // The first parameter is the function name to execute.
 
@@ -61,8 +54,6 @@ uint8_t debug_enabled = 0;
 
 %(proxied_function_globals)s // {***PLACEHOLDER***}
 
-#ifndef PY_ARDUINO_DEVEL
-	
 	%(proxied_function_source)s // {***PLACEHOLDER***}
 	
 	// PROXIED_FUNCTION_COUNT: how many proxied functions we have
@@ -136,93 +127,6 @@ uint8_t debug_enabled = 0;
 		}
 	}
 	
-#endif
-
-#ifdef PY_ARDUINO_DEVEL // Taken from : wiring.h - Partial implementation of the Wiring API for the ATmega8. Part of Arduino - http://www.arduino.cc/
-
-#define HIGH 0x1
-#define LOW  0x0
-
-#define INPUT 0x0
-#define OUTPUT 0x1
-
-#define true 0x1
-#define false 0x0
-
-#define CHANGE 1
-#define FALLING 2
-#define RISING 3
-
-#define interrupts() sei()
-#define noInterrupts() cli()
-
-typedef unsigned int word;
-
-#define bit(b) (1UL << (b))
-
-typedef uint8_t boolean;
-typedef uint8_t byte;
-
-void pinMode(uint8_t a, uint8_t b) { }
-void digitalWrite(uint8_t a, uint8_t b) { }
-int digitalRead(uint8_t a) { return 0; }
-int analogRead(uint8_t a) { return 0; }
-void analogReference(uint8_t mode) { }
-void analogWrite(uint8_t a, int b) { }
-
-unsigned long millis(void) { return 0; }
-unsigned long micros(void) { return 0; }
-void delay(unsigned long a) { }
-void delayMicroseconds(unsigned int us) { }
-unsigned long pulseIn(uint8_t pin, uint8_t state, unsigned long timeout) { return 0; }
-
-void attachInterrupt(uint8_t interruptNum, void (*userFunc)(void), int mode) { }
-void detachInterrupt(uint8_t interruptNum) { }
-
-#endif
-
-#ifdef PY_ARDUINO_DEVEL
-	
-	void send_debug() { }
-	
-	void _ping() {
-		printf("ping()\n");
-	}
-	
-	void _analogRead() {
-		printf("_analogRead() PIN %s\n", received_parameters[1]);
-	}
-
-	// PROXIED_FUNCTION_COUNT: how many proxied functions we have
-	#define PROXIED_FUNCTION_COUNT 2
-
-	proxied_function_ptr function_ptr[PROXIED_FUNCTION_COUNT] = { _ping, _analogRead, };
-	char* function_name[PROXIED_FUNCTION_COUNT] = { "_ping", "_analogRead", };
-
-	int read_char() {
-		char* text = "_ping\n_analogRead 5\n_some_invalid_command\n";
-		static int next_return = 0;
-		int ret = (int) text[next_return];
-		next_return = next_return + 1;
-		if(next_return >= strlen(text))
-			next_return = 0;
-		return ret;
-	}
-	
-	void send_invalid_cmd_response(int error_code) {
-		printf("send_invalid_cmd_response(error_code=%d)\n", error_code);
-	}
-	
-	void setup_serial() { }
-	
-	void send_int_response(int value) { }
-	
-	void send_invalid_parameter_response() { }
-	
-	void send_char_array_response(char* response) { }
-	
-#endif
-
 // Define all the possible return values. This is used as a 'code' for
 // reporing errors to python.
 
@@ -405,16 +309,6 @@ proxied_function_ptr get_function_by_name(char* name) {
 void loop() {
 	uint8_t ret = read_parameters();
 	
-	#ifdef PY_ARDUINO_DEVEL
-	printf(" -> read_parameters(): %d\n", ret);
-	int i;
-	for(i=0; i<MAX_RECEIVED_PARAMETERS; i++) {
-		if(received_parameters[i] != NULL) {
-			printf(" -> Parametro[%d]: %s\n", i, received_parameters[i]);
-		}
-	}
-	#endif
-	
 	if(ret == RETURN_OK) {
 		send_debug();
 		proxied_function_ptr function = get_function_by_name(received_parameters[0]);
@@ -449,39 +343,3 @@ void setup() {
 	%(proxied_function_setup)s // {***PLACEHOLDER***}
 
 }
-
-#ifdef PY_ARDUINO_DEVEL
-
-int main() {
-	setup();
-	loop();
-	loop();
-	loop();
-	
-	printf("\n");
-	printf("detected_interrupts: %d; check_mark_interrupt_0(): %d; check_mark_interrupt_1(): %d\n", detected_interrupts, check_mark_interrupt_0(), check_mark_interrupt_1());
-	
-	printf("\n");
-	set_mark_interrupt_0();
-	printf("set_mark_interrupt_0();\n");
-	printf("detected_interrupts: %d; check_mark_interrupt_0(): %d; check_mark_interrupt_1(): %d\n", detected_interrupts, check_mark_interrupt_0(), check_mark_interrupt_1());
-	
-	printf("\n");
-	set_mark_interrupt_1();
-	printf("set_mark_interrupt_1();\n");
-	printf("detected_interrupts: %d; check_mark_interrupt_0(): %d; check_mark_interrupt_1(): %d\n", detected_interrupts, check_mark_interrupt_0(), check_mark_interrupt_1());
-	
-	printf("\n");
-	clear_mark_interrupt_1();
-	printf("clear_mark_interrupt_1();\n");
-	printf("detected_interrupts: %d; check_mark_interrupt_0(): %d; check_mark_interrupt_1(): %d\n", detected_interrupts, check_mark_interrupt_0(), check_mark_interrupt_1());
-	
-	printf("\n");
-	clear_mark_interrupt_0();
-	printf("clear_mark_interrupt_0();\n");
-	printf("detected_interrupts: %d; check_mark_interrupt_0(): %d; check_mark_interrupt_1(): %d\n", detected_interrupts, check_mark_interrupt_0(), check_mark_interrupt_1());
-	
-	return 0;
-}
-
-#endif
