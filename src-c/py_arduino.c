@@ -54,6 +54,9 @@ uint8_t debug_enabled = 0;
 
 %(proxied_function_globals)s // {***PLACEHOLDER***}
 
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Dynamically generated source of functions
+
 	%(proxied_function_source)s // {***PLACEHOLDER***}
 	
 	// PROXIED_FUNCTION_COUNT: how many proxied functions we have
@@ -306,6 +309,17 @@ proxied_function_ptr get_function_by_name(char* name) {
 	return NULL;
 }
 
+void setup() {
+
+	setup_serial();
+
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	// Dynamically generated code to execute on setup()
+
+	%(proxied_function_setup)s // {***PLACEHOLDER***}
+
+}
+
 void loop() {
 	uint8_t ret = read_parameters();
 	
@@ -331,15 +345,4 @@ void loop() {
 		send_debug();
 		send_invalid_cmd_response(UNEXPECTED_RESPONSE_FROM_READ_PARAMETERS);
 	}
-}
-
-void setup() {
-	
-	setup_serial();
-
-	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	// Dynamically generated code to execute on setup()
-
-	%(proxied_function_setup)s // {***PLACEHOLDER***}
-
 }
