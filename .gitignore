@@ -7,7 +7,7 @@
 /docs/
 /build
 /dist
-/virtualenv
+/virtualenv*/
 /fotos-y-videos
 /.settings
 /.git
