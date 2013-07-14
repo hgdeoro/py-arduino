@@ -1,6 +1,6 @@
 
 //
-// THIS FILE WAS GENERATED AUTOMATICALLY on 2013-07-10 01:16:39.227545
+// THIS FILE WAS GENERATED AUTOMATICALLY on 2013-07-14 18:57:45.245789
 // WITH 'sketches/generate_sketch.py'
 // WHICH IS PART OF THE PROJECT "py-arduino"
 //
@@ -56,6 +56,11 @@ char* received_parameters[MAX_RECEIVED_PARAMETERS] = { 0 };
 // headers for ds18x20_read()
 
 #include "OneWire.h"
+
+
+// headers for irRead()
+
+#include "IRremote.h"
 
 
 // headers for lcdWrite()
@@ -399,6 +404,32 @@ void _gIM() {
 }
 
 
+// sources for irRead()
+
+void _irRd()
+{
+    int pin = atoi(received_parameters[1]);
+    int timeout = atoi(received_parameters[2]);
+    IRrecv irrecv(pin);
+    decode_results results;
+    irrecv.enableIRIn();
+
+    unsigned long time;
+    time = millis();
+    while(millis() - time < timeout) {
+        if (irrecv.decode(&results)) {
+            Serial.print("IR_OK,");
+            Serial.println(results.value);
+            Serial.print("\n");
+            return;
+        }
+    }
+    Serial.print("IR_NO_READ");
+    Serial.print("\n");
+    return;
+}
+
+
 // sources for lcdClear()
 
 void _lcdClr() {
@@ -556,12 +587,12 @@ void _wI() {
 	
 	// PROXIED_FUNCTION_COUNT: how many proxied functions we have
 // >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
-	#define PROXIED_FUNCTION_COUNT 26 // {***PLACEHOLDER***}
+	#define PROXIED_FUNCTION_COUNT 27 // {***PLACEHOLDER***}
 	
 // >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
-	proxied_function_ptr function_ptr[PROXIED_FUNCTION_COUNT] = { _aRd, _aWrt, _dy, _dMs, _dht11Rd, _dRd, _dWrt, _dD, _ds18x20Rd, _eD, _eDL, _gATS, _gACT, _gFM, _gIM, _lcdClr, _lcdW, _mc, _ms, _pMd, _ping, _sftO, _strAR, _strDR, _vCnt, _wI,  }; // {***PLACEHOLDER***}
+	proxied_function_ptr function_ptr[PROXIED_FUNCTION_COUNT] = { _aRd, _aWrt, _dy, _dMs, _dht11Rd, _dRd, _dWrt, _dD, _ds18x20Rd, _eD, _eDL, _gATS, _gACT, _gFM, _gIM, _irRd, _lcdClr, _lcdW, _mc, _ms, _pMd, _ping, _sftO, _strAR, _strDR, _vCnt, _wI,  }; // {***PLACEHOLDER***}
 // >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
-	char*               function_name[PROXIED_FUNCTION_COUNT] = { "_aRd", "_aWrt", "_dy", "_dMs", "_dht11Rd", "_dRd", "_dWrt", "_dD", "_ds18x20Rd", "_eD", "_eDL", "_gATS", "_gACT", "_gFM", "_gIM", "_lcdClr", "_lcdW", "_mc", "_ms", "_pMd", "_ping", "_sftO", "_strAR", "_strDR", "_vCnt", "_wI",  }; // {***PLACEHOLDER***}
+	char*               function_name[PROXIED_FUNCTION_COUNT] = { "_aRd", "_aWrt", "_dy", "_dMs", "_dht11Rd", "_dRd", "_dWrt", "_dD", "_ds18x20Rd", "_eD", "_eDL", "_gATS", "_gACT", "_gFM", "_gIM", "_irRd", "_lcdClr", "_lcdW", "_mc", "_ms", "_pMd", "_ping", "_sftO", "_strAR", "_strDR", "_vCnt", "_wI",  }; // {***PLACEHOLDER***}
 	
 	#define read_char() Serial.read()
 	
