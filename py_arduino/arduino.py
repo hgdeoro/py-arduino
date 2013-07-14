@@ -1812,6 +1812,74 @@ class PyArduino(object):  # pylint: disable=R0904
         #include "OneWire.h"
         """)
 
+    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+
+    def irRead(self, pin, timeout):
+        """
+        Read and decodes a value using an IR sensor.
+        See: http://www.righto.com/2009/08/multi-protocol-infrared-remote-library.html
+        See: https://github.com/shirriff/Arduino-IRremote
+
+        Parameters:
+            - pin (int): digital pin where the sensor is connected
+            - timeout (int): time in milliseconds to wait for a read
+
+        Returns:
+            - The value read (int) or None if no value was read
+        """
+        self._assert_connected()
+        self._validate_digital_pin(pin)
+        cmd = "_irRd\t%d\t%d" % (pin, timeout)
+
+        response = self.send_cmd(cmd, timeout=timeout + 2)  # raises CommandTimeout,InvalidCommand
+
+        splitted_response = response.split(",")
+        if splitted_response[0] == 'IR_OK':
+            if len(splitted_response) == 2:
+                try:
+                    value = int(splitted_response[1])
+                    return value
+                except ValueError:
+                    raise(InvalidResponse("IR_OK received, "
+                        "but data couldn't be transformed to int"))
+            else:
+                raise(InvalidResponse("IR_OK received, but without or bad data"))
+
+        if splitted_response[0] == 'IR_NO_READ':
+            return None
+
+        raise(InvalidResponse(splitted_response[0]))
+
+    irRead.arduino_function_name = '_irRd'
+    irRead.arduino_code = textwrap.dedent("""
+        void _irRd()
+        {
+            int pin = atoi(received_parameters[1]);
+            int timeout = atoi(received_parameters[2]);
+            IRrecv irrecv(pin);
+            decode_results results;
+            irrecv.enableIRIn();
+
+            unsigned long time;
+            time = millis();
+            while(millis() - time < timeout) {
+                if (irrecv.decode(&results)) {
+                    Serial.print("IR_OK,");
+                    Serial.println(results.value);
+                    Serial.print("\\n");
+                    return;
+                }
+            }
+            Serial.print("IR_NO_READ");
+            Serial.print("\\n");
+            return;
+        }
+        """)
+
+    irRead.arduino_header = textwrap.dedent("""
+        #include "IRremote.h"
+        """)
+
 ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 ## EXAMPLE CODE FOR NEW FUNCTIONS
 ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
