@@ -21,6 +21,7 @@
 from py_arduino import InvalidCommand, CommandTimeout, InvalidResponse, NotConnected, \
     HIGH, OUTPUT, LSBFIRST
 from py_arduino.main_utils import  BaseMain
+import py_arduino
 
 
 class Main(BaseMain):
@@ -160,8 +161,16 @@ class Main(BaseMain):
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         print "Test autoconnect()"
         arduino.close()
-        assert arduino.autoconnect()
-        arduino.ping()
+        autoconnect_ok = arduino.autoconnect()
+        if not autoconnect_ok and arduino.tty == py_arduino.DEVICE_FOR_EMULATOR:
+            print ""
+            print "autoconnect() failed, but you are using the emulator. " + \
+                "This is not considered a fail."
+            print ""
+            self.auto_close = False
+        else:
+            assert autoconnect_ok
+            arduino.ping()
 
 
 if __name__ == '__main__':

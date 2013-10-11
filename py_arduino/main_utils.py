@@ -170,6 +170,8 @@ class BaseMain(object):
             except Exception:
                 raise
             finally:
-                arduino.close()
+                if self.auto_close:
+                    # While `run()` is executed, `self.auto_close` can become False
+                    arduino.close()
         else:
             return self.run(options, args, arduino)
