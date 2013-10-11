@@ -168,7 +168,7 @@ class TestProxiedMethodsOfPyArduino(unittest.TestCase):  # pylint: disable=R0904
             self.assertTrue('pin' in item)
             self.assertTrue('digital' in item)
             self.assertTrue('pwm' in item)
-            self.assertTrue('label' in item)
+            # self.assertTrue('label' in item)
         self.assertTrue(enhanced['analog_pins_struct'])
 
     def test_getAvrCpuType(self):
