@@ -1,6 +1,6 @@
 
 //
-// THIS FILE WAS GENERATED AUTOMATICALLY on 2013-10-11 12:30:45.373577
+// THIS FILE WAS GENERATED AUTOMATICALLY on 2013-10-11 13:08:37.879095
 // WITH 'sketches/generate_sketch.py'
 // WHICH IS PART OF THE PROJECT "py-arduino"
 //
@@ -366,6 +366,7 @@ void _emonRd()
     // float supplyVoltage = emon1.Vrms;             //extract Vrms into Variable
     // float Irms = emon1.Irms;             //extract Irms into Variable
 
+    Serial.print("EMON_R_OK,");
     Serial.print(emon.realPower);
     Serial.print(",");
     Serial.print(emon.apparentPower);
@@ -387,7 +388,7 @@ void _emonRd()
 void _emonStp()
 {
     int v_pin = atoi(received_parameters[1]);
-    float v_calibration =  = atof(received_parameters[2]);
+    float v_calibration = atof(received_parameters[2]);
     float v_phase_shift = atof(received_parameters[3]);
     int c_pin = atoi(received_parameters[4]);
     float c_calibration = atof(received_parameters[5]);

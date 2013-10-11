@@ -1852,7 +1852,7 @@ class PyArduino(object):  # pylint: disable=R0904
         void _emonStp()
         {
             int v_pin = atoi(received_parameters[1]);
-            float v_calibration =  = atof(received_parameters[2]);
+            float v_calibration = atof(received_parameters[2]);
             float v_phase_shift = atof(received_parameters[3]);
             int c_pin = atoi(received_parameters[4]);
             float c_calibration = atof(received_parameters[5]);
@@ -1936,6 +1936,7 @@ class PyArduino(object):  # pylint: disable=R0904
             // float supplyVoltage = emon1.Vrms;             //extract Vrms into Variable
             // float Irms = emon1.Irms;             //extract Irms into Variable
 
+            Serial.print("EMON_R_OK,");
             Serial.print(emon.realPower);
             Serial.print(",");
             Serial.print(emon.apparentPower);
