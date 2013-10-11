@@ -229,6 +229,9 @@ class SerialConnectionArduinoEmulator(object):
 
         if other_side:
             # other_side != None -> Arduino side (SLAVE)
+            # ie: this instance (`self`) is for the side of the Arduino:
+            # - write() sends data to python
+            # - read() reads data sent from python to Arduino
             self.master_of = None
             self.slave_of = weakref.ref(other_side)
             self.timeout = other_side.timeout
@@ -237,6 +240,9 @@ class SerialConnectionArduinoEmulator(object):
             self.emulator = None
         else:
             # other_side == None -> Python side (MASTER)
+            # ie: this instance (`self`) is for the side of the Python:
+            # - write() sends data to Arduino
+            # - read() reads data sent from Arduino to python
             self._out_buffer = INITIAL_OUT_BUFFER_CONTENTS
             self._in_buffer = initial_in_buffer_contents
             self.timeout = timeout
@@ -321,6 +327,9 @@ class SerialConnectionArduinoEmulator(object):
 
     def getTimeout(self):  # pylint: disable=C0103
         return self.timeout
+
+    def inject_to_in_buffer(self, text):
+        self._in_buffer = self._in_buffer + text
 
     def __str__(self):
         return "SerialConnectionArduinoEmulator\n" + \

@@ -26,7 +26,6 @@ import unittest
 from py_arduino import InvalidArgument, InvalidResponse, InvalidCommand, \
     HIGH, LOW, OUTPUT, INPUT, DEVICE_FOR_EMULATOR
 from py_arduino.arduino import PyArduino
-from py_arduino import emulator
 
 logger = logging.getLogger(__name__)  # pylint: disable=C0103
 
@@ -36,18 +35,21 @@ class TestPyArduinoWithInitialContentInSerialBuffer(unittest.TestCase):  # pylin
     Testcase for commands.
     """
     def setUp(self):  # pylint: disable=C0103
-        self._INITIAL_OUT_BUFFER_CONTENTS = emulator.INITIAL_OUT_BUFFER_CONTENTS
-        emulator.INITIAL_OUT_BUFFER_CONTENTS = "** SOME TEXT **\n" * 5
         self.arduino = PyArduino(tty=DEVICE_FOR_EMULATOR,
             call_validate_connection=True)
         self.arduino.connect()
+        # Inject after connect()
+        self.arduino.serial_port.inject_to_in_buffer("** SOME TEXT **\n" * 5)
 
-    def test_ping(self):
+    def test_ping_after_validateConnection(self):
+        self.arduino.validateConnection()
         response = self.arduino.ping()
         self.assertEquals(response, 'PING_OK')
 
+    def test_ping_without_validateConnection(self):
+        self.assertRaises(InvalidResponse, self.arduino.ping)
+
     def tearDown(self):  # pylint: disable=C0103
-        emulator.INITIAL_OUT_BUFFER_CONTENTS = self._INITIAL_OUT_BUFFER_CONTENTS
         self.arduino.close()
 
 
