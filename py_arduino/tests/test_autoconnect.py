@@ -19,21 +19,23 @@
 ##-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 import logging
+import unittest
 
 from py_arduino.arduino import PyArduino
 
 
-def main(): # pylint: disable=R0915
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    # Test autoconnect()
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    logging.basicConfig(level=logging.DEBUG)
-    print "Test autoconnect()"
-    arduino = PyArduino()
-    arduino.autoconnect()
-    arduino.ping()
-    arduino.close()
+class AutoConnectTest(unittest.TestCase):
+    """
+    Just call autoconnect(). This test WILL FAILL if you don't have an Arduino connected!
+    """
+
+    def test_autoconnect(self):
+        logging.basicConfig(level=logging.DEBUG)
+        arduino = PyArduino()
+        arduino.autoconnect()
+        arduino.ping()
+        arduino.close()
 
 
 if __name__ == '__main__':
-    main()
+    unittest.main()
