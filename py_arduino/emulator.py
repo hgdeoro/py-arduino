@@ -123,6 +123,7 @@ class ArduinoEmulator(threading.Thread):
             self.serial_connection.write("%d\n" % random.randint(800, 1200))
         elif splitted[0] == '_sftO':  # shiftOut()
             self.serial_connection.write("SOOK\n")
+
         elif splitted[0] == '_gATS':
             analog_pins = _get_int("emulator_analog_pins", 5)
             digital_pins = _get_int("emulator_digital_pins", 5)
@@ -141,15 +142,17 @@ class ArduinoEmulator(threading.Thread):
                 flash_size,
                 ram_size,
             )
-
             self.serial_connection.write(arduino_type_struct)
+
         elif splitted[0] == '_lcdClr':  # lcdClear()
             print "LCD: lcdClear()"
             self.serial_connection.write("LCLROK\n")
+
         elif splitted[0] == '_lcdW':  # lcdWrite()
             print "LCD[col=%d][row=%d]: %s" % (int(splitted[1]), int(splitted[2]),
                 ' '.join(splitted[3:]))
             self.serial_connection.write("LWOK\n")
+
         elif splitted[0] == '_strAR':  # streamingAnalogRead()
             # If message sent to real Arduino is delayed, maybe some more data is sent from Arduino
             # splitted[1] -> pin
@@ -157,12 +160,27 @@ class ArduinoEmulator(threading.Thread):
             for i in range(0, int(splitted[2])):
                 self.serial_connection.write("%d\n" % random.randint(0, 1023))
             self.serial_connection.write("SR_OK\n")
+
         elif splitted[0] == '_strDR':  # streamingDigitalRead()
             # splitted[1] -> pin
             # splitted[2] -> count
             for i in range(0, int(splitted[2])):
                 self.serial_connection.write("%d\n" % random.randint(0, 1))
             self.serial_connection.write("SR_OK\n")
+
+        elif splitted[0] == '_emonStp':  # energy_monitor_setup()
+            assert int(splitted[1]) >= 0
+            assert float(splitted[2]) >= 0
+            assert float(splitted[3]) >= 0
+            assert int(splitted[4]) >= 0
+            assert float(splitted[5]) >= 0
+            self.serial_connection.write("EMON_S_OK\n")
+
+        elif splitted[0] == '_emonRd':  # energy_monitor_read()
+            assert int(splitted[1]) >= 0
+            assert int(splitted[2]) >= 0
+            self.serial_connection.write("EMON_R_OK,1.1,2.2,3.3,4.4,5.5\n")
+
         else:
             # FUNCTION_NOT_FOUND = 6
             self.serial_connection.write("%s 6\n" % INVALID_CMD)
