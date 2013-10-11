@@ -118,11 +118,11 @@ class Main(BaseMain):
 
         print "getFreeMemory() -> %s" % str(arduino.getFreeMemory())
 
-        print "energy_monitor_setup() -> %s" % str(
-            arduino.energy_monitor_setup(1, 2.2, 3.3, 4, 5.5))
+        print "energyMonitorSetup() -> %s" % str(
+            arduino.energyMonitorSetup(1, 2.2, 3.3, 4, 5.5))
 
-        print "energy_monitor_read() -> %s" % str(
-            arduino.energy_monitor_read(1, 2))
+        print "energyMonitorRead() -> %s" % str(
+            arduino.energyMonitorRead(1, 2))
 
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # Test streaming

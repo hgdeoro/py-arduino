@@ -1821,7 +1821,7 @@ class PyArduino(object):  # pylint: disable=R0904
     # Energy Monitor
     #===========================================================================
 
-    def energy_monitor_setup(self, v_pin, v_calibration, v_phase_shift, c_pin, c_calibration):
+    def energyMonitorSetup(self, v_pin, v_calibration, v_phase_shift, c_pin, c_calibration):
         """
         Setup energy monitor.
         
@@ -1848,8 +1848,8 @@ class PyArduino(object):  # pylint: disable=R0904
 
         raise(InvalidResponse(splitted_response[0]))
 
-    energy_monitor_setup.arduino_function_name = '_emonStp'
-    energy_monitor_setup.arduino_code = textwrap.dedent("""
+    energyMonitorSetup.arduino_function_name = '_emonStp'
+    energyMonitorSetup.arduino_code = textwrap.dedent("""
         void _emonStp()
         {
             int v_pin = atoi(received_parameters[1]);
@@ -1870,17 +1870,17 @@ class PyArduino(object):  # pylint: disable=R0904
         }
         """)
 
-    energy_monitor_setup.arduino_globals = textwrap.dedent("""
+    energyMonitorSetup.arduino_globals = textwrap.dedent("""
         EnergyMonitor emon;
         """)
 
-    energy_monitor_setup.arduino_header = textwrap.dedent("""
+    energyMonitorSetup.arduino_header = textwrap.dedent("""
         #include "EmonLib.h"
         """)
 
     # --------------------
 
-    def energy_monitor_read(self, no_wl, timeout):
+    def energyMonitorRead(self, no_wl, timeout):
         """
         Read energy monitor values.
         
@@ -1921,8 +1921,8 @@ class PyArduino(object):  # pylint: disable=R0904
 
         raise(InvalidResponse(splitted_response[0]))
 
-    energy_monitor_read.arduino_function_name = '_emonRd'
-    energy_monitor_read.arduino_code = textwrap.dedent("""
+    energyMonitorRead.arduino_function_name = '_emonRd'
+    energyMonitorRead.arduino_code = textwrap.dedent("""
         void _emonRd()
         {
             int no_wl = atoi(received_parameters[1]);

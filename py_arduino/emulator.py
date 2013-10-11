@@ -166,7 +166,7 @@ class ArduinoEmulator(threading.Thread):
                 self.serial_connection.write("%d\n" % random.randint(0, 1))
             self.serial_connection.write("SR_OK\n")
 
-        elif splitted[0] == '_emonStp':  # energy_monitor_setup()
+        elif splitted[0] == '_emonStp':  # energyMonitorSetup()
             assert int(splitted[1]) >= 0
             assert float(splitted[2]) >= 0
             assert float(splitted[3]) >= 0
@@ -174,7 +174,7 @@ class ArduinoEmulator(threading.Thread):
             assert float(splitted[5]) >= 0
             self.serial_connection.write("EMON_S_OK\n")
 
-        elif splitted[0] == '_emonRd':  # energy_monitor_read()
+        elif splitted[0] == '_emonRd':  # energyMonitorRead()
             assert int(splitted[1]) >= 0
             assert int(splitted[2]) >= 0
             self.serial_connection.write("EMON_R_OK,1.1,2.2,3.3,4.4,5.5\n")

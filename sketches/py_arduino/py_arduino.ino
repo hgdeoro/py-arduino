@@ -1,6 +1,6 @@
 
 //
-// THIS FILE WAS GENERATED AUTOMATICALLY on 2013-10-11 13:08:37.879095
+// THIS FILE WAS GENERATED AUTOMATICALLY on 2013-10-11 17:25:16.544785
 // WITH 'sketches/generate_sketch.py'
 // WHICH IS PART OF THE PROJECT "py-arduino"
 //
@@ -58,7 +58,7 @@ char* received_parameters[MAX_RECEIVED_PARAMETERS] = { 0 };
 #include "OneWire.h"
 
 
-// headers for energy_monitor_setup()
+// headers for energyMonitorSetup()
 
 #include "EmonLib.h"
 
@@ -101,7 +101,7 @@ uint8_t debug_enabled = 0;
 
 // >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
 
-// globals for energy_monitor_setup()
+// globals for energyMonitorSetup()
 
 EnergyMonitor emon;
 
@@ -350,7 +350,7 @@ void _eDL() {
 }
 
 
-// sources for energy_monitor_read()
+// sources for energyMonitorRead()
 
 void _emonRd()
 {
@@ -383,7 +383,7 @@ void _emonRd()
 }
 
 
-// sources for energy_monitor_setup()
+// sources for energyMonitorSetup()
 
 void _emonStp()
 {
