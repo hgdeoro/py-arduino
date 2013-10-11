@@ -170,6 +170,8 @@ def main():  # pylint: disable=R0914,R0912,R0915
         'dht11.h',
         'OneWire.cpp',
         'OneWire.h',
+        'EmonLib.cpp',
+        'EmonLib.h',
     ]
 
     logging.info("Template for .ino file: %s", c_input_filename)
