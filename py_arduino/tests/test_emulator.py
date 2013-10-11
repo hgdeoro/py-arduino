@@ -38,11 +38,11 @@ class TestPyArduinoWithInitialContentInSerialBuffer(unittest.TestCase):  # pylin
     def setUp(self):  # pylint: disable=C0103
         self._INITIAL_OUT_BUFFER_CONTENTS = emulator.INITIAL_OUT_BUFFER_CONTENTS
         emulator.INITIAL_OUT_BUFFER_CONTENTS = "** SOME TEXT **\n" * 5
-        self.arduino = PyArduino(tty=DEVICE_FOR_EMULATOR, call_validate_connection=False)
+        self.arduino = PyArduino(tty=DEVICE_FOR_EMULATOR,
+            call_validate_connection=True)
         self.arduino.connect()
 
     def test_ping(self):
-        self.arduino.validateConnection()
         response = self.arduino.ping()
         self.assertEquals(response, 'PING_OK')
 
