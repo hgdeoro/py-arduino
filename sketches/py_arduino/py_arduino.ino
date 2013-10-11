@@ -1,6 +1,6 @@
 
 //
-// THIS FILE WAS GENERATED AUTOMATICALLY on 2013-07-10 01:16:39.227545
+// THIS FILE WAS GENERATED AUTOMATICALLY on 2013-10-11 12:30:45.373577
 // WITH 'sketches/generate_sketch.py'
 // WHICH IS PART OF THE PROJECT "py-arduino"
 //
@@ -58,6 +58,11 @@ char* received_parameters[MAX_RECEIVED_PARAMETERS] = { 0 };
 #include "OneWire.h"
 
 
+// headers for energy_monitor_setup()
+
+#include "EmonLib.h"
+
+
 // headers for lcdWrite()
 
 // If you want to disable LCD support once the sketch file is generated,
@@ -95,6 +100,11 @@ uint8_t debug_enabled = 0;
 // Dynamically generated global variables
 
 // >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
+
+// globals for energy_monitor_setup()
+
+EnergyMonitor emon;
+
 
 // globals for lcdWrite()
 
@@ -340,6 +350,60 @@ void _eDL() {
 }
 
 
+// sources for energy_monitor_read()
+
+void _emonRd()
+{
+    int no_wl = atoi(received_parameters[1]);
+    int timeout = atoi(received_parameters[2]);
+
+    emon.calcVI(no_wl, timeout);         // Calculate all. No.of wavelengths, time-out
+
+    // emon1.serialprint();           // Print out all variables
+    // float realPower = emon1.realPower;        //extract Real Power into variable
+    // float apparentPower = emon1.apparentPower;    //extract Apparent Power into variable
+    // float powerFActor = emon1.powerFactor;      //extract Power Factor into Variable
+    // float supplyVoltage = emon1.Vrms;             //extract Vrms into Variable
+    // float Irms = emon1.Irms;             //extract Irms into Variable
+
+    Serial.print(emon.realPower);
+    Serial.print(",");
+    Serial.print(emon.apparentPower);
+    Serial.print(",");
+    Serial.print(emon.powerFactor);
+    Serial.print(",");
+    Serial.print(emon.Vrms);
+    Serial.print(",");
+    Serial.print(emon.Irms);
+    Serial.print("\n");
+    return;
+
+
+}
+
+
+// sources for energy_monitor_setup()
+
+void _emonStp()
+{
+    int v_pin = atoi(received_parameters[1]);
+    float v_calibration =  = atof(received_parameters[2]);
+    float v_phase_shift = atof(received_parameters[3]);
+    int c_pin = atoi(received_parameters[4]);
+    float c_calibration = atof(received_parameters[5]);
+
+    // emon1.voltage(2, 225.00, 1.7);  // Voltage: input pin, calibration, phase_shift
+    // emon1.current(1, 111.1);       // Current: input pin, calibration.
+
+    emon.voltage(v_pin, v_calibration, v_phase_shift);
+    emon.current(c_pin, c_calibration);
+
+    Serial.print("EMON_S_OK");
+    Serial.print("\n");
+    return;
+}
+
+
 // sources for getArduinoTypeStruct()
 
 void _gATS() {
@@ -556,12 +620,12 @@ void _wI() {
 	
 	// PROXIED_FUNCTION_COUNT: how many proxied functions we have
 // >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
-	#define PROXIED_FUNCTION_COUNT 26 // {***PLACEHOLDER***}
+	#define PROXIED_FUNCTION_COUNT 28 // {***PLACEHOLDER***}
 	
 // >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
-	proxied_function_ptr function_ptr[PROXIED_FUNCTION_COUNT] = { _aRd, _aWrt, _dy, _dMs, _dht11Rd, _dRd, _dWrt, _dD, _ds18x20Rd, _eD, _eDL, _gATS, _gACT, _gFM, _gIM, _lcdClr, _lcdW, _mc, _ms, _pMd, _ping, _sftO, _strAR, _strDR, _vCnt, _wI,  }; // {***PLACEHOLDER***}
+	proxied_function_ptr function_ptr[PROXIED_FUNCTION_COUNT] = { _aRd, _aWrt, _dy, _dMs, _dht11Rd, _dRd, _dWrt, _dD, _ds18x20Rd, _eD, _eDL, _emonRd, _emonStp, _gATS, _gACT, _gFM, _gIM, _lcdClr, _lcdW, _mc, _ms, _pMd, _ping, _sftO, _strAR, _strDR, _vCnt, _wI,  }; // {***PLACEHOLDER***}
 // >>>>>>>>>>>>>>>>>>>> PLACEHOLDER <<<<<<<<<<<<<<<<<<<<
-	char*               function_name[PROXIED_FUNCTION_COUNT] = { "_aRd", "_aWrt", "_dy", "_dMs", "_dht11Rd", "_dRd", "_dWrt", "_dD", "_ds18x20Rd", "_eD", "_eDL", "_gATS", "_gACT", "_gFM", "_gIM", "_lcdClr", "_lcdW", "_mc", "_ms", "_pMd", "_ping", "_sftO", "_strAR", "_strDR", "_vCnt", "_wI",  }; // {***PLACEHOLDER***}
+	char*               function_name[PROXIED_FUNCTION_COUNT] = { "_aRd", "_aWrt", "_dy", "_dMs", "_dht11Rd", "_dRd", "_dWrt", "_dD", "_ds18x20Rd", "_eD", "_eDL", "_emonRd", "_emonStp", "_gATS", "_gACT", "_gFM", "_gIM", "_lcdClr", "_lcdW", "_mc", "_ms", "_pMd", "_ping", "_sftO", "_strAR", "_strDR", "_vCnt", "_wI",  }; // {***PLACEHOLDER***}
 	
 	#define read_char() Serial.read()
 	
