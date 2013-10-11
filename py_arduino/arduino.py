@@ -1623,7 +1623,9 @@ class PyArduino(object):  # pylint: disable=R0904
             }
         """)
 
-    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    #===============================================================================
+    # DHT11 - temperature and huminity sensor
+    #===============================================================================
 
     def dht11_read(self, pin):  # pylint: disable=C0103
         """
@@ -1689,7 +1691,9 @@ class PyArduino(object):  # pylint: disable=R0904
             #include "dht11.h"
         """)
 
-    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    #===========================================================================
+    # OneWire - DS18x20
+    #===========================================================================
 
     def ds18x20_read(self, pin):
         """
@@ -1810,6 +1814,142 @@ class PyArduino(object):  # pylint: disable=R0904
 
     ds18x20_read.arduino_header = textwrap.dedent("""
         #include "OneWire.h"
+        """)
+
+    #===========================================================================
+    # Energy Monitor
+    #===========================================================================
+
+    def energy_monitor_setup(self, v_pin, v_calibration, v_phase_shift, c_pin, c_calibration):
+        """
+        Setup energy monitor.
+        
+        Parameters:
+            - v_pin (int): xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+            - v_calibration (float): xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+            - v_phase_shift (float): xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+            - c_pin (int): xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+            - c_calibration (float): xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+        """
+        # FIXME: add doc for exceptions
+        self._assert_connected()
+        self._validate_digital_pin(v_pin)
+        self._validate_digital_pin(c_pin)
+
+        cmd = "_emonStp\t%d\t%f\t%f\t%d\t%f" % (v_pin, v_calibration, v_phase_shift,
+            c_pin, c_calibration)
+
+        response = self.send_cmd(cmd)  # raises CommandTimeout,InvalidCommand
+
+        splitted_response = response.split(",")
+        if splitted_response[0] == 'EMON_S_OK':
+            return splitted_response[0]
+
+        raise(InvalidResponse(splitted_response[0]))
+
+    energy_monitor_setup.arduino_function_name = '_emonStp'
+    energy_monitor_setup.arduino_code = textwrap.dedent("""
+        void _emonStp()
+        {
+            int v_pin = atoi(received_parameters[1]);
+            float v_calibration =  = atof(received_parameters[2]);
+            float v_phase_shift = atof(received_parameters[3]);
+            int c_pin = atoi(received_parameters[4]);
+            float c_calibration = atof(received_parameters[5]);
+
+            // emon1.voltage(2, 225.00, 1.7);  // Voltage: input pin, calibration, phase_shift
+            // emon1.current(1, 111.1);       // Current: input pin, calibration.
+
+            emon.voltage(v_pin, v_calibration, v_phase_shift);
+            emon.current(c_pin, c_calibration);
+
+            Serial.print("EMON_S_OK");
+            Serial.print("\\n");
+            return;
+        }
+        """)
+
+    energy_monitor_setup.arduino_globals = textwrap.dedent("""
+        EnergyMonitor emon;
+        """)
+
+    energy_monitor_setup.arduino_header = textwrap.dedent("""
+        #include "EmonLib.h"
+        """)
+
+    # --------------------
+
+    def energy_monitor_read(self, no_wl, timeout):
+        """
+        Read energy monitor values.
+        
+        Parameters:
+            - no_wl (int): first parameter for `calcVI()` function
+            - timeout (int): second parameter for `calcVI()` function
+        
+        Returns:
+            - float, realPower
+            - float, apparentPower
+            - float, powerFactor
+            - float, Vrms
+            - float, Irms
+        """
+        # FIXME: add doc for exceptions
+        self._assert_connected()
+        cmd = "_emonRd\t%d\t%d" % (int(no_wl), int(timeout))
+
+        response = self.send_cmd(cmd)  # raises CommandTimeout,InvalidCommand
+
+        splitted_response = response.split(",")
+        if splitted_response[0] == 'EMON_R_OK':
+            if len(splitted_response) == 6:
+                try:
+                    return (
+                        float(splitted_response[1]),
+                        float(splitted_response[2]),
+                        float(splitted_response[3]),
+                        float(splitted_response[4]),
+                        float(splitted_response[5]),
+                    )
+                except ValueError:
+                    raise(InvalidResponse("EMON_R_OK received, "
+                        "but data couldn't be transformed to float"))
+            else:
+                raise(InvalidResponse("EMON_R_OK received, "
+                    "but without the expected number of data"))
+
+        raise(InvalidResponse(splitted_response[0]))
+
+    energy_monitor_read.arduino_function_name = '_emonRd'
+    energy_monitor_read.arduino_code = textwrap.dedent("""
+        void _emonRd()
+        {
+            int no_wl = atoi(received_parameters[1]);
+            int timeout = atoi(received_parameters[2]);
+
+            emon.calcVI(no_wl, timeout);         // Calculate all. No.of wavelengths, time-out
+
+            // emon1.serialprint();           // Print out all variables
+            // float realPower = emon1.realPower;        //extract Real Power into variable
+            // float apparentPower = emon1.apparentPower;    //extract Apparent Power into variable
+            // float powerFActor = emon1.powerFactor;      //extract Power Factor into Variable
+            // float supplyVoltage = emon1.Vrms;             //extract Vrms into Variable
+            // float Irms = emon1.Irms;             //extract Irms into Variable
+
+            Serial.print(emon.realPower);
+            Serial.print(",");
+            Serial.print(emon.apparentPower);
+            Serial.print(",");
+            Serial.print(emon.powerFactor);
+            Serial.print(",");
+            Serial.print(emon.Vrms);
+            Serial.print(",");
+            Serial.print(emon.Irms);
+            Serial.print("\\n");
+            return;
+
+
+        }
         """)
 
 ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
