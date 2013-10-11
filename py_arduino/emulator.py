@@ -27,8 +27,6 @@ import weakref
 
 from py_arduino import HIGH, LOW, INVALID_CMD
 
-INITIAL_OUT_BUFFER_CONTENTS = ''
-
 
 class ArduinoEmulator(threading.Thread):
     """
@@ -243,7 +241,7 @@ class SerialConnectionArduinoEmulator(object):
             # ie: this instance (`self`) is for the side of the Python:
             # - write() sends data to Arduino
             # - read() reads data sent from Arduino to python
-            self._out_buffer = INITIAL_OUT_BUFFER_CONTENTS
+            self._out_buffer = ''
             self._in_buffer = initial_in_buffer_contents
             self.timeout = timeout
             self._lock = threading.RLock()

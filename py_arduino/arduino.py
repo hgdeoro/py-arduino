@@ -178,8 +178,6 @@ class PyArduino(object):  # pylint: disable=R0904
         connceted to an instance of ArduinoEmulator if tty is DEVICE_FOR_EMULATOR.
         """
         if self.tty == DEVICE_FOR_EMULATOR:
-            # FIXME: move import to module level
-            # FIXME: fix INITIAL_OUT_BUFFER_CONTENTS (no longer works after refactor of emulator)
             return SerialConnectionArduinoEmulator()
         else:
             logger.debug("Opening serial port %s...", self.tty)
