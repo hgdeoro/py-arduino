@@ -785,6 +785,7 @@ class PyArduino(object):  # pylint: disable=R0904
         self._assert_connected()
         random_str = str(random.randint(0, 10000000))
         cmd = "_vCnt\t%s" % random_str
+        logger.debug("validateConnection(): will send random string %s", random_str)
         response = self.send_cmd(cmd)  # raises CommandTimeout,InvalidCommand
 
         while response != random_str:
@@ -792,6 +793,8 @@ class PyArduino(object):  # pylint: disable=R0904
                 pprint.pformat(response))
             # Go for the string, or a timeout exception!
             response = self.get_next_response()
+
+        logger.debug("validateConnection(): got valid response! Returning...")
 
         return response
 
