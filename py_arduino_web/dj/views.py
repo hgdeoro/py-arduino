@@ -19,8 +19,8 @@ STORAGE_PYRO = get_storage_pyro()
 
 
 class JsonResponse(HttpResponse):
-    def __init__(self, data, *args, **kwargs):
-        content = json.dumps(data)
+    def __init__(self, data, indent=None, *args, **kwargs):
+        content = json.dumps(data, indent=indent)
         mimetype = kwargs.get('mimetype', 'application/json')
         super(JsonResponse, self).__init__(content=content, mimetype=mimetype,
             *args, **kwargs)

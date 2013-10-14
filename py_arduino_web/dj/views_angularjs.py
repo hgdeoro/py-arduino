@@ -50,5 +50,7 @@ def get_arduino_data(request):
         'avr_cpu_type': avr_cpu_type,
         'enhanced_arduino_type': enhanced_arduino_type,
     }
-
-    return JsonResponse(ctx)
+    if 'indent' in request.GET:
+        return JsonResponse(ctx, indent=int(request.GET['indent']))
+    else:
+        return JsonResponse(ctx)
