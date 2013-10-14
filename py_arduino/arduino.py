@@ -1452,6 +1452,10 @@ class PyArduino(object):  # pylint: disable=R0904
                 # 'pin_id': d_pin_obj.pin_id,
                 # 'enabled_in_web': d_pin_obj.enabled_in_web,
                 'status_mode': d_pin_status.mode,
+                'status_mode_is_input': bool(d_pin_status.mode == INPUT),
+                'status_mode_is_output': bool(d_pin_status.mode == OUTPUT),
+                'status_mode_is_unknown': not bool(d_pin_status.mode == INPUT or
+                    d_pin_status.mode == OUTPUT),
                 'status_read_value': d_pin_status.read_value,
                 'status_written_value': d_pin_status.written_value,
             })
@@ -1473,6 +1477,8 @@ class PyArduino(object):  # pylint: disable=R0904
                 # 'pin_id': a_pin_obj.pin_id,
                 # 'enabled_in_web': a_pin_obj.enabled_in_web,
                 'status_mode': a_pin_status.mode,
+                'status_mode_is_input': bool(d_pin_status.mode == INPUT),
+                'status_mode_is_unknown': not bool(d_pin_status.mode == INPUT),
                 'status_read_value': a_pin_status.read_value,
                 'status_written_value': a_pin_status.written_value,
             })

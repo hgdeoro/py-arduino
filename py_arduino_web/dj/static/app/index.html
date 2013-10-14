@@ -128,14 +128,14 @@ INPUT.pin_label {
 					<td>
 						<div class="btn-group btn-group-xs">
 							<button ng-disabled="! pin_struct.enabled_in_web" type="button"
-								ng-click="pinModeDisabled(pin_struct)" class="btn btn-default"
-								ng-class="getClassForDisabled(pin_struct)">X</button>
+								ng-click="pinModeDisabled(pin_struct)" class="btn"
+								ng-class="pin_struct.css_for_button_unknown_mode">X</button>
 							<button ng-disabled="! pin_struct.enabled_in_web" type="button"
-								ng-click="pinModeInput(pin_struct)" class="btn btn-default"
-								ng-class="getClassForInput(pin_struct)">INPUT</button>
+								ng-click="pinModeInput(pin_struct)" class="btn"
+								ng-class="pin_struct.css_for_button_input_mode">INPUT</button>
 							<button ng-disabled="! pin_struct.enabled_in_web" type="button"
-								ng-click="pinModeOutput(pin_struct)" class="btn btn-default"
-								ng-class="getClassForOutput(pin_struct)">OUTPUT</button>
+								ng-click="pinModeOutput(pin_struct)" class="btn"
+								ng-class="pin_struct.css_for_button_output_mode">OUTPUT</button>
 						</div>
 					</td>
 					<td><input type="text" ng-model="pin_struct.xxxxxxxxxxx"
@@ -181,11 +181,11 @@ INPUT.pin_label {
 					<td>
 						<div class="btn-group btn-group-xs">
 							<button ng-disabled="! pin_struct.enabled_in_web" type="button"
-								ng-click="pinModeDisabled(pin_struct)" class="btn btn-default"
-								ng-class="getClassForDisabled(pin_struct)">X</button>
+								ng-click="pinModeDisabled(pin_struct)" class="btn"
+								ng-class="pin_struct.css_for_button_unknown_mode">X</button>
 							<button ng-disabled="! pin_struct.enabled_in_web" type="button"
-								ng-click="pinModeInput(pin_struct)" class="btn btn-default"
-								ng-class="getClassForInput(pin_struct)">INPUT</button>
+								ng-click="pinModeInput(pin_struct)" class="btn"
+								ng-class="pin_struct.css_for_button_input_mode">INPUT</button>
 						</div>
 					</td>
 

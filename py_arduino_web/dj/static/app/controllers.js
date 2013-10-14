@@ -9,8 +9,29 @@ var pyArduinoModule = angular.module('PyArduino', []);
 // };
 // } ]);
 
-//INPUT = 0
-//OUTPUT= 1
+// pyArduinoModule.filter('if_mode_is_input', function() {
+// return function(pin_struct, text_if_true, text_otherwise) {
+// if (pin_struct.status_mode_is_input)
+// return text_if_true;
+// return text_otherwise;
+// }
+// });
+//
+// pyArduinoModule.filter('if_mode_is_output', function() {
+// return function(pin_struct, text_if_true, text_otherwise) {
+// if (pin_struct.status_mode_is_output)
+// return text_if_true;
+// return text_otherwise;
+// }
+// });
+//
+// pyArduinoModule.filter('if_mode_is_unknown', function() {
+// return function(pin_struct, text_if_true, text_otherwise) {
+// if (pin_struct.status_mode_is_unknown)
+// return text_if_true;
+// return text_otherwise;
+// }
+// });
 
 pyArduinoModule.controller('GlobalController', function($scope) {
 
@@ -41,32 +62,53 @@ pyArduinoModule.controller('PinsController', function($scope, $http) {
 
     $scope.pinModeDisabled = function(pinStruct) {
         pinStruct.status_mode = null;
+        $scope.refreshCssForButtons();
     };
 
     $scope.pinModeInput = function(pinStruct) {
         pinStruct.status_mode = INPUT;
+        $scope.refreshCssForButtons();
     };
 
     $scope.pinModeOutput = function(pinStruct) {
         pinStruct.status_mode = OUTPUT;
+        $scope.refreshCssForButtons();
     };
 
-    $scope.getClassForDisabled = function(pinStruct) {
-        if(pinStruct.status_mode == INPUT || pinStruct.status_mode == OUTPUT)
-            return CSS_FOR_NON_SELECTED_MODE;
-        return CSS_FOR_SELECTED_MODE;
-    };
+    $scope.refreshCssForButtons = function() {
+        for (i = 0; i < $scope.enhanced_arduino_type.digital_pins_struct.length; i++) {
+            var pin_struct = $scope.enhanced_arduino_type.digital_pins_struct[i];
+            // console.debug("pin_struct[" + i + "].status_mode_is_input: " + pin_struct.status_mode_is_input)
+            // console.debug("pin_struct[" + i + "].status_mode_is_output: " + pin_struct.status_mode_is_output)
+            if (pin_struct.status_mode_is_input) {
+                pin_struct.css_for_button_unknown_mode = CSS_FOR_NON_SELECTED_MODE;
+                pin_struct.css_for_button_input_mode = CSS_FOR_SELECTED_MODE;
+                pin_struct.css_for_button_output_mode = CSS_FOR_NON_SELECTED_MODE;
+            } else if (pin_struct.status_mode_is_output) {
+                pin_struct.css_for_button_unknown_mode = CSS_FOR_NON_SELECTED_MODE;
+                pin_struct.css_for_button_input_mode = CSS_FOR_NON_SELECTED_MODE;
+                pin_struct.css_for_button_output_mode = CSS_FOR_SELECTED_MODE;
+            } else {
+                pin_struct.css_for_button_unknown_mode = CSS_FOR_SELECTED_MODE;
+                pin_struct.css_for_button_input_mode = CSS_FOR_NON_SELECTED_MODE;
+                pin_struct.css_for_button_output_mode = CSS_FOR_NON_SELECTED_MODE;
+            }
+        }
 
-    $scope.getClassForInput = function(pinStruct) {
-        if(pinStruct.status_mode == INPUT)
-            return CSS_FOR_SELECTED_MODE;
-        return CSS_FOR_NON_SELECTED_MODE;
-    };
+        for (i = 0; i < $scope.enhanced_arduino_type.analog_pins_struct.length; i++) {
+            var pin_struct = $scope.enhanced_arduino_type.analog_pins_struct[i];
+            // console.debug("pin_struct[" + i + "].status_mode_is_input: " + pin_struct.status_mode_is_input)
+            if (pin_struct.status_mode_is_input) {
+                pin_struct.css_for_button_unknown_mode = CSS_FOR_NON_SELECTED_MODE;
+                pin_struct.css_for_button_input_mode = CSS_FOR_SELECTED_MODE;
+                pin_struct.css_for_button_output_mode = CSS_FOR_NON_SELECTED_MODE;
+            } else {
+                pin_struct.css_for_button_unknown_mode = CSS_FOR_SELECTED_MODE;
+                pin_struct.css_for_button_input_mode = CSS_FOR_NON_SELECTED_MODE;
+                pin_struct.css_for_button_output_mode = CSS_FOR_NON_SELECTED_MODE;
+            }
+        }
 
-    $scope.getClassForOutput = function(pinStruct) {
-        if(pinStruct.status_mode == OUTPUT)
-            return CSS_FOR_SELECTED_MODE;
-        return CSS_FOR_NON_SELECTED_MODE;
     };
 
     $scope.refreshPinInfo = function() {
@@ -83,13 +125,10 @@ pyArduinoModule.controller('PinsController', function($scope, $http) {
             console.debug("$scope.enhanced_arduino_type: " + $scope.enhanced_arduino_type);
             console.debug("$scope.enhanced_arduino_type.digital_pins_struct: " + $scope.enhanced_arduino_type.digital_pins_struct);
 
-            // var i;
-            // for(i=0;
-            // i<$scope.enhanced_arduino_type.digital_pins_struct.length; i++) {
-            // var pin_struct =
-            // $scope.enhanced_arduino_type.digital_pins_struct;
-            //                pin_struct
-            //            }
+            var i;
+
+            // Digitales...
+            $scope.refreshCssForButtons();
 
             // "enhanced_arduino_type": {
             // "digital_pins_struct": [
@@ -101,6 +140,9 @@ pyArduinoModule.controller('PinsController', function($scope, $http) {
             // .... .... "status_written_value": null,
             // .... .... "status_read_value": null,
             // .... .... "status_mode": null,
+            // .... .... "status_mode_is_input": true|false,
+            // .... .... "status_mode_is_output": true|false,
+            // .... .... "status_mode_is_unknown": true|false,
             // .... .... "digital": true,
             // .... .... "pk": 1,
             // .... .... "label": "Digital pin #0"
@@ -108,16 +150,18 @@ pyArduinoModule.controller('PinsController', function($scope, $http) {
             // ],
             // "analog_pins_struct": [
             // .... {
-            // .... "pwm": false,
-            // .... "enabled_in_web": true,
-            // .... "pin": 0,
-            // .... "pin_id": null,
-            // .... "status_written_value": null,
-            // .... "status_read_value": null,
-            // .... "status_mode": null,
-            // .... "digital": true,
-            // .... "pk": 55,
-            // .... "label": "Analog pin #0"
+            // .... .... "pwm": false,
+            // .... .... "enabled_in_web": true,
+            // .... .... "pin": 0,
+            // .... .... "pin_id": null,
+            // .... .... "status_written_value": null,
+            // .... .... "status_read_value": null,
+            // .... .... "status_mode": null,
+            // .... .... "status_mode_is_input": true|false,
+            // .... .... "status_mode_is_unknown": true|false,
+            // .... .... "digital": true,
+            // .... .... "pk": 55,
+            // .... .... "label": "Analog pin #0"
             // .... },
             // ],
 
