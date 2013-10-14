@@ -13,7 +13,9 @@ pyArduinoModule.controller('GlobalController', function($scope) {
 
     $scope.CONST = {
         INPUT : 0,
-        OUTPUT : 1
+        OUTPUT : 1,
+        LOW : 0,
+        HIGH : 1
     };
 
     $scope.avr_cpu_type = '(unknown)';
@@ -25,10 +27,13 @@ pyArduinoModule.controller('PinsController', function($scope, $http) {
 
     var get_arduino_data_url = '/angular/get_arduino_data/';
     var digital_pin_mode_url = '/angular/digital_pin_mode/';
+    var read_pin_url = '/angular/read_pin/';
 
     var MODE_PIN_UNKNOWN = null; // 'None' of PyArduino
     var INPUT = 0;
     var OUTPUT = 1;
+    var LOW = 0;
+    var HIGH = 1;
 
     var CSS_FOR_SELECTED_MODE = 'btn-success';
     var CSS_FOR_NON_SELECTED_MODE = 'btn-default';
@@ -67,6 +72,9 @@ pyArduinoModule.controller('PinsController', function($scope, $http) {
         $scope.refreshCssForButtons();
     };
 
+    /*
+     * refreshCssForButtons()
+     */
     $scope.refreshCssForButtons = function() {
 
         var i = 0;
@@ -120,7 +128,7 @@ pyArduinoModule.controller('PinsController', function($scope, $http) {
         // "pin": 0,
         // "pin_id": null,
         // "label": "Analog pin #0",
-        // "digital": true,
+        // "digital": false,
         // "pk": 55,
         // "pwm": false
 
@@ -139,20 +147,15 @@ pyArduinoModule.controller('PinsController', function($scope, $http) {
 
     };
 
+    /*
+     * refreshPinInfo()
+     */
     $scope.refreshPinInfo = function() {
         console.info("refreshPinInfo()");
-        $http.get(get_arduino_data_url).success(function(data) {
 
-            // console.debug("$http.get() -> success -> " + data);
+        $http.get(get_arduino_data_url).success(function(data) {
             $scope.avr_cpu_type = data.avr_cpu_type;
             $scope.enhanced_arduino_type = data.enhanced_arduino_type;
-
-            // console.debug("$scope.avr_cpu_type: " + $scope.avr_cpu_type);
-            // console.debug("$scope.enhanced_arduino_type: " +
-            // $scope.enhanced_arduino_type);
-            // console.debug("$scope.enhanced_arduino_type.digital_pins_struct:
-            // " + $scope.enhanced_arduino_type.digital_pins_struct);
-
             $scope.refreshCssForButtons();
 
         }).error(function(data) {
@@ -160,22 +163,44 @@ pyArduinoModule.controller('PinsController', function($scope, $http) {
         });
     };
 
+    /*
+     * setDigitalPinMode()
+     */
     $scope.setDigitalPinMode = function(pin, mode) {
 
         console.info("setPinMode()");
         $http.post(digital_pin_mode_url, {
             pin : pin,
             mode : mode
+
         }).success(function(data) {
-
-            console.info("setPinMode() OK! :-D");
-
             $scope.avr_cpu_type = data.avr_cpu_type;
             $scope.enhanced_arduino_type = data.enhanced_arduino_type;
             $scope.refreshCssForButtons();
 
         }).error(function(data) {
             console.error("setPinMode() -> $http.post() -> ERROR -> " + data);
+        });
+
+    };
+
+    /*
+     * readPin()
+     */
+    $scope.readPin = function(pin_struct) {
+
+        console.info("readPin()");
+        $http.post(read_pin_url, {
+            pin : pin_struct.pin,
+            digital : pin_struct.digital
+
+        }).success(function(data) {
+            $scope.avr_cpu_type = data.avr_cpu_type;
+            $scope.enhanced_arduino_type = data.enhanced_arduino_type;
+            $scope.refreshCssForButtons();
+
+        }).error(function(data) {
+            console.error("readPin() -> $http.post() -> ERROR -> " + data);
         });
 
     };

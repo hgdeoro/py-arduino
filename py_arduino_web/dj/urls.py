@@ -32,6 +32,11 @@ urlpatterns = patterns('',
         name='ng_get_arduino_data'),
     url(r'^angular/digital_pin_mode/?$', 'py_arduino_web.dj.views_angularjs.digital_pin_mode',
         name='ng_digital_pin_mode'),
+    url(r'^angular/read_pin/?$', 'py_arduino_web.dj.views_angularjs.read_pin',
+        name='ng_read_pin'),
+
+    url(r'^angular/pin_write/?$', 'py_arduino_web.dj.views_angularjs.pin_write',
+        name='ng_pin_write'),
 
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),

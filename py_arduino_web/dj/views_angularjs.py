@@ -92,3 +92,51 @@ def digital_pin_mode(request):
 
     else:
         raise(Exception("Invalid mode: {}".format(mode)))
+
+
+@csrf_exempt
+def read_pin(request):
+    if request.method != 'POST':
+        raise(Exception("Only POST allowed"))
+
+    data = json.loads(request.body)
+    try:
+        pin = int(data.get('pin', None))
+    except ValueError:
+        raise(Exception("Invalid pin: {}".format(data.get('pin', None))))
+
+    digital = data.get('digital', None)
+    if digital is True:
+        ARDUINO_PYRO.digitalRead(pin)
+        return JsonResponse(_get_arduino_data(result_ok=True))
+
+    elif digital is False:
+        ARDUINO_PYRO.analogRead(pin)
+        return JsonResponse(_get_arduino_data(result_ok=True))
+
+    raise(Exception("Invalid value for 'digital: {}".format(digital)))
+
+
+#@csrf_exempt
+#def pin_write(request):
+#    if request.method != 'POST':
+#        raise(Exception("Only POST allowed"))
+#
+#    data = json.loads(request.body)
+#    try:
+#        pin = int(data.get('pin', None))
+#    except ValueError:
+#        raise(Exception("Invalid pin: {}".format(data.get('pin', None))))
+#
+#    digital = data.get('digital', None)
+#    value = data.get('value', None)
+#
+#    if digital is True:
+#        ARDUINO_PYRO.digitalWrite(pin, value)
+#        return JsonResponse(_get_arduino_data(result_ok=True))
+#
+#    elif digital is False:
+#        # No support for write on analog pin yet
+#        raise(Exception("Invalid value for 'digital: {}".format(digital)))
+#
+#    raise(Exception("Invalid value for 'digital: {}".format(digital)))

@@ -36,6 +36,13 @@ INPUT.pin_label {
 	line-height: 1;
 	padding-left: 2px;
 }
+
+INPUT.pin_io_value {
+	height: 24px;
+	line-height: 1;
+	padding-left: 2px;
+	width: 4em;
+}
 </style>
 
 </head>
@@ -145,7 +152,11 @@ INPUT.pin_label {
 						</div>
 						<div style="float: right;">
 							<button ng-disabled="! pin_struct.enabled_in_web" type="button"
-								ng-click="readPin(pin_struct)" class="btn btn-primary btn-xs">Read</button>
+								ng-click="readPin(pin_struct)" class="btn btn-primary btn-xs"
+								ng-show="pin_struct.status.mode_is_input">Read</button>
+							<button ng-disabled="! pin_struct.enabled_in_web" type="button"
+								ng-click="writePin(pin_struct)" class="btn btn-primary btn-xs"
+								ng-show="pin_struct.status.mode_is_output">Write</button>
 						</div>
 
 					</td>
@@ -153,8 +164,10 @@ INPUT.pin_label {
 						<!-- <slider floor="0" ceiling="1023" step="1" precision="1"
 							ng-model="pin_struct.xxxxxxxxxxxxxxxxxxxxx" ng-show="pin_struct.pwm"></slider> -->
 						<input type="text" ng-model="pin_struct.xxxxxxxxxxx"
-						class="input-sm" ng-show="true"
-						style="height: 24px; line-height: 1; width: 5em;" />
+						class="input-sm pin_io_value"
+						ng-show="pin_struct.status.mode_is_output && pin_struct.pwm" />
+						
+						{{pin_struct.status.read_value}}
 					</td>
 				</tr>
 
@@ -195,28 +208,13 @@ INPUT.pin_label {
 							class="glyphicon glyphicon-question-sign"></span></a></td>
 
 					<td>
-
 						<div style="float: right;">
 							<button ng-disabled="! pin_struct.enabled_in_web" type="button"
 								ng-click="readPin(pin_struct)" class="btn btn-primary btn-xs">Read</button>
-						</div> <!--
-						<div class="btn-group btn-group-xs">
-
-							<button ng-disabled="! pin_struct.enabled_in_web" type="button"
-								ng-click="pinModeDisabled(pin_struct)" class="btn"
-								ng-class="pin_struct.css_for_button_unknown_mode">X</button>
-
-							<button ng-disabled="! pin_struct.enabled_in_web" type="button"
-								ng-click="pinModeInput(pin_struct)" class="btn"
-								ng-class="pin_struct.css_for_button_input_mode">INPUT</button>
-
 						</div>
-						-->
 					</td>
 
-					<td><input type="text" ng-model="pin_struct.xxxxxxxxxxx"
-						class="input-sm" ng-show="true"
-						style="height: 24px; line-height: 1; width: 5em;" /></td>
+					<td>{{pin_struct.status.read_value}}</td>
 
 				</tr>
 
