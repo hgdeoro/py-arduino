@@ -53,6 +53,9 @@ pyArduinoModule.controller('GlobalController', function($scope) {
     };
 
     $scope.avr_cpu_type = '(unknown)';
+    $scope.extras = {
+        avr_cpu_type : '(unknown)'
+    };
     $scope.enhanced_arduino_type = {};
 
 });
@@ -190,7 +193,7 @@ pyArduinoModule.controller('PinsController', function($scope, $http) {
         console.info("refreshPinInfo()");
 
         $http.get(get_arduino_data_url).success(function(data) {
-            $scope.avr_cpu_type = data.avr_cpu_type;
+            $scope.extras.avr_cpu_type = data.avr_cpu_type;
             $scope.enhanced_arduino_type = data.enhanced_arduino_type;
             $scope.refreshCssForButtons();
 
@@ -210,7 +213,7 @@ pyArduinoModule.controller('PinsController', function($scope, $http) {
             mode : mode
 
         }).success(function(data) {
-            $scope.avr_cpu_type = data.avr_cpu_type;
+            $scope.extras.avr_cpu_type = data.avr_cpu_type;
             $scope.enhanced_arduino_type = data.enhanced_arduino_type;
             $scope.refreshCssForButtons();
 
@@ -231,7 +234,7 @@ pyArduinoModule.controller('PinsController', function($scope, $http) {
             digital : pin_struct.digital
 
         }).success(function(data) {
-            $scope.avr_cpu_type = data.avr_cpu_type;
+            $scope.extras.avr_cpu_type = data.avr_cpu_type;
             $scope.enhanced_arduino_type = data.enhanced_arduino_type;
             $scope.refreshCssForButtons();
 
@@ -253,7 +256,7 @@ pyArduinoModule.controller('PinsController', function($scope, $http) {
             value : value
 
         }).success(function(data) {
-            $scope.avr_cpu_type = data.avr_cpu_type;
+            $scope.extras.avr_cpu_type = data.avr_cpu_type;
             $scope.enhanced_arduino_type = data.enhanced_arduino_type;
             $scope.refreshCssForButtons();
 
@@ -297,7 +300,7 @@ pyArduinoModule.controller('PinsController', function($scope, $http) {
             value : value
 
         }).success(function(data) {
-            $scope.avr_cpu_type = data.avr_cpu_type;
+            $scope.extras.avr_cpu_type = data.avr_cpu_type;
             $scope.enhanced_arduino_type = data.enhanced_arduino_type;
             $scope.refreshCssForButtons();
 
