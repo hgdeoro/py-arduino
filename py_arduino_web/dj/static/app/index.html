@@ -130,19 +130,24 @@ INPUT.pin_label {
 						style="margin-left: 4px;"><span
 							class="glyphicon glyphicon-question-sign"></span></a></td>
 					<td>
-						<div class="btn-group btn-group-xs">
+						<div class="btn-group btn-group-xs" style="float: left;">
 							<button ng-disabled="! pin_struct.enabled_in_web" type="button"
 								ng-click="pinModeDisabled(pin_struct)" class="btn"
 								ng-class="pin_struct.css_for_button_unknown_mode">X</button>
-								
+
 							<button ng-disabled="! pin_struct.enabled_in_web" type="button"
 								ng-click="pinModeInput(pin_struct)" class="btn"
 								ng-class="pin_struct.css_for_button_input_mode">INPUT</button>
-								
+
 							<button ng-disabled="! pin_struct.enabled_in_web" type="button"
 								ng-click="pinModeOutput(pin_struct)" class="btn"
 								ng-class="pin_struct.css_for_button_output_mode">OUTPUT</button>
 						</div>
+						<div style="float: right;">
+							<button ng-disabled="! pin_struct.enabled_in_web" type="button"
+								ng-click="readPin(pin_struct)" class="btn btn-primary btn-xs">Read</button>
+						</div>
+
 					</td>
 					<td>
 						<!-- <slider floor="0" ceiling="1023" step="1" precision="1"
@@ -188,15 +193,25 @@ INPUT.pin_label {
 						title="This pin is configured to not be modified from web interface"
 						style="margin-left: 4px;"><span
 							class="glyphicon glyphicon-question-sign"></span></a></td>
+
 					<td>
+
+						<div style="float: right;">
+							<button ng-disabled="! pin_struct.enabled_in_web" type="button"
+								ng-click="readPin(pin_struct)" class="btn btn-primary btn-xs">Read</button>
+						</div> <!--
 						<div class="btn-group btn-group-xs">
+
 							<button ng-disabled="! pin_struct.enabled_in_web" type="button"
 								ng-click="pinModeDisabled(pin_struct)" class="btn"
 								ng-class="pin_struct.css_for_button_unknown_mode">X</button>
+
 							<button ng-disabled="! pin_struct.enabled_in_web" type="button"
 								ng-click="pinModeInput(pin_struct)" class="btn"
 								ng-class="pin_struct.css_for_button_input_mode">INPUT</button>
+
 						</div>
+						-->
 					</td>
 
 					<td><input type="text" ng-model="pin_struct.xxxxxxxxxxx"
