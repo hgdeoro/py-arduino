@@ -118,7 +118,7 @@ def read_pin(request):
 
 
 @csrf_exempt
-def pin_write(request):
+def digital_write(request):
     if request.method != 'POST':
         raise(Exception("Only POST allowed"))
 
