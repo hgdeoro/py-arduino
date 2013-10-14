@@ -78,7 +78,13 @@
 
 		<div ng-controller="PinsController">
 
-			<!--
+			<table class="table table-condensed table-hover">
+
+				<tr>
+					<th colspan="2">Pin #</th>
+				</tr>
+
+				<!--
             // .... .... "pwm": false,
             // .... .... "enabled_in_web": true,
             // .... .... "pin": 0,
@@ -91,12 +97,13 @@
             // .... .... "label": "Digital pin #0"
             -->
 
-			<div
-				ng-repeat="pin_struct in enhanced_arduino_type.digital_pins_struct">
-				<a href="#">{{pin_struct.label}}</a>
-			</div>
+				<tr
+					ng-repeat="pin_struct in enhanced_arduino_type.digital_pins_struct">
+					<td style="text-align: right;" width="1%">D{{pin_struct.pin}}</td>
+					<td><a href="#">{{pin_struct.label}}</a></td>
+				</tr>
 
-			<!--
+				<!--
             // "analog_pins_struct": [
             // .... {
             // .... "pwm": false,
@@ -112,10 +119,13 @@
             // .... },
             -->
 
-			<div
-				ng-repeat="pin_struct in enhanced_arduino_type.analog_pins_struct">
-				<a href="#">{{pin_struct.label}}</a>
-			</div>
+				<tr
+					ng-repeat="pin_struct in enhanced_arduino_type.analog_pins_struct">
+					<td style="text-align: right;">A{{pin_struct.pin}}</td>
+					<td><a href="#">{{pin_struct.label}}</a></td>
+				</tr>
+
+			</table>
 
 			<button ng-click="loadPinInfo()">Cargar</button>
 
