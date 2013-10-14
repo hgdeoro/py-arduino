@@ -32,6 +32,36 @@ pyArduinoModule.controller('PinsController', function($scope, $http) {
         // TODO: save changes!
     };
 
+    $scope.pinModeDisabled = function(pinStruct) {
+        pinStruct['status.mode'] = null;
+    };
+
+    $scope.pinModeInput = function(pinStruct) {
+        pinStruct['status.mode'] = 'INPUT';
+    };
+
+    $scope.pinModeOutput = function(pinStruct) {
+        pinStruct['status.mode'] = 'OUTPUT';
+    };
+
+    $scope.getClassForDisabled = function(pinStruct) {
+        if(pinStruct['status.mode'] == 'INPUT' || pinStruct['status.mode'] == 'OUTPUT')
+            return '';
+        return 'btn-primary';
+    };
+
+    $scope.getClassForInput = function(pinStruct) {
+        if(pinStruct['status.mode'] == 'INPUT')
+            return 'btn-primary';
+        return '';
+    };
+
+    $scope.getClassForOutput = function(pinStruct) {
+        if(pinStruct['status.mode'] == 'OUTPUT')
+            return 'btn-primary';
+        return '';
+    };
+
     $scope.loadPinInfo = function() {
         console.info("loadPinInfo()");
         $http.get(get_arduino_data_url).success(function(data) {
