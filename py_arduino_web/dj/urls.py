@@ -28,8 +28,8 @@ urlpatterns = patterns('',
         name='get_free_memory'),
     url(r'^close$', 'py_arduino_web.dj.views.close', name='close'),
 
-    # Uncomment the admin/doc line below to enable admin documentation:
-    # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
+    url(r'^angular/get_arduino_data/?$', 'py_arduino_web.dj.views_angularjs.get_arduino_data',
+        name='ng_get_arduino_data'),
 
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),

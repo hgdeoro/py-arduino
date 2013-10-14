@@ -27,7 +27,7 @@
 <script src="/static/app/controllers.js"></script>
 
 </head>
-<body>
+<body ng-controller="GlobalController">
 
 	<!-- Fixed navbar -->
 	<div class="navbar navbar-default navbar-fixed-top">
@@ -60,7 +60,7 @@
 				<ul class="nav navbar-nav navbar-right">
 					<li><a href="../navbar/">Default</a></li>
 					<li><a href="../navbar-static-top/">Static top</a></li>
-					<li class="active"><a href="./">Fixed top</a></li>
+					<li class="active"><a href="./">{{ arduino_data.avr_cpu_type }}</a></li>
 				</ul>
 			</div>
 			<!--/.nav-collapse -->
@@ -81,6 +81,8 @@
         <div ng-repeat="pin in pins">
             Pin {{pin}}
         </div>
+    
+        <button ng-click="loadPinInfo()">Cargar</button>
     
     </div>
 
