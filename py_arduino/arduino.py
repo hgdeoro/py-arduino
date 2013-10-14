@@ -1451,9 +1451,9 @@ class PyArduino(object):  # pylint: disable=R0904
                 # 'label': d_pin_obj.label,
                 # 'pin_id': d_pin_obj.pin_id,
                 # 'enabled_in_web': d_pin_obj.enabled_in_web,
-                'status.mode': d_pin_status.mode,
-                'status.read_value': d_pin_status.read_value,
-                'status.written_value': d_pin_status.written_value,
+                'status_mode': d_pin_status.mode,
+                'status_read_value': d_pin_status.read_value,
+                'status_written_value': d_pin_status.written_value,
             })
         arduino_type_struct['digital_pins_struct'] = digital_pins_struct
         del dp
@@ -1472,9 +1472,9 @@ class PyArduino(object):  # pylint: disable=R0904
                 # 'label': a_pin_obj.label,
                 # 'pin_id': a_pin_obj.pin_id,
                 # 'enabled_in_web': a_pin_obj.enabled_in_web,
-                'status.mode': a_pin_status.mode,
-                'status.read_value': a_pin_status.read_value,
-                'status.written_value': a_pin_status.written_value,
+                'status_mode': a_pin_status.mode,
+                'status_read_value': a_pin_status.read_value,
+                'status_written_value': a_pin_status.written_value,
             })
         arduino_type_struct['analog_pins_struct'] = analog_pins_struct
 
