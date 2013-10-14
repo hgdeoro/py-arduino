@@ -50,8 +50,6 @@ class BaseStorage():
             + pin_id (str)
             + enabled_in_web (bool)
         """
-        # arduino_type_struct['digital_pins_items']
-        # arduino_type_struct['analog_pins_items']
         assert 'digital_pins_items' in arduino_type_struct
         assert 'analog_pins_items' in arduino_type_struct
         assert 'digital_pins_struct' in arduino_type_struct
@@ -68,15 +66,9 @@ class BaseStorage():
             d_pin_obj = self.get_pin(dp, True)
             dp_struct.update({
                 'pk': d_pin_obj.pk,
-                #'pin': dp,
-                #'digital': True,
-                #'pwm': (dp in arduino_type_struct['pwm_pin_list']),
                 'label': d_pin_obj.label,
                 'pin_id': d_pin_obj.pin_id,
                 'enabled_in_web': d_pin_obj.enabled_in_web,
-                #'status.mode': d_pin_status.mode,
-                #'status.read_value': d_pin_status.read_value,
-                #'status.written_value': d_pin_status.written_value,
             })
 
         del dp  # to avoid bugs (happened!)
@@ -94,15 +86,9 @@ class BaseStorage():
             a_pin_obj = self.get_pin(ap, False)
             ap_struct.update({
                 'pk': a_pin_obj.pk,
-                #'pin': ap,
-                #'digital': True,
-                #'pwm': False,
                 'label': a_pin_obj.label,
                 'pin_id': a_pin_obj.pin_id,
                 'enabled_in_web': a_pin_obj.enabled_in_web,
-                #'status.mode': a_pin_status.mode,
-                #'status.read_value': a_pin_status.read_value,
-                #'status.written_value': a_pin_status.written_value,
             })
 
         return arduino_type_struct
