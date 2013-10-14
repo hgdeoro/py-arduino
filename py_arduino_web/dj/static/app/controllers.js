@@ -1,4 +1,4 @@
-var pyArduinoModule = angular.module('PyArduino', ['uiSlider']);
+var pyArduinoModule = angular.module('PyArduino', [ 'uiSlider' ]);
 
 // pyArduinoModule.factory('pyArduinoHttpClient', [ '$http', function($http) {
 // var get_arduino_data_url = '/angular/get_arduino_data/';
@@ -9,31 +9,12 @@ var pyArduinoModule = angular.module('PyArduino', ['uiSlider']);
 // };
 // } ]);
 
-// pyArduinoModule.filter('if_mode_is_input', function() {
-// return function(pin_struct, text_if_true, text_otherwise) {
-// if (pin_struct.status_mode_is_input)
-// return text_if_true;
-// return text_otherwise;
-// }
-// });
-//
-// pyArduinoModule.filter('if_mode_is_output', function() {
-// return function(pin_struct, text_if_true, text_otherwise) {
-// if (pin_struct.status_mode_is_output)
-// return text_if_true;
-// return text_otherwise;
-// }
-// });
-//
-// pyArduinoModule.filter('if_mode_is_unknown', function() {
-// return function(pin_struct, text_if_true, text_otherwise) {
-// if (pin_struct.status_mode_is_unknown)
-// return text_if_true;
-// return text_otherwise;
-// }
-// });
-
 pyArduinoModule.controller('GlobalController', function($scope) {
+
+    $scope.CONST = {
+        INPUT : 0,
+        OUTPUT : 1
+    };
 
     $scope.avr_cpu_type = '(unknown)';
     $scope.arduino_type = {};
@@ -44,6 +25,9 @@ pyArduinoModule.controller('GlobalController', function($scope) {
 pyArduinoModule.controller('PinsController', function($scope, $http) {
 
     var get_arduino_data_url = '/angular/get_arduino_data/';
+    var digital_pin_mode_url = '/angular/digital_pin_mode/';
+
+    var MODE_PIN_DISABLED= -1; // FIXME: this doesn't exists in py-arduino!
     var INPUT = 0;
     var OUTPUT = 1;
     var CSS_FOR_SELECTED_MODE = 'btn-success';
@@ -61,25 +45,27 @@ pyArduinoModule.controller('PinsController', function($scope, $http) {
     };
 
     $scope.pinModeDisabled = function(pinStruct) {
-        pinStruct.status_mode = null;
-        $scope.refreshCssForButtons();
+        $scope.setDigitalPinMode(pinStruct.pin, MODE_PIN_DISABLED);
+        // $scope.refreshCssForButtons();
     };
 
     $scope.pinModeInput = function(pinStruct) {
-        pinStruct.status_mode = INPUT;
-        $scope.refreshCssForButtons();
+        $scope.setDigitalPinMode(pinStruct.pin, INPUT);
+        // $scope.refreshCssForButtons();
     };
 
     $scope.pinModeOutput = function(pinStruct) {
-        pinStruct.status_mode = OUTPUT;
-        $scope.refreshCssForButtons();
+        $scope.setDigitalPinMode(pinStruct.pin, OUTPUT);
+        // $scope.refreshCssForButtons();
     };
 
     $scope.refreshCssForButtons = function() {
         for (i = 0; i < $scope.enhanced_arduino_type.digital_pins_struct.length; i++) {
             var pin_struct = $scope.enhanced_arduino_type.digital_pins_struct[i];
-            // console.debug("pin_struct[" + i + "].status_mode_is_input: " + pin_struct.status_mode_is_input)
-            // console.debug("pin_struct[" + i + "].status_mode_is_output: " + pin_struct.status_mode_is_output)
+            // console.debug("pin_struct[" + i + "].status_mode_is_input: " +
+            // pin_struct.status_mode_is_input)
+            // console.debug("pin_struct[" + i + "].status_mode_is_output: " +
+            // pin_struct.status_mode_is_output)
             if (pin_struct.status_mode_is_input) {
                 pin_struct.css_for_button_unknown_mode = CSS_FOR_NON_SELECTED_MODE;
                 pin_struct.css_for_button_input_mode = CSS_FOR_SELECTED_MODE;
@@ -97,7 +83,8 @@ pyArduinoModule.controller('PinsController', function($scope, $http) {
 
         for (i = 0; i < $scope.enhanced_arduino_type.analog_pins_struct.length; i++) {
             var pin_struct = $scope.enhanced_arduino_type.analog_pins_struct[i];
-            // console.debug("pin_struct[" + i + "].status_mode_is_input: " + pin_struct.status_mode_is_input)
+            // console.debug("pin_struct[" + i + "].status_mode_is_input: " +
+            // pin_struct.status_mode_is_input)
             if (pin_struct.status_mode_is_input) {
                 pin_struct.css_for_button_unknown_mode = CSS_FOR_NON_SELECTED_MODE;
                 pin_struct.css_for_button_input_mode = CSS_FOR_SELECTED_MODE;
@@ -166,7 +153,29 @@ pyArduinoModule.controller('PinsController', function($scope, $http) {
             // ],
 
         }).error(function(data) {
-            console.error("$http.get() -> ERROR -> " + data);
+            console.error("refreshPinInfo() -> $http.get() -> ERROR -> " + data);
         });
-    }
+    };
+
+    $scope.setDigitalPinMode = function(pin, mode) {
+
+        console.info("setPinMode()");
+        $http.post(digital_pin_mode_url, {
+            pin : pin,
+            mode : mode
+        }).success(function(data) {
+
+            console.info("setPinMode() OK! :-D");
+
+            $scope.avr_cpu_type = data.avr_cpu_type;
+            $scope.arduino_type = data.arduino_type;
+            $scope.enhanced_arduino_type = data.enhanced_arduino_type;
+            $scope.refreshCssForButtons();
+
+        }).error(function(data) {
+            console.error("setPinMode() -> $http.post() -> ERROR -> " + data);
+        });
+
+    };
+
 });

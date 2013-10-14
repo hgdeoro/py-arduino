@@ -134,19 +134,23 @@ INPUT.pin_label {
 							<button ng-disabled="! pin_struct.enabled_in_web" type="button"
 								ng-click="pinModeDisabled(pin_struct)" class="btn"
 								ng-class="pin_struct.css_for_button_unknown_mode">X</button>
+								
 							<button ng-disabled="! pin_struct.enabled_in_web" type="button"
 								ng-click="pinModeInput(pin_struct)" class="btn"
 								ng-class="pin_struct.css_for_button_input_mode">INPUT</button>
+								
 							<button ng-disabled="! pin_struct.enabled_in_web" type="button"
 								ng-click="pinModeOutput(pin_struct)" class="btn"
 								ng-class="pin_struct.css_for_button_output_mode">OUTPUT</button>
 						</div>
 					</td>
-					<td><slider floor="0" ceiling="1023" step="1" precision="1"
-							ng-model="pin_struct.xxxxxxxxxxxxxxxxxxxxx" ng-show="pin_struct.pwm"></slider>
-							<!-- <input type="text"
-						ng-model="pin_struct.xxxxxxxxxxx" class="input-sm" ng-show="true"
-						style="height: 24px; line-height: 1; width: 5em;" /></td>-->
+					<td>
+						<!-- <slider floor="0" ceiling="1023" step="1" precision="1"
+							ng-model="pin_struct.xxxxxxxxxxxxxxxxxxxxx" ng-show="pin_struct.pwm"></slider> -->
+						<input type="text" ng-model="pin_struct.xxxxxxxxxxx"
+						class="input-sm" ng-show="true"
+						style="height: 24px; line-height: 1; width: 5em;" />
+					</td>
 				</tr>
 
 				<!--
