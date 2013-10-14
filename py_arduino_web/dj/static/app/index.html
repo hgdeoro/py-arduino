@@ -86,9 +86,9 @@
             // .... .... "enabled_in_web": true,
             // .... .... "pin": 0,
             // .... .... "pin_id": null,
-            // .... .... "status.written_value": null,
-            // .... .... "status.read_value": null,
-            // .... .... "status.mode": null,
+            // .... .... "status_written_value": null,
+            // .... .... "status_read_value": null,
+            // .... .... "status_mode": null,
             // .... .... "digital": true,
             // .... .... "pk": 1,
             // .... .... "label": "Digital pin #0"
@@ -126,9 +126,9 @@
             // .... "enabled_in_web": true,
             // .... "pin": 0,
             // .... "pin_id": null,
-            // .... "status.written_value": null,
-            // .... "status.read_value": null,
-            // .... "status.mode": null,
+            // .... "status_written_value": null,
+            // .... "status_read_value": null,
+            // .... "status_mode": null,
             // .... "digital": true,
             // .... "pk": 55,
             // .... "label": "Analog pin #0"
@@ -160,7 +160,7 @@
 
 			</table>
 
-			<button ng-click="loadPinInfo()">Load pins</button>
+			<button ng-click="refreshPinInfo()">Refresh</button>
 			<button ng-click="editModeEnter()" ng-show="! editMode">Edit
 				labels</button>
 			<button ng-click="editModeExit()" ng-show="editMode">Finish
