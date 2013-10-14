@@ -156,9 +156,6 @@ INPUT.pin_io_value {
 							<button ng-disabled="! pin_struct.enabled_in_web" type="button"
 								ng-click="readPin(pin_struct)" class="btn btn-primary btn-xs"
 								ng-show="pin_struct.status.mode_is_input">Read</button>
-							<button ng-disabled="! pin_struct.enabled_in_web" type="button"
-								ng-click="writePin(pin_struct)" class="btn btn-primary btn-xs"
-								ng-show="pin_struct.status.mode_is_output">Write</button>
 						</div>
 
 					</td>
@@ -166,10 +163,16 @@ INPUT.pin_io_value {
 					<td width="20%">
 						<!-- <slider floor="0" ceiling="1023" step="1" precision="1"
 							ng-model="pin_struct.xxxxxxxxxxxxxxxxxxxxx" ng-show="pin_struct.pwm"></slider> -->
-						<input type="text" ng-model="pin_struct.xxxxxxxxxxx"
+						<!--  --> <input type="text" ng-model="pin_struct.xxxxxxxxxxx"
 						class="input-sm pin_io_value"
-						ng-show="pin_struct.status.mode_is_output && pin_struct.pwm" /> <span
-						class="badge" ng-show="pin_struct.status.read_value|is_number">{{pin_struct.status.read_value|as_high_low}}</span>
+						ng-show="pin_struct.status.mode_is_output && pin_struct.pwm" /> <!--  -->
+						<span class="badge"
+						ng-show="pin_struct.status.read_value|is_number">{{pin_struct.status.read_value|as_high_low}}</span>
+						<!--  -->
+						<button ng-disabled="! pin_struct.enabled_in_web" type="button"
+							ng-click="writePin(pin_struct)" class="btn btn-primary btn-xs"
+							ng-show="pin_struct.status.mode_is_output">Write</button>
+
 					</td>
 
 				</tr>
