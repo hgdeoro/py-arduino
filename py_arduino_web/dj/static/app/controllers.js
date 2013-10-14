@@ -83,6 +83,14 @@ pyArduinoModule.controller('PinsController', function($scope, $http) {
             console.debug("$scope.enhanced_arduino_type: " + $scope.enhanced_arduino_type);
             console.debug("$scope.enhanced_arduino_type.digital_pins_struct: " + $scope.enhanced_arduino_type.digital_pins_struct);
 
+            // var i;
+            // for(i=0;
+            // i<$scope.enhanced_arduino_type.digital_pins_struct.length; i++) {
+            // var pin_struct =
+            // $scope.enhanced_arduino_type.digital_pins_struct;
+            //                pin_struct
+            //            }
+
             // "enhanced_arduino_type": {
             // "digital_pins_struct": [
             // .... {

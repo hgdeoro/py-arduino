@@ -28,9 +28,9 @@
 
 <style type="text/css">
 INPUT.pin_label {
-    height: 24px;
-    line-height: 1;
-    padding-left: 2px;
+	height: 24px;
+	line-height: 1;
+	padding-left: 2px;
 }
 </style>
 
@@ -86,9 +86,9 @@ INPUT.pin_label {
 						data-toggle="tooltip" title="Indicates pins with PWM support"><span
 							class="glyphicon glyphicon-question-sign"></span></a></th>
 					<th width="50%" colspan="2">Pin #</th>
-                    <th width="1%">&nbsp;</th>
-                    <th width="40%">Mode</th>
-                    <th width="10%">IO</th>
+					<th width="1%">&nbsp;</th>
+					<th width="40%">Mode</th>
+					<th width="10%">IO</th>
 				</tr>
 
 				<!--
@@ -120,23 +120,27 @@ INPUT.pin_label {
 						<input type="text" ng-model="pin_struct.label"
 						class="col-lg-3 input-sm pin_label" ng-show="editMode" /></td>
 
-                    <td width="1%">
-                            <a href="javascript:void(0);" ng-show="! pin_struct.enabled_in_web"
-                                data-toggle="tooltip" title="This pin is configured to not be modified from web interface"
-                                style="margin-left: 4px;"><span
-                                class="glyphicon glyphicon-question-sign"></span></a>
-                    </td>
+					<td width="1%"><a href="javascript:void(0);"
+						ng-show="! pin_struct.enabled_in_web" data-toggle="tooltip"
+						title="This pin is configured to not be modified from web interface"
+						style="margin-left: 4px;"><span
+							class="glyphicon glyphicon-question-sign"></span></a></td>
 					<td>
 						<div class="btn-group btn-group-xs">
-							<button ng-disabled="! pin_struct.enabled_in_web" type="button" ng-click="pinModeDisabled(pin_struct)" class="btn btn-default" ng-class="getClassForDisabled(pin_struct)">X</button>
-							<button ng-disabled="! pin_struct.enabled_in_web" type="button" ng-click="pinModeInput(pin_struct)" class="btn btn-default"  ng-class="getClassForInput(pin_struct)">INPUT</button>
-							<button ng-disabled="! pin_struct.enabled_in_web" type="button" ng-click="pinModeOutput(pin_struct)" class="btn btn-default"  ng-class="getClassForOutput(pin_struct)">OUTPUT</button>
+							<button ng-disabled="! pin_struct.enabled_in_web" type="button"
+								ng-click="pinModeDisabled(pin_struct)" class="btn btn-default"
+								ng-class="getClassForDisabled(pin_struct)">X</button>
+							<button ng-disabled="! pin_struct.enabled_in_web" type="button"
+								ng-click="pinModeInput(pin_struct)" class="btn btn-default"
+								ng-class="getClassForInput(pin_struct)">INPUT</button>
+							<button ng-disabled="! pin_struct.enabled_in_web" type="button"
+								ng-click="pinModeOutput(pin_struct)" class="btn btn-default"
+								ng-class="getClassForOutput(pin_struct)">OUTPUT</button>
 						</div>
 					</td>
-					<td>
-					   <input type="text" ng-model="pin_struct.xxxxxxxxxxx"
-                            class="input-sm" ng-show="true"  style="height: 24px; line-height: 1; width: 5em;"/>
-					</td>
+					<td><input type="text" ng-model="pin_struct.xxxxxxxxxxx"
+						class="input-sm" ng-show="true"
+						style="height: 24px; line-height: 1; width: 5em;" /></td>
 				</tr>
 
 				<!--
@@ -169,38 +173,43 @@ INPUT.pin_label {
 						<input type="text" ng-model="pin_struct.label"
 						class="col-lg-3 input-sm pin_label" ng-show="editMode" /></td>
 
-                    <td width="1%">
-                            <a href="javascript:void(0);" ng-show="! pin_struct.enabled_in_web"
-                                data-toggle="tooltip" title="This pin is configured to not be modified from web interface"
-                                style="margin-left: 4px;"><span
-                                class="glyphicon glyphicon-question-sign"></span></a>
-                    </td>
-                    <td>
-                        <div class="btn-group btn-group-xs">
-                            <button ng-disabled="! pin_struct.enabled_in_web" type="button" ng-click="pinModeDisabled(pin_struct)" class="btn btn-default" ng-class="getClassForDisabled(pin_struct)">X</button>
-                            <button ng-disabled="! pin_struct.enabled_in_web" type="button" ng-click="pinModeInput(pin_struct)" class="btn btn-default"  ng-class="getClassForInput(pin_struct)">INPUT</button>
-                        </div>
-                    </td>
+					<td width="1%"><a href="javascript:void(0);"
+						ng-show="! pin_struct.enabled_in_web" data-toggle="tooltip"
+						title="This pin is configured to not be modified from web interface"
+						style="margin-left: 4px;"><span
+							class="glyphicon glyphicon-question-sign"></span></a></td>
+					<td>
+						<div class="btn-group btn-group-xs">
+							<button ng-disabled="! pin_struct.enabled_in_web" type="button"
+								ng-click="pinModeDisabled(pin_struct)" class="btn btn-default"
+								ng-class="getClassForDisabled(pin_struct)">X</button>
+							<button ng-disabled="! pin_struct.enabled_in_web" type="button"
+								ng-click="pinModeInput(pin_struct)" class="btn btn-default"
+								ng-class="getClassForInput(pin_struct)">INPUT</button>
+						</div>
+					</td>
 
-                    <td>
-                       <input type="text" ng-model="pin_struct.xxxxxxxxxxx"
-                            class="input-sm" ng-show="true"  style="height: 24px; line-height: 1; width: 5em;"/>
-                    </td>
+					<td><input type="text" ng-model="pin_struct.xxxxxxxxxxx"
+						class="input-sm" ng-show="true"
+						style="height: 24px; line-height: 1; width: 5em;" /></td>
 
 				</tr>
 
 			</table>
 
 			<button class="btn btn-primary" ng-click="refreshPinInfo()">
-                <span class="glyphicon glyphicon-refresh"></span> Refresh
+				<span class="glyphicon glyphicon-refresh"></span> Refresh
 			</button>
-			
-			<button class="btn btn-primary" ng-click="editModeEnter()" ng-show="! editMode">
-                <span class="glyphicon glyphicon-pencil"></span> Edit labels</button>
-				
-			<button class="btn btn-danger" ng-click="editModeExit()" ng-show="editMode">
-                <span class="glyphicon glyphicon-ok"></span> Finish edition
-            </button>
+
+			<button class="btn btn-primary" ng-click="editModeEnter()"
+				ng-show="! editMode">
+				<span class="glyphicon glyphicon-pencil"></span> Edit labels
+			</button>
+
+			<button class="btn btn-danger" ng-click="editModeExit()"
+				ng-show="editMode">
+				<span class="glyphicon glyphicon-ok"></span> Finish edition
+			</button>
 
 		</div>
 
