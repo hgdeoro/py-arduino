@@ -69,13 +69,6 @@
 
 	<div class="container" style="padding-top: 70px;">
 
-		<div>
-			<label>Name:</label> <input type="text" ng-model="yourName"
-				placeholder="Enter a name here">
-			<hr>
-			<h1>Hello {{yourName}}!</h1>
-		</div>
-
 		<div ng-controller="PinsController">
 
 			<table class="table table-condensed table-hover">
@@ -148,10 +141,9 @@
 
 			</table>
 
-			<button ng-click="loadPinInfo()">Cargar</button>
-            <button ng-click="editModeOn()" ng-show="! editMode">Editar</button>
-            <button ng-click="editModeSaveAndExit()" ng-show="editMode">Guardar</button>
-            <button ng-click="editModeDiscardAndExit()" ng-show="editMode">Cancelar</button>
+			<button ng-click="loadPinInfo()">Load pins</button>
+            <button ng-click="editModeEnter()" ng-show="! editMode">Edit labels</button>
+            <button ng-click="editModeExit()" ng-show="editMode">Finish edition</button>
 
 		</div>
 

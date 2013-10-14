@@ -15,25 +15,22 @@ pyArduinoModule.controller('GlobalController', function($scope) {
     $scope.arduino_type = {};
     $scope.enhanced_arduino_type = {};
 
-    $scope.editMode = false;
-
-    $scope.editModeOn = function() {
-        $scope.editMode = true;
-    };
-
-    $scope.editModeSaveAndExit = function() {
-        $scope.editMode = false;
-    };
-
-    $scope.editModeDiscardAndExit = function() {
-        $scope.editMode = false;
-    };
-
 });
 
 pyArduinoModule.controller('PinsController', function($scope, $http) {
 
     var get_arduino_data_url = '/angular/get_arduino_data/';
+
+    $scope.editMode = false;
+
+    $scope.editModeEnter = function() {
+        $scope.editMode = true;
+    };
+
+    $scope.editModeExit = function() {
+        $scope.editMode = false;
+        // TODO: save changes!
+    };
 
     $scope.loadPinInfo = function() {
         console.info("loadPinInfo()");
