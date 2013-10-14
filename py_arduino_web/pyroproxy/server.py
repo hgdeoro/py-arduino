@@ -19,19 +19,32 @@
 
 import logging
 import hmac
-import os
+import optparse
+
 import Pyro4
 
 from py_arduino.arduino import PyArduino
 from py_arduino_web.storage import Storage
+from py_arduino import DEVICE_FOR_EMULATOR
 
 
 def main():
     """
     Expose object using PyRO
     """
-    if "ENABLE_LOGGING" in os.environ:
+    parser = optparse.OptionParser()
+    parser.add_option("--debug",
+        action="store_true", dest="debug", default=False,
+        help="Configure logging to show debug messages.")
+    parser.add_option("--emulator",
+        action="store_true", dest="emulator", default=False,
+        help="Automatically connect to emulator.")
+
+    (options, _) = parser.parse_args()
+
+    if options.debug:
         logging.basicConfig(level=logging.DEBUG)
+
     Pyro4.config.HMAC_KEY = hmac.new('this-is-py-arduino').digest()
     Pyro4.config.SOCK_REUSE = True
     arduino = PyArduino()
@@ -43,6 +56,9 @@ def main():
         logging.exception("Couldn't import DjStorage")
         logging.error("-" * 80)
         storage = Storage()
+
+    if options.emulator:
+        arduino.connect(DEVICE_FOR_EMULATOR)
 
     Pyro4.Daemon.serveSimple(
         {

@@ -171,12 +171,12 @@ To start Django:
     $ export PYTHONPATH=.
     $ python py_arduino_web/dj/manage.py runserver
 
-To start Pyro (in another terminal):
+To start Pyro (in another terminal) and automatically connect to emulator:
 
     $ . virtualenv/bin/activate
     $ export PYTHONPATH=.
     $ export DJANGO_SETTINGS_MODULE=py_arduino_web.dj.settings
-    $ python py_arduino_web/pyroproxy/server.py
+    $ python py_arduino_web/pyroproxy/server.py --emulator
 
 
 TODOs
