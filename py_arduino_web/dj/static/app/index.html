@@ -112,9 +112,13 @@
 
 					<td>
 						<div class="btn-group btn-group-xs">
-							<button type="button" ng-click="pinModeDisabled(pin_struct)" class="btn btn-default" ng-class="getClassForDisabled(pin_struct)">X</button>
-							<button type="button" ng-click="pinModeInput(pin_struct)" class="btn btn-default"  ng-class="getClassForInput(pin_struct)">INPUT</button>
-							<button type="button" ng-click="pinModeOutput(pin_struct)" class="btn btn-default"  ng-class="getClassForOutput(pin_struct)">OUTPUT</button>
+							<button ng-disabled="! pin_struct.enabled_in_web" type="button" ng-click="pinModeDisabled(pin_struct)" class="btn btn-default" ng-class="getClassForDisabled(pin_struct)">X</button>
+							<button ng-disabled="! pin_struct.enabled_in_web" type="button" ng-click="pinModeInput(pin_struct)" class="btn btn-default"  ng-class="getClassForInput(pin_struct)">INPUT</button>
+							<button ng-disabled="! pin_struct.enabled_in_web" type="button" ng-click="pinModeOutput(pin_struct)" class="btn btn-default"  ng-class="getClassForOutput(pin_struct)">OUTPUT</button>
+							<a href="javascript:void(0);" ng-show="! pin_struct.enabled_in_web"
+                                data-toggle="tooltip" title="This pin is configured to not be modified from web interface"
+                                style="margin-left: 4px;"><span
+                                class="glyphicon glyphicon-question-sign"></span></a>
 						</div>
 					</td>
 				</tr>
@@ -151,8 +155,12 @@
 
                     <td>
                         <div class="btn-group btn-group-xs">
-                            <button type="button" ng-click="pinModeDisabled(pin_struct)" class="btn btn-default" ng-class="getClassForDisabled(pin_struct)">X</button>
-                            <button type="button" ng-click="pinModeInput(pin_struct)" class="btn btn-default"  ng-class="getClassForInput(pin_struct)">INPUT</button>
+                            <button ng-disabled="! pin_struct.enabled_in_web" type="button" ng-click="pinModeDisabled(pin_struct)" class="btn btn-default" ng-class="getClassForDisabled(pin_struct)">X</button>
+                            <button ng-disabled="! pin_struct.enabled_in_web" type="button" ng-click="pinModeInput(pin_struct)" class="btn btn-default"  ng-class="getClassForInput(pin_struct)">INPUT</button>
+                            <a href="javascript:void(0);" ng-show="! pin_struct.enabled_in_web"
+                                data-toggle="tooltip" title="This pin is configured to not be modified from web interface"
+                                style="margin-left: 4px;"><span
+                                class="glyphicon glyphicon-question-sign"></span></a>
                         </div>
                     </td>
 
