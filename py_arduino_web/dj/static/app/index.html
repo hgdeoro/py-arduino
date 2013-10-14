@@ -23,6 +23,9 @@
 	src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js"></script>
 
 <script src="/static/app/ui-bootstrap-tpls-0.6.0.min.js"></script>
+
+<script src="/static/app/controllers.js"></script>
+
 </head>
 <body>
 
@@ -66,10 +69,20 @@
 
 	<div class="container" style="padding-top: 70px;">
 
-		<label>Name:</label> <input type="text" ng-model="yourName"
-			placeholder="Enter a name here">
-		<hr>
-		<h1>Hello {{yourName}}!</h1>
+		<div>
+			<label>Name:</label> <input type="text" ng-model="yourName"
+				placeholder="Enter a name here">
+			<hr>
+			<h1>Hello {{yourName}}!</h1>
+		</div>
+
+    <div ng-controller="PinsController">
+    
+        <div ng-repeat="pin in pins">
+            Pin {{pin}}
+        </div>
+    
+    </div>
 
 	</div>
 	<!-- /container -->
