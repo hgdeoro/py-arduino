@@ -28,10 +28,10 @@ pyArduinoModule.filter('as_high_low', function() {
 pyArduinoModule.filter('written_pwm_value', function() {
     return function(pin_struct) {
         if (pin_struct.status.analog_written_value != null) {
-            if (pin_struct.status.analog_written_value == 0)
-                return 'LOW (0)';
-            if (pin_struct.status.analog_written_value == 255)
-                return 'HIGH (255)';
+            // if (pin_struct.status.analog_written_value == 0)
+            // return 'LOW (0)';
+            // if (pin_struct.status.analog_written_value == 255)
+            // return 'HIGH (255)';
             return pin_struct.status.analog_written_value;
         }
 
@@ -270,7 +270,7 @@ pyArduinoModule.controller('PinsController', function($scope, $http) {
 
         console.info("analogWrite()");
 
-        if (typeof(pin_struct._tmp_analog_write) == "undefined") {
+        if (typeof (pin_struct._tmp_analog_write) == "undefined") {
             alert("Invalid value for PWM");
             return;
         }

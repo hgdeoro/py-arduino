@@ -201,7 +201,7 @@ INPUT.pin_io_value {
 						ng-show="pin_struct.status.mode_is_output && ! pin_struct.pwm">{{pin_struct.status.written_value|as_high_low}}</span>
 
 						<!-- *** WRITE *** badge to show written value (when OUTPUT is pwm) -->
-						<span class="label label-info"
+						<span class="label label-default"
 						ng-show="pin_struct.status.mode_is_output && pin_struct.pwm">{{pin_struct|written_pwm_value}}</span>
 
 					</td>
