@@ -149,7 +149,12 @@
 						<input type="text" ng-model="pin_struct.label"
 						class="col-lg-3 input-sm" ng-show="editMode" /></td>
 
-					<td><span class="badge">INPUT</span></td>
+                    <td>
+                        <div class="btn-group btn-group-xs">
+                            <button type="button" ng-click="pinModeDisabled(pin_struct)" class="btn btn-default" ng-class="getClassForDisabled(pin_struct)">X</button>
+                            <button type="button" ng-click="pinModeInput(pin_struct)" class="btn btn-default"  ng-class="getClassForInput(pin_struct)">INPUT</button>
+                        </div>
+                    </td>
 
 				</tr>
 
