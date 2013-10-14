@@ -136,7 +136,11 @@
 					</td>
 
 					<td style="text-align: right;" width="1%">A{{pin_struct.pin}}</td>
-					<td><a href="#">{{pin_struct.label}}</a></td>
+					
+                    <td><a href="javascript:void(0);" ng-show="! editMode">{{pin_struct.label}}</a>
+                        <input type="text" ng-model="pin_struct.label"
+                        class="col-lg-3 input-sm" ng-show="editMode" /></td>
+					
 				</tr>
 
 			</table>
