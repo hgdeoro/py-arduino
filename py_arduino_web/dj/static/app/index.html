@@ -13,6 +13,8 @@
 <link rel="stylesheet"
 	href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-theme.min.css">
 
+<link rel="stylesheet" href="/static/app/angular-slider.css">
+
 <script src="//code.jquery.com/jquery.js"></script>
 
 <!-- Latest compiled and minified JavaScript -->
@@ -23,6 +25,8 @@
 	src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js"></script>
 
 <script src="/static/app/ui-bootstrap-tpls-0.6.0.min.js"></script>
+
+<script src="/static/app/angular-slider.js"></script>
 
 <script src="/static/app/controllers.js"></script>
 
@@ -138,9 +142,11 @@ INPUT.pin_label {
 								ng-class="pin_struct.css_for_button_output_mode">OUTPUT</button>
 						</div>
 					</td>
-					<td><input type="text" ng-model="pin_struct.xxxxxxxxxxx"
-						class="input-sm" ng-show="true"
-						style="height: 24px; line-height: 1; width: 5em;" /></td>
+					<td><slider floor="0" ceiling="1023" step="1" precision="1"
+							ng-model="pin_struct.xxxxxxxxxxxxxxxxxxxxx" ng-show="pin_struct.pwm"></slider>
+							<!-- <input type="text"
+						ng-model="pin_struct.xxxxxxxxxxx" class="input-sm" ng-show="true"
+						style="height: 24px; line-height: 1; width: 5em;" /></td>-->
 				</tr>
 
 				<!--

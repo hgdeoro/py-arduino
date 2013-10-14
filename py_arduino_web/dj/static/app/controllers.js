@@ -1,4 +1,4 @@
-var pyArduinoModule = angular.module('PyArduino', []);
+var pyArduinoModule = angular.module('PyArduino', ['uiSlider']);
 
 // pyArduinoModule.factory('pyArduinoHttpClient', [ '$http', function($http) {
 // var get_arduino_data_url = '/angular/get_arduino_data/';
