@@ -747,12 +747,12 @@ class PyArduino(object):  # pylint: disable=R0904
 
         try:
             self.status_tracker.set_pin_analog_written_value(
-                pin, digital=False, analog_written_value=value)
+                pin, digital=True, analog_written_value=value)
             return self.send_cmd(cmd, expected_response="AW_OK")
             # raises CommandTimeout,InvalidCommand,InvalidResponse
         except:
             self.status_tracker.set_pin_analog_written_value(
-                pin, digital=False, analog_written_value=None)
+                pin, digital=True, analog_written_value=None)
             raise
 
     analogWrite.arduino_function_name = '_aWrt'
