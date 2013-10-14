@@ -173,12 +173,12 @@ INPUT.pin_io_value {
 
 							<!-- *** WRITE *** BUTTON to write LOW  -->
 							<button ng-disabled="! pin_struct.enabled_in_web" type="button"
-								ng-click="writePin(pin_struct)" class="btn btn-primary btn-xs"
+								ng-click="writePin(pin_struct, CONST.LOW)" class="btn btn-primary btn-xs"
 								ng-show="pin_struct.status.mode_is_output">Write LOW</button>
 
 							<!-- *** WRITE *** BUTTON to write HIGH  -->
 							<button ng-disabled="! pin_struct.enabled_in_web" type="button"
-								ng-click="writePin(pin_struct)" class="btn btn-primary btn-xs"
+								ng-click="writePin(pin_struct, CONST.HIGH)" class="btn btn-primary btn-xs"
 								ng-show="pin_struct.status.mode_is_output">Write HIGH</button>
 
 						</div>

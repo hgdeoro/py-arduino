@@ -34,7 +34,6 @@ urlpatterns = patterns('',
         name='ng_digital_pin_mode'),
     url(r'^angular/read_pin/?$', 'py_arduino_web.dj.views_angularjs.read_pin',
         name='ng_read_pin'),
-
     url(r'^angular/pin_write/?$', 'py_arduino_web.dj.views_angularjs.pin_write',
         name='ng_pin_write'),
 

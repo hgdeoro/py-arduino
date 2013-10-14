@@ -11,7 +11,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from py_arduino import DEVICE_FOR_EMULATOR, LOW, HIGH, \
     OUTPUT, INPUT, MODE_UNKNOWN
-from py_arduino_web.pyroproxy.utils import get_arduino_pyro, server_is_up,\
+from py_arduino_web.pyroproxy.utils import get_arduino_pyro, server_is_up, \
     get_storage_pyro
 
 
@@ -77,7 +77,7 @@ def digital_pin_mode(request):
         raise(Exception("Invalid pin: {}".format(data.get('pin', None))))
 
     mode = data.get('mode', '(not specified)')
-    
+
     if mode == 'output' or mode == OUTPUT:
         ARDUINO_PYRO.pinMode(pin, OUTPUT)
         return JsonResponse(_get_arduino_data(result_ok=True))
@@ -117,26 +117,29 @@ def read_pin(request):
     raise(Exception("Invalid value for 'digital: {}".format(digital)))
 
 
-#@csrf_exempt
-#def pin_write(request):
-#    if request.method != 'POST':
-#        raise(Exception("Only POST allowed"))
-#
-#    data = json.loads(request.body)
-#    try:
-#        pin = int(data.get('pin', None))
-#    except ValueError:
-#        raise(Exception("Invalid pin: {}".format(data.get('pin', None))))
-#
-#    digital = data.get('digital', None)
-#    value = data.get('value', None)
-#
-#    if digital is True:
-#        ARDUINO_PYRO.digitalWrite(pin, value)
-#        return JsonResponse(_get_arduino_data(result_ok=True))
-#
-#    elif digital is False:
-#        # No support for write on analog pin yet
-#        raise(Exception("Invalid value for 'digital: {}".format(digital)))
-#
-#    raise(Exception("Invalid value for 'digital: {}".format(digital)))
+@csrf_exempt
+def pin_write(request):
+    if request.method != 'POST':
+        raise(Exception("Only POST allowed"))
+
+    data = json.loads(request.body)
+    try:
+        pin = int(data.get('pin', None))
+    except ValueError:
+        raise(Exception("Invalid pin: {}".format(data.get('pin', None))))
+
+    digital = data.get('digital', None)
+    value = data.get('value', None)
+
+    if digital is True:
+        if value in (LOW, HIGH):
+            ARDUINO_PYRO.digitalWrite(pin, value)
+            return JsonResponse(_get_arduino_data(result_ok=True))
+
+        raise(Exception("Invalid value for 'value: {}".format(value)))
+
+    elif digital is False:
+        # No support for write on analog pin yet
+        raise(Exception("Invalid value for 'digital: {}".format(digital)))
+
+    raise(Exception("Invalid value for 'digital: {}".format(digital)))

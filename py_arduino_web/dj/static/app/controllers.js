@@ -44,6 +44,7 @@ pyArduinoModule.controller('PinsController', function($scope, $http) {
     var get_arduino_data_url = '/angular/get_arduino_data/';
     var digital_pin_mode_url = '/angular/digital_pin_mode/';
     var read_pin_url = '/angular/read_pin/';
+    var write_pin_url = '/angular/pin_write/';
 
     var MODE_PIN_UNKNOWN = null; // 'None' of PyArduino
     var INPUT = 0;
@@ -217,6 +218,28 @@ pyArduinoModule.controller('PinsController', function($scope, $http) {
 
         }).error(function(data) {
             console.error("readPin() -> $http.post() -> ERROR -> " + data);
+        });
+
+    };
+
+    /*
+     * writePin()
+     */
+    $scope.writePin = function(pin_struct, value) {
+
+        console.info("writePin()");
+        $http.post(write_pin_url, {
+            pin : pin_struct.pin,
+            digital : pin_struct.digital,
+            value : value
+
+        }).success(function(data) {
+            $scope.avr_cpu_type = data.avr_cpu_type;
+            $scope.enhanced_arduino_type = data.enhanced_arduino_type;
+            $scope.refreshCssForButtons();
+
+        }).error(function(data) {
+            console.error("writePin() -> $http.post() -> ERROR -> " + data);
         });
 
     };
