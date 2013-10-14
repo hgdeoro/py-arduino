@@ -167,7 +167,8 @@ INPUT.pin_io_value {
 						class="input-sm pin_io_value"
 						ng-show="pin_struct.status.mode_is_output && pin_struct.pwm" />
 						
-						{{pin_struct.status.read_value}}
+						<span class="badge" ng-show="pin_struct.status.read_value|is_number">{{pin_struct.status.read_value}}</span>
+						
 					</td>
 				</tr>
 
@@ -214,7 +215,9 @@ INPUT.pin_io_value {
 						</div>
 					</td>
 
-					<td>{{pin_struct.status.read_value}}</td>
+					<td>
+					   <span class="badge" ng-show="pin_struct.status.read_value|is_number">{{pin_struct.status.read_value}}</span>
+					</td>
 
 				</tr>
 

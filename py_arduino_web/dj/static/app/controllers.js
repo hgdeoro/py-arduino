@@ -9,6 +9,12 @@ var pyArduinoModule = angular.module('PyArduino', [ 'uiSlider' ]);
 // };
 // } ]);
 
+pyArduinoModule.filter('is_number', function() {
+    return function(input) {
+        return typeof input == "number";
+    };
+});
+
 pyArduinoModule.controller('GlobalController', function($scope) {
 
     $scope.CONST = {
