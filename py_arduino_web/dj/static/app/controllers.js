@@ -15,6 +15,16 @@ pyArduinoModule.filter('is_number', function() {
     };
 });
 
+pyArduinoModule.filter('as_high_low', function() {
+    return function(input) {
+        if (input == 0)
+            return 'LOW';
+        if (input == 1)
+            return 'HIGH';
+        return '?';
+    };
+});
+
 pyArduinoModule.controller('GlobalController', function($scope) {
 
     $scope.CONST = {

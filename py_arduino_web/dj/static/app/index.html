@@ -167,7 +167,7 @@ INPUT.pin_io_value {
 						class="input-sm pin_io_value"
 						ng-show="pin_struct.status.mode_is_output && pin_struct.pwm" />
 						
-						<span class="badge" ng-show="pin_struct.status.read_value|is_number">{{pin_struct.status.read_value}}</span>
+						<span class="badge" ng-show="pin_struct.status.read_value|is_number">{{pin_struct.status.read_value|as_high_low}}</span>
 						
 					</td>
 				</tr>
