@@ -42,7 +42,7 @@ from py_arduino import INPUT, OUTPUT, DEVICE_FOR_EMULATOR, \
     MSBFIRST, DEFAULT_SERIAL_SPEED, LOW, HIGH, NotConnected, PyArduinoException, \
     InvalidArgument, InvalidResponse, InvalidCommand, InvalidParameter, \
     UnsupportedCommand, CommandTimeout, INVALID_CMD, INVALID_PARAMETER, \
-    UNSUPPORTED_CMD
+    UNSUPPORTED_CMD, MODE_UNKNOWN
 from py_arduino.utils import  synchronized
 from py_arduino.emulator import SerialConnectionArduinoEmulator
 
@@ -67,12 +67,23 @@ class PinStatus(object):
     don't know if the write was done. This could be done having the
     'pin status' in the Arduino (maybe in some future version).
     """
-    def __init__(self, pin, digital, mode=None, read_value=None, written_value=None):
+    def __init__(self, pin, digital, mode=MODE_UNKNOWN, read_value=None, written_value=None):
         self.pin = pin
         self.digital = digital
         self.mode = mode  # None == unknown
         self.read_value = read_value  # None == unknown
         self.written_value = written_value  # None == unknown
+
+    def as_dict(self):
+        return {
+            'digital': self.digital,
+            'mode': self.mode,
+            'read_value': self.read_value,
+            'written_value': self.written_value,
+            'mode_is_input': self.mode == INPUT,
+            'mode_is_output': self.mode == OUTPUT,
+            'mode_is_unknown': self.mode not in (INPUT, OUTPUT),
+        }
 
 
 class PinStatusTracker(object):
@@ -101,7 +112,7 @@ class PinStatusTracker(object):
 
         This resets the value of `value`
         """
-        assert mode in (INPUT, OUTPUT, None)
+        assert mode in (INPUT, OUTPUT, MODE_UNKNOWN)
         status = self.get_pin_status(pin, digital)
         status.mode = mode
         status.read_value = None
@@ -127,9 +138,9 @@ class PinStatusTracker(object):
 
     @synchronized(STATUS_TRACKER_LOCK)
     def populate(self, arduino_type_struct):
-        for pin in range(1, arduino_type_struct['digital_pins'] + 1):
+        for pin in range(0, arduino_type_struct['digital_pins']):
             self.get_pin_status(pin, digital=True)
-        for pin in range(1, arduino_type_struct['analog_pins'] + 1):
+        for pin in range(0, arduino_type_struct['analog_pins']):
             self.get_pin_status(pin, digital=False)
 
 
@@ -509,18 +520,25 @@ class PyArduino(object):  # pylint: disable=R0904
         
         See: http://arduino.cc/en/Reference/PinMode and
         http://arduino.cc/en/Tutorial/DigitalPins
-        
+
+        Note: the 'None' mode is used to inform the StatusTracker that the pin isn't used anymore
+
         Parameters:
             - pin (int): pin to configure
-            - mode: INPUT or OUTPUT
+            - mode: INPUT or OUTPUT, or MODE_UNKNOWN
         """
         # TODO: The analog input pins can be used as digital pins, referred to as A0, A1, etc.
         # FIXME: validate pin and value
         # FIXME: add doc for parameters and exceptions
         self._assert_connected()
         self._validate_digital_pin(pin)
-        if not mode in [INPUT, OUTPUT]:
+        if not mode in [INPUT, OUTPUT, MODE_UNKNOWN]:
             raise(InvalidArgument())
+
+        if mode is MODE_UNKNOWN:
+            self.status_tracker.set_pin_mode(pin, digital=True, mode=mode)
+            return
+
         cmd = "_pMd\t%d\t%d" % (pin, mode)
 
         try:
@@ -1441,46 +1459,23 @@ class PyArduino(object):  # pylint: disable=R0904
         # create 'structs' for each digital pin
         digital_pins_struct = []
         for dp in arduino_type_struct['digital_pins_items']:
-            # d_pin_obj = storage.get_pin(dp, True)
-            d_pin_status = self.status_tracker.get_pin_status(dp, digital=True)
             digital_pins_struct.append({
-                # 'pk': d_pin_obj.pk,
                 'pin': dp,
                 'digital': True,
                 'pwm': (dp in arduino_type_struct['pwm_pin_list']),
-                # 'label': d_pin_obj.label,
-                # 'pin_id': d_pin_obj.pin_id,
-                # 'enabled_in_web': d_pin_obj.enabled_in_web,
-                'status_mode': d_pin_status.mode,
-                'status_mode_is_input': bool(d_pin_status.mode == INPUT),
-                'status_mode_is_output': bool(d_pin_status.mode == OUTPUT),
-                'status_mode_is_unknown': not bool(d_pin_status.mode == INPUT or
-                    d_pin_status.mode == OUTPUT),
-                'status_read_value': d_pin_status.read_value,
-                'status_written_value': d_pin_status.written_value,
+                'status': self.status_tracker.get_pin_status(dp, digital=True).as_dict(),
             })
         arduino_type_struct['digital_pins_struct'] = digital_pins_struct
         del dp
-        # del d_pin_obj
 
         # create 'structs' for each analog pin
         analog_pins_struct = []
         for ap in arduino_type_struct['analog_pins_items']:
-            # a_pin_obj = storage.get_pin(ap, False)
-            a_pin_status = self.status_tracker.get_pin_status(ap, digital=False)
             analog_pins_struct.append({
-                # 'pk': a_pin_obj.pk,
                 'pin': ap,
                 'digital': True,
                 'pwm': False,
-                # 'label': a_pin_obj.label,
-                # 'pin_id': a_pin_obj.pin_id,
-                # 'enabled_in_web': a_pin_obj.enabled_in_web,
-                'status_mode': a_pin_status.mode,
-                'status_mode_is_input': bool(d_pin_status.mode == INPUT),
-                'status_mode_is_unknown': not bool(d_pin_status.mode == INPUT),
-                'status_read_value': a_pin_status.read_value,
-                'status_written_value': a_pin_status.written_value,
+                'status': self.status_tracker.get_pin_status(ap, digital=False).as_dict(),
             })
         arduino_type_struct['analog_pins_struct'] = analog_pins_struct
 

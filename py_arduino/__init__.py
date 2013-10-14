@@ -29,6 +29,10 @@ LOW = 0x00  # define LOW  0x0
 INPUT = 0x00  # define INPUT 0x0
 OUTPUT = 0x01  # define OUTPUT 0x1
 
+# This mode doesn't exists in Arduino.
+# We use internally it to track the mode of a pin
+MODE_UNKNOWN = None
+
 #===============================================================================
 # CONSTANTS - Bit
 #===============================================================================
