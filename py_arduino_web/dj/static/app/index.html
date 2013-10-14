@@ -82,9 +82,8 @@
 
 				<tr>
 					<th width="1%"><a href="javascript:void(0);"
-                         data-toggle="tooltip"
-                        title="Indicates pins with PWM support"><span
-                            class="glyphicon glyphicon-question-sign"></span></a></th>
+						data-toggle="tooltip" title="Indicates pins with PWM support"><span
+							class="glyphicon glyphicon-question-sign"></span></a></th>
 					<th width="99%" colspan="2">Pin #</th>
 				</tr>
 
@@ -109,11 +108,14 @@
 						ng-show="pin_struct.pwm" data-toggle="tooltip"
 						title="This pin has PWM support"><span
 							class="glyphicon glyphicon-ok-circle"></span></a>
-
 					</td>
 
 					<td style="text-align: right;" width="1%">D{{pin_struct.pin}}</td>
-					<td><a href="#">{{pin_struct.label}}</a></td>
+
+					<td><a href="javascript:void(0);" ng-show="! editMode">{{pin_struct.label}}</a>
+						<input type="text" ng-model="pin_struct.label"
+						class="col-lg-3 input-sm" ng-show="editMode" /></td>
+
 				</tr>
 
 				<!--
@@ -147,6 +149,9 @@
 			</table>
 
 			<button ng-click="loadPinInfo()">Cargar</button>
+            <button ng-click="editModeOn()" ng-show="! editMode">Editar</button>
+            <button ng-click="editModeSaveAndExit()" ng-show="editMode">Guardar</button>
+            <button ng-click="editModeDiscardAndExit()" ng-show="editMode">Cancelar</button>
 
 		</div>
 

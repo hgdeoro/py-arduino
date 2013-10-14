@@ -15,6 +15,20 @@ pyArduinoModule.controller('GlobalController', function($scope) {
     $scope.arduino_type = {};
     $scope.enhanced_arduino_type = {};
 
+    $scope.editMode = false;
+
+    $scope.editModeOn = function() {
+        $scope.editMode = true;
+    };
+
+    $scope.editModeSaveAndExit = function() {
+        $scope.editMode = false;
+    };
+
+    $scope.editModeDiscardAndExit = function() {
+        $scope.editMode = false;
+    };
+
 });
 
 pyArduinoModule.controller('PinsController', function($scope, $http) {
