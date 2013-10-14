@@ -26,6 +26,7 @@ pyArduinoModule.controller('PinsController', function($scope, $http) {
     var INPUT = 0;
     var OUTPUT = 1;
     var CSS_FOR_SELECTED_MODE = 'btn-success';
+    var CSS_FOR_NON_SELECTED_MODE = 'btn-default';
 
     $scope.editMode = false;
 
@@ -52,20 +53,20 @@ pyArduinoModule.controller('PinsController', function($scope, $http) {
 
     $scope.getClassForDisabled = function(pinStruct) {
         if(pinStruct.status_mode == INPUT || pinStruct.status_mode == OUTPUT)
-            return '';
+            return CSS_FOR_NON_SELECTED_MODE;
         return CSS_FOR_SELECTED_MODE;
     };
 
     $scope.getClassForInput = function(pinStruct) {
         if(pinStruct.status_mode == INPUT)
             return CSS_FOR_SELECTED_MODE;
-        return '';
+        return CSS_FOR_NON_SELECTED_MODE;
     };
 
     $scope.getClassForOutput = function(pinStruct) {
         if(pinStruct.status_mode == OUTPUT)
             return CSS_FOR_SELECTED_MODE;
-        return '';
+        return CSS_FOR_NON_SELECTED_MODE;
     };
 
     $scope.refreshPinInfo = function() {
