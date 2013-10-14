@@ -60,7 +60,7 @@
 				<ul class="nav navbar-nav navbar-right">
 					<li><a href="../navbar/">Default</a></li>
 					<li><a href="../navbar-static-top/">Static top</a></li>
-					<li class="active"><a href="./">{{ arduino_data.avr_cpu_type }}</a></li>
+					<li class="active"><a href="./">{{ avr_cpu_type }}</a></li>
 				</ul>
 			</div>
 			<!--/.nav-collapse -->
@@ -76,15 +76,50 @@
 			<h1>Hello {{yourName}}!</h1>
 		</div>
 
-    <div ng-controller="PinsController">
-    
-        <div ng-repeat="pin in pins">
-            Pin {{pin}}
-        </div>
-    
-        <button ng-click="loadPinInfo()">Cargar</button>
-    
-    </div>
+		<div ng-controller="PinsController">
+
+			<!--
+            // .... .... "pwm": false,
+            // .... .... "enabled_in_web": true,
+            // .... .... "pin": 0,
+            // .... .... "pin_id": null,
+            // .... .... "status.written_value": null,
+            // .... .... "status.read_value": null,
+            // .... .... "status.mode": null,
+            // .... .... "digital": true,
+            // .... .... "pk": 1,
+            // .... .... "label": "Digital pin #0"
+            -->
+
+			<div
+				ng-repeat="pin_struct in enhanced_arduino_type.digital_pins_struct">
+				<a href="#">{{pin_struct.label}}</a>
+			</div>
+
+			<!--
+            // "analog_pins_struct": [
+            // .... {
+            // .... "pwm": false,
+            // .... "enabled_in_web": true,
+            // .... "pin": 0,
+            // .... "pin_id": null,
+            // .... "status.written_value": null,
+            // .... "status.read_value": null,
+            // .... "status.mode": null,
+            // .... "digital": true,
+            // .... "pk": 55,
+            // .... "label": "Analog pin #0"
+            // .... },
+            -->
+
+			<div
+				ng-repeat="pin_struct in enhanced_arduino_type.analog_pins_struct">
+				<a href="#">{{pin_struct.label}}</a>
+			</div>
+
+			<button ng-click="loadPinInfo()">Cargar</button>
+
+		</div>
 
 	</div>
 	<!-- /container -->
