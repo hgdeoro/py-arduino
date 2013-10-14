@@ -162,6 +162,23 @@ Python API
 You can get some initial API documentation [here](http://www.hgdeoro.com.ar/~horacio/py-arduino-proxy/index.html).
 -->
 
+How to start servers for development
+====================================
+
+To start Django:
+
+    $ . virtualenv/bin/activate
+    $ export PYTHONPATH=.
+    $ python py_arduino_web/dj/manage.py runserver
+
+To start Pyro (in another terminal):
+
+    $ . virtualenv/bin/activate
+    $ export PYTHONPATH=.
+    $ export DJANGO_SETTINGS_MODULE=py_arduino_web.dj.settings
+    $ python py_arduino_web/pyroproxy/server.py
+
+
 TODOs
 =============
 
