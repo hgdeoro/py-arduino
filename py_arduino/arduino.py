@@ -1473,7 +1473,7 @@ class PyArduino(object):  # pylint: disable=R0904
         for ap in arduino_type_struct['analog_pins_items']:
             analog_pins_struct.append({
                 'pin': ap,
-                'digital': True,
+                'digital': False,
                 'pwm': False,
                 'status': self.status_tracker.get_pin_status(ap, digital=False).as_dict(),
             })
