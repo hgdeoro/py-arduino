@@ -81,7 +81,8 @@
 			<table class="table table-condensed table-hover">
 
 				<tr>
-					<th colspan="2">Pin #</th>
+					<th width="1%">&nbsp;</th>
+					<th width="99%" colspan="2">Pin #</th>
 				</tr>
 
 				<!--
@@ -99,6 +100,12 @@
 
 				<tr
 					ng-repeat="pin_struct in enhanced_arduino_type.digital_pins_struct">
+
+					<td width="1%">
+						<!-- PWM: {{ pin_struct.pwm }} --> <span
+						class="glyphicon glyphicon-ok-circle" ng-show="pin_struct.pwm"></span>
+					</td>
+
 					<td style="text-align: right;" width="1%">D{{pin_struct.pin}}</td>
 					<td><a href="#">{{pin_struct.label}}</a></td>
 				</tr>
@@ -121,7 +128,13 @@
 
 				<tr
 					ng-repeat="pin_struct in enhanced_arduino_type.analog_pins_struct">
-					<td style="text-align: right;">A{{pin_struct.pin}}</td>
+
+					<td width="1%">
+						<!-- PWM: {{ pin_struct.pwm }} --> <span
+						class="glyphicon glyphicon-ok-circle" ng-show="pin_struct.pwm"></span>
+					</td>
+
+					<td style="text-align: right;" width="1%">A{{pin_struct.pin}}</td>
 					<td><a href="#">{{pin_struct.label}}</a></td>
 				</tr>
 
