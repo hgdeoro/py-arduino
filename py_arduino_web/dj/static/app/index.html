@@ -160,25 +160,28 @@ INPUT.pin_io_value {
 								ng-show="pin_struct.status.mode_is_input">Read</button>
 
 							<!-- *** WRITE *** INPUT text to write PWM values  -->
-							<input type="text" ng-model="pin_struct.xxxxxxxxxxx"
+							<input type="text" ng-model="pin_struct._tmp_analog_write"
 								class="input-sm pin_io_value"
 								ng-show="pin_struct.status.mode_is_output && pin_struct.pwm" />
 							<!--  -->
 
 							<!-- *** WRITE *** BUTTON to write PWM value  -->
 							<button ng-disabled="! pin_struct.enabled_in_web" type="button"
-								ng-click="digitalWrite(pin_struct)" class="btn btn-primary btn-xs"
+								ng-click="analogWrite(pin_struct, pin_struct._tmp_analog_write)"
+								class="btn btn-primary btn-xs"
 								ng-show="pin_struct.status.mode_is_output && pin_struct.pwm">Write
 								PWM</button>
 
 							<!-- *** WRITE *** BUTTON to write LOW  -->
 							<button ng-disabled="! pin_struct.enabled_in_web" type="button"
-								ng-click="digitalWrite(pin_struct, CONST.LOW)" class="btn btn-primary btn-xs"
+								ng-click="digitalWrite(pin_struct, CONST.LOW)"
+								class="btn btn-primary btn-xs"
 								ng-show="pin_struct.status.mode_is_output">Write LOW</button>
 
 							<!-- *** WRITE *** BUTTON to write HIGH  -->
 							<button ng-disabled="! pin_struct.enabled_in_web" type="button"
-								ng-click="digitalWrite(pin_struct, CONST.HIGH)" class="btn btn-primary btn-xs"
+								ng-click="digitalWrite(pin_struct, CONST.HIGH)"
+								class="btn btn-primary btn-xs"
 								ng-show="pin_struct.status.mode_is_output">Write HIGH</button>
 
 						</div>
@@ -190,12 +193,16 @@ INPUT.pin_io_value {
 							ng-model="pin_struct.xxxxxxxxxxxxxxxxxxxxx" ng-show="pin_struct.pwm"></slider> -->
 
 						<!-- *** READ *** badge to show read value (when 'read_value' is a valid number) -->
-						<span class="badge"
+						<span class="label label-default"
 						ng-show="pin_struct.status.read_value|is_number">{{pin_struct.status.read_value|as_high_low}}</span>
 
-						<!-- *** WRITE *** badge to show written value (when OUTPUT & pwm) -->
-						<span class="badge" ng-show="pin_struct.status.mode_is_output">{{pin_struct.status.written_value|as_high_low}}</span>
+						<!-- *** WRITE *** badge to show written value (when OUTPUT but NOT pwm) -->
+						<span class="label label-default"
+						ng-show="pin_struct.status.mode_is_output && ! pin_struct.pwm">{{pin_struct.status.written_value|as_high_low}}</span>
 
+						<!-- *** WRITE *** badge to show written value (when OUTPUT is pwm) -->
+						<span class="label label-info"
+						ng-show="pin_struct.status.mode_is_output && pin_struct.pwm">{{pin_struct|written_pwm_value}}</span>
 
 					</td>
 
@@ -244,7 +251,7 @@ INPUT.pin_io_value {
 						</div>
 					</td>
 
-					<td><span class="badge"
+					<td><span class="label label-default"
 						ng-show="pin_struct.status.read_value|is_number">{{pin_struct.status.read_value}}</span>
 					</td>
 

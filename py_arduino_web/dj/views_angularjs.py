@@ -143,3 +143,31 @@ def digital_write(request):
         raise(Exception("Invalid value for 'digital: {}".format(digital)))
 
     raise(Exception("Invalid value for 'digital: {}".format(digital)))
+
+
+@csrf_exempt
+def analog_write(request):
+    if request.method != 'POST':
+        raise(Exception("Only POST allowed"))
+
+    data = json.loads(request.body)
+    try:
+        pin = int(data.get('pin', None))
+    except ValueError:
+        raise(Exception("Invalid pin: {}".format(data.get('pin', None))))
+
+    digital = data.get('digital', None)
+    value = data.get('value', None)
+
+    if digital is True:
+        if type(value) != int:
+            raise(Exception("Invalid type for 'value': {}".format(value)))
+
+        ARDUINO_PYRO.analogWrite(pin, value)
+        return JsonResponse(_get_arduino_data(result_ok=True))
+
+    elif digital is False:
+        # No support for write on analog pin yet
+        raise(Exception("Invalid value for 'digital': {}".format(digital)))
+
+    raise(Exception("Invalid value for 'digital': {}".format(digital)))

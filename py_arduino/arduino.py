@@ -67,12 +67,15 @@ class PinStatus(object):
     don't know if the write was done. This could be done having the
     'pin status' in the Arduino (maybe in some future version).
     """
-    def __init__(self, pin, digital, mode=MODE_UNKNOWN, read_value=None, written_value=None):
+    def __init__(self, pin, digital, mode=MODE_UNKNOWN, read_value=None, written_value=None,
+            analog_written_value=None):
         self.pin = pin
         self.digital = digital
         self.mode = mode  # None == unknown
         self.read_value = read_value  # None == unknown
         self.written_value = written_value  # None == unknown
+        self.analog_written_value = analog_written_value  # None == unknown
+        # analog_written_value -> PWM & analogWrite()
 
     def as_dict(self):
         return {
@@ -80,6 +83,7 @@ class PinStatus(object):
             'mode': self.mode,
             'read_value': self.read_value,
             'written_value': self.written_value,
+            'analog_written_value': self.analog_written_value,
             'mode_is_input': self.mode == INPUT,
             'mode_is_output': self.mode == OUTPUT,
             'mode_is_unknown': self.mode not in (INPUT, OUTPUT),
@@ -117,6 +121,7 @@ class PinStatusTracker(object):
         status.mode = mode
         status.read_value = None
         status.written_value = None
+        status.analog_written_value = None
 
     @synchronized(STATUS_TRACKER_LOCK)
     def set_pin_written_value(self, pin, digital, written_value):
@@ -126,6 +131,17 @@ class PinStatusTracker(object):
         """
         status = self.get_pin_status(pin, digital)
         status.written_value = written_value
+        status.analog_written_value = None # For PWM, we should put 0 or 255 here
+
+    @synchronized(STATUS_TRACKER_LOCK)
+    def set_pin_analog_written_value(self, pin, digital, analog_written_value):
+        """
+        Set the last value written. `value = None` implies we don't know the pin value
+        (because an error was detected while trying to send that value to Arduino).
+        """
+        status = self.get_pin_status(pin, digital)
+        status.analog_written_value = analog_written_value
+        status.written_value = None # we should put HIGH (255), LOW (0) or None here
 
     @synchronized(STATUS_TRACKER_LOCK)
     def set_pin_read_value(self, pin, digital, read_value):
@@ -724,16 +740,19 @@ class PyArduino(object):  # pylint: disable=R0904
         # FIXME: validate pin
         # FIXME: add doc for exceptions
         self._assert_connected()
+        self._validate_digital_pin(pin) # Only for DIGITAL pins
         if not type(pin) is int or not type(value) is int or value < 0 or value > 255:
             raise(InvalidArgument())
         cmd = "_aWrt\t%d\t%d" % (pin, value)
 
         try:
-            self.status_tracker.set_pin_written_value(pin, digital=False, written_value=value)
+            self.status_tracker.set_pin_analog_written_value(
+                pin, digital=False, analog_written_value=value)
             return self.send_cmd(cmd, expected_response="AW_OK")
             # raises CommandTimeout,InvalidCommand,InvalidResponse
         except:
-            self.status_tracker.set_pin_written_value(pin, digital=False, written_value=None)
+            self.status_tracker.set_pin_analog_written_value(
+                pin, digital=False, analog_written_value=None)
             raise
 
     analogWrite.arduino_function_name = '_aWrt'
