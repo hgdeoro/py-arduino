@@ -177,7 +177,19 @@ class PinStatusTracker(object):
         status.read_value = read_value
 
     @synchronized(STATUS_TRACKER_LOCK)
+    def reset(self):
+        """
+        Reset the values of status tracker.
+        """
+        self.status = {}
+        self.background_tasks = {}
+
+    @synchronized(STATUS_TRACKER_LOCK)
     def populate(self, arduino_type_struct):
+        """
+        Reset the values of status tracker and re-populates.
+        """
+        self.reset()
         for pin in range(0, arduino_type_struct['digital_pins']):
             self.get_pin_status(pin, digital=True)
         for pin in range(0, arduino_type_struct['analog_pins']):
@@ -198,6 +210,8 @@ class PinStatusTracker(object):
         for pin, digital in pin_spec_list:
             status = self.get_pin_status(pin, digital)
             if status.reserved_by_background_task:
+                logger.info("Pin %s (%s) is already reserved - Reservation for %s failed" % (
+                    pin, digital, background_task_name))
                 return False
 
         # Then reserve it
@@ -206,16 +220,18 @@ class PinStatusTracker(object):
             if not background_task_name in self.background_tasks:
                 self.background_tasks[background_task_name] = BackgroundTask(background_task_name)
             status.reserved_by_background_task = self.background_tasks[background_task_name]
+            logger.info("Pin %s (%s) reserved successfully for %s" % (
+                pin, digital, background_task_name))
         return True
 
-    @synchronized(STATUS_TRACKER_LOCK)
-    def update_background_task_status(self, background_task_name):
-        """
-        Returns True if the status was updated
-        """
-        if not background_task_name in self.background_tasks:
-            return False
-        self.background_tasks[background_task_name].set_status(background_task_name)
+    #    @synchronized(STATUS_TRACKER_LOCK)
+    #    def update_background_task_status(self, background_task_name, status):
+    #        """
+    #        Returns True if the status was updated
+    #        """
+    #        if not background_task_name in self.background_tasks:
+    #            return False
+    #        self.background_tasks[background_task_name].set_status(status)
 
     @synchronized(STATUS_TRACKER_LOCK)
     def get_background_tasks(self):
@@ -261,7 +277,7 @@ class PyArduino(object):  # pylint: disable=R0904
         self.call_validate_connection = call_validate_connection
 
         self.serial_port = None
-        self.status_tracker = None
+        self.status_tracker = PinStatusTracker()
 
     def _get_serial_port(self):
         """
@@ -304,7 +320,6 @@ class PyArduino(object):  # pylint: disable=R0904
 
         logger.debug("connect() OK")
 
-        self.status_tracker = PinStatusTracker()
         self.status_tracker.populate(self.getArduinoTypeStruct())
 
         return self
@@ -319,7 +334,7 @@ class PyArduino(object):  # pylint: disable=R0904
             logger.exception("Error detected when trying to close serial port. "
                 "Continuing anyway...")
         self.serial_port = None
-        self.status_tracker = None
+        self.status_tracker.reset()
         self._arduino_type_struct_cache = None
 
     def _assert_connected(self):
