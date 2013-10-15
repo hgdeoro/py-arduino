@@ -54,7 +54,8 @@ pyArduinoModule.controller('GlobalController', function($scope) {
 
     $scope.avr_cpu_type = '(unknown)';
     $scope.extras = {
-        avr_cpu_type : '(unknown)'
+        avr_cpu_type : '(unknown)',
+        errors : [],
     };
     $scope.enhanced_arduino_type = {};
 
@@ -67,6 +68,7 @@ pyArduinoModule.controller('PinsController', function($scope, $http) {
     var read_pin_url = '/angular/read_pin/';
     var digital_write_url = '/angular/digital_write/';
     var analog_write_url = '/angular/analog_write/';
+    var update_labels_and_ids_url = '/angular/update_labels_and_ids/';
 
     var MODE_PIN_UNKNOWN = null; // 'None' of PyArduino
     var INPUT = 0;
@@ -88,8 +90,59 @@ pyArduinoModule.controller('PinsController', function($scope, $http) {
     };
 
     $scope.editModeExit = function() {
-        $scope.editMode = false;
-        // TODO: save changes!
+        console.info("editModeExit()");
+
+        var to_update = Array();
+
+        function smart_add(pin_struct) {
+            var include = false;
+            var a_pin = {
+                pk : pin_struct.pk
+            }
+            if (Boolean(pin_struct._pin_label_modified)) {
+                console.info("Modified (label): " + pin_struct.label);
+                a_pin.label = pin_struct.label;
+                include = true;
+            }
+            if (Boolean(pin_struct._pin_id_modified)) {
+                console.info("Modified (id): " + pin_struct.pin_id);
+                a_pin.pin_id = pin_struct.pin_id;
+                include = true;
+            }
+            if (include)
+                to_update.push(a_pin);
+        }
+
+        var i = 0;
+        for (i = 0; i < $scope.enhanced_arduino_type.digital_pins_struct.length; i++) {
+            var pin_struct = $scope.enhanced_arduino_type.digital_pins_struct[i];
+            smart_add(pin_struct);
+        }
+
+        for (i = 0; i < $scope.enhanced_arduino_type.analog_pins_struct.length; i++) {
+            var pin_struct = $scope.enhanced_arduino_type.analog_pins_struct[i];
+            smart_add(pin_struct);
+        }
+
+        $http.post(update_labels_and_ids_url, {
+            to_update : to_update
+
+        }).success(function(data) {
+            $scope.editMode = false;
+            $scope.refreshUi(data);
+
+        }).error(function(data) {
+            console.error("editModeExit() -> $http.post() -> ERROR -> " + data);
+        });
+
+    };
+
+    $scope.pinIdModified = function(pinStruct) {
+        pinStruct._pin_id_modified = true;
+    };
+
+    $scope.pinLabelModified = function(pinStruct) {
+        pinStruct._pin_label_modified = true;
     };
 
     /*
@@ -184,6 +237,10 @@ pyArduinoModule.controller('PinsController', function($scope, $http) {
             }
         }
 
+        if (data.response_errors)
+            for (i = 0; i < data.response_errors.length; i++) {
+                $scope.extras.errors.push(data.response_errors[i]);
+            }
     };
 
     /*

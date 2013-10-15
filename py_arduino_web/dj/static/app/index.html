@@ -96,6 +96,11 @@ INPUT.pin_io_value {
 
 	<div class="container" style="padding-top: 70px;">
 
+        <div ng-repeat="error_msg in extras.errors" class="alert alert-danger alert-dismissable">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            {{error_msg}}
+        </div>
+
 		<div ng-controller="PinsController" ng-init="refreshPinInfo()">
 
 			<table class="table table-condensed table-hover">
@@ -136,12 +141,14 @@ INPUT.pin_io_value {
 					<td width="37%">
 						<div style="float: left;">
 							<a href="javascript:void(0);" ng-show="! editMode">{{pin_struct.label}}</a>
-							<input type="text" ng-model="pin_struct.label"
+							<input type="text" ng-model="pin_struct.label" ng-change="pinLabelModified(pin_struct)"
 								class="input-sm pin_label" ng-show="editMode" />
 						</div>
 						<div style="float: right;">
-							<span ng-show="pin_struct.pin_id && ! editMode" class="label label-primary">{{pin_struct.pin_id}}</span> <input
-								type="text" ng-model="pin_struct.pin_id" class="input-sm pin_id"
+							<span ng-show="pin_struct.pin_id && ! editMode"
+								class="label label-primary">{{pin_struct.pin_id}}</span> <input
+								type="text" ng-model="pin_struct.pin_id"
+								ng-change="pinIdModified(pin_struct)" class="input-sm pin_id"
 								ng-show="editMode" />
 						</div>
 					</td>
@@ -251,13 +258,14 @@ INPUT.pin_io_value {
 					<td>
 						<div style="float: left;">
 							<a href="javascript:void(0);" ng-show="! editMode">{{pin_struct.label}}</a>
-							<input type="text" ng-model="pin_struct.label"
+							<input type="text" ng-model="pin_struct.label" ng-change="pinLabelModified(pin_struct)"
 								class="col-lg-3 input-sm pin_label" ng-show="editMode" />
 						</div>
 						<div style="float: right;">
-							<span ng-show="pin_struct.pin_id && ! editMode" class="label label-primary">{{pin_struct.pin_id}}</span> <input
+							<span ng-show="pin_struct.pin_id && ! editMode"
+								class="label label-primary">{{pin_struct.pin_id}}</span> <input
 								type="text" ng-model="pin_struct.pin_id" class="input-sm pin_id"
-								ng-show="editMode" />
+								ng-show="editMode" ng-change="pinIdModified(pin_struct)" />
 						</div>
 					</td>
 

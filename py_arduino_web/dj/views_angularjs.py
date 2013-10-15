@@ -13,6 +13,8 @@ from py_arduino import DEVICE_FOR_EMULATOR, LOW, HIGH, \
     OUTPUT, INPUT, MODE_UNKNOWN
 from py_arduino_web.pyroproxy.utils import get_arduino_pyro, server_is_up, \
     get_storage_pyro
+from py_arduino_web.dj.models import Pin
+from django.db.utils import IntegrityError
 
 
 ARDUINO_PYRO = get_arduino_pyro()
@@ -171,3 +173,25 @@ def analog_write(request):
         raise(Exception("Invalid value for 'digital': {}".format(digital)))
 
     raise(Exception("Invalid value for 'digital': {}".format(digital)))
+
+
+@csrf_exempt
+def update_labels_and_ids(request):
+    if request.method != 'POST':
+        raise(Exception("Only POST allowed"))
+
+    response_errors = []
+
+    data = json.loads(request.body)
+    for item in data['to_update']:
+        pin = Pin.objects.get(pk=item['pk'])
+        if 'pin_id' in item:
+            pin.pin_id = item['pin_id']
+        if 'label' in item:
+            pin.label = item['label']
+        try:
+            pin.save()
+        except IntegrityError:
+            response_errors.append("Couldn't update {}".format(pin))
+
+    return JsonResponse(_get_arduino_data(result_ok=True, response_errors=response_errors))
