@@ -1,15 +1,8 @@
-import logging
 import json
-import Pyro4
 
-from django.shortcuts import render
-from django.http.response import HttpResponse, HttpResponseRedirect, \
-    HttpResponseServerError
-from django.core.urlresolvers import reverse
-from django.contrib import messages
 from django.views.decorators.csrf import csrf_exempt
 
-from py_arduino import DEVICE_FOR_EMULATOR, LOW, HIGH, \
+from py_arduino import LOW, HIGH, \
     OUTPUT, INPUT, MODE_UNKNOWN
 from py_arduino_web.pyroproxy.utils import get_arduino_pyro, server_is_up, \
     get_storage_pyro
