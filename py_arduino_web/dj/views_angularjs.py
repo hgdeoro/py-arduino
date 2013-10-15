@@ -5,13 +5,14 @@ from django.views.decorators.csrf import csrf_exempt
 from py_arduino import LOW, HIGH, \
     OUTPUT, INPUT, MODE_UNKNOWN
 from py_arduino_web.pyroproxy.utils import get_arduino_pyro, server_is_up, \
-    get_storage_pyro
+    get_storage_pyro, get_status_tracker
 from py_arduino_web.dj.models import Pin
 from django.db.utils import IntegrityError
 
 
 ARDUINO_PYRO = get_arduino_pyro()
 STORAGE_PYRO = get_storage_pyro()
+STATUS_TRACKER = get_status_tracker()
 
 from py_arduino_web.dj.views import JsonResponse
 
@@ -25,9 +26,14 @@ def _get_arduino_data(**kwargs):
     enhanced_arduino_type = STORAGE_PYRO.enhanceArduinoTypeStruct(enhanced_arduino_type)
     avr_cpu_type = ARDUINO_PYRO.getAvrCpuType()
 
+    bg_task_names = []
+    for bg_task in STATUS_TRACKER.get_background_tasks():
+        bg_task_names.append(bg_task.name)
+
     ctx = {
         'avr_cpu_type': avr_cpu_type,
         'enhanced_arduino_type': enhanced_arduino_type,
+        'bg_task_names': bg_task_names,
     }
     ctx.update(**kwargs)
 

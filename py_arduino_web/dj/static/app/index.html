@@ -96,10 +96,12 @@ INPUT.pin_io_value {
 
 	<div class="container" style="padding-top: 70px;">
 
-        <div ng-repeat="error_msg in extras.errors" class="alert alert-danger alert-dismissable">
-            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-            {{error_msg}}
-        </div>
+		<div ng-repeat="error_msg in extras.errors"
+			class="alert alert-danger alert-dismissable">
+			<button type="button" class="close" data-dismiss="alert"
+				aria-hidden="true">&times;</button>
+			{{error_msg}}
+		</div>
 
 		<div ng-controller="PinsController" ng-init="refreshPinInfo()">
 
@@ -141,7 +143,8 @@ INPUT.pin_io_value {
 					<td width="37%">
 						<div style="float: left;">
 							<a href="javascript:void(0);" ng-show="! editMode">{{pin_struct.label}}</a>
-							<input type="text" ng-model="pin_struct.label" ng-change="pinLabelModified(pin_struct)"
+							<input type="text" ng-model="pin_struct.label"
+								ng-change="pinLabelModified(pin_struct)"
 								class="input-sm pin_label" ng-show="editMode" />
 						</div>
 						<div style="float: right;">
@@ -258,7 +261,8 @@ INPUT.pin_io_value {
 					<td>
 						<div style="float: left;">
 							<a href="javascript:void(0);" ng-show="! editMode">{{pin_struct.label}}</a>
-							<input type="text" ng-model="pin_struct.label" ng-change="pinLabelModified(pin_struct)"
+							<input type="text" ng-model="pin_struct.label"
+								ng-change="pinLabelModified(pin_struct)"
 								class="col-lg-3 input-sm pin_label" ng-show="editMode" />
 						</div>
 						<div style="float: right;">
@@ -304,6 +308,15 @@ INPUT.pin_io_value {
 				ng-show="editMode">
 				<span class="glyphicon glyphicon-ok"></span> Finish edition
 			</button>
+
+			<div ng-show="extras.bg_task_names">
+				<h3>Background tasks</h3>
+				<table class="table table-condensed table-hover">
+					<tr ng-repeat="bg_task_name in extras.bg_task_names">
+						<td>{{bg_task_name}}</td>
+					</tr>
+				</table>
+			</div>
 
 		</div>
 
