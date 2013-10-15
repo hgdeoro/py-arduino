@@ -28,6 +28,7 @@ import serial
 import time
 import threading
 import textwrap
+import datetime
 
 try:
     from cStringIO import StringIO
@@ -55,6 +56,24 @@ logger = _logging.getLogger(__name__)  # pylint: disable=C0103
 STATUS_TRACKER_LOCK = threading.RLock()
 
 
+class BackgroundTask(object):
+    """
+    Represents a background task
+    """
+
+    def __init__(self, name=None, status=None):
+        self.name = name
+        self.last_alive = None
+        self.status = status
+
+    def touch(self):
+        self.last_alive = datetime.datetime.now()
+
+    def set_status(self, status):
+        self.status = status
+        self.last_alive = datetime.datetime.now()
+
+
 class PinStatus(object):
     """
     Class to hold transient information of pin status.
@@ -68,7 +87,7 @@ class PinStatus(object):
     'pin status' in the Arduino (maybe in some future version).
     """
     def __init__(self, pin, digital, mode=MODE_UNKNOWN, read_value=None, written_value=None,
-            analog_written_value=None):
+            analog_written_value=None, reserved_by_background_task=None):
         self.pin = pin
         self.digital = digital
         self.mode = mode  # None == unknown
@@ -76,9 +95,10 @@ class PinStatus(object):
         self.written_value = written_value  # None == unknown
         self.analog_written_value = analog_written_value  # None == unknown
         # analog_written_value -> PWM & analogWrite()
+        self.reserved_by_background_task = reserved_by_background_task
 
     def as_dict(self):
-        return {
+        ret = {
             'digital': self.digital,
             'mode': self.mode,
             'read_value': self.read_value,
@@ -88,12 +108,16 @@ class PinStatus(object):
             'mode_is_output': self.mode == OUTPUT,
             'mode_is_unknown': self.mode not in (INPUT, OUTPUT),
         }
+        if self.reserved_by_background_task:
+            ret['reserved_by_background_task_name'] = self.reserved_by_background_task.name
+        return ret
 
 
 class PinStatusTracker(object):
     """Helper objecto to track status of all the pins"""
     def __init__(self):
         self.status = {}
+        self.background_tasks = {} # Keyed by name
 
     @synchronized(STATUS_TRACKER_LOCK)
     def get_pin_status(self, pin, digital):
@@ -159,6 +183,46 @@ class PinStatusTracker(object):
         for pin in range(0, arduino_type_struct['analog_pins']):
             self.get_pin_status(pin, digital=False)
 
+    @synchronized(STATUS_TRACKER_LOCK)
+    def reserve_pins(self, pin_spec_list, background_task_name):
+        """
+        Mark the pins on `pin_spec_list` as reserved by background task
+        identified by `background_task_name`.
+
+        Returns True if the pin were reserved.
+
+        For example:
+            reserve_pins(((1, 'True'),), 'Led blinker @ D1')
+        """
+        # First check if pins are available
+        for pin, digital in pin_spec_list:
+            status = self.get_pin_status(pin, digital)
+            if status.reserved_by_background_task:
+                return False
+
+        # Then reserve it
+        for pin, digital in pin_spec_list:
+            status = self.get_pin_status(pin, digital)
+            if not background_task_name in self.background_tasks:
+                self.background_tasks[background_task_name] = BackgroundTask(background_task_name)
+            status.reserved_by_background_task = self.background_tasks[background_task_name]
+        return True
+
+    @synchronized(STATUS_TRACKER_LOCK)
+    def update_background_task_status(self, background_task_name):
+        """
+        Returns True if the status was updated
+        """
+        if not background_task_name in self.background_tasks:
+            return False
+        self.background_tasks[background_task_name].set_status(background_task_name)
+
+    @synchronized(STATUS_TRACKER_LOCK)
+    def get_background_tasks(self):
+        ret = []
+        for key in sorted(self.background_tasks.keys()):
+            ret.append(self.background_tasks[key])
+        return ret
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
