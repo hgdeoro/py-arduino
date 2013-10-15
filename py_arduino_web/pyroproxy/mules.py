@@ -41,6 +41,8 @@ class MuleDigitalPinMonitor(BasePyroMain):
         super(MuleDigitalPinMonitor, self).add_options()
         self.parser.add_option("--pin",
             dest="pin", help="Digital pin to monitor.")
+        self.parser.add_option("--description",
+            dest="description", help="Description to use for background task.")
         self.parser.set_defaults(info=True, dont_check_pyro_server=True,
             wait_until_pyro_server_is_up=True)
 
@@ -60,7 +62,7 @@ class MuleDigitalPinMonitor(BasePyroMain):
         self.logger.debug("Setting pinMode() on %s", pin)
         status_tracker = get_status_tracker()
         reserved_ok = status_tracker.reserve_pins([[pin, True]],
-            "MuleDigitalPinMonitor on pin {}".format(pin))
+            self.options.description or "MuleDigitalPinMonitor on pin {}".format(pin))
         assert reserved_ok, "Couldn't reserve pin"
         arduino.pinMode(pin, INPUT)
         arduino.digitalWrite(pin, HIGH)
