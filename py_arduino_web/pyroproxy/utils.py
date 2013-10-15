@@ -41,6 +41,12 @@ def get_storage_pyro():
     return Pyro4.Proxy("PYRO:py_arduino_web.storage@localhost:61234")
 
 
+def get_status_tracker():
+    """Returns a Pyro proxy of the Status Tracker instance"""
+    Pyro4.config.HMAC_KEY = hmac.new('this-is-py-arduino').digest()
+    return Pyro4.Proxy("PYRO:py_arduino.status_tracker@localhost:61234")
+
+
 def wait_for_server(logger=_logger, sleep=1):
     """
     Waits until Pyro server is reachable.

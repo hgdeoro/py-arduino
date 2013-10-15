@@ -22,7 +22,7 @@ import time
 import subprocess
 
 from py_arduino import HIGH, INPUT, LOW
-from py_arduino_web.pyroproxy.utils import BasePyroMain
+from py_arduino_web.pyroproxy.utils import BasePyroMain, get_status_tracker
 
 
 class MuleDigitalPinMonitor(BasePyroMain):
@@ -58,6 +58,10 @@ class MuleDigitalPinMonitor(BasePyroMain):
     def bg_setup(self, arduino):
         pin = int(self.options.pin)
         self.logger.debug("Setting pinMode() on %s", pin)
+        status_tracker = get_status_tracker()
+        reserved_ok = status_tracker.reserve_pins([[pin, True]],
+            "MuleDigitalPinMonitor on pin {}".format(pin))
+        assert reserved_ok, "Couldn't reserve pin"
         arduino.pinMode(pin, INPUT)
         arduino.digitalWrite(pin, HIGH)
 
