@@ -88,6 +88,8 @@ class BasePyroMain(object):
     def __init__(self):
         self.parser = optparse.OptionParser()
         self.add_options()
+        self.options = None
+        self.args = None
 
     def add_options(self):
         self.parser.add_option("--debug",
@@ -104,7 +106,7 @@ class BasePyroMain(object):
             action="store_true", dest="wait_until_pyro_server_is_up", default=False,
             help="Wait until the PyRO server is up")
 
-    def run(self, options, args, arduino):
+    def run(self, arduino):
         """
         To be overriden in subclass.
         Do not call this method directly! You must call `start()`.
@@ -112,27 +114,27 @@ class BasePyroMain(object):
         raise(NotImplementedError())
 
     def start(self):
-        (options, args) = self.parser.parse_args()
+        self.options, self.args = self.parser.parse_args()
 
         # setup logging
-        if options.debug:
+        if self.options.debug:
             logging.basicConfig(level=logging.DEBUG)
-        elif options.info:
+        elif self.options.info:
             logging.basicConfig(level=logging.INFO)
         else:
             logging.basicConfig(level=logging.ERROR)
 
-        if not options.dont_check_pyro_server:
+        if not self.options.dont_check_pyro_server:
             if not server_is_up():
                 print "ERROR: PyRO server isn't reachable"
                 sys.exit(1)
 
-        if options.wait_until_pyro_server_is_up:
+        if self.options.wait_until_pyro_server_is_up:
             wait_for_server()
 
         arduino = get_arduino_pyro()
         try:
-            return self.run(options, args, arduino)
+            return self.run(arduino)
         except KeyboardInterrupt:
             print ""
             return None

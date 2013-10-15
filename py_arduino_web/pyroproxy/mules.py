@@ -32,7 +32,6 @@ class MuleDigitalPinMonitor(BasePyroMain):
     Example: See `examples/bg_log_change_on_digital_pin.py`
     """
 
-    pin = None
     script_on_high = None
     script_on_low = None
     wait_after_change = 0.1
@@ -40,6 +39,8 @@ class MuleDigitalPinMonitor(BasePyroMain):
 
     def add_options(self):
         super(MuleDigitalPinMonitor, self).add_options()
+        self.parser.add_option("--pin",
+            dest="pin", help="Digital pin to monitor.")
         self.parser.set_defaults(info=True, dont_check_pyro_server=True,
             wait_until_pyro_server_is_up=True)
 
@@ -54,16 +55,18 @@ class MuleDigitalPinMonitor(BasePyroMain):
                 self.logger.debug("Calling script: %s", self.script_on_low)
                 subprocess.call(self.script_on_low, shell=True)
 
-    def bg_setup(self, options, args, arduino):
-        self.logger.debug("Setting pinMode() on %s", self.pin)
-        arduino.pinMode(self.pin, INPUT)
-        arduino.digitalWrite(self.pin, HIGH)
+    def bg_setup(self, arduino):
+        pin = int(self.options.pin)
+        self.logger.debug("Setting pinMode() on %s", pin)
+        arduino.pinMode(pin, INPUT)
+        arduino.digitalWrite(pin, HIGH)
 
-    def bg_loop(self, options, args, arduino):
-        last_value = arduino.digitalRead(self.pin)
+    def bg_loop(self, arduino):
+        pin = int(self.options.pin)
+        last_value = arduino.digitalRead(pin)
         self.logger.debug("Initial value: %s", last_value)
         while True:
-            new_value = arduino.digitalRead(self.pin)
+            new_value = arduino.digitalRead(pin)
             self.logger.debug("Read value: %s", new_value)
             if new_value != last_value:
                 # Value changed
@@ -75,12 +78,9 @@ class MuleDigitalPinMonitor(BasePyroMain):
                 if self.wait_if_nothing_changed:
                     time.sleep(self.wait_if_nothing_changed)
 
-    def run(self, options, args, arduino):
-        self.logger.info("Starting on pin: %s", self.pin)
-        if self.pin is None:
-            self.logger.error("You must set the PIN to a valid integer...")
-            self.logger.error("(will halt this mule for an hour)")
-            time.sleep(60 * 60)
+    def run(self, arduino):
+        pin = int(self.options.pin)
+        self.logger.info("Starting on pin: %s", pin)
 
         if not arduino.is_connected():
             self.logger.debug("Arduino is not connected...")
@@ -93,7 +93,7 @@ class MuleDigitalPinMonitor(BasePyroMain):
 
         try:
             self.logger.debug("Calling self.bg_setup()")
-            self.bg_setup(options, args, arduino)
+            self.bg_setup(arduino)
         except:
             self.logger.exception("Error detected when called bg_setup()")
             return
@@ -102,7 +102,7 @@ class MuleDigitalPinMonitor(BasePyroMain):
 
         try:
             self.logger.debug("Calling self.bg_loop()")
-            self.bg_loop(options, args, arduino)
+            self.bg_loop(arduino)
         except:
             self.logger.exception("Error detected in loop")
             return
@@ -117,7 +117,7 @@ class MuleDigitalPinMonitorWithBounceControl(MuleDigitalPinMonitor):
 
     bounce_control_time = 2.0  # in seconds
 
-    def bg_loop(self, options, args, arduino):
+    def bg_loop(self, arduino):
         bounce_control_start = None
         last_value = arduino.digitalRead(self.pin)
         self.logger.debug("Initial value: %s", last_value)
