@@ -21,8 +21,6 @@ import logging
 import hmac
 import optparse
 
-import Pyro4
-
 from py_arduino.arduino import PyArduino
 from py_arduino_web.storage import Storage
 from py_arduino import DEVICE_FOR_EMULATOR
@@ -36,6 +34,9 @@ def main():
     parser.add_option("--debug",
         action="store_true", dest="debug", default=False,
         help="Configure logging to show debug messages.")
+    parser.add_option("--info",
+        action="store_true", dest="info", default=False,
+        help="Configure logging to show info messages.")
     parser.add_option("--emulator",
         action="store_true", dest="emulator", default=False,
         help="Automatically connect to emulator.")
@@ -44,6 +45,10 @@ def main():
 
     if options.debug:
         logging.basicConfig(level=logging.DEBUG)
+    elif options.info:
+        logging.basicConfig(level=logging.INFO)
+
+    import Pyro4
 
     Pyro4.config.HMAC_KEY = hmac.new('this-is-py-arduino').digest()
     Pyro4.config.SOCK_REUSE = True
@@ -57,6 +62,8 @@ def main():
         logging.error("-" * 80)
         storage = Storage()
 
+    status_tracker = arduino.status_tracker
+
     if options.emulator:
         arduino.connect(DEVICE_FOR_EMULATOR)
 
@@ -64,6 +71,7 @@ def main():
         {
             arduino: "py_arduino.arduino",
             storage: "py_arduino_web.storage",
+            status_tracker: "py_arduino.status_tracker",
         },
         host="localhost", port=61234, ns=False)
     # FORMA DE URI -> uri_string = "PYRO:py_arduino.PyArduino@localhost:61234"
