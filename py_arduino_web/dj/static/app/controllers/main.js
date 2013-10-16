@@ -61,7 +61,7 @@ pyArduinoModule.filter('written_pwm_value', function() {
     };
 });
 
-pyArduinoModule.controller('GlobalController', function($scope) {
+pyArduinoModule.controller('GlobalController', function($scope, $location) {
 
     $scope.CONST = {
         INPUT : 0,
@@ -80,5 +80,9 @@ pyArduinoModule.controller('GlobalController', function($scope) {
         bg_tasks : [],
     };
     $scope.enhanced_arduino_type = {};
+
+    $scope.isCurrentPath = function(path) {
+        return $location.path() == path;
+    };
 
 });
