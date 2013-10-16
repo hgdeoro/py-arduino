@@ -25,7 +25,77 @@ from py_arduino import HIGH, INPUT, LOW
 from py_arduino_web.pyroproxy.utils import BasePyroMain, get_status_tracker
 
 
-class MuleDigitalPinMonitor(BasePyroMain):
+class MulePinReader(BasePyroMain):
+    """Base class for background tasks"""
+
+    def add_options(self):
+        super(MulePinReader, self).add_options()
+        self.parser.add_option("--pin",
+            dest="pin", help="Pin to monitor.")
+        self.parser.add_option("--description",
+            dest="description", help="Description to use for background task.")
+        self.parser.set_defaults(info=True, dont_check_pyro_server=True,
+            wait_until_pyro_server_is_up=True)
+
+    def bg_setup(self, arduino):
+        raise(NotImplemented())
+
+    def bg_loop(self, arduino):
+        raise(NotImplemented())
+
+    def run(self, arduino):
+        pin = int(self.options.pin)
+        self.logger.info("Starting on pin: %s", pin)
+
+        if not arduino.is_connected():
+            self.logger.debug("Arduino is not connected...")
+            while not arduino.is_connected():
+                self.logger.info("Waiting until connected...")
+                time.sleep(5)
+            self.logger.info("Connected!")
+
+        ## setup()
+
+        try:
+            self.logger.debug("Calling self.bg_setup()")
+            self.bg_setup(arduino)
+        except:
+            self.logger.exception("Error detected when called bg_setup()")
+            return
+
+        ## loop()
+
+        try:
+            self.logger.debug("Calling self.bg_loop()")
+            self.bg_loop(arduino)
+        except:
+            self.logger.exception("Error detected in loop")
+            return
+
+
+class MuleAnalogPinLogger(MulePinReader):
+    """
+    Simple background task that reads a analog pin and log its value
+    """
+
+    wait_between_reads = 1.0
+
+    def bg_setup(self, arduino):
+        pin = int(self.options.pin)
+        self.logger.debug("Setting pinMode() on %s", pin)
+        status_tracker = get_status_tracker()
+        reserved_ok = status_tracker.reserve_pins([[pin, False]],
+            self.options.description or "MuleAnalogPinLogger on pin {}".format(pin))
+        assert reserved_ok, "Couldn't reserve pin"
+
+    def bg_loop(self, arduino):
+        pin = int(self.options.pin)
+        while True:
+            self.logger.debug("Read value: %s", arduino.analogRead(pin))
+            time.sleep(self.wait_between_reads)
+
+
+class MuleDigitalPinMonitor(MulePinReader):
     """
     TODO: add documentation
 
@@ -36,15 +106,6 @@ class MuleDigitalPinMonitor(BasePyroMain):
     script_on_low = None
     wait_after_change = 0.1
     wait_if_nothing_changed = 0.5
-
-    def add_options(self):
-        super(MuleDigitalPinMonitor, self).add_options()
-        self.parser.add_option("--pin",
-            dest="pin", help="Digital pin to monitor.")
-        self.parser.add_option("--description",
-            dest="description", help="Description to use for background task.")
-        self.parser.set_defaults(info=True, dont_check_pyro_server=True,
-            wait_until_pyro_server_is_up=True)
 
     def value_changed(self, new_value):
         self.logger.debug("Value changed: %s", new_value)
@@ -83,35 +144,6 @@ class MuleDigitalPinMonitor(BasePyroMain):
                 # Value hasn't changed
                 if self.wait_if_nothing_changed:
                     time.sleep(self.wait_if_nothing_changed)
-
-    def run(self, arduino):
-        pin = int(self.options.pin)
-        self.logger.info("Starting on pin: %s", pin)
-
-        if not arduino.is_connected():
-            self.logger.debug("Arduino is not connected...")
-            while not arduino.is_connected():
-                self.logger.info("Waiting until connected...")
-                time.sleep(5)
-            self.logger.info("Connected!")
-
-        ## setup()
-
-        try:
-            self.logger.debug("Calling self.bg_setup()")
-            self.bg_setup(arduino)
-        except:
-            self.logger.exception("Error detected when called bg_setup()")
-            return
-
-        ## loop()
-
-        try:
-            self.logger.debug("Calling self.bg_loop()")
-            self.bg_loop(arduino)
-        except:
-            self.logger.exception("Error detected in loop")
-            return
 
 
 class MuleDigitalPinMonitorWithBounceControl(MuleDigitalPinMonitor):
