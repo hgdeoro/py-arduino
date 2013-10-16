@@ -83,7 +83,7 @@ pyArduinoModule.controller('GlobalController', function($scope) {
 
 });
 
-function ConnectController($scope, $http) {
+function ConnectController($scope, $http, $location) {
 
     $scope.data = {};
     $scope.flags = {};
@@ -106,6 +106,10 @@ function ConnectController($scope, $http) {
             $scope.flags.checkingConnection = false;
             $scope.data = data;
 
+            if (data.connected) {
+                if (redirectIfConnected)
+                    $location.path("/pins");
+            }
         }).error(function(data) {
             $scope.flags.checkingConnection = false;
             $scope.data = {};
