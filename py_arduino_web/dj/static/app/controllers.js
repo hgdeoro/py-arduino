@@ -70,6 +70,7 @@ pyArduinoModule.controller('GlobalController', function($scope) {
         HIGH : 1,
         check_connection_url : '/angular/check_connection/',
         connect_url : '/angular/connect/',
+        disconnect_url : '/angular/disconnect/',
     };
 
     $scope.avr_cpu_type = '(unknown)';
@@ -90,13 +91,18 @@ function ConnectController($scope, $http) {
     $scope.flags.checkingConnection = true;
     $scope.flags.emulator_port = '/dev/ARDUINO_EMULATOR';
 
+    //
+    // Django views should return:
+    //
+    // data['connected'] = False
+    // data['serial_ports'] = ( ... )
+    // data['pyro_not_contacted'] = False
+    //
+
     $scope.checkConnection = function() {
         $http.post($scope.CONST.check_connection_url, {
 
         }).success(function(data) {
-            // ret['connected'] = False
-            // ret['serial_ports'] = ( ... )
-            // ret['pyro_not_contacted'] = False
             $scope.flags.checkingConnection = false;
             $scope.data = data;
 
@@ -112,9 +118,20 @@ function ConnectController($scope, $http) {
             serial_port : serial_port
 
         }).success(function(data) {
-            // ret['connected'] = False
-            // ret['serial_ports'] = ( ... )
-            // ret['pyro_not_contacted'] = False
+            $scope.flags.checkingConnection = false;
+            $scope.data = data;
+
+        }).error(function(data) {
+            $scope.flags.checkingConnection = false;
+            $scope.data = {};
+
+        });
+    };
+
+    $scope.disconnectArduino = function(serial_port) {
+        $http.post($scope.CONST.disconnect_url, {
+
+        }).success(function(data) {
             $scope.flags.checkingConnection = false;
             $scope.data = data;
 

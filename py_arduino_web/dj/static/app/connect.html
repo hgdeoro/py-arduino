@@ -22,30 +22,32 @@
 				<button type="button" class="close" data-dismiss="alert"
 					aria-hidden="true">&times;</button>
 				Connection OK!
+				&nbsp;&nbsp;&nbsp;
+				<button class="btn-sm btn btn-success" ng-click="disconnectArduino()">Disconnect</button>
 			</div>
 
 			<div ng-show="! data.connected">
 
 				<table class="table table-condensed table-hover">
-                    <tr>
-                        <th width="30%" style="text-align: right;">Detected ports:</th>
-                        <td width="70%">
-                            <div ng-repeat="port in data.serial_ports">
-                                <button ng-click="connectArduino(port)"
-                                    class="btn btn-primary btn-sm">Connect to {{port}}</button>
-                            </div>
-                            <div ng-show="! data.serial_ports.length">
-                                <small>No serial port detected</small>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th width="30%" style="text-align: right;">Virtual ports:</th>
-                        <td width="70%">
-                                <button ng-click="connectArduino(flags.emulator_port)"
-                                    class="btn btn-primary btn-sm">Connect to emulator</button>
-                        </td>
-                    </tr>
+					<tr>
+						<th width="30%" style="text-align: right;">Detected ports:</th>
+						<td width="70%">
+							<div ng-repeat="port in data.serial_ports">
+								<button ng-click="connectArduino(port)"
+									class="btn btn-primary btn-sm">Connect to {{port}}</button>
+							</div>
+							<div ng-show="! data.serial_ports.length">
+								<small>No serial port detected</small>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<th width="30%" style="text-align: right;">Virtual ports:</th>
+						<td width="70%">
+							<button ng-click="connectArduino(flags.emulator_port)"
+								class="btn btn-primary btn-sm">Connect to emulator</button>
+						</td>
+					</tr>
 					<tr>
 						<th style="text-align: right;">Connect to:</th>
 						<td><input type="text" ng-model="flags._port"

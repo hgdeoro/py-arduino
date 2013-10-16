@@ -235,3 +235,23 @@ def connect(request):
         ret['pyro_not_contacted'] = True
 
     return JsonResponse(ret)
+
+
+@csrf_exempt
+def disconnect(request):
+    if request.method != 'POST':
+        raise(Exception("Only POST allowed"))
+
+    ret = {}
+
+    try:
+        ARDUINO_PYRO.close()
+        ret['connected'] = ARDUINO_PYRO.is_connected()
+        ret['pyro_not_contacted'] = False
+        if not ret['connected']:
+            ret['serial_ports'] = ARDUINO_PYRO.get_serial_ports()
+    except:
+        ret['connected'] = False
+        ret['pyro_not_contacted'] = True
+
+    return JsonResponse(ret)
