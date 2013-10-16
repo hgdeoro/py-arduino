@@ -41,6 +41,9 @@ urlpatterns = patterns('',
     url(r'^angular/update_labels_and_ids/?$',
         'py_arduino_web.dj.views_angularjs.update_labels_and_ids',
         name='ng_update_labels_and_ids'),
+    url(r'^angular/check_connection/?$',
+        'py_arduino_web.dj.views_angularjs.check_connection',
+        name='ng_check_connection'),
 
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),

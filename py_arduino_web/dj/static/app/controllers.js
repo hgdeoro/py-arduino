@@ -3,6 +3,10 @@ var pyArduinoModule = angular.module('PyArduino', [ /* 'uiSlider' */]);
 pyArduinoModule.config(function($routeProvider) {
 
     $routeProvider.when('/', {
+        controller : ConnectController,
+        templateUrl : 'connect.html',
+
+    }).when('/pins', {
         controller : PinsController,
         templateUrl : 'pins.html',
 
@@ -63,7 +67,8 @@ pyArduinoModule.controller('GlobalController', function($scope) {
         INPUT : 0,
         OUTPUT : 1,
         LOW : 0,
-        HIGH : 1
+        HIGH : 1,
+        check_connection_url : '/angular/check_connection/'
     };
 
     $scope.avr_cpu_type = '(unknown)';
@@ -75,6 +80,32 @@ pyArduinoModule.controller('GlobalController', function($scope) {
     $scope.enhanced_arduino_type = {};
 
 });
+
+function ConnectController($scope, $http) {
+
+    $scope.flags = {};
+    $scope.flags.showCheckingMessage = true;
+    $scope.flags.connectionOk = false;
+
+    $scope.checkConnection = function() {
+        $http.post($scope.CONST.check_connection_url, {
+
+        }).success(function(data) {
+
+            // ret['connected'] = False
+            // ret['pyro_contacted'] = False
+
+            $scope.flags.connectionOk = true;
+            $scope.flags.showCheckingMessage = false;
+
+        }).error(function(data) {
+            $scope.flags.connectionOk = false;
+            $scope.flags.showCheckingMessage = false;
+
+        });
+    };
+
+};
 
 function PinsController($scope, $http) {
 

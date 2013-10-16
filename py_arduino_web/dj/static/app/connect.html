@@ -1,0 +1,21 @@
+<div ng-init="checkConnection()">
+
+    <div ng-show="flags.showCheckingMessage">
+        <i class="icon-spinner icon-spin icon-large"></i> Checking
+        connection...
+    </div>
+
+    <div ng-show="! flags.showCheckingMessage">
+        <div ng-show="! flags.connectionOk" class="alert alert-danger alert-dismissable">
+            <button type="button" class="close" data-dismiss="alert"
+                aria-hidden="true">&times;</button>
+                Couldn't connect...
+        </div>
+        <div ng-show="flags.connectionOk" class="alert alert-success alert-dismissable">
+            <button type="button" class="close" data-dismiss="alert"
+                aria-hidden="true">&times;</button>
+                Connection OK!
+        </div>
+    </div>
+
+</div>

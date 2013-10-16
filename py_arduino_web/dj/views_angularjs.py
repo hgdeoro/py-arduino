@@ -190,3 +190,19 @@ def update_labels_and_ids(request):
             response_errors.append("Couldn't update {}".format(pin))
 
     return JsonResponse(_get_arduino_data(result_ok=True, response_errors=response_errors))
+
+
+@csrf_exempt
+def ng_check_connection(request):
+    if request.method != 'POST':
+        raise(Exception("Only POST allowed"))
+
+    ret = {}
+    try:
+        ret['connected'] = ARDUINO_PYRO.is_connected()
+        ret['pyro_contacted'] = True
+    except:
+        ret['connected'] = False
+        ret['pyro_contacted'] = False
+
+    return JsonResponse(ret)
