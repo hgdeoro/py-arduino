@@ -89,4 +89,15 @@ pyArduinoModule.controller('GlobalController', function($scope, $location) {
         return $location.path() == path;
     };
 
+    $scope.safeApply = function(fn) {
+        var phase = this.$root.$$phase;
+        if (phase == '$apply' || phase == '$digest') {
+            if (fn && (typeof (fn) === 'function')) {
+                fn();
+            }
+        } else {
+            this.$apply(fn);
+        }
+    };
+
 });

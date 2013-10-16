@@ -5,7 +5,11 @@
 		connection...
 	</div>
 
-	<div ng-show="! flags.checkingConnection">
+	<div ng-show="flags.connecting">
+		<i class="icon-spinner icon-spin icon-large"></i> Connecting...
+	</div>
+
+	<div ng-show="! (flags.checkingConnection || flags.connecting)">
 
 		<div ng-show="data.pyro_not_contacted"
 			class="alert alert-danger alert-dismissable">
