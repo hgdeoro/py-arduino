@@ -103,6 +103,7 @@ function PinsController($scope, $http, $location) {
      */
     $scope.refreshUi = function(data) {
 
+        $scope.resetExtras();
         $scope.extras.avr_cpu_type = data.avr_cpu_type;
         $scope.extras.bg_tasks = data.bg_tasks;
         $scope.enhanced_arduino_type = data.enhanced_arduino_type;

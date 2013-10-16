@@ -37,8 +37,6 @@ function ConnectController($scope, $http, $location) {
             $scope.flags.connecting = true;
         });
 
-        // $scope.flags.connecting = true;
-
         $http.post($scope.CONST.connect_url, {
             serial_port : serial_port
 
@@ -56,6 +54,7 @@ function ConnectController($scope, $http, $location) {
     };
 
     $scope.disconnectArduino = function(serial_port) {
+        $scope.resetExtras();
         $http.post($scope.CONST.disconnect_url, {
 
         }).success(function(data) {

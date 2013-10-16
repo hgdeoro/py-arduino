@@ -77,13 +77,18 @@ pyArduinoModule.controller('GlobalController', function($scope, $location) {
         disconnect_url : '/angular/disconnect/',
     };
 
-    $scope.avr_cpu_type = '(unknown)';
     $scope.extras = {
-        avr_cpu_type : '(unknown)',
+        avr_cpu_type : '', // default to empty string
         errors : [],
         bg_tasks : [],
     };
+
     $scope.enhanced_arduino_type = {};
+
+    $scope.resetExtras = function() {
+        $scope.extras.avr_cpu_type = '';
+        $scope.extras.bg_tasks = [];
+    };
 
     $scope.isCurrentPath = function(path) {
         return $location.path() == path;
