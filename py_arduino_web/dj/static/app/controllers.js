@@ -69,7 +69,7 @@ pyArduinoModule.controller('GlobalController', function($scope) {
         LOW : 0,
         HIGH : 1,
         check_connection_url : '/angular/check_connection/',
-    // connect_url : '/angular/connect/',
+        connect_url : '/angular/connect/',
     };
 
     $scope.avr_cpu_type = '(unknown)';
@@ -88,6 +88,7 @@ function ConnectController($scope, $http) {
     $scope.flags = {};
 
     $scope.flags.checkingConnection = true;
+    $scope.flags.emulator_port = '/dev/ARDUINO_EMULATOR';
 
     $scope.checkConnection = function() {
         $http.post($scope.CONST.check_connection_url, {
@@ -106,22 +107,23 @@ function ConnectController($scope, $http) {
         });
     };
 
-    // $scope.connectArduino(function(port) {
-    // $http.post($scope.CONST.connect_url, {
-    // port : port
-    // }).success(function(data) {
-    // // ret['connected'] = False
-    // // ret['serial_ports'] = ( ... )
-    // // ret['pyro_not_contacted'] = False
-    // $scope.flags.checkingConnection = false;
-    // $scope.data = data;
-    //
-    // }).error(function(data) {
-    // $scope.flags.checkingConnection = false;
-    // $scope.data = {};
-    //
-    // });
-    // });
+    $scope.connectArduino = function(serial_port) {
+        $http.post($scope.CONST.connect_url, {
+            serial_port : serial_port
+
+        }).success(function(data) {
+            // ret['connected'] = False
+            // ret['serial_ports'] = ( ... )
+            // ret['pyro_not_contacted'] = False
+            $scope.flags.checkingConnection = false;
+            $scope.data = data;
+
+        }).error(function(data) {
+            $scope.flags.checkingConnection = false;
+            $scope.data = {};
+
+        });
+    };
 
 };
 

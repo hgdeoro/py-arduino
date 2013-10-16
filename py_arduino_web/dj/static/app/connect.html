@@ -27,23 +27,30 @@
 			<div ng-show="! data.connected">
 
 				<table class="table table-condensed table-hover">
-					<tr>
-						<th width="30%" style="text-align: right;">Detected ports:</th>
-						<td width="70%">
-							<div ng-repeat="port in data.serial_ports">
-								<button xng-click="connectArduino(port)"
-									class="btn btn-primary btn-sm">Connect to {{port}}</button>
-							</div>
-							<div ng-show="! data.serial_ports.length">
-								<small>No serial port detected</small>
-							</div>
-						</td>
-					</tr>
+                    <tr>
+                        <th width="30%" style="text-align: right;">Detected ports:</th>
+                        <td width="70%">
+                            <div ng-repeat="port in data.serial_ports">
+                                <button ng-click="connectArduino(port)"
+                                    class="btn btn-primary btn-sm">Connect to {{port}}</button>
+                            </div>
+                            <div ng-show="! data.serial_ports.length">
+                                <small>No serial port detected</small>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th width="30%" style="text-align: right;">Virtual ports:</th>
+                        <td width="70%">
+                                <button ng-click="connectArduino(flags.emulator_port)"
+                                    class="btn btn-primary btn-sm">Connect to emulator</button>
+                        </td>
+                    </tr>
 					<tr>
 						<th style="text-align: right;">Connect to:</th>
-						<td><input type="text" ng-model="flags.port"
+						<td><input type="text" ng-model="flags._port"
 							class="input-sm pin_label">
-							<button xng-click="connectArduino(flags.port)"
+							<button ng-click="connectArduino(flags._port)"
 								class="btn btn-primary btn-sm">Connect</button></td>
 					</tr>
 				</table>

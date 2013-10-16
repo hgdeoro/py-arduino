@@ -192,6 +192,11 @@ def update_labels_and_ids(request):
     return JsonResponse(_get_arduino_data(result_ok=True, response_errors=response_errors))
 
 
+#===============================================================================
+# Connection handling
+# All this views should return the same data
+#===============================================================================
+
 @csrf_exempt
 def check_connection(request):
     if request.method != 'POST':
@@ -199,6 +204,28 @@ def check_connection(request):
 
     ret = {}
     try:
+        ret['connected'] = ARDUINO_PYRO.is_connected()
+        ret['pyro_not_contacted'] = False
+        if not ret['connected']:
+            ret['serial_ports'] = ARDUINO_PYRO.get_serial_ports()
+    except:
+        ret['connected'] = False
+        ret['pyro_not_contacted'] = True
+
+    return JsonResponse(ret)
+
+
+@csrf_exempt
+def connect(request):
+    if request.method != 'POST':
+        raise(Exception("Only POST allowed"))
+
+    data = json.loads(request.body)
+    ret = {}
+    serial_port = data.get('serial_port', None)
+
+    try:
+        ARDUINO_PYRO.connect(serial_port)
         ret['connected'] = ARDUINO_PYRO.is_connected()
         ret['pyro_not_contacted'] = False
         if not ret['connected']:
