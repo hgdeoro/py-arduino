@@ -16,6 +16,7 @@
 		</div>
 
 		<div ng-show="! data.pyro_not_contacted">
+
 			<div ng-show="data.connected"
 				class="alert alert-success alert-dismissable">
 				<button type="button" class="close" data-dismiss="alert"
@@ -24,16 +25,22 @@
 			</div>
 
 			<div ng-show="! data.connected">
-				<div ng-show="serial_ports">
-					Detected ports: <span ng-repeat="port in serial_ports">
-						<button xng-click="connectArduino(port)">{{port}}</button>
-					</span>
-				</div>
 
-				<div>
-					Connect to port <input type="text" ng-model="flags.port">
-					<button xng-click="connectArduino(flags.port)">Connect</button>
-				</div>
+				<table class="table table-condensed table-hover">
+					<tr>
+						<th width="30%" style="text-align: right;">Detected ports:</th>
+						<td width="70%"><span ng-repeat="port in serial_ports">
+								<button xng-click="connectArduino(port)">{{port}}</button>
+						</span> <span ng-show="! serial_ports"><small>No serial
+									port detected</small></span></td>
+					</tr>
+					<tr>
+						<th style="text-align: right;">Connect to:</th>
+						<td><input type="text" ng-model="flags.port" class="input-sm pin_label">
+							<button xng-click="connectArduino(flags.port)" class="btn btn-primary btn-sm">Connect</button></td>
+					</tr>
+				</table>
+
 			</div>
 
 		</div>
