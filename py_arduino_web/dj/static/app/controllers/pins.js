@@ -197,6 +197,17 @@ function PinsController($scope, $http) {
             $scope.refreshUi(data);
 
         }).error(function(data) {
+            // Check connection problem!
+            // If error was caused because Arduino isn't connected, we should
+            // redirect to /connection
+            if (data && data.pyro_server_unreachable) {
+                $location.path("/connection");
+                return;
+            }
+            if (data && data.arduino_isnt_connected) {
+                $location.path("/connection");
+                return;
+            }
             console.error("refreshPinInfo() -> $http.get() -> ERROR -> " + data);
         });
     };

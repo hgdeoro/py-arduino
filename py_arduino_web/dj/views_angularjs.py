@@ -40,10 +40,10 @@ def _get_arduino_data(**kwargs):
 def get_arduino_data(request):
 
     if not server_is_up():
-        raise(Exception("Pyro server isn't running"))
+        JsonResponse({'pyro_server_unreachable': True}, status=500)
 
     if not ARDUINO_PYRO.is_connected():
-        raise(Exception("Arduino isn't connected"))
+        JsonResponse({'arduino_isnt_connected': True}, status=500)
 
     #    try:
     #        ARDUINO_PYRO.validateConnection()
