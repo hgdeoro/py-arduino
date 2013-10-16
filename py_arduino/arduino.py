@@ -359,6 +359,7 @@ class PyArduino(object):  # pylint: disable=R0904
 
         assert self.tty is not None
 
+        logger.info("Connecting to %s", tty)
         self.serial_port = self._get_serial_port()
 
         if self.call_validate_connection:
@@ -381,6 +382,7 @@ class PyArduino(object):  # pylint: disable=R0904
             logger.exception("Error detected when trying to close serial port. "
                 "Continuing anyway...")
         self.serial_port = None
+        self.tty = None
         self.status_tracker.reset()
         self._arduino_type_struct_cache = None
 
