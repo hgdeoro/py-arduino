@@ -9,7 +9,6 @@ from py_arduino_web.pyroproxy.utils import get_arduino_pyro, server_is_up, \
     get_storage_pyro, get_status_tracker
 from py_arduino_web.dj.models import Pin
 from django.db.utils import IntegrityError
-from Pyro4.errors import CommunicationError
 
 
 ARDUINO_PYRO = get_arduino_pyro()
