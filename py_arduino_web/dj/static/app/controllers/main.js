@@ -3,6 +3,10 @@ var pyArduinoModule = angular.module('PyArduino', [ /* 'uiSlider' */]);
 pyArduinoModule.config(function($routeProvider) {
 
     $routeProvider.when('/', {
+        controller : RedirectController,
+        templateUrl : '/static/app/redirect.html',
+
+    }).when('/connection', {
         controller : ConnectController,
         templateUrl : '/static/app/connect.html',
 

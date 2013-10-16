@@ -21,9 +21,6 @@ function ConnectController($scope, $http, $location) {
             $scope.flags.checkingConnection = false;
             $scope.data = data;
 
-            if (data.connected) {
-                $location.path("/pins");
-            }
         }).error(function(data) {
             $scope.flags.checkingConnection = false;
             $scope.data = {};
