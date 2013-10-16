@@ -114,6 +114,9 @@ function ConnectController($scope, $http) {
     };
 
     $scope.connectArduino = function(serial_port) {
+        // ret['connection_attempt_ok'] = True
+        // ret['connection_attempt_failed'] = True
+
         $http.post($scope.CONST.connect_url, {
             serial_port : serial_port
 

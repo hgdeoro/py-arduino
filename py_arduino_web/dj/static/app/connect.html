@@ -17,13 +17,20 @@
 
 		<div ng-show="! data.pyro_not_contacted">
 
+			<div ng-show="data.connection_attempt_failed"
+				class="alert alert-danger alert-dismissable">
+				<button type="button" class="close" data-dismiss="alert"
+					aria-hidden="true">&times;</button>
+				Connection attempt failed!
+			</div>
+
 			<div ng-show="data.connected"
 				class="alert alert-success alert-dismissable">
 				<button type="button" class="close" data-dismiss="alert"
 					aria-hidden="true">&times;</button>
-				Connection OK!
-				&nbsp;&nbsp;&nbsp;
-				<button class="btn-sm btn btn-success" ng-click="disconnectArduino()">Disconnect</button>
+				Connection OK! &nbsp;&nbsp;&nbsp;
+				<button class="btn-sm btn btn-success"
+					ng-click="disconnectArduino()">Disconnect</button>
 			</div>
 
 			<div ng-show="! data.connected">

@@ -225,7 +225,12 @@ def connect(request):
     serial_port = data.get('serial_port', None)
 
     try:
-        ARDUINO_PYRO.connect(serial_port)
+        try:
+            ARDUINO_PYRO.connect(serial_port)
+            ret['connection_attempt_ok'] = True
+        except:
+            # connection failed!
+            ret['connection_attempt_failed'] = True
         ret['connected'] = ARDUINO_PYRO.is_connected()
         ret['pyro_not_contacted'] = False
         if not ret['connected']:
