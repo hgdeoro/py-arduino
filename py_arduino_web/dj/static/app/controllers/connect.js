@@ -22,7 +22,12 @@ function ConnectController($scope, $http, $location) {
             $scope.flags.checkingConnection = false;
             $scope.data = data;
 
+            if ((!data) || (data && !data.connected)) {
+                $scope.resetExtras();
+            }
+
         }).error(function(data) {
+            $scope.resetExtras();
             $scope.flags.checkingConnection = false;
             $scope.data = {};
 
