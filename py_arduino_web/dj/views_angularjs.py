@@ -9,6 +9,7 @@ from py_arduino_web.pyroproxy.utils import get_arduino_pyro, server_is_up, \
     get_storage_pyro, get_status_tracker
 from py_arduino_web.dj.models import Pin
 from django.db.utils import IntegrityError
+from Pyro4.errors import CommunicationError
 
 
 ARDUINO_PYRO = get_arduino_pyro()
@@ -40,10 +41,16 @@ def _get_arduino_data(**kwargs):
 def get_arduino_data(request):
 
     if not server_is_up():
-        JsonResponse({'pyro_server_unreachable': True}, status=500)
+        return JsonResponse({'pyro_server_unreachable': True, 'try_connect': True}, status=500)
+
+    #    try:
+    #        if not ARDUINO_PYRO.is_connected():
+    #            return JsonResponse({'arduino_isnt_connected': True}, status=500)
+    #    except CommunicationError:
+    #        return JsonResponse({'pyro_server_reachable_but_comm_error': True}, status=500)
 
     if not ARDUINO_PYRO.is_connected():
-        JsonResponse({'arduino_isnt_connected': True}, status=500)
+        return JsonResponse({'arduino_isnt_connected': True, 'try_connect': True}, status=500)
 
     #    try:
     #        ARDUINO_PYRO.validateConnection()

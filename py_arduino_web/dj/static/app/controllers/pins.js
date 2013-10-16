@@ -1,4 +1,4 @@
-function PinsController($scope, $http) {
+function PinsController($scope, $http, $location) {
 
     var get_arduino_data_url = '/angular/get_arduino_data/';
     var digital_pin_mode_url = '/angular/digital_pin_mode/';
@@ -200,14 +200,11 @@ function PinsController($scope, $http) {
             // Check connection problem!
             // If error was caused because Arduino isn't connected, we should
             // redirect to /connection
-            if (data && data.pyro_server_unreachable) {
+            if (data && data.try_connect) {
                 $location.path("/connection");
                 return;
             }
-            if (data && data.arduino_isnt_connected) {
-                $location.path("/connection");
-                return;
-            }
+
             console.error("refreshPinInfo() -> $http.get() -> ERROR -> " + data);
         });
     };
