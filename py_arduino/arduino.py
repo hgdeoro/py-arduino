@@ -29,6 +29,7 @@ import time
 import threading
 import textwrap
 import datetime
+import weakref
 
 try:
     from cStringIO import StringIO
@@ -65,6 +66,7 @@ class BackgroundTask(object):
         self.name = name
         self.last_alive = None
         self.status = status
+        self.pins = weakref.WeakSet()
 
     def touch(self):
         self.last_alive = datetime.datetime.now()
@@ -97,6 +99,7 @@ class PinStatus(object):
         # analog_written_value -> PWM & analogWrite()
         # background_task -> instance of BackgroundTask()
         self.background_task = background_task
+        self.last_update = 0
 
     def as_dict(self):
         ret = {
@@ -108,6 +111,7 @@ class PinStatus(object):
             'mode_is_input': self.mode == INPUT,
             'mode_is_output': self.mode == OUTPUT,
             'mode_is_unknown': self.mode not in (INPUT, OUTPUT),
+            'last_update': self.last_update
         }
 
         if self.background_task:
@@ -118,7 +122,7 @@ class PinStatus(object):
         return ret
 
 
-class PinStatusTracker(object):
+class StatusTracker(object):
     """Helper objecto to track status of all the pins"""
     def __init__(self):
         # self.status: (pin, digital) -> PinStatus
@@ -128,7 +132,7 @@ class PinStatusTracker(object):
         # self.background_tasks: background_task_name -> BackgroundTask
         # - keys are 'background_task_name'
         # - values are BackgroundTask instances
-        self.background_tasks = {} # Keyed by name
+        self.background_tasks = {}  # Keyed by name
 
     @synchronized(STATUS_TRACKER_LOCK)
     def get_pin_status(self, pin, digital):
@@ -157,6 +161,7 @@ class PinStatusTracker(object):
         status.read_value = None
         status.written_value = None
         status.analog_written_value = None
+        status.last_update = time.time()
 
     @synchronized(STATUS_TRACKER_LOCK)
     def set_pin_written_value(self, pin, digital, written_value):
@@ -166,7 +171,8 @@ class PinStatusTracker(object):
         """
         status = self.get_pin_status(pin, digital)
         status.written_value = written_value
-        status.analog_written_value = None # For PWM, we should put 0 or 255 here
+        status.analog_written_value = None  # For PWM, we should put 0 or 255 here
+        status.last_update = time.time()
 
     @synchronized(STATUS_TRACKER_LOCK)
     def set_pin_analog_written_value(self, pin, digital, analog_written_value):
@@ -176,7 +182,8 @@ class PinStatusTracker(object):
         """
         status = self.get_pin_status(pin, digital)
         status.analog_written_value = analog_written_value
-        status.written_value = None # we should put HIGH (255), LOW (0) or None here
+        status.written_value = None  # we should put HIGH (255), LOW (0) or None here
+        status.last_update = time.time()
 
     @synchronized(STATUS_TRACKER_LOCK)
     def set_pin_read_value(self, pin, digital, read_value):
@@ -186,6 +193,7 @@ class PinStatusTracker(object):
         """
         status = self.get_pin_status(pin, digital)
         status.read_value = read_value
+        status.last_update = time.time()
 
     @synchronized(STATUS_TRACKER_LOCK)
     def reset(self):
@@ -230,7 +238,9 @@ class PinStatusTracker(object):
             status = self.get_pin_status(pin, digital)
             if not background_task_name in self.background_tasks:
                 self.background_tasks[background_task_name] = BackgroundTask(background_task_name)
-            status.background_task = self.background_tasks[background_task_name]
+            bg_task = self.background_tasks[background_task_name]
+            status.background_task = bg_task
+            bg_task.pins.add(status)
             logger.info("Pin %s (%s) reserved successfully for %s" % (
                 pin, digital, background_task_name))
         return True
@@ -244,14 +254,37 @@ class PinStatusTracker(object):
     #            return False
     #        self.background_tasks[background_task_name].set_status(status)
 
+    #    @synchronized(STATUS_TRACKER_LOCK)
+    #    def get_background_tasks(self):
+    #        """
+    #        Return list of `BackgroundTask` instances, ordered by task name
+    #        """
+    #        ret = []
+    #        for key in sorted(self.background_tasks.keys()):
+    #            ret.append(self.background_tasks[key])
+    #        return ret
+
     @synchronized(STATUS_TRACKER_LOCK)
-    def get_background_tasks(self):
+    def get_serializable_background_tasks(self):
         """
-        Return list of `BackgroundTask` instances, ordered by task name
+        Return list of serializable `BackgroundTask` instances, ordered by task name
         """
         ret = []
+        ref_time = time.time()
         for key in sorted(self.background_tasks.keys()):
-            ret.append(self.background_tasks[key])
+            bg_task = self.background_tasks[key]
+            pins = []
+            for pin in bg_task.pins:
+                pin_info = dict(pin=pin.pin, digital=pin.digital, last_update=pin.last_update)
+                pin_info['pin_name'] = 'D%d' % pin.pin if pin.digital else 'A%d' % pin.pin
+                pin_info['last_update_ago'] = ref_time - pin.last_update
+                pins.append(pin_info)
+            ret.append({
+                'name': bg_task.name,
+                'last_alive': bg_task.last_alive,
+                'status': bg_task.status,
+                'pins': pins,
+            })
         return ret
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -291,7 +324,7 @@ class PyArduino(object):  # pylint: disable=R0904
         self.call_validate_connection = call_validate_connection
 
         self.serial_port = None
-        self.status_tracker = PinStatusTracker()
+        self.status_tracker = StatusTracker()
 
     def _get_serial_port(self):
         """
@@ -833,7 +866,7 @@ class PyArduino(object):  # pylint: disable=R0904
         # FIXME: validate pin
         # FIXME: add doc for exceptions
         self._assert_connected()
-        self._validate_digital_pin(pin) # Only for DIGITAL pins
+        self._validate_digital_pin(pin)  # Only for DIGITAL pins
         if not type(pin) is int or not type(value) is int or value < 0 or value > 255:
             raise(InvalidArgument())
         cmd = "_aWrt\t%d\t%d" % (pin, value)

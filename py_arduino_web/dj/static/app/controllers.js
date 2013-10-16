@@ -56,7 +56,7 @@ pyArduinoModule.controller('GlobalController', function($scope) {
     $scope.extras = {
         avr_cpu_type : '(unknown)',
         errors : [],
-        bg_task_names : [],
+        bg_tasks : [],
     };
     $scope.enhanced_arduino_type = {};
 
@@ -168,7 +168,7 @@ pyArduinoModule.controller('PinsController', function($scope, $http) {
     $scope.refreshUi = function(data) {
 
         $scope.extras.avr_cpu_type = data.avr_cpu_type;
-        $scope.extras.bg_task_names = data.bg_task_names;
+        $scope.extras.bg_tasks = data.bg_tasks;
         $scope.enhanced_arduino_type = data.enhanced_arduino_type;
 
         var i = 0;

@@ -238,9 +238,9 @@ INPUT.pin_io_value {
 					</td>
 
 					<!-- PWM -->
-					<td width="1%"><span
-						ng-show="pin_struct.pwm" data-toggle="tooltip"
-						title="This pin has PWM support"><i class="icon-signal"></i></span></td>
+					<td width="1%"><span ng-show="pin_struct.pwm"
+						data-toggle="tooltip" title="This pin has PWM support"><i
+							class="icon-signal"></i></span></td>
 
 				</tr>
 
@@ -301,7 +301,8 @@ INPUT.pin_io_value {
 					</td>
 
 					<!-- PWM -->
-					<td><span ng-show="pin_struct.pwm"><i class="icon-signal"></i></span></td>
+					<td><span ng-show="pin_struct.pwm"><i
+							class="icon-signal"></i></span></td>
 
 				</tr>
 
@@ -322,11 +323,16 @@ INPUT.pin_io_value {
 				<span class="glyphicon glyphicon-ok"></span> Finish edition
 			</button>
 
-			<div ng-show="extras.bg_task_names">
+			<div ng-show="extras.bg_tasks">
 				<h3>Background tasks</h3>
 				<table class="table table-condensed table-hover">
-					<tr ng-repeat="bg_task_name in extras.bg_task_names">
-						<td>{{bg_task_name}}</td>
+					<tr ng-repeat="bg_task in extras.bg_tasks">
+						<td width="90%">{{bg_task.name}} <span
+							ng-repeat="pin in bg_task.pins"> &nbsp; <span
+								class="label label-info"> {{ pin.pin_name }}</span>
+									<small>({{pin.last_update_ago|number:3}} sec. ago)</small>
+						</span>
+						</td>
 					</tr>
 				</table>
 			</div>

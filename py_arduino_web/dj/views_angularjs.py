@@ -26,14 +26,10 @@ def _get_arduino_data(**kwargs):
     enhanced_arduino_type = STORAGE_PYRO.enhanceArduinoTypeStruct(enhanced_arduino_type)
     avr_cpu_type = ARDUINO_PYRO.getAvrCpuType()
 
-    bg_task_names = []
-    for bg_task in STATUS_TRACKER.get_background_tasks():
-        bg_task_names.append(bg_task.name)
-
     ctx = {
         'avr_cpu_type': avr_cpu_type,
         'enhanced_arduino_type': enhanced_arduino_type,
-        'bg_task_names': bg_task_names,
+        'bg_tasks': STATUS_TRACKER.get_serializable_background_tasks(),
     }
     ctx.update(**kwargs)
 
