@@ -1,21 +1,44 @@
 <div ng-init="checkConnection()">
 
-    <div ng-show="flags.showCheckingMessage">
-        <i class="icon-spinner icon-spin icon-large"></i> Checking
-        connection...
-    </div>
+	<div ng-show="flags.checkingConnection">
+		<i class="icon-spinner icon-spin icon-large"></i> Checking
+		connection...
+	</div>
 
-    <div ng-show="! flags.showCheckingMessage">
-        <div ng-show="! flags.connectionOk" class="alert alert-danger alert-dismissable">
-            <button type="button" class="close" data-dismiss="alert"
-                aria-hidden="true">&times;</button>
-                Couldn't connect...
-        </div>
-        <div ng-show="flags.connectionOk" class="alert alert-success alert-dismissable">
-            <button type="button" class="close" data-dismiss="alert"
-                aria-hidden="true">&times;</button>
-                Connection OK!
-        </div>
-    </div>
+	<div ng-show="! flags.checkingConnection">
+
+		<div ng-show="data.pyro_not_contacted"
+			class="alert alert-danger alert-dismissable">
+			<button type="button" class="close" data-dismiss="alert"
+				aria-hidden="true">&times;</button>
+			Couldn't make contact with PyRO server
+			<button class="btn-sm btn btn-danger" ng-click="checkConnection()">Re-check</button>
+		</div>
+
+		<div ng-show="! data.pyro_not_contacted">
+			<div ng-show="data.connected"
+				class="alert alert-success alert-dismissable">
+				<button type="button" class="close" data-dismiss="alert"
+					aria-hidden="true">&times;</button>
+				Connection OK!
+			</div>
+
+			<div ng-show="! data.connected">
+				<div ng-show="serial_ports">
+					Detected ports: <span ng-repeat="port in serial_ports">
+						<button xng-click="connectArduino(port)">{{port}}</button>
+					</span>
+				</div>
+
+				<div>
+					Connect to port <input type="text" ng-model="flags.port">
+					<button xng-click="connectArduino(flags.port)">Connect</button>
+				</div>
+			</div>
+
+		</div>
+
+	</div>
+	<!-- ! checkingConnection -->
 
 </div>

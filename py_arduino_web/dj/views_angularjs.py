@@ -193,16 +193,18 @@ def update_labels_and_ids(request):
 
 
 @csrf_exempt
-def ng_check_connection(request):
+def check_connection(request):
     if request.method != 'POST':
         raise(Exception("Only POST allowed"))
 
     ret = {}
     try:
         ret['connected'] = ARDUINO_PYRO.is_connected()
-        ret['pyro_contacted'] = True
+        ret['pyro_not_contacted'] = False
+        if not ret['connected']:
+            ret['serial_ports'] = ARDUINO_PYRO.get_serial_ports()
     except:
         ret['connected'] = False
-        ret['pyro_contacted'] = False
+        ret['pyro_not_contacted'] = True
 
     return JsonResponse(ret)
