@@ -87,7 +87,7 @@ class PinStatus(object):
     'pin status' in the Arduino (maybe in some future version).
     """
     def __init__(self, pin, digital, mode=MODE_UNKNOWN, read_value=None, written_value=None,
-            analog_written_value=None, reserved_by_background_task=None):
+            analog_written_value=None, background_task=None):
         self.pin = pin
         self.digital = digital
         self.mode = mode  # None == unknown
@@ -95,8 +95,8 @@ class PinStatus(object):
         self.written_value = written_value  # None == unknown
         self.analog_written_value = analog_written_value  # None == unknown
         # analog_written_value -> PWM & analogWrite()
-        # reserved_by_background_task -> instance of BackgroundTask()
-        self.reserved_by_background_task = reserved_by_background_task
+        # background_task -> instance of BackgroundTask()
+        self.background_task = background_task
 
     def as_dict(self):
         ret = {
@@ -110,11 +110,11 @@ class PinStatus(object):
             'mode_is_unknown': self.mode not in (INPUT, OUTPUT),
         }
 
-        if self.reserved_by_background_task:
-            ret['bg_task_name'] = self.reserved_by_background_task.name
-            ret['bg_task_status'] = self.reserved_by_background_task.status
+        if self.background_task:
+            ret['bg_task_name'] = self.background_task.name
+            ret['bg_task_status'] = self.background_task.status
             ret['bg_task_last_alive'] = \
-                self.reserved_by_background_task.last_alive
+                self.background_task.last_alive
         return ret
 
 
@@ -220,7 +220,7 @@ class PinStatusTracker(object):
         # First check if pins are available
         for pin, digital in pin_spec_list:
             status = self.get_pin_status(pin, digital)
-            if status.reserved_by_background_task:
+            if status.background_task:
                 logger.info("Pin %s (%s) is already reserved - Reservation for %s failed" % (
                     pin, digital, background_task_name))
                 return False
@@ -230,7 +230,7 @@ class PinStatusTracker(object):
             status = self.get_pin_status(pin, digital)
             if not background_task_name in self.background_tasks:
                 self.background_tasks[background_task_name] = BackgroundTask(background_task_name)
-            status.reserved_by_background_task = self.background_tasks[background_task_name]
+            status.background_task = self.background_tasks[background_task_name]
             logger.info("Pin %s (%s) reserved successfully for %s" % (
                 pin, digital, background_task_name))
         return True
