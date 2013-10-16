@@ -1,5 +1,19 @@
 var pyArduinoModule = angular.module('PyArduino', [ 'uiSlider' ]);
 
+pyArduinoModule.config(function($routeProvider) {
+
+    $routeProvider.when('/', {
+        controller : PinsController,
+        templateUrl : 'pins.html',
+
+    // }).otherwise({
+    // controller : aController,
+    // templateUrl : '/path/to/template',
+
+    });
+
+});
+
 // pyArduinoModule.factory('pyArduinoHttpClient', [ '$http', function($http) {
 // var get_arduino_data_url = '/angular/get_arduino_data/';
 // return {
@@ -62,7 +76,7 @@ pyArduinoModule.controller('GlobalController', function($scope) {
 
 });
 
-pyArduinoModule.controller('PinsController', function($scope, $http) {
+function PinsController($scope, $http) {
 
     var get_arduino_data_url = '/angular/get_arduino_data/';
     var digital_pin_mode_url = '/angular/digital_pin_mode/';
@@ -365,4 +379,4 @@ pyArduinoModule.controller('PinsController', function($scope, $http) {
 
     };
 
-});
+};

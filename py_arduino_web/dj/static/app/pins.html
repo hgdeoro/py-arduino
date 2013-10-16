@@ -1,0 +1,229 @@
+<div ng-init="refreshPinInfo()">
+	<!-- ng-controller="PinsController" -->
+
+	<table class="table table-condensed table-hover">
+
+		<tr>
+			<th><a href="javascript:void(0);" data-toggle="tooltip"
+				title="Indicates pins reserved by background tasks"><span
+					class="glyphicon glyphicon-question-sign"></span></a></th>
+			<th colspan="2">Pin #</th>
+			<!-- <th>&nbsp;</th> -->
+			<th>Mode</th>
+			<th>IO</th>
+			<th><a href="javascript:void(0);" data-toggle="tooltip"
+				title="Indicates pins with PWM support"><span
+					class="glyphicon glyphicon-question-sign"></span></a></th>
+		</tr>
+
+		<!-- #  -->
+		<!-- #  -->
+		<!-- # DIGITALES -->
+		<!-- #  -->
+		<!-- #  -->
+
+		<tr
+			ng-repeat="pin_struct in enhanced_arduino_type.digital_pins_struct"
+			ng-class="{ warning : ! pin_struct.enabled }">
+
+			<!-- Enabled/Disabled PINs -->
+			<td width="1%"><span ng-show="pin_struct.status.bg_task_name"
+				data-toggle="tooltip"
+				title="This pin was reserved by background task '{{pin_struct.status.bg_task_name}}'"><i
+					class="icon-remove-sign text-danger"></i></span></td>
+
+			<td width="1%" style="text-align: right;">D{{pin_struct.pin}}</td>
+
+			<!-- Label / Pin_ID / INPUT.text -->
+			<td width="37%">
+				<div style="float: left;">
+					<a href="javascript:void(0);" ng-show="! editMode">{{pin_struct.label}}</a>
+					<input type="text" ng-model="pin_struct.label"
+						ng-change="pinLabelModified(pin_struct)"
+						class="input-sm pin_label" ng-show="editMode" />
+				</div>
+				<div style="float: right;">
+					<span ng-show="pin_struct.pin_id && ! editMode"
+						class="label label-info">{{pin_struct.pin_id}}</span> <input
+						type="text" ng-model="pin_struct.pin_id"
+						ng-change="pinIdModified(pin_struct)" class="input-sm pin_id"
+						ng-show="editMode" />
+				</div>
+			</td>
+
+			<!-- ICON to indicate DISABLED pins - - >
+                    <td width="1%"><a href="javascript:void(0);"
+                        ng-show="! pin_struct.enabled" data-toggle="tooltip"
+                        title="This pin is configured to not be modified from web interface"
+                        style="margin-left: 4px;"><span
+                            class="glyphicon glyphicon-question-sign"></span></a></td> -->
+
+			<!-- PIN MODE + ACTIONS (READ/WRITE) -->
+			<td width="50%">
+				<div class="btn-group btn-group-xs" style="float: left;">
+					<button ng-disabled="! pin_struct.enabled" type="button"
+						ng-click="pinModeDisabled(pin_struct)" class="btn"
+						ng-class="pin_struct.css_for_button_unknown_mode">X</button>
+
+					<button ng-disabled="! pin_struct.enabled" type="button"
+						ng-click="pinModeInput(pin_struct)" class="btn"
+						ng-class="pin_struct.css_for_button_input_mode">INPUT</button>
+
+					<button ng-disabled="! pin_struct.enabled" type="button"
+						ng-click="pinModeOutput(pin_struct)" class="btn"
+						ng-class="pin_struct.css_for_button_output_mode">OUTPUT</button>
+				</div>
+				<div style="float: right;">
+
+					<!-- *** READ *** BUTTON to read  value  -->
+					<button ng-disabled="! pin_struct.enabled" type="button"
+						ng-click="readPin(pin_struct)" class="btn btn-primary btn-xs"
+						ng-show="pin_struct.status.mode_is_input">Read</button>
+
+					<!-- *** WRITE *** INPUT text to write PWM values  -->
+					<input type="text" ng-model="pin_struct._tmp_analog_write"
+						class="input-sm pin_io_value"
+						ng-show="pin_struct.status.mode_is_output && pin_struct.pwm" />
+					<!--  -->
+
+					<!-- *** WRITE *** BUTTON to write PWM value  -->
+					<button ng-disabled="! pin_struct.enabled" type="button"
+						ng-click="analogWrite(pin_struct, pin_struct._tmp_analog_write)"
+						class="btn btn-primary btn-xs"
+						ng-show="pin_struct.status.mode_is_output && pin_struct.pwm">Write
+						PWM</button>
+
+					<!-- *** WRITE *** BUTTON to write LOW  -->
+					<button ng-disabled="! pin_struct.enabled" type="button"
+						ng-click="digitalWrite(pin_struct, CONST.LOW)"
+						class="btn btn-primary btn-xs"
+						ng-show="pin_struct.status.mode_is_output">Write LOW</button>
+
+					<!-- *** WRITE *** BUTTON to write HIGH  -->
+					<button ng-disabled="! pin_struct.enabled" type="button"
+						ng-click="digitalWrite(pin_struct, CONST.HIGH)"
+						class="btn btn-primary btn-xs"
+						ng-show="pin_struct.status.mode_is_output">Write HIGH</button>
+
+				</div>
+
+			</td>
+
+			<!-- VALUES (read / written) -->
+			<td width="10%">
+				<!-- <slider floor="0" ceiling="1023" step="1" precision="1"
+                            ng-model="pin_struct.xxxxxxxxxxxxxxxxxxxxx" ng-show="pin_struct.pwm"></slider> -->
+
+				<!-- *** READ *** badge to show read value (when 'read_value' is a valid number) -->
+				<span class="label label-default"
+				ng-show="pin_struct.status.read_value|is_number">{{pin_struct.status.read_value|as_high_low}}</span>
+
+				<!-- *** WRITE *** badge to show written value (when OUTPUT but NOT pwm) -->
+				<span class="label label-default"
+				ng-show="pin_struct.status.mode_is_output && ! pin_struct.pwm">{{pin_struct.status.written_value|as_high_low}}</span>
+
+				<!-- *** WRITE *** badge to show written value (when OUTPUT is pwm) -->
+				<span class="label label-default"
+				ng-show="pin_struct.status.mode_is_output && pin_struct.pwm">{{pin_struct|written_pwm_value}}</span>
+
+			</td>
+
+			<!-- PWM -->
+			<td width="1%"><span ng-show="pin_struct.pwm"
+				data-toggle="tooltip" title="This pin has PWM support"><i
+					class="icon-signal"></i></span></td>
+
+		</tr>
+
+		<!-- #  -->
+		<!-- #  -->
+		<!-- # ANALOGICOS -->
+		<!-- #  -->
+		<!-- #  -->
+
+		<tr ng-repeat="pin_struct in enhanced_arduino_type.analog_pins_struct"
+			ng-class="{ warning : ! pin_struct.enabled }">
+
+
+			<!-- Enabled/Disabled PINs -->
+			<td width="1%"><span ng-show="pin_struct.status.bg_task_name"
+				data-toggle="tooltip"
+				title="This pin was reserved by background task '{{pin_struct.status.bg_task_name}}'"><i
+					class="icon-remove-sign text-danger"></i></span></td>
+
+			<td style="text-align: right;">A{{pin_struct.pin}}</td>
+
+			<!-- Label / Pin_ID / INPUT.text -->
+			<td>
+				<div style="float: left;">
+					<a href="javascript:void(0);" ng-show="! editMode">{{pin_struct.label}}</a>
+					<input type="text" ng-model="pin_struct.label"
+						ng-change="pinLabelModified(pin_struct)"
+						class="col-lg-3 input-sm pin_label" ng-show="editMode" />
+				</div>
+				<div style="float: right;">
+					<span ng-show="pin_struct.pin_id && ! editMode"
+						class="label label-info">{{pin_struct.pin_id}}</span> <input
+						type="text" ng-model="pin_struct.pin_id" class="input-sm pin_id"
+						ng-show="editMode" ng-change="pinIdModified(pin_struct)" />
+				</div>
+			</td>
+
+			<!-- ICON to indicate DISABLED pins - - >
+                    <td><a href="javascript:void(0);"
+                        ng-show="! pin_struct.enabled" data-toggle="tooltip"
+                        title="This pin is configured to not be modified from web interface"
+                        style="margin-left: 4px;"><span
+                            class="glyphicon glyphicon-question-sign"></span></a></td>
+                            -->
+
+			<!-- ACTIONS (READ/WRITE) -->
+			<td>
+				<div style="float: right;">
+					<button ng-disabled="! pin_struct.enabled" type="button"
+						ng-click="readPin(pin_struct)" class="btn btn-primary btn-xs">Read</button>
+				</div>
+			</td>
+
+			<!-- VALUES (read / written) -->
+			<td><span class="label label-default"
+				ng-show="pin_struct.status.read_value|is_number">{{pin_struct.status.read_value}}</span>
+			</td>
+
+			<!-- PWM -->
+			<td><span ng-show="pin_struct.pwm"><i class="icon-signal"></i></span></td>
+
+		</tr>
+
+	</table>
+
+	<button class="btn btn-primary" ng-click="refreshPinInfo()"
+		ng-show="! editMode">
+		<span class="glyphicon glyphicon-refresh"></span> Refresh
+	</button>
+
+	<button class="btn btn-primary" ng-click="editModeEnter()"
+		ng-show="! editMode">
+		<span class="glyphicon glyphicon-pencil"></span> Edit labels
+	</button>
+
+	<button class="btn btn-danger" ng-click="editModeExit()"
+		ng-show="editMode">
+		<span class="glyphicon glyphicon-ok"></span> Finish edition
+	</button>
+
+	<div ng-show="extras.bg_tasks">
+		<h3>Background tasks</h3>
+		<table class="table table-condensed table-hover">
+			<tr ng-repeat="bg_task in extras.bg_tasks">
+				<td width="90%">{{bg_task.name}} <span
+					ng-repeat="pin in bg_task.pins"> &nbsp; <span
+						class="label label-info"> {{ pin.pin_name }}</span> <small>({{pin.last_update_ago|number:3}}
+							sec. ago)</small>
+				</span>
+				</td>
+			</tr>
+		</table>
+	</div>
+
+</div>
