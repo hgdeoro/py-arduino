@@ -95,6 +95,7 @@ class PinStatus(object):
         self.written_value = written_value  # None == unknown
         self.analog_written_value = analog_written_value  # None == unknown
         # analog_written_value -> PWM & analogWrite()
+        # reserved_by_background_task -> instance of BackgroundTask()
         self.reserved_by_background_task = reserved_by_background_task
 
     def as_dict(self):
@@ -108,15 +109,25 @@ class PinStatus(object):
             'mode_is_output': self.mode == OUTPUT,
             'mode_is_unknown': self.mode not in (INPUT, OUTPUT),
         }
+
         if self.reserved_by_background_task:
-            ret['reserved_by_background_task_name'] = self.reserved_by_background_task.name
+            ret['bg_task_name'] = self.reserved_by_background_task.name
+            ret['bg_task_status'] = self.reserved_by_background_task.status
+            ret['bg_task_last_alive'] = \
+                self.reserved_by_background_task.last_alive
         return ret
 
 
 class PinStatusTracker(object):
     """Helper objecto to track status of all the pins"""
     def __init__(self):
+        # self.status: (pin, digital) -> PinStatus
+        # - keys are (pin, digital) tuples
+        # - values are PinStatus instances
         self.status = {}
+        # self.background_tasks: background_task_name -> BackgroundTask
+        # - keys are 'background_task_name'
+        # - values are BackgroundTask instances
         self.background_tasks = {} # Keyed by name
 
     @synchronized(STATUS_TRACKER_LOCK)
@@ -235,6 +246,9 @@ class PinStatusTracker(object):
 
     @synchronized(STATUS_TRACKER_LOCK)
     def get_background_tasks(self):
+        """
+        Return list of `BackgroundTask` instances, ordered by task name
+        """
         ret = []
         for key in sorted(self.background_tasks.keys()):
             ret.append(self.background_tasks[key])

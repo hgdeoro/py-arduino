@@ -56,7 +56,7 @@ pyArduinoModule.controller('GlobalController', function($scope) {
     $scope.extras = {
         avr_cpu_type : '(unknown)',
         errors : [],
-        bg_task_names: [],
+        bg_task_names : [],
     };
     $scope.enhanced_arduino_type = {};
 
@@ -170,7 +170,7 @@ pyArduinoModule.controller('PinsController', function($scope, $http) {
         $scope.extras.avr_cpu_type = data.avr_cpu_type;
         $scope.extras.bg_task_names = data.bg_task_names;
         $scope.enhanced_arduino_type = data.enhanced_arduino_type;
-        
+
         var i = 0;
 
         // "digital_pins_struct": [{
@@ -193,6 +193,9 @@ pyArduinoModule.controller('PinsController', function($scope, $http) {
 
         for (i = 0; i < $scope.enhanced_arduino_type.digital_pins_struct.length; i++) {
             var pin_struct = $scope.enhanced_arduino_type.digital_pins_struct[i];
+            // Allow modifications from UI
+            pin_struct.enabled = !(pin_struct.enabled_in_web == false || pin_struct.status.bg_task_name);
+            // CSS
             if (pin_struct.status.mode_is_input) {
                 pin_struct.css_for_button_unknown_mode = CSS_FOR_NON_SELECTED_MODE;
                 pin_struct.css_for_button_input_mode = CSS_FOR_SELECTED_MODE;
@@ -228,6 +231,9 @@ pyArduinoModule.controller('PinsController', function($scope, $http) {
 
         for (i = 0; i < $scope.enhanced_arduino_type.analog_pins_struct.length; i++) {
             var pin_struct = $scope.enhanced_arduino_type.analog_pins_struct[i];
+            // Allow modifications from UI
+            pin_struct.enabled = !(pin_struct.enabled_in_web == false || pin_struct.status.bg_task_name);
+            // CSS
             if (pin_struct.status.mode_is_input) {
                 pin_struct.css_for_button_unknown_mode = CSS_FOR_NON_SELECTED_MODE;
                 pin_struct.css_for_button_input_mode = CSS_FOR_SELECTED_MODE;
