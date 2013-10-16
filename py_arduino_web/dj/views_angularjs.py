@@ -1,4 +1,5 @@
 import json
+import logging
 
 from django.views.decorators.csrf import csrf_exempt
 
@@ -231,6 +232,7 @@ def connect(request):
         except:
             # connection failed!
             ret['connection_attempt_failed'] = True
+            logging.exception("Connection attempt failed")
         ret['connected'] = ARDUINO_PYRO.is_connected()
         ret['pyro_not_contacted'] = False
         if not ret['connected']:
