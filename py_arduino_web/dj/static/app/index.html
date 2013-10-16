@@ -13,6 +13,11 @@
 <link rel="stylesheet"
 	href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-theme.min.css">
 
+<!-- Font Awesome -->
+<link
+	href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css"
+	rel="stylesheet">
+
 <link rel="stylesheet" href="/static/app/angular-slider.css">
 
 <script src="//code.jquery.com/jquery.js"></script>
@@ -108,46 +113,42 @@ INPUT.pin_io_value {
 			<table class="table table-condensed table-hover">
 
 				<tr>
-                    <th><a href="javascript:void(0);" data-toggle="tooltip"
-                        title="Indicates pins with PWM support"><span
-                            class="glyphicon glyphicon-question-sign"></span></a></th>
-                    <th><a href="javascript:void(0);" data-toggle="tooltip"
-                        title="Indicates pins reserved by background tasks"><span
-                            class="glyphicon glyphicon-question-sign"></span></a></th>
+					<th><a href="javascript:void(0);" data-toggle="tooltip"
+						title="Indicates pins with PWM support"><span
+							class="glyphicon glyphicon-question-sign"></span></a></th>
+					<th><a href="javascript:void(0);" data-toggle="tooltip"
+						title="Indicates pins reserved by background tasks"><span
+							class="glyphicon glyphicon-question-sign"></span></a></th>
 					<th colspan="2">Pin #</th>
 					<th>&nbsp;</th>
 					<th>Mode</th>
 					<th>IO</th>
 				</tr>
 
-				<!--
-            // .... .... "pwm": false,
-            // .... .... "enabled_in_web": true,
-            // .... .... "pin": 0,
-            // .... .... "pin_id": null,
-            // .... .... "status_written_value": null,
-            // .... .... "status_read_value": null,
-            // .... .... "status_mode": null,
-            // .... .... "digital": true,
-            // .... .... "pk": 1,
-            // .... .... "label": "Digital pin #0"
-            -->
+				<!-- #  -->
+				<!-- #  -->
+				<!-- # DIGITALES -->
+				<!-- #  -->
+				<!-- #  -->
 
 				<tr
 					ng-repeat="pin_struct in enhanced_arduino_type.digital_pins_struct">
 
-                    <td width="1%"><a href="javascript:void(0);"
-                        ng-show="pin_struct.pwm" data-toggle="tooltip"
-                        title="This pin has PWM support"><span
-                            class="glyphicon glyphicon-ok-circle"></span></a></td>
+					<!-- PWM -->
+					<td width="1%"><a href="javascript:void(0);"
+						ng-show="pin_struct.pwm" data-toggle="tooltip"
+						title="This pin has PWM support"><span
+							class="glyphicon glyphicon-ok-circle"></span></a></td>
 
-                    <td width="1%"><a href="javascript:void(0);"
-                        ng-show="pin_struct.status.bg_task_name" data-toggle="tooltip"
-                        title="This pin was reserved by background task '{{pin_struct.status.bg_task_name}}'"><span
-                            class="glyphicon glyphicon-ban-circle"></span></a></td>
+					<!-- Enabled/Disabled PINs -->
+					<td width="1%"><span ng-show="pin_struct.status.bg_task_name"
+						data-toggle="tooltip"
+						title="This pin was reserved by background task '{{pin_struct.status.bg_task_name}}'"><i
+							class="icon-remove-sign text-danger"></i></span></td>
 
 					<td width="1%" style="text-align: right;">D{{pin_struct.pin}}</td>
 
+					<!-- Label / Pin_ID / INPUT.text -->
 					<td width="37%">
 						<div style="float: left;">
 							<a href="javascript:void(0);" ng-show="! editMode">{{pin_struct.label}}</a>
@@ -164,12 +165,14 @@ INPUT.pin_io_value {
 						</div>
 					</td>
 
+					<!-- ICON to indicate DISABLED pins -->
 					<td width="1%"><a href="javascript:void(0);"
 						ng-show="! pin_struct.enabled" data-toggle="tooltip"
 						title="This pin is configured to not be modified from web interface"
 						style="margin-left: 4px;"><span
 							class="glyphicon glyphicon-question-sign"></span></a></td>
 
+					<!-- PIN MODE + ACTIONS (READ/WRITE) -->
 					<td width="50%">
 						<div class="btn-group btn-group-xs" style="float: left;">
 							<button ng-disabled="! pin_struct.enabled" type="button"
@@ -220,6 +223,7 @@ INPUT.pin_io_value {
 
 					</td>
 
+					<!-- VALUES (read / written) -->
 					<td width="10%">
 						<!-- <slider floor="0" ceiling="1023" step="1" precision="1"
 							ng-model="pin_struct.xxxxxxxxxxxxxxxxxxxxx" ng-show="pin_struct.pwm"></slider> -->
@@ -240,37 +244,28 @@ INPUT.pin_io_value {
 
 				</tr>
 
-				<!--
-            // "analog_pins_struct": [
-            // .... {
-            // .... "pwm": false,
-            // .... "enabled_in_web": true,
-            // .... "pin": 0,
-            // .... "pin_id": null,
-            // .... "status_written_value": null,
-            // .... "status_read_value": null,
-            // .... "status_mode": null,
-            // .... "digital": true,
-            // .... "pk": 55,
-            // .... "label": "Analog pin #0"
-            // .... },
-            -->
+				<!-- #  -->
+				<!-- #  -->
+				<!-- # ANALOGICOS -->
+				<!-- #  -->
+				<!-- #  -->
 
 				<tr
 					ng-repeat="pin_struct in enhanced_arduino_type.analog_pins_struct">
 
-					<td>
-						<!-- PWM: {{ pin_struct.pwm }} --> <span
-						class="glyphicon glyphicon-ok-circle" ng-show="pin_struct.pwm"></span>
-					</td>
+					<!-- PWM -->
+					<td><span class="glyphicon glyphicon-ok-circle"
+						ng-show="pin_struct.pwm"></span></td>
 
-                    <td width="1%"><a href="javascript:void(0);"
-                        ng-show="pin_struct.status.bg_task_name" data-toggle="tooltip"
-                        title="This pin was reserved by background task '{{pin_struct.status.bg_task_name}}'"><span
-                            class="glyphicon glyphicon-ban-circle"></span></a></td>
+					<!-- Enabled/Disabled PINs -->
+					<td width="1%"><span ng-show="pin_struct.status.bg_task_name"
+						data-toggle="tooltip"
+						title="This pin was reserved by background task '{{pin_struct.status.bg_task_name}}'"><i
+							class="icon-remove-sign text-danger"></i></span></td>
 
 					<td style="text-align: right;">A{{pin_struct.pin}}</td>
 
+					<!-- Label / Pin_ID / INPUT.text -->
 					<td>
 						<div style="float: left;">
 							<a href="javascript:void(0);" ng-show="! editMode">{{pin_struct.label}}</a>
@@ -286,12 +281,14 @@ INPUT.pin_io_value {
 						</div>
 					</td>
 
+					<!-- ICON to indicate DISABLED pins -->
 					<td><a href="javascript:void(0);"
 						ng-show="! pin_struct.enabled" data-toggle="tooltip"
 						title="This pin is configured to not be modified from web interface"
 						style="margin-left: 4px;"><span
 							class="glyphicon glyphicon-question-sign"></span></a></td>
 
+					<!-- ACTIONS (READ/WRITE) -->
 					<td>
 						<div style="float: right;">
 							<button ng-disabled="! pin_struct.enabled" type="button"
@@ -299,6 +296,7 @@ INPUT.pin_io_value {
 						</div>
 					</td>
 
+					<!-- VALUES (read / written) -->
 					<td><span class="label label-default"
 						ng-show="pin_struct.status.read_value|is_number">{{pin_struct.status.read_value}}</span>
 					</td>
