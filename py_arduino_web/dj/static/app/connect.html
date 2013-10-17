@@ -41,7 +41,7 @@
 
 				<table class="table table-condensed table-hover">
 					<tr>
-						<th width="30%" style="text-align: right;">Detected ports:</th>
+						<th width="30%" style="text-align: right;">Detected serial ports:</th>
 						<td width="70%">
 							<div ng-repeat="port in data.serial_ports">
 								<button ng-click="connectArduino(port)"
@@ -53,18 +53,23 @@
 						</td>
 					</tr>
 					<tr>
-						<th width="30%" style="text-align: right;">Virtual ports:</th>
+						<th width="30%" style="text-align: right; vertical-align: middle;">Virtual ports:</th>
 						<td width="70%">
 							<button ng-click="connectArduino(flags.emulator_port)"
 								class="btn btn-primary btn-sm">Connect to emulator</button>
 						</td>
 					</tr>
 					<tr>
-						<th style="text-align: right;">Connect to:</th>
+						<th style="text-align: right; vertical-align: middle;">Connect to:</th>
 						<td><input type="text" ng-model="flags._port"
 							class="input-sm pin_label">
 							<button ng-click="connectArduino(flags._port)"
 								class="btn btn-primary btn-sm">Connect</button></td>
+					</tr>
+					<tr>
+					   <td>&nbsp;</td>
+					   <td><button ng-click="checkConnection()"
+                                class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-refresh"></span> Refresh</button></td>
 					</tr>
 				</table>
 
