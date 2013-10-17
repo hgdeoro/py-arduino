@@ -268,3 +268,32 @@ def disconnect(request):
         ret['pyro_not_contacted'] = True
 
     return JsonResponse(ret)
+
+UNSERIALIZABLE_METHOD_RESULTS = (
+    'connect',
+)
+
+
+@csrf_exempt
+def call_arduino_method(request):
+    if request.method != 'POST':
+        raise(Exception("Only POST allowed"))
+
+    data = json.loads(request.body)
+    if not 'functionName' in data:
+        raise(Exception("Parameter 'functionName' not found"))
+    if not 'functionArgs' in data:
+        raise(Exception("Parameter 'functionArgs' not found"))
+
+    function_name = data['functionName']
+    function_args = data['functionArgs']
+
+    method_returned = ARDUINO_PYRO._pyroInvoke(function_name, function_args, {})
+
+    if function_name in UNSERIALIZABLE_METHOD_RESULTS:
+        method_returned = None
+
+    return JsonResponse({
+        'method_returned': method_returned,
+        'exception': None,
+    })

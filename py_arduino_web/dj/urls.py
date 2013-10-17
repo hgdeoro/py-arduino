@@ -50,6 +50,9 @@ urlpatterns = patterns('',
     url(r'^angular/disconnect/?$',
         'py_arduino_web.dj.views_angularjs.disconnect',
         name='ng_disconnect'),
+    url(r'^angular/call_arduino_method/?$',
+        'py_arduino_web.dj.views_angularjs.call_arduino_method',
+        name='ng_call_arduino_method'),
 
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),

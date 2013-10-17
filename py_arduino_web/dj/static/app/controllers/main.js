@@ -22,15 +22,6 @@ pyArduinoModule.config(function($routeProvider) {
 
 });
 
-// pyArduinoModule.factory('pyArduinoHttpClient', [ '$http', function($http) {
-// var get_arduino_data_url = '/angular/get_arduino_data/';
-// return {
-// get_arduino_data : function() {
-// return $http.get(get_arduino_data_url);
-// }
-// };
-// } ]);
-
 pyArduinoModule.filter('is_number', function() {
     return function(input) {
         return typeof input == "number";
@@ -63,6 +54,59 @@ pyArduinoModule.filter('written_pwm_value', function() {
             return 'HIGH';
         return '?';
     };
+});
+
+pyArduinoModule.factory('remoteArduino', function($http) {
+    var remoteArduinoService = {
+
+        // get_pin_status : function() {
+        //
+        // //
+        // //
+        // http://stackoverflow.com/questions/12505760/angularjs-processing-http-response-in-service
+        // //
+        //
+        // var promise =
+        // $http.get('/angular/get_arduino_data/').then(function(response) {
+        // console.info('remoteArduino.get_pin_status(): OK');
+        // //
+        // // data – {string|Object} – The response body transformed with
+        // // the transform functions.
+        // //
+        // // status – {number} – HTTP status code of the response.
+        // //
+        // // headers – {function([headerName])} – Header getter function.
+        // //
+        // // config – {Object} – The configuration object that was used to
+        // // generate the request.
+        // //
+        // response.ok = true;
+        // response.error = false;
+        // return response;
+        //
+        // }, function(response) {
+        // console.error('remoteArduino.get_pin_status(): ERROR - response: ' +
+        // response);
+        // response.ok = false;
+        // response.error = true;
+        // return response;
+        // });
+        // return promise;
+        // },
+
+        callArduinoMethod : function(arduino_method) {
+            // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions_and_function_scope/arguments
+            var functionArgs = Array.prototype.slice.call(arguments, 1);
+            return $http.post('/angular/call_arduino_method/', {
+                functionName : arduino_method,
+                functionArgs : functionArgs
+            });
+        },
+
+    };
+
+    // factory function body that constructs shinyNewServiceInstance
+    return remoteArduinoService;
 });
 
 pyArduinoModule.controller('GlobalController', function($scope, $location) {
