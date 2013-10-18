@@ -71,34 +71,6 @@ def get_arduino_data(request):
 
 
 @csrf_exempt
-def digital_write(request):
-    if request.method != 'POST':
-        raise(Exception("Only POST allowed"))
-
-    data = json.loads(request.body)
-    try:
-        pin = int(data.get('pin', None))
-    except ValueError:
-        raise(Exception("Invalid pin: {}".format(data.get('pin', None))))
-
-    digital = data.get('digital', None)
-    value = data.get('value', None)
-
-    if digital is True:
-        if value in (LOW, HIGH):
-            ARDUINO_PYRO.digitalWrite(pin, value)
-            return JsonResponse(_get_arduino_data(result_ok=True))
-
-        raise(Exception("Invalid value for 'value: {}".format(value)))
-
-    elif digital is False:
-        # No support for write on analog pin yet
-        raise(Exception("Invalid value for 'digital: {}".format(digital)))
-
-    raise(Exception("Invalid value for 'digital: {}".format(digital)))
-
-
-@csrf_exempt
 def analog_write(request):
     if request.method != 'POST':
         raise(Exception("Only POST allowed"))
@@ -231,12 +203,12 @@ class Interceptor(object):
             raise(Exception("Invalid mode: {}".format(mode)))
 
     def read_pin(self, function_args):
-    
+
         try:
             pin = int(function_args[0])  # TODO: check KeyError
         except ValueError:
             raise(Exception("Invalid pin"))
-    
+
         digital = function_args[1]  # TODO: check KeyError
         if digital is True:
             ARDUINO_PYRO.digitalRead(pin)
@@ -245,7 +217,29 @@ class Interceptor(object):
         elif digital is False:
             ARDUINO_PYRO.analogRead(pin)
             return _get_arduino_data(result_ok=True)
-    
+
+        raise(Exception("Invalid value for 'digital: {}".format(digital)))
+
+    def digital_write(self, function_args):
+        try:
+            pin = int(function_args[0])  # TODO: check KeyError
+        except ValueError:
+            raise(Exception("Invalid pin"))
+
+        digital = function_args[1]  # TODO: check KeyError
+        value = function_args[2]  # TODO: check KeyError
+
+        if digital is True:
+            if value in (LOW, HIGH):
+                ARDUINO_PYRO.digitalWrite(pin, value)
+                return _get_arduino_data(result_ok=True)
+
+            raise(Exception("Invalid value for 'value: {}".format(value)))
+
+        elif digital is False:
+            # No support for write on analog pin yet
+            raise(Exception("Invalid value for 'digital: {}".format(digital)))
+
         raise(Exception("Invalid value for 'digital: {}".format(digital)))
 
 interceptor = Interceptor()

@@ -231,7 +231,6 @@ function PinsController($scope, $http, $location, remoteArduino) {
      */
     $scope.readPin = function(pin_struct) {
         console.info("readPin()");
-
         remoteArduino.callArduinoMethod('read_pin', pin_struct.pin, pin_struct.digital).success(function(data) {
             data = data.method_returned; // TODO: remove this!
             $scope.refreshUi(data);
@@ -247,17 +246,13 @@ function PinsController($scope, $http, $location, remoteArduino) {
      * digitalWrite()
      */
     $scope.digitalWrite = function(pin_struct, value) {
-
         console.info("digitalWrite()");
-        $http.post(digital_write_url, {
-            pin : pin_struct.pin,
-            digital : pin_struct.digital,
-            value : value
-
-        }).success(function(data) {
+        remoteArduino.callArduinoMethod('digital_write', pin_struct.pin, pin_struct.digital, value).success(function(data) {
+            data = data.method_returned; // TODO: remove this!
             $scope.refreshUi(data);
 
         }).error(function(data) {
+            data = data.method_returned; // TODO: remove this!
             console.error("digitalWrite() -> $http.post() -> ERROR -> " + data);
         });
 
