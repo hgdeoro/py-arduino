@@ -71,34 +71,6 @@ def get_arduino_data(request):
 
 
 @csrf_exempt
-def analog_write(request):
-    if request.method != 'POST':
-        raise(Exception("Only POST allowed"))
-
-    data = json.loads(request.body)
-    try:
-        pin = int(data.get('pin', None))
-    except ValueError:
-        raise(Exception("Invalid pin: {}".format(data.get('pin', None))))
-
-    digital = data.get('digital', None)
-    value = data.get('value', None)
-
-    if digital is True:
-        if type(value) != int:
-            raise(Exception("Invalid type for 'value': {}".format(value)))
-
-        ARDUINO_PYRO.analogWrite(pin, value)
-        return JsonResponse(_get_arduino_data(result_ok=True))
-
-    elif digital is False:
-        # No support for write on analog pin yet
-        raise(Exception("Invalid value for 'digital': {}".format(digital)))
-
-    raise(Exception("Invalid value for 'digital': {}".format(digital)))
-
-
-@csrf_exempt
 def update_labels_and_ids(request):
     if request.method != 'POST':
         raise(Exception("Only POST allowed"))
@@ -241,6 +213,28 @@ class Interceptor(object):
             raise(Exception("Invalid value for 'digital: {}".format(digital)))
 
         raise(Exception("Invalid value for 'digital: {}".format(digital)))
+
+    def analog_write(self, function_args):
+        try:
+            pin = int(function_args[0])  # TODO: check KeyError
+        except ValueError:
+            raise(Exception("Invalid pin"))
+
+        digital = function_args[1]  # TODO: check KeyError
+        value = function_args[2]  # TODO: check KeyError
+        if digital is True:
+            if type(value) != int:
+                raise(Exception("Invalid type for 'value': {}".format(value)))
+
+            ARDUINO_PYRO.analogWrite(pin, value)
+            return _get_arduino_data(result_ok=True)
+    
+        elif digital is False:
+            # No support for write on analog pin yet
+            raise(Exception("Value for 'digital' could only be True (not False)"))
+    
+        raise(Exception("Invalid value for 'digital': {} - type: {}".format(digital,
+            type(digital))))
 
 interceptor = Interceptor()
 

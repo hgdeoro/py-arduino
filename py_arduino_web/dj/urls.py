@@ -30,8 +30,6 @@ urlpatterns = patterns('',
 
     url(r'^angular/get_arduino_data/?$', 'py_arduino_web.dj.views_angularjs.get_arduino_data',
         name='ng_get_arduino_data'),
-    url(r'^angular/analog_write/?$', 'py_arduino_web.dj.views_angularjs.analog_write',
-        name='ng_analog_write'),
     url(r'^angular/update_labels_and_ids/?$',
         'py_arduino_web.dj.views_angularjs.update_labels_and_ids',
         name='ng_update_labels_and_ids'),

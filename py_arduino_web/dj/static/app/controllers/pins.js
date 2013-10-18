@@ -286,15 +286,12 @@ function PinsController($scope, $http, $location, remoteArduino) {
             return;
         }
 
-        $http.post(analog_write_url, {
-            pin : pin_struct.pin,
-            digital : pin_struct.digital,
-            value : value
-
-        }).success(function(data) {
+        remoteArduino.callArduinoMethod('analog_write', pin_struct.pin, pin_struct.digital, value).success(function(data) {
+            data = data.method_returned; // TODO: remove this!
             $scope.refreshUi(data);
 
         }).error(function(data) {
+            data = data.method_returned; // TODO: remove this!
             console.error("analogWrite() -> $http.post() -> ERROR -> " + data);
         });
 
