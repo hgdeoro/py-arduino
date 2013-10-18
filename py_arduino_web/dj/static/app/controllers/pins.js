@@ -230,16 +230,14 @@ function PinsController($scope, $http, $location, remoteArduino) {
      * readPin()
      */
     $scope.readPin = function(pin_struct) {
-
         console.info("readPin()");
-        $http.post(read_pin_url, {
-            pin : pin_struct.pin,
-            digital : pin_struct.digital
 
-        }).success(function(data) {
+        remoteArduino.callArduinoMethod('read_pin', pin_struct.pin, pin_struct.digital).success(function(data) {
+            data = data.method_returned; // TODO: remove this!
             $scope.refreshUi(data);
 
         }).error(function(data) {
+            data = data.method_returned; // TODO: remove this!
             console.error("readPin() -> $http.post() -> ERROR -> " + data);
         });
 
