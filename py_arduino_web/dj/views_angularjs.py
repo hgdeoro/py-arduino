@@ -9,6 +9,7 @@ from py_arduino_web.pyroproxy.utils import get_arduino_pyro, server_is_up, \
     get_storage_pyro, get_status_tracker
 from py_arduino_web.dj.models import Pin
 from django.db.utils import IntegrityError
+import traceback
 
 
 ARDUINO_PYRO = get_arduino_pyro()
@@ -199,79 +200,67 @@ def update_labels_and_ids(request):
     return JsonResponse(_get_arduino_data(result_ok=True, response_errors=response_errors))
 
 
-#===============================================================================
-# Connection handling
-# All this views should return the same data
-#===============================================================================
+class Interceptor(object):
+    """
+    This class implements customizations for handling some method calls.
+    """
 
-@csrf_exempt
-def check_connection(request):
-    if request.method != 'POST':
-        raise(Exception("Only POST allowed"))
-
-    ret = {}
-    try:
-        ret['connected'] = ARDUINO_PYRO.is_connected()
-        ret['pyro_not_contacted'] = False
-        if not ret['connected']:
-            ret['serial_ports'] = ARDUINO_PYRO.get_serial_ports()
-    except:
-        ret['connected'] = False
-        ret['pyro_not_contacted'] = True
-
-    return JsonResponse(ret)
-
-
-@csrf_exempt
-def connect(request):
-    if request.method != 'POST':
-        raise(Exception("Only POST allowed"))
-
-    data = json.loads(request.body)
-    ret = {}
-    serial_port = data.get('serial_port', None)
-
-    try:
+    def connect(self, function_args):
+        """
+        Parameters:
+        - ret: value returned by original call to PyArduino
+        - raised_exception: True if call to PyArduino raised an exception
+        """
+        # TODO: report error if some argument is missing
+        serial_port = function_args[0]
+        ret = {}
         try:
-            ARDUINO_PYRO.connect(serial_port)
-            ret['connection_attempt_ok'] = True
+            try:
+                ARDUINO_PYRO.connect(serial_port)
+                ret['connection_attempt_ok'] = True
+            except:
+                # connection failed!
+                ret['connection_attempt_failed'] = True
+                logging.exception("Connection attempt failed")
+            ret['connected'] = ARDUINO_PYRO.is_connected()
+            ret['pyro_not_contacted'] = False
+            if not ret['connected']:
+                ret['serial_ports'] = ARDUINO_PYRO.get_serial_ports()
         except:
-            # connection failed!
-            ret['connection_attempt_failed'] = True
-            logging.exception("Connection attempt failed")
-        ret['connected'] = ARDUINO_PYRO.is_connected()
-        ret['pyro_not_contacted'] = False
-        if not ret['connected']:
-            ret['serial_ports'] = ARDUINO_PYRO.get_serial_ports()
-    except:
-        ret['connected'] = False
-        ret['pyro_not_contacted'] = True
+            ret['connected'] = False
+            ret['pyro_not_contacted'] = True
+        return ret
 
-    return JsonResponse(ret)
+    def disconnect(self, function_args):
+        ret = {}
+        try:
+            ARDUINO_PYRO.close()
+            ret['connected'] = ARDUINO_PYRO.is_connected()
+            ret['pyro_not_contacted'] = False
+            if not ret['connected']:
+                ret['serial_ports'] = ARDUINO_PYRO.get_serial_ports()
+        except:
+            ret['connected'] = False
+            ret['pyro_not_contacted'] = True
+        return ret
+
+    def check_connection(self, function_args):
+        """
+        This method DOES NOT EXISTS in PyArduino!
+        """
+        ret = {}
+        try:
+            ret['connected'] = ARDUINO_PYRO.is_connected()
+            ret['pyro_not_contacted'] = False
+            if not ret['connected']:
+                ret['serial_ports'] = ARDUINO_PYRO.get_serial_ports()
+        except:
+            ret['connected'] = False
+            ret['pyro_not_contacted'] = True
+        return ret
 
 
-@csrf_exempt
-def disconnect(request):
-    if request.method != 'POST':
-        raise(Exception("Only POST allowed"))
-
-    ret = {}
-
-    try:
-        ARDUINO_PYRO.close()
-        ret['connected'] = ARDUINO_PYRO.is_connected()
-        ret['pyro_not_contacted'] = False
-        if not ret['connected']:
-            ret['serial_ports'] = ARDUINO_PYRO.get_serial_ports()
-    except:
-        ret['connected'] = False
-        ret['pyro_not_contacted'] = True
-
-    return JsonResponse(ret)
-
-UNSERIALIZABLE_METHOD_RESULTS = (
-    'connect',
-)
+interceptor = Interceptor()
 
 
 @csrf_exempt
@@ -288,12 +277,29 @@ def call_arduino_method(request):
     function_name = data['functionName']
     function_args = data['functionArgs']
 
-    method_returned = ARDUINO_PYRO._pyroInvoke(function_name, function_args, {})
-
-    if function_name in UNSERIALIZABLE_METHOD_RESULTS:
-        method_returned = None
+    # Call interceptor if exists
+    interceptor_method = getattr(interceptor, function_name, None)
+    if callable(interceptor_method):
+        intercepted = True
+        try:
+            to_return = interceptor_method(function_args)
+            exception_traceback = None
+        except:
+            to_return = None
+            exception_traceback = traceback.format_exc()
+            logging.exception("Exception detected when calling interceptor")
+            # TODO: maybe we should return some json indicating an internal error
+    else:
+        intercepted = False
+        try:
+            to_return = ARDUINO_PYRO._pyroInvoke(function_name, function_args, {})
+            exception_traceback = None
+        except:
+            to_return = None
+            exception_traceback = traceback.format_exc()
 
     return JsonResponse({
-        'method_returned': method_returned,
-        'exception': None,
+        'method_returned': to_return,
+        'exception_traceback': exception_traceback,
+        'intercepted': intercepted,
     })
