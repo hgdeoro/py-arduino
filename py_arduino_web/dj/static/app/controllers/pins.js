@@ -1,4 +1,4 @@
-function PinsController($scope, $http, $location) {
+function PinsController($scope, $http, $location, remoteArduino) {
 
     var get_arduino_data_url = '/angular/get_arduino_data/';
     var digital_pin_mode_url = '/angular/digital_pin_mode/';
@@ -214,16 +214,13 @@ function PinsController($scope, $http, $location) {
      * setDigitalPinMode()
      */
     $scope.setDigitalPinMode = function(pin, mode) {
-
         console.info("setPinMode()");
-        $http.post(digital_pin_mode_url, {
-            pin : pin,
-            mode : mode
-
-        }).success(function(data) {
+        remoteArduino.callArduinoMethod('pinMode', pin, mode).success(function(data) {
+            data = data.method_returned; // TODO: remove this!
             $scope.refreshUi(data);
 
         }).error(function(data) {
+            data = data.method_returned; // TODO: remove this!
             console.error("setPinMode() -> $http.post() -> ERROR -> " + data);
         });
 

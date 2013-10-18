@@ -71,35 +71,6 @@ def get_arduino_data(request):
 
 
 @csrf_exempt
-def digital_pin_mode(request):
-    if request.method != 'POST':
-        raise(Exception("Only POST allowed"))
-
-    data = json.loads(request.body)
-    try:
-        pin = int(data.get('pin', None))
-    except ValueError:
-        raise(Exception("Invalid pin: {}".format(data.get('pin', None))))
-
-    mode = data.get('mode', '(not specified)')
-
-    if mode == 'output' or mode == OUTPUT:
-        ARDUINO_PYRO.pinMode(pin, OUTPUT)
-        return JsonResponse(_get_arduino_data(result_ok=True))
-
-    elif mode == 'input' or mode == INPUT:
-        ARDUINO_PYRO.pinMode(pin, INPUT)
-        return JsonResponse(_get_arduino_data(result_ok=True))
-
-    elif mode == MODE_UNKNOWN:
-        ARDUINO_PYRO.pinMode(pin, MODE_UNKNOWN)
-        return JsonResponse(_get_arduino_data(result_ok=True))
-
-    else:
-        raise(Exception("Invalid mode: {}".format(mode)))
-
-
-@csrf_exempt
 def read_pin(request):
     if request.method != 'POST':
         raise(Exception("Only POST allowed"))
@@ -258,6 +229,29 @@ class Interceptor(object):
             ret['connected'] = False
             ret['pyro_not_contacted'] = True
         return ret
+
+    def pinMode(self, function_args):
+        try:
+            pin = int(function_args[0])  # TODO: check KeyError
+        except ValueError:
+            raise(Exception("Invalid pin"))
+
+        mode = function_args[1]  # TODO: check KeyError
+
+        if mode == 'output' or mode == OUTPUT:
+            ARDUINO_PYRO.pinMode(pin, OUTPUT)
+            return _get_arduino_data(result_ok=True)
+
+        elif mode == 'input' or mode == INPUT:
+            ARDUINO_PYRO.pinMode(pin, INPUT)
+            return _get_arduino_data(result_ok=True)
+
+        elif mode == MODE_UNKNOWN:
+            ARDUINO_PYRO.pinMode(pin, MODE_UNKNOWN)
+            return _get_arduino_data(result_ok=True)
+
+        else:
+            raise(Exception("Invalid mode: {}".format(mode)))
 
 
 interceptor = Interceptor()
