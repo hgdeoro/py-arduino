@@ -1,4 +1,4 @@
-function ConnectController($scope, $http, $location) {
+function ConnectController($scope, $http, $location, remoteArduino) {
 
     $scope.data = {};
     $scope.flags = {};
@@ -16,9 +16,11 @@ function ConnectController($scope, $http, $location) {
     //
 
     $scope.checkConnection = function() {
-        $http.post($scope.CONST.check_connection_url, {
+        remoteArduino.callArduinoMethod('check_connection').success(function(data) {
 
-        }).success(function(data) {
+            // TODO: remove this!
+            data = data.method_returned;
+
             $scope.flags.checkingConnection = false;
             $scope.data = data;
 
@@ -27,6 +29,10 @@ function ConnectController($scope, $http, $location) {
             }
 
         }).error(function(data) {
+
+            // TODO: remove this!
+            data = data.method_returned;
+
             $scope.resetExtras();
             $scope.flags.checkingConnection = false;
             $scope.data = {};
@@ -42,15 +48,20 @@ function ConnectController($scope, $http, $location) {
             $scope.flags.connecting = true;
         });
 
-        $http.post($scope.CONST.connect_url, {
-            serial_port : serial_port
+        remoteArduino.callArduinoMethod('connect', serial_port).success(function(data) {
 
-        }).success(function(data) {
+            // TODO: remove this!
+            data = data.method_returned;
+
             $scope.flags.checkingConnection = false;
             $scope.flags.connecting = false;
             $scope.data = data;
 
         }).error(function(data) {
+
+            // TODO: remove this!
+            data = data.method_returned;
+
             $scope.flags.checkingConnection = false;
             $scope.flags.connecting = false;
             $scope.data = {};
@@ -60,13 +71,20 @@ function ConnectController($scope, $http, $location) {
 
     $scope.disconnectArduino = function(serial_port) {
         $scope.resetExtras();
-        $http.post($scope.CONST.disconnect_url, {
 
-        }).success(function(data) {
+        remoteArduino.callArduinoMethod('disconnect').success(function(data) {
+
+            // TODO: remove this!
+            data = data.method_returned;
+
             $scope.flags.checkingConnection = false;
             $scope.data = data;
 
         }).error(function(data) {
+
+            // TODO: remove this!
+            data = data.method_returned;
+
             $scope.flags.checkingConnection = false;
             $scope.data = {};
 
