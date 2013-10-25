@@ -228,7 +228,7 @@ class Interceptor(object):
 
             ARDUINO_PYRO.analogWrite(pin, value)
             return _get_arduino_data(result_ok=True)
-    
+
         elif digital is False:
             # No support for write on analog pin yet
             raise(Exception("Value for 'digital' could only be True (not False)"))

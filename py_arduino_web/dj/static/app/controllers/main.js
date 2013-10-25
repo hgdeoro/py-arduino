@@ -1,4 +1,4 @@
-var pyArduinoModule = angular.module('PyArduino', [ /* 'uiSlider' */]);
+var pyArduinoModule = angular.module('PyArduino', [ 'ngRoute' /* 'ngAnimate' *//* 'uiSlider' */]);
 
 pyArduinoModule.config(function($routeProvider) {
 
