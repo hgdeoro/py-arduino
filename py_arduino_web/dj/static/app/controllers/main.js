@@ -90,6 +90,7 @@ pyArduinoModule.controller('GlobalController', function($scope, $location) {
         avr_cpu_type : '', // default to empty string
         errors : [],
         bg_tasks : [],
+        intervalAutoRefresh : null
     };
 
     $scope.enhanced_arduino_type = {};

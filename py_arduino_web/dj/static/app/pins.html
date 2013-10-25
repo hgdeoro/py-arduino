@@ -198,7 +198,7 @@
 	</table>
 
 	<button class="btn btn-primary" ng-click="refreshPinInfo()"
-		ng-show="! editMode">
+		ng-show="! editMode" ng-disabled="extras.intervalAutoRefresh">
 		<span class="glyphicon glyphicon-refresh"></span> Refresh
 	</button>
 
@@ -211,6 +211,14 @@
 		ng-show="editMode">
 		<span class="glyphicon glyphicon-ok"></span> Finish edition
 	</button>
+
+        <button type="button" ng-click="startAutoRefresh()"
+            class="btn btn-primary"
+            ng-show="! extras.intervalAutoRefresh">Start auto-refresh</button>
+
+        <button type="button" ng-click="stopAutoRefresh()"
+            class="btn btn-primary"
+            ng-show="extras.intervalAutoRefresh">Stop  auto-refresh</button>
 
 	<div ng-show="extras.bg_tasks">
 		<h3>Background tasks</h3>

@@ -1,4 +1,4 @@
-function PinsController($scope, $http, $location, remoteArduino) {
+function PinsController($scope, $http, $location, $interval, remoteArduino) {
 
     var get_arduino_data_url = '/angular/get_arduino_data/';
     var digital_pin_mode_url = '/angular/digital_pin_mode/';
@@ -208,6 +208,26 @@ function PinsController($scope, $http, $location, remoteArduino) {
 
             console.error("refreshPinInfo() -> $http.get() -> ERROR -> " + data);
         });
+    };
+
+    /*
+     * autoRefresh
+     */
+
+    // $scope.getBackgroundProcessesStatus
+
+    $scope.startAutoRefresh = function() {
+        if ($scope.extras.intervalAutoRefresh)
+            return;
+        $scope.extras.intervalAutoRefresh = $interval(function() {
+            $scope.refreshPinInfo();
+        }, 5000);
+    };
+
+    $scope.stopAutoRefresh = function() {
+        console.info("stopAutoRefresh()");
+        $interval.cancel($scope.extras.intervalAutoRefresh);
+        $scope.extras.intervalAutoRefresh = null;
     };
 
     /*
