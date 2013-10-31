@@ -359,7 +359,7 @@ class PyArduino(object):  # pylint: disable=R0904
 
         assert self.tty is not None
 
-        logger.info("Connecting to %s", tty)
+        logger.info("Connecting to %s", self.tty)
         self.serial_port = self._get_serial_port()
 
         if self.call_validate_connection:
