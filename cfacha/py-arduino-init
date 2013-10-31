@@ -17,8 +17,8 @@ BASEDIR=$(cd $(dirname $0)/..; pwd)
 case "$1" in
 "start")
 	set -u
-	echo -n "Iniciando py-arduino... "
-	$BASEDIR/bin/run_uwsgi.sh --pidfile2=$PID --daemonize2=$LOG --uid=$USER
+	echo -n "Starting py-arduino... "
+	$BASEDIR/cfacha/run.sh --pidfile2=$PID --daemonize2=$LOG --uid=$USER
 	if [ "$?" -eq 0 ] ; then
 		echo "ERROR"
 	else
@@ -26,9 +26,17 @@ case "$1" in
 	fi
 	;;
 "stop")
+	set -u
+	echo -n "Stoping py-arduino... "
+	$BASEDIR/cfacha/run.sh --uid=$USER --stop $PID
+	if [ "$?" -eq 0 ] ; then
+		echo "ERROR"
+	else
+		echo "OK"
+	fi
 	;;
 *)
-	echo "ERROR: opciones validas: [start|stop]"
+	echo "ERROR: valid options: [start|stop]"
 	exit 1
 	;;
 esac
