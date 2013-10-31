@@ -134,10 +134,11 @@ class BasePyroMain(object):
         _dont_check_pyro_server = self.options.dont_check_pyro_server
         _wait_until_pyro_server_is_up = self.options.wait_until_pyro_server_is_up
 
+        # TODO: add support 'wait_until_connected'
         self._start(_debug, _info, _dont_check_pyro_server, _wait_until_pyro_server_is_up)
 
     def _start(self, debug=False, info=False, dont_check_pyro_server=False,
-        wait_until_pyro_server_is_up=False):
+        wait_until_pyro_server_is_up=False, wait_until_connected=False):
         """
         Internal functions that really launch the process.
         This is needed becaus for mules, it's not posible to pass command line arguments.
@@ -159,6 +160,16 @@ class BasePyroMain(object):
             wait_for_server()
 
         arduino = get_arduino_pyro()
+
+        if wait_until_connected:
+            reported = False
+            while not arduino.is_connected():
+                if not reported:
+                    BasePyroMain.logger.info("Arduino not connected... will wait until connected")
+                reported = True
+                time.sleep(3)
+            BasePyroMain.logger.info("Connection detected! Will continue with execution")
+
         try:
             return self.run(arduino)
         except KeyboardInterrupt:
