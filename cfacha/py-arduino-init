@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# Configuraciones
+USER="horacio"
+PID="/tmp/py-arduino-cfacha.pid"
+LOG="/tmp/py-arduino.log"
+
+test -e /etc/py-arduino.conf && source /etc/py-arduino.conf
+
+if [ "$(id -u)" -ne "0" ] ; then
+	echo "ERROR: you must run this as root"
+	exit 1
+fi
+
+BASEDIR=$(cd $(dirname $0)/..; pwd)
+
+case "$1" in
+"start")
+	set -u
+	echo -n "Iniciando py-arduino... "
+	$BASEDIR/bin/run_uwsgi.sh --pidfile2=$PID --daemonize2=$LOG --uid=$USER
+	if [ "$?" -eq 0 ] ; then
+		echo "ERROR"
+	else
+		echo "OK"
+	fi
+	;;
+"stop")
+	;;
+*)
+	echo "ERROR: opciones validas: [start|stop]"
+	exit 1
+	;;
+esac
+
