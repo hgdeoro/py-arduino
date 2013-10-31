@@ -77,4 +77,5 @@ def main():
     # FORMA DE URI -> uri_string = "PYRO:py_arduino.PyArduino@localhost:61234"
 
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.INFO)
     main()
