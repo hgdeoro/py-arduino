@@ -122,20 +122,40 @@ class BasePyroMain(object):
     def start(self):
         self.options, self.args = self.parser.parse_args()
 
+        _debug = False
+        _info = False
+
         # setup logging
         if self.options.debug:
-            logging.basicConfig(level=logging.DEBUG)
+            _debug = True
         elif self.options.info:
+            _info = True
+
+        _dont_check_pyro_server = self.options.dont_check_pyro_server
+        _wait_until_pyro_server_is_up = self.options.wait_until_pyro_server_is_up
+
+        self._start(_debug, _info, _dont_check_pyro_server, _wait_until_pyro_server_is_up)
+
+    def _start(self, debug=False, info=False, dont_check_pyro_server=False,
+        wait_until_pyro_server_is_up=False):
+        """
+        Internal functions that really launch the process.
+        This is needed becaus for mules, it's not posible to pass command line arguments.
+        """
+        # setup logging
+        if debug:
+            logging.basicConfig(level=logging.DEBUG)
+        elif info:
             logging.basicConfig(level=logging.INFO)
         else:
             logging.basicConfig(level=logging.ERROR)
 
-        if not self.options.dont_check_pyro_server:
+        if not dont_check_pyro_server:
             if not server_is_up():
                 print "ERROR: PyRO server isn't reachable"
                 sys.exit(1)
 
-        if self.options.wait_until_pyro_server_is_up:
+        if wait_until_pyro_server_is_up:
             wait_for_server()
 
         arduino = get_arduino_pyro()
