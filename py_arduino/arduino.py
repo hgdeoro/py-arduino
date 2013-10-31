@@ -56,6 +56,8 @@ logger = _logging.getLogger(__name__)  # pylint: disable=C0103
 
 STATUS_TRACKER_LOCK = threading.RLock()
 
+ARDUINO_LOCK = threading.RLock()
+
 
 class BackgroundTask(object):
     """
@@ -344,6 +346,7 @@ class PyArduino(object):  # pylint: disable=R0904
                 time.sleep(self.wait_after_open)
             return serial_port
 
+    @synchronized(ARDUINO_LOCK)
     def connect(self, tty=None, speed=None):
         """
         Estabishes serial connection to the Arduino, and returns the PyArduino instance.
@@ -372,6 +375,7 @@ class PyArduino(object):  # pylint: disable=R0904
 
         return self
 
+    @synchronized(ARDUINO_LOCK)
     def close(self):
         """
         Closes the connection to the Arduino.
@@ -398,6 +402,7 @@ class PyArduino(object):  # pylint: disable=R0904
         ports = [x[0] for x in comports() if x[0].startswith(prefix)]
         return ports
 
+    @synchronized(ARDUINO_LOCK)
     def autoconnect(self):
         """
         Try to connect on every available serial port.
@@ -422,6 +427,7 @@ class PyArduino(object):  # pylint: disable=R0904
 
         return False
 
+    @synchronized(ARDUINO_LOCK)
     def run_watchdog(self, autoconnect=False):
         """
         Check connectivity and close() in case of error.
@@ -469,6 +475,7 @@ class PyArduino(object):  # pylint: disable=R0904
         if self.serial_port:
             self.serial_port.timeout = new_timeout
 
+    @synchronized(ARDUINO_LOCK)
     def get_next_response(self, timeout=None):
         """
         Note: this is a **low level** method. The only situation you may need to call this method
@@ -585,6 +592,7 @@ class PyArduino(object):  # pylint: disable=R0904
     #                continue_streaming.setTrue()
     #            response = self.get_next_response(timeout=timeout) # Raises CommandTimeout
 
+    @synchronized(ARDUINO_LOCK)
     def send_cmd(self, cmd, expected_response=None, timeout=None, response_transformer=None):
         """
         Note: this is a **low level** method. The only situation you may need to call this method
@@ -678,6 +686,7 @@ class PyArduino(object):  # pylint: disable=R0904
     ## HERE STARTS PROXIED FUNCTIONS
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
+    @synchronized(ARDUINO_LOCK)
     def pinMode(self, pin, mode):  # pylint: disable=C0103
         """
         Proxy function for Arduino's **pinMode()**.
@@ -732,6 +741,7 @@ class PyArduino(object):  # pylint: disable=R0904
 
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
+    @synchronized(ARDUINO_LOCK)
     def digitalWrite(self, pin, value):  # pylint: disable=C0103
         """
         Proxy function for Arduino's **digitalWrite()**.
@@ -776,6 +786,7 @@ class PyArduino(object):  # pylint: disable=R0904
 
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
+    @synchronized(ARDUINO_LOCK)
     def digitalRead(self, pin):  # pylint: disable=C0103
         """
         Proxy function for Arduino's **digitalRead()**.
@@ -833,6 +844,7 @@ class PyArduino(object):  # pylint: disable=R0904
 
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
+    @synchronized(ARDUINO_LOCK)
     def analogRead(self, pin):  # pylint: disable=C0103
         """
         Proxy function for Arduino's **analogRead()**.
@@ -876,6 +888,7 @@ class PyArduino(object):  # pylint: disable=R0904
 
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
+    @synchronized(ARDUINO_LOCK)
     def analogWrite(self, pin, value):  # pylint: disable=C0103
         """
         Proxy function for Arduino's **analogWrite()**.
@@ -925,6 +938,7 @@ class PyArduino(object):  # pylint: disable=R0904
     ## CONNECTION TESTING FUNCTIONS
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
+    @synchronized(ARDUINO_LOCK)
     def ping(self):  # pylint: disable=C0103
         """
         Sends a 'ping' to the Arduino. May be used to check if the connection is alive.
@@ -943,6 +957,7 @@ class PyArduino(object):  # pylint: disable=R0904
 
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
+    @synchronized(ARDUINO_LOCK)
     def validateConnection(self):  # pylint: disable=C0103
         """
         Asserts that the current connection is valid, discarding any existing information in the
@@ -994,6 +1009,7 @@ class PyArduino(object):  # pylint: disable=R0904
     ## TIME RELATED FUNCTIONS
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
+    @synchronized(ARDUINO_LOCK)
     def delay(self, value):  # pylint: disable=C0103
         """
         Proxy function for Arduino's **delay()**.
@@ -1041,6 +1057,7 @@ class PyArduino(object):  # pylint: disable=R0904
 
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
+    @synchronized(ARDUINO_LOCK)
     def delayMicroseconds(self, value):  # pylint: disable=C0103
         """
         Proxy function for Arduino's **delayMicroseconds()**.
@@ -1087,6 +1104,7 @@ class PyArduino(object):  # pylint: disable=R0904
 
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
+    @synchronized(ARDUINO_LOCK)
     def millis(self):  # pylint: disable=C0103
         """
         Proxy function for Arduino's **millis()**.
@@ -1110,6 +1128,7 @@ class PyArduino(object):  # pylint: disable=R0904
 
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
+    @synchronized(ARDUINO_LOCK)
     def micros(self):  # pylint: disable=C0103
         """
         Proxy function for Arduino's **micros()**.
@@ -1136,6 +1155,7 @@ class PyArduino(object):  # pylint: disable=R0904
     ## INTERRUPT RELATED FUNCTIONS
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
+    @synchronized(ARDUINO_LOCK)
     def watchInterrupt(self, interrupt, mode):  # pylint: disable=C0103
         """
         Begin to watch if an interrupt occurs. Use :func:`getInterruptMark` to check if an
@@ -1193,6 +1213,7 @@ class PyArduino(object):  # pylint: disable=R0904
 
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
+    @synchronized(ARDUINO_LOCK)
     def getInterruptMark(self, interrupt):  # pylint: disable=C0103
         """
         Check if an interrupt was detected on the Arduino.
@@ -1250,6 +1271,7 @@ class PyArduino(object):  # pylint: disable=R0904
     ## DEBUG FUNCTIONS
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
+    @synchronized(ARDUINO_LOCK)
     def enableDebug(self):  # pylint: disable=C0103
         """
         Enable transmision of debug messages from the Arduino.
@@ -1268,6 +1290,7 @@ class PyArduino(object):  # pylint: disable=R0904
 
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
+    @synchronized(ARDUINO_LOCK)
     def enableDebugToLcd(self):  # pylint: disable=C0103
         """
         Enable transmision of debug messages from the Arduino, and the display of some
@@ -1291,6 +1314,7 @@ class PyArduino(object):  # pylint: disable=R0904
 
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
+    @synchronized(ARDUINO_LOCK)
     def disableDebug(self):  # pylint: disable=C0103
         """
         Disable transmision of debug messages from the Arduino.
@@ -1311,6 +1335,7 @@ class PyArduino(object):  # pylint: disable=R0904
     ## LCD FUNCTIONS
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
+    @synchronized(ARDUINO_LOCK)
     def lcdMessage(self, message):
         """
         Clear the content of the LCD and write the given message.
@@ -1334,6 +1359,7 @@ class PyArduino(object):  # pylint: disable=R0904
 
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
+    @synchronized(ARDUINO_LOCK)
     def lcdWrite(self, message, col, row, clear_lcd=False):  # pylint: disable=C0103
         """
         Write a message to the LCD, starting in the given row and column.
@@ -1437,6 +1463,7 @@ class PyArduino(object):  # pylint: disable=R0904
 
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
+    @synchronized(ARDUINO_LOCK)
     def lcdClear(self):  # pylint: disable=C0103
         """
         Clear the LCD.
@@ -1463,6 +1490,7 @@ class PyArduino(object):  # pylint: disable=R0904
 
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
+    @synchronized(ARDUINO_LOCK)
     def shiftOut(self, dataPin, clockPin, bitOrder, value, set_pin_mode=False):
         """
         Proxy function for Arduino's **shiftOut()**.
@@ -1514,6 +1542,7 @@ class PyArduino(object):  # pylint: disable=R0904
     ## HARDWARD INFO FUNCTIONS
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
+    @synchronized(ARDUINO_LOCK)
     def getAvrCpuType(self):  # pylint: disable=C0103
         """
         Returns the value of _AVR_CPU_NAME_
@@ -1531,6 +1560,7 @@ class PyArduino(object):  # pylint: disable=R0904
 
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
+    @synchronized(ARDUINO_LOCK)
     def getArduinoTypeStruct(self):  # pylint: disable=C0103
         """
         Returns a dict with the value of **this_arduino_type** struct.
@@ -1652,6 +1682,7 @@ class PyArduino(object):  # pylint: disable=R0904
 
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
+    @synchronized(ARDUINO_LOCK)
     def getFreeMemory(self):  # pylint: disable=C0103
         """
         Returns the available free memory.
@@ -1669,6 +1700,7 @@ class PyArduino(object):  # pylint: disable=R0904
 
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
+    @synchronized(ARDUINO_LOCK)
     def send_streaming_cmd(self, cmd, count, timeout=None, response_transformer=None):
         """
         Note: this is a **low level** method. The only situation you may need to call this method
@@ -1728,6 +1760,7 @@ class PyArduino(object):  # pylint: disable=R0904
                 "Response: %s." % pprint.pformat(response) \
             ))
 
+    @synchronized(ARDUINO_LOCK)
     def streamingAnalogRead(self, pin, count):  # pylint: disable=C0103
         """
         Start reading from the specified analog pin.
@@ -1761,6 +1794,7 @@ class PyArduino(object):  # pylint: disable=R0904
             }
         """)
 
+    @synchronized(ARDUINO_LOCK)
     def streamingDigitalRead(self, pin, count):  # pylint: disable=C0103
         """
         Start reading from the specified digital pin.
@@ -1798,6 +1832,7 @@ class PyArduino(object):  # pylint: disable=R0904
     # DHT11 - temperature and huminity sensor
     #===============================================================================
 
+    @synchronized(ARDUINO_LOCK)
     def dht11_read(self, pin):  # pylint: disable=C0103
         """
         Read the values of temperature and huminity of a DHT11.
@@ -1866,6 +1901,7 @@ class PyArduino(object):  # pylint: disable=R0904
     # OneWire - DS18x20
     #===========================================================================
 
+    @synchronized(ARDUINO_LOCK)
     def ds18x20_read(self, pin):
         """
         Read the values of temperature with a DS18x20 sensor.
@@ -1991,6 +2027,7 @@ class PyArduino(object):  # pylint: disable=R0904
     # Energy Monitor
     #===========================================================================
 
+    @synchronized(ARDUINO_LOCK)
     def energyMonitorSetup(self, v_pin, v_calibration, v_phase_shift, c_pin, c_calibration):
         """
         Setup energy monitor.
@@ -2050,6 +2087,7 @@ class PyArduino(object):  # pylint: disable=R0904
 
     # --------------------
 
+    @synchronized(ARDUINO_LOCK)
     def energyMonitorRead(self, no_wl, timeout):
         """
         Read energy monitor values.
