@@ -14,10 +14,11 @@ ARCHIVO = '/tmp/temperatura-pileta.txt'
 class Main(BasePyroMain):
 
     def run(self, arduino):
+
+        logger.info("Iniciando - PIN_TEMPERATURA: %s - ARCHIVO: %s",
+            PIN_TEMPERATURA, ARCHIVO)
         
         while True:
-            logger.info("Iniciando - PIN_TEMPERATURA: %s - ARCHIVO: %s",
-                PIN_TEMPERATURA, ARCHIVO)
             try:
                 # arduino.pinMode(PIN_TEMPERATURA, ArduinoProxy.INPUT)
                 value = arduino.ds18x20_read(PIN_TEMPERATURA)
