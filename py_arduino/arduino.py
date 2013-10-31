@@ -422,6 +422,27 @@ class PyArduino(object):  # pylint: disable=R0904
 
         return False
 
+    def run_watchdog(self, autoconnect=False):
+        """
+        Check connectivity and close() in case of error.
+        If not connected, does NOT check connectivity.
+        """
+        try:
+            if self.is_connected():
+                # if connected, does a ping() to validate the cx.
+                self.ping()
+                # If ping worked, return (no need to auto-connect)
+                return
+        except:
+            # If ping() failed, do the close()
+            try:
+                self.close()
+            except:
+                pass
+
+        if autoconnect:
+            self.autoconnect()
+
     ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
     def _validate_analog_pin(self, pin, pin_name='pin'):  # pylint: disable=R0201
