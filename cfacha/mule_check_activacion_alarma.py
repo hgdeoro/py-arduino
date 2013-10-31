@@ -44,4 +44,5 @@ class Main(BasePyroMain):
             os._exit(1)
 
 if __name__ == '__main__':
-    Main()._start(info=True, dont_check_pyro_server=True, wait_until_pyro_server_is_up=True)
+    Main()._start(info=True, dont_check_pyro_server=True, wait_until_pyro_server_is_up=True,
+        wait_until_connected=True)

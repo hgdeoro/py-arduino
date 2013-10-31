@@ -3,6 +3,7 @@ import logging
 import time
 
 from py_arduino_web.pyroproxy.utils import BasePyroMain
+from py_arduino import InvalidResponse
 
 logger = logging.getLogger(__name__)
 
@@ -13,6 +14,7 @@ ARCHIVO = '/tmp/temperatura-pileta.txt'
 class Main(BasePyroMain):
 
     def run(self, arduino):
+        
         while True:
             logger.info("Iniciando - PIN_TEMPERATURA: %s - ARCHIVO: %s",
                 PIN_TEMPERATURA, ARCHIVO)
@@ -25,10 +27,14 @@ class Main(BasePyroMain):
                     f.write("  -->> ")
                     f.write(hora.strftime("%H:%M:%S %Y-%m-%d"))
                     f.write("\n")
-            except:
-                logger.exception("ERROR en ds18x20_read()... "
-                    "En vez de salir, solo esperaremos un momento y reiniciaremos...")
-                time.sleep(10)
+            except InvalidResponse, e:
+                if e.message == 'DS18X20_NO_MORE_ADDRESSES':
+                    logger.warn("Se detecto DS18X20_NO_MORE_ADDRESSES. "
+                        "Esperando y reintentando...")
+                    time.sleep(10)
+                else:
+                    raise
 
 if __name__ == '__main__':
-    Main()._start(info=True, dont_check_pyro_server=True, wait_until_pyro_server_is_up=True)
+    Main()._start(info=True, dont_check_pyro_server=True, wait_until_pyro_server_is_up=True,
+        wait_until_connected=True)
