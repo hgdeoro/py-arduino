@@ -328,6 +328,7 @@ class PyArduino(object):  # pylint: disable=R0904
         self.serial_port = None
         self.status_tracker = StatusTracker()
 
+    @synchronized(ARDUINO_LOCK)
     def _get_serial_port(self):
         """
         Returns a real serial port object, or a virtual serial port
@@ -1636,6 +1637,7 @@ class PyArduino(object):  # pylint: disable=R0904
             }
         """)
 
+    @synchronized(ARDUINO_LOCK)
     def enhanceArduinoTypeStruct(self, arduino_type_struct):
         """
         Returns an enhanced copy of `arduino_type_struct` with user-friendlier data.
