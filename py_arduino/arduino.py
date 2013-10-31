@@ -435,6 +435,7 @@ class PyArduino(object):  # pylint: disable=R0904
                 return
         except:
             # If ping() failed, do the close()
+            logger.warn("run_watchdog(): ping failed. Will close instance.")
             try:
                 self.close()
             except:
