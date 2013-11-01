@@ -32,9 +32,9 @@ class Main(BasePyroMain):
                 if e.message == 'DS18X20_NO_MORE_ADDRESSES':
                     logger.warn("Se detecto DS18X20_NO_MORE_ADDRESSES. "
                         "Esperando y reintentando...")
-                    time.sleep(10)
                 else:
                     raise
+            time.sleep(60)
 
 if __name__ == '__main__':
     Main()._start(info=True, dont_check_pyro_server=True, wait_until_pyro_server_is_up=True,
