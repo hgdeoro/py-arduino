@@ -7,8 +7,8 @@ from py_arduino import InvalidResponse
 
 logger = logging.getLogger(__name__)
 
-PIN_TEMPERATURA = 9
-ARCHIVO = '/home/registros/temperatura-pileta.txt'
+PIN_TEMPERATURA = 10
+ARCHIVO = '/home/registros/temperatura-patio.txt'
 
 
 class Main(BasePyroMain):
