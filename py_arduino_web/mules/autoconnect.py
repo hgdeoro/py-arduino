@@ -5,6 +5,15 @@ from py_arduino_web.pyroproxy.utils import BasePyroMain
 
 
 class MuleAutoconnect(BasePyroMain):
+    """
+    This mule checks the communication with Arduino and
+    runs auto-connect if a serial connection is detected.
+
+    This is intended to be used as a mule.
+
+    Example:
+        ./bin/run_uwsgi.sh --mule=py_arduino_web/mules/autoconnect.py
+    """
 
     def __init__(self, *args, **kwargs):
         super(MuleAutoconnect, self).__init__(*args, **kwargs)
