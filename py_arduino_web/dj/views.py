@@ -107,25 +107,41 @@ def validate_connection(request):
         return JsonErrorResponse(e)
 
 
+def control_panel_html(request):
+    try:
+        cp = ControlPanel.objects.get(name='default')
+        return HttpResponse(cp.html)
+    except ControlPanel.DoesNotExist:
+        return HttpResponse("<p>Control panel with name 'default' not found.</p>")
+
+
+def control_panel_js(request):
+    try:
+        cp = ControlPanel.objects.get(name='default')
+        return HttpResponse(cp.js, content_type='application/javascript')
+    except ControlPanel.DoesNotExist:
+        return HttpResponse("/* Control panel with name 'default' not found. */")
+
+
+def control_panel_combined(request):
+    try:
+        cp = ControlPanel.objects.get(name='default')
+        return JsonResponse({
+            'html': cp.html,
+            'js': cp.js,
+        })
+    except ControlPanel.DoesNotExist:
+        return HttpResponse("Control panel with name 'default' not found.")
+
+
 @csrf_exempt
-def render_control_panel(request):
-    if request.method == 'GET':
-        try:
-            cp = ControlPanel.objects.get(name='default')
-            return JsonResponse({
-                'html': cp.html,
-                'js': cp.js,
-                })
-
-        except ControlPanel.DoesNotExist:
-            return HttpResponse("<p>Control panel with name 'default' not found.")
-
-    elif request.method == 'POST':
-        data = json.loads(request.body)
-        control_panel = ControlPanel.objects.get(name='default')
-        control_panel.html = data['html']
-        control_panel.js = data['js']
-        control_panel.save()
-        return HttpResponse('ok')
-    else:
+def control_panel_update(request):
+    if request.method != 'POST':
         return HttpResponseBadRequest()
+    
+    data = json.loads(request.body)
+    control_panel = ControlPanel.objects.get(name='default')
+    control_panel.html = data['html']
+    control_panel.js = data['js']
+    control_panel.save()
+    return HttpResponse('ok')

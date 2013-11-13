@@ -19,10 +19,21 @@ urlpatterns = patterns('',
         'py_arduino_web.dj.views_angularjs.call_arduino_method',
         name='ng_call_arduino_method'),
 
+    url(r'^control_panel/html/$',
+        'py_arduino_web.dj.views.control_panel_html',
+        name='control_panel_html'),
 
-    url(r'^renderControlPanel/?$',
-        'py_arduino_web.dj.views.render_control_panel',
-        name='control_panel'),
+    url(r'^control_panel/js/$',
+        'py_arduino_web.dj.views.control_panel_js',
+        name='control_panel_js'),
+
+    url(r'^control_panel/combined/$',
+        'py_arduino_web.dj.views.control_panel_combined',
+        name='control_panel_combined'),
+
+    url(r'^control_panel/update/$',
+        'py_arduino_web.dj.views.control_panel_update',
+        name='control_panel_update'),
 
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),

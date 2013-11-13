@@ -1,11 +1,16 @@
 function ControlPanelController($scope, $http, $location, $interval, $route, $templateCache) {
 
-    var control_panel_code_url = '/renderControlPanel/';
+    var control_panel_combined_url = '/control_panel/combined/';
+    var control_panel_html_url = '/control_panel/html/';
+    var control_panel_js_url = '/control_panel/js/';
+    var control_panel_update_url = '/control_panel/update/';
 
     $scope.enableAceEditor = function() {
         
         // Remove from cache
-        $templateCache.remove(control_panel_code_url);
+        $templateCache.remove(control_panel_combined_url);
+        $templateCache.remove(control_panel_html_url);
+        $templateCache.remove(control_panel_js_url);
 
         $scope.aceEditorHtml = ace.edit("editor_html");
         $scope.aceEditorHtml.setTheme("ace/theme/twilight");
@@ -15,7 +20,7 @@ function ControlPanelController($scope, $http, $location, $interval, $route, $te
         $scope.aceEditorJs.setTheme("ace/theme/twilight");
         $scope.aceEditorJs.getSession().setMode("ace/mode/javascript");
         
-        $http.get(control_panel_code_url).success(function(data) {
+        $http.get(control_panel_combined_url).success(function(data) {
             $scope.aceEditorHtml.setValue(data.html);
             $scope.aceEditorJs.setValue(data.js);
 
@@ -29,7 +34,7 @@ function ControlPanelController($scope, $http, $location, $interval, $route, $te
     $scope.saveControlPanelCode = function() {
         // console.info("To save: " + $scope.aceEditorHtml.getValue());
 
-        $http.post(control_panel_code_url, {
+        $http.post(control_panel_update_url, {
             html : $scope.aceEditorHtml.getValue(),
             js : $scope.aceEditorJs.getValue()
 
