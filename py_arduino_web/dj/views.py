@@ -111,13 +111,20 @@ def validate_connection(request):
 def render_control_panel(request):
     if request.method == 'GET':
         try:
-            return HttpResponse(ControlPanel.objects.get(name='default').html)
+            cp = ControlPanel.objects.get(name='default')
+            return JsonResponse({
+                'html': cp.html,
+                'js': cp.js,
+                })
+
         except ControlPanel.DoesNotExist:
             return HttpResponse("<p>Control panel with name 'default' not found.")
+
     elif request.method == 'POST':
         data = json.loads(request.body)
         control_panel = ControlPanel.objects.get(name='default')
         control_panel.html = data['html']
+        control_panel.js = data['js']
         control_panel.save()
         return HttpResponse('ok')
     else:
