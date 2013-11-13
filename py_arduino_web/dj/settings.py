@@ -106,6 +106,7 @@ MIDDLEWARE_CLASSES = (
     # Uncomment the next line for simple clickjacking protection:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'py_arduino_web.dj.middleware.PyroproxyConnectionMiddleware',
+    'py_arduino_web.dj.middleware.AutomaticLoginUserMiddleware',
 )
 
 ROOT_URLCONF = 'py_arduino_web.dj.urls'
