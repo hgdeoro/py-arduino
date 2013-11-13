@@ -25,7 +25,7 @@ function ControlPanelController($scope, $http, $location, $interval, $route, $te
         // console.info("To save: " + $scope.aceEditor.getValue());
 
         $http.post(control_panel_code_url, {
-            code : $scope.aceEditor.getValue()
+            html : $scope.aceEditor.getValue()
 
         }).success(function(data) {
             $route.reload();

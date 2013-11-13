@@ -3,7 +3,7 @@ import json
 import Pyro4
 
 from django.http.response import HttpResponse, HttpResponseRedirect, \
-    HttpResponseServerError, HttpResponseNotAllowed, HttpResponseBadRequest
+    HttpResponseServerError, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
 
 from py_arduino_web.pyroproxy.utils import get_arduino_pyro, get_storage_pyro
@@ -111,13 +111,13 @@ def validate_connection(request):
 def render_control_panel(request):
     if request.method == 'GET':
         try:
-            return HttpResponse(ControlPanel.objects.get(name='default').code)
+            return HttpResponse(ControlPanel.objects.get(name='default').html)
         except ControlPanel.DoesNotExist:
             return HttpResponse("<p>Control panel with name 'default' not found.")
     elif request.method == 'POST':
         data = json.loads(request.body)
         control_panel = ControlPanel.objects.get(name='default')
-        control_panel.code = data['code']
+        control_panel.html = data['html']
         control_panel.save()
         return HttpResponse('ok')
     else:

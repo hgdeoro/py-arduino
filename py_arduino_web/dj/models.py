@@ -41,7 +41,7 @@ class ControlPanel(models.Model):
     Represents a control panel.
     """
     name = models.CharField(max_length=64)
-    code = models.TextField()
+    html = models.TextField()
 
     def __unicode__(self):
         return self.name
