@@ -317,4 +317,16 @@ function PinsController($scope, $http, $location, $interval, remoteArduino) {
 
     };
 
+    /*
+     * ----------
+     * For Control Panel
+     * ----------
+     */
+    
+    $scope.enableAceEditor = function() {
+        var editor = ace.edit("editor");
+        editor.setTheme("ace/theme/twilight");
+        editor.getSession().setMode("ace/mode/javascript");
+    };
+    
 };

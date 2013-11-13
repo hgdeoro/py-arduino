@@ -16,7 +16,8 @@ pyArduinoModule.config(function($routeProvider) {
 
     }).when('/controlPanel', {
         controller : PinsController,
-        templateUrl : '/renderControlPanel/',
+        // templateUrl : '/renderControlPanel/',
+        templateUrl : '/static/app/control_panel.html',
 
     // }).otherwise({
     // controller : aController,
