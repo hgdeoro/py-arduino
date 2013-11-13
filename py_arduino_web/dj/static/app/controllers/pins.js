@@ -1,4 +1,4 @@
-function PinsController($scope, $http, $location, $interval, remoteArduino) {
+function PinsController($scope, $http, $location, $interval, $route, remoteArduino) {
 
     var get_arduino_data_url = '/angular/get_arduino_data/';
     var digital_pin_mode_url = '/angular/digital_pin_mode/';
@@ -339,4 +339,9 @@ function PinsController($scope, $http, $location, $interval, remoteArduino) {
 
     };
     
+    $scope.saveControlPanelCode = function() {
+        console.info("To save: " + $scope.aceEditor.getValue());
+        $route.reload();
+    };
+
 };
