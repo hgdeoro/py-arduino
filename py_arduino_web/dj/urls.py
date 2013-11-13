@@ -19,6 +19,11 @@ urlpatterns = patterns('',
         'py_arduino_web.dj.views_angularjs.call_arduino_method',
         name='ng_call_arduino_method'),
 
+
+    url(r'^renderControlPanel/?$',
+        'py_arduino_web.dj.views.render_control_panel',
+        name='control_panel'),
+
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
 )

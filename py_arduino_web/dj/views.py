@@ -6,6 +6,7 @@ from django.http.response import HttpResponse, HttpResponseRedirect, \
     HttpResponseServerError
 
 from py_arduino_web.pyroproxy.utils import get_arduino_pyro, get_storage_pyro
+from py_arduino_web.dj.models import ControlPanel
 
 
 ARDUINO_PYRO = get_arduino_pyro()
@@ -103,3 +104,10 @@ def validate_connection(request):
         logging.exception("Exception raised by arduino.validate_connection(). " +
             "".join(Pyro4.util.getPyroTraceback()))
         return JsonErrorResponse(e)
+
+
+def render_control_panel(request):
+    try:
+        return HttpResponse(ControlPanel.objects.get(name='default').code)
+    except ControlPanel.DoesNotExist:
+        return HttpResponse("<p>Control panel with name 'default' not found.")
