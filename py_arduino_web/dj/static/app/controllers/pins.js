@@ -6,7 +6,7 @@ function PinsController($scope, $http, $location, $interval, $route, remoteArdui
     var digital_write_url = '/angular/digital_write/';
     var analog_write_url = '/angular/analog_write/';
     var update_labels_and_ids_url = '/angular/update_labels_and_ids/';
-    var get_control_panel_code_url = '/renderControlPanel/';
+    var control_panel_code_url = '/renderControlPanel/';
 
     var MODE_PIN_UNKNOWN = null; // 'None' of PyArduino
     var INPUT = 0;
@@ -329,7 +329,7 @@ function PinsController($scope, $http, $location, $interval, $route, remoteArdui
         $scope.aceEditor.setTheme("ace/theme/twilight");
         $scope.aceEditor.getSession().setMode("ace/mode/html");
         
-        $http.get(get_control_panel_code_url).success(function(data) {
+        $http.get(control_panel_code_url).success(function(data) {
             $scope.aceEditor.setValue(data);
 
         }).error(function(data) {
@@ -341,7 +341,18 @@ function PinsController($scope, $http, $location, $interval, $route, remoteArdui
     
     $scope.saveControlPanelCode = function() {
         console.info("To save: " + $scope.aceEditor.getValue());
-        $route.reload();
+
+        $http.post(control_panel_code_url, {
+            code : $scope.aceEditor.getValue()
+
+        }).success(function(data) {
+            $route.reload();
+
+        }).error(function(data) {
+            console.error("saveControlPanelCode() -> $http.post() -> ERROR -> " + data);
+        });
+
+        
     };
 
 };
