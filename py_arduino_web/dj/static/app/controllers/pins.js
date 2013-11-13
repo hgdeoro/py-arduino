@@ -1,4 +1,4 @@
-function PinsController($scope, $http, $location, $interval, $route, remoteArduino) {
+function PinsController($scope, $http, $location, $interval, $route, $templateCache, remoteArduino) {
 
     var get_arduino_data_url = '/angular/get_arduino_data/';
     var digital_pin_mode_url = '/angular/digital_pin_mode/';
@@ -325,6 +325,10 @@ function PinsController($scope, $http, $location, $interval, $route, remoteArdui
      */
     
     $scope.enableAceEditor = function() {
+        
+        // Remove from cache
+        $templateCache.remove('/renderControlPanel/');
+
         $scope.aceEditor = ace.edit("editor");
         $scope.aceEditor.setTheme("ace/theme/twilight");
         $scope.aceEditor.getSession().setMode("ace/mode/html");
@@ -340,7 +344,7 @@ function PinsController($scope, $http, $location, $interval, $route, remoteArdui
     };
     
     $scope.saveControlPanelCode = function() {
-        console.info("To save: " + $scope.aceEditor.getValue());
+        // console.info("To save: " + $scope.aceEditor.getValue());
 
         $http.post(control_panel_code_url, {
             code : $scope.aceEditor.getValue()
