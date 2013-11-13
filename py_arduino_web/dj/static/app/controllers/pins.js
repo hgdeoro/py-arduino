@@ -6,6 +6,7 @@ function PinsController($scope, $http, $location, $interval, remoteArduino) {
     var digital_write_url = '/angular/digital_write/';
     var analog_write_url = '/angular/analog_write/';
     var update_labels_and_ids_url = '/angular/update_labels_and_ids/';
+    var get_control_panel_code_url = '/renderControlPanel/';
 
     var MODE_PIN_UNKNOWN = null; // 'None' of PyArduino
     var INPUT = 0;
@@ -324,9 +325,18 @@ function PinsController($scope, $http, $location, $interval, remoteArduino) {
      */
     
     $scope.enableAceEditor = function() {
-        var editor = ace.edit("editor");
-        editor.setTheme("ace/theme/twilight");
-        editor.getSession().setMode("ace/mode/javascript");
+        $scope.aceEditor = ace.edit("editor");
+        $scope.aceEditor.setTheme("ace/theme/twilight");
+        $scope.aceEditor.getSession().setMode("ace/mode/html");
+        
+        $http.get(get_control_panel_code_url).success(function(data) {
+            $scope.aceEditor.setValue(data);
+
+        }).error(function(data) {
+            console.error("enableAceEditor() -> $http.get() -> ERROR -> " + data);
+
+        });
+
     };
     
 };
