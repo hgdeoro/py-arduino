@@ -21,7 +21,7 @@ class Pin(models.Model):
     def save(self, *args, **kwargs):
         if self.pin_id is not None and len(self.pin_id.strip()) == 0:
             self.pin_id = None
-        super(Pin, self).save(*args, **kwargs) # Call the "real" save() method.
+        super(Pin, self).save(*args, **kwargs)  # Call the "real" save() method.
 
     def __unicode__(self):
         if self.digital:
@@ -34,6 +34,17 @@ class Pin(models.Model):
 
     class Meta:
         unique_together = (('pin', 'digital',),)
+
+
+class ControlPanel(models.Model):
+    """
+    Represents a control panel.
+    """
+    name = models.CharField(max_length=64)
+    code = models.TextField()
+
+    def __unicode__(self):
+        return self.name
 
 
 class DjStorage(BaseStorage):
@@ -58,3 +69,7 @@ class DjStorage(BaseStorage):
             return Pin.objects.get(pin_id=pin_id)
         except Pin.DoesNotExist:
             return None
+
+    def get_control_panels(self):
+        """Returns the list of available control panels"""
+        return ControlPanel.objects.order_by('name').all()
