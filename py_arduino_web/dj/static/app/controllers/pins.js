@@ -222,7 +222,7 @@ function PinsController($scope, $http, $location, $interval, $route, $templateCa
             return;
         $scope.extras.intervalAutoRefresh = $interval(function() {
             $scope.refreshPinInfo();
-        }, 5000);
+        }, 2000);
     };
 
     $scope.stopAutoRefresh = function() {

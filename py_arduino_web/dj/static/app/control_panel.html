@@ -1,4 +1,13 @@
 <div ng-include="'/renderControlPanel/'" onload="enableAceEditor()"></div>
 <hr/>
-<button class="btn btn-primary" ng-click="saveControlPanelCode()">Save</button>
+<button class="btn btn-danger" ng-click="saveControlPanelCode()">Save Code</button>
+
+<button class="btn btn-primary" ng-click="refreshPinInfo()">Refresh values</button>
+
+<button type="button" ng-click="startAutoRefresh()"
+    class="btn btn-primary" ng-show="! extras.intervalAutoRefresh">Start auto-refresh</button>
+
+<button type="button" ng-click="stopAutoRefresh()" class="btn btn-primary"
+    ng-show="extras.intervalAutoRefresh">Stop  auto-refresh</button>
+
 <pre id="editor" style="height: 400px;"></pre>
