@@ -9,10 +9,14 @@ class MuleAutoconnect(BasePyroMain):
     This mule checks the communication with Arduino and
     runs auto-connect if a serial connection is detected.
 
-    This is intended to be used as a mule.
+    This is intended to be used as a mule, but can be used
+    as a stand-alone background task.
 
-    Example:
+    Example (mule):
         ./bin/run_uwsgi.sh --mule=py_arduino_web/mules/autoconnect.py
+        
+    Example (background task):
+        python py_arduino_web/mules/autoconnect.py
     """
 
     def __init__(self, *args, **kwargs):
