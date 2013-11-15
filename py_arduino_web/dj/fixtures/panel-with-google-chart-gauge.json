@@ -1,0 +1,11 @@
+[
+{
+  "pk": 1, 
+  "model": "dj.controlpanel", 
+  "fields": {
+    "html": "<div id=\"chart_div\"></div>\r\n\r\n<div ng-controller=\"MyPanel\" ng-init=\"drawChart()\">\r\n    Mensaje: {{ mypanel.msg }}\r\n</div>", 
+    "name": "default", 
+    "js": "\r\nfunction MyPanel($scope) {\r\n    $scope.mypanel = {msg: \"Hola!\"};\r\n\r\n    $scope.googleChart = {};\r\n\r\n    $scope.drawChart = function() {\r\n        $scope.googleChart.data = google.visualization.arrayToDataTable([\r\n          ['Label', 'Value'],\r\n          ['Memory', 80],\r\n          ['CPU', 55],\r\n          ['Network', 68]\r\n        ]);\r\n        \r\n        $scope.googleChart.options = {\r\n          width: 400, height: 120,\r\n          redFrom: 90, redTo: 100,\r\n          yellowFrom:75, yellowTo: 90,\r\n          minorTicks: 5\r\n        };\r\n\r\n        $scope.googleChart.chart = new google.visualization.Gauge(document.getElementById('chart_div'));\r\n        $scope.googleChart.chart.draw($scope.googleChart.data, $scope.googleChart.options);\r\n    };\r\n}\r\n\r\ngoogle.load('visualization', '1', {packages:['gauge']});\r\n\r\ngoogle.setOnLoadCallback(function() {\r\n    angular.bootstrap(document.body, ['PyArduino']);\r\n});\r\n"
+  }
+}
+]
