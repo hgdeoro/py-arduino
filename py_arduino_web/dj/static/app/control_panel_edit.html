@@ -1,8 +1,10 @@
 <div ng-controller="PinsController">
-<div ng-controller="ControlPanelController">
+<div ng-controller="ControlPanelController" ng-init="enableAceEditor()">
 
+    <!--
 	<div ng-include="'/control_panel/html/'" onload="enableAceEditor()"></div>
 	<hr/>
+	-->
 	<button class="btn btn-danger" ng-click="saveControlPanelCode()">Save Code</button>
 	
 	<button class="btn btn-primary" ng-click="refreshPinInfo()">Refresh values</button>
