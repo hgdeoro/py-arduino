@@ -35,6 +35,10 @@ urlpatterns = patterns('',
         'py_arduino_web.dj.views.control_panel_update',
         name='control_panel_update'),
 
+    url(r'^control_panel/view/$',
+        'py_arduino_web.dj.views.control_panel_view',
+        name='control_panel_view'),
+
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
 )

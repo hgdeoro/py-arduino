@@ -8,6 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from py_arduino_web.pyroproxy.utils import get_arduino_pyro, get_storage_pyro
 from py_arduino_web.dj.models import ControlPanel
+from django.shortcuts import render_to_response
 
 
 ARDUINO_PYRO = get_arduino_pyro()
@@ -145,3 +146,15 @@ def control_panel_update(request):
     control_panel.js = data['js']
     control_panel.save()
     return HttpResponse('ok')
+
+
+@csrf_exempt
+def control_panel_view(request):
+    try:
+        html_contents = ControlPanel.objects.get(name='default').html
+    except ControlPanel.DoesNotExist:
+        html_contents = ''
+    ctx = {
+        'html_contents': html_contents,
+    }
+    return render_to_response('py-arduino/control_panel_view.html', ctx)
