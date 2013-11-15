@@ -192,11 +192,14 @@ function PinsController($scope, $http, $location, $interval, $route, $templateCa
     /*
      * refreshPinInfo()
      */
-    $scope.refreshPinInfo = function() {
+    $scope.refreshPinInfo = function(callback) {
         console.info("refreshPinInfo()");
 
         $http.get(get_arduino_data_url).success(function(data) {
             $scope.refreshUi(data);
+
+            if(callback)
+                callback();
 
         }).error(function(data) {
             // Check connection problem!
@@ -216,7 +219,6 @@ function PinsController($scope, $http, $location, $interval, $route, $templateCa
      */
 
     // $scope.getBackgroundProcessesStatus
-
     $scope.startAutoRefresh = function() {
         if ($scope.extras.intervalAutoRefresh)
             return;
