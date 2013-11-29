@@ -43,6 +43,7 @@ class ControlPanel(models.Model):
     name = models.CharField(max_length=64)
     html = models.TextField()
     js = models.TextField()
+    header = models.TextField()
 
     def __unicode__(self):
         return self.name

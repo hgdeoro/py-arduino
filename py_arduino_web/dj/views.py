@@ -129,6 +129,7 @@ def control_panel_combined(request):
         cp = ControlPanel.objects.get(name='default')
         return JsonResponse({
             'html': cp.html,
+            'header': cp.header,
             'js': cp.js,
         })
     except ControlPanel.DoesNotExist:
@@ -143,6 +144,7 @@ def control_panel_update(request):
     data = json.loads(request.body)
     control_panel = ControlPanel.objects.get(name='default')
     control_panel.html = data['html']
+    control_panel.header = data['header']
     control_panel.js = data['js']
     control_panel.save()
     return HttpResponse('ok')
@@ -151,10 +153,15 @@ def control_panel_update(request):
 @csrf_exempt
 def control_panel_view(request):
     try:
-        html_contents = ControlPanel.objects.get(name='default').html
+        cp = ControlPanel.objects.get(name='default')
+        html_contents = cp.html
+        html_header = cp.header
     except ControlPanel.DoesNotExist:
         html_contents = ''
+        html_header = ''
+
     ctx = {
+        'html_header': html_header,
         'html_contents': html_contents,
     }
     return render_to_response('py-arduino/control_panel_view.html', ctx)

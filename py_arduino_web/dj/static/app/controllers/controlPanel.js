@@ -12,6 +12,10 @@ function ControlPanelController($scope, $http, $location, $interval, $route, $te
         $templateCache.remove(control_panel_html_url);
         $templateCache.remove(control_panel_js_url);
 
+        $scope.aceEditorHeader = ace.edit("editor_header");
+        $scope.aceEditorHeader.setTheme("ace/theme/twilight");
+        $scope.aceEditorHeader.getSession().setMode("ace/mode/html");
+
         $scope.aceEditorHtml = ace.edit("editor_html");
         $scope.aceEditorHtml.setTheme("ace/theme/twilight");
         $scope.aceEditorHtml.getSession().setMode("ace/mode/html");
@@ -21,6 +25,7 @@ function ControlPanelController($scope, $http, $location, $interval, $route, $te
         $scope.aceEditorJs.getSession().setMode("ace/mode/javascript");
         
         $http.get(control_panel_combined_url).success(function(data) {
+            $scope.aceEditorHeader.setValue(data.header);
             $scope.aceEditorHtml.setValue(data.html);
             $scope.aceEditorJs.setValue(data.js);
 
@@ -35,6 +40,7 @@ function ControlPanelController($scope, $http, $location, $interval, $route, $te
         // console.info("To save: " + $scope.aceEditorHtml.getValue());
 
         $http.post(control_panel_update_url, {
+            header : $scope.aceEditorHeader.getValue(),
             html : $scope.aceEditorHtml.getValue(),
             js : $scope.aceEditorJs.getValue()
 
