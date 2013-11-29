@@ -45,7 +45,7 @@
 						<td width="70%">
 							<div ng-repeat="port in data.serial_ports">
 								<button ng-click="connectArduino(port)"
-									class="btn btn-primary btn-sm">Connect to {{port}}</button>
+									class="btn btn-primary btn-sm" style="margin-right: 0.5em; margin-bottom: 0.5em;">Connect to {{port}}</button>
 							</div>
 							<div ng-show="! data.serial_ports.length">
 								<small>No serial port detected</small>
