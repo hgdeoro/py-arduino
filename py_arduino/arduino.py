@@ -333,13 +333,15 @@ class PyArduino(object):  # pylint: disable=R0904
         """
         Returns a real serial port object, or a virtual serial port
         connceted to an instance of ArduinoEmulator if tty is DEVICE_FOR_EMULATOR.
+
+        The `timeout` value is used to set read timeout and write timeout.
         """
         if self.tty == DEVICE_FOR_EMULATOR:
             return SerialConnectionArduinoEmulator()
         else:
             logger.debug("Opening serial port %s...", self.tty)
             serial_port = serial.Serial(port=self.tty, baudrate=self.speed, bytesize=8,
-                parity='N', stopbits=1, timeout=self.timeout)
+                parity='N', stopbits=1, timeout=self.timeout, writeTimeout=self.timeout)
             # self.serial_port.open() - The port is opened when the instance is created!
             # This has no efect on Linux, but raises an exception on other os.
             if self.wait_after_open > 0:
