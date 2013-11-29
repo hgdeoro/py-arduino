@@ -198,8 +198,10 @@ function PinsController($scope, $http, $location, $interval, $route, $templateCa
         $http.get(get_arduino_data_url).success(function(data) {
             $scope.refreshUi(data);
 
-            if(callback)
+            if(callback) {
+                console.debug("refreshPinInfo(): will call callback");
                 callback();
+            }
 
         }).error(function(data) {
             // Check connection problem!
