@@ -88,14 +88,22 @@ class PinStatus(object):
     - pin: the pin number
     - digital: if the pin is digital (True) or analog (False)
     - mode: pin mode (INPUT, OUTPUT)
-    - read_value: last read value
-    - written_value: last writen value
-    - analog_written_value: last 'analog written' value (PWM)
+    - read_value: last read value from the pin
+    - written_value: last writen value to the pin
+    - analog_written_value: last 'analog written' value (PWM) to the pin
     - background_task: instance of BackgroundTask, references the
         background task that is using the pin.
     - last_update: the `time.time()` value of the last update to
         the instance.
+
     - used_by_lib: name of the library that is using the pin
+    - lib_read_value: the last values read by the library
+        (a dict, since a library could read multiple values, or make
+        many reads in a single call, and generate many results)
+
+    TODO:
+    - lib_written_value: the last values used to call the library
+        (ie: argument values)
 
     Note: since the communication isn't "transactional", when some
     errors occurs, we don't know if the change was made in the Arduino.
@@ -104,7 +112,8 @@ class PinStatus(object):
     'pin status' in the Arduino (maybe in some future version).
     """
     def __init__(self, pin, digital, mode=MODE_UNKNOWN, read_value=None, written_value=None,
-            analog_written_value=None, background_task=None, used_by_lib=None):
+            analog_written_value=None, background_task=None, used_by_lib=None,
+            lib_read_value=None):
         self.pin = pin
         self.digital = digital
         self.mode = mode  # None == unknown
@@ -115,6 +124,7 @@ class PinStatus(object):
         # background_task -> instance of BackgroundTask()
         self.background_task = background_task
         self.used_by_lib = used_by_lib
+        self.lib_read_value = lib_read_value
         self.last_update = 0
 
     def as_dict(self):
@@ -128,6 +138,7 @@ class PinStatus(object):
             'mode_is_output': self.mode == OUTPUT,
             'mode_is_unknown': self.mode not in (INPUT, OUTPUT),
             'used_by_lib': self.used_by_lib,
+            'lib_read_value': self.lib_read_value,
             'last_update': self.last_update
         }
 
@@ -194,6 +205,40 @@ class StatusTracker(object):
         status.written_value = None
         status.analog_written_value = None
         status.used_by_lib = library
+        status.lib_read_value = None
+        status.last_update = time.time()
+
+    #    @synchronized(STATUS_TRACKER_LOCK)
+    #    def set_lib_read_value(self, pin, digital, read_values_dict):
+    #        """
+    #        Set the last read value. `value = None` implies we don't know the value read
+    #        (because an error was detected while trying to read that value to Arduino).
+    #
+    #        Replaces the old dict with a new one.
+    #        """
+    #        status = self.get_pin_status_instance(pin, digital)
+    #        status.lib_read_value = read_values_dict
+    #        status.last_update = time.time()
+
+    @synchronized(STATUS_TRACKER_LOCK)
+    def set_lib_read_value(self, library_name, read_values_dict):
+        """
+        Set the last read value. `value = None` implies we don't know the value read
+        (because an error was detected while trying to read that value to Arduino).
+
+        Replaces the old dict with a new one.
+        """
+        status = None
+        for key in sorted(self.status.keys()):
+            if self.status[key].used_by_lib == library_name:
+                status = self.status[key]
+                break
+
+        if status is None:
+            raise(PyArduinoException("Pin not found for library '{}'".format(library_name)))
+
+        status.read_value = None
+        status.lib_read_value = read_values_dict
         status.last_update = time.time()
 
     @synchronized(STATUS_TRACKER_LOCK)
@@ -225,6 +270,7 @@ class StatusTracker(object):
         (because an error was detected while trying to read that value to Arduino).
         """
         status = self.get_pin_status_instance(pin, digital)
+        status.lib_read_value = None
         status.read_value = read_value
         status.last_update = time.time()
 
@@ -2084,8 +2130,8 @@ class PyArduino(object):  # pylint: disable=R0904
 
         response = self.send_cmd(cmd)  # raises CommandTimeout,InvalidCommand
 
-        self.status_tracker.set_for_library(v_pin, digital=False, library='EnergyMonitor')
-        self.status_tracker.set_for_library(c_pin, digital=False, library='EnergyMonitor')
+        self.status_tracker.set_for_library(v_pin, digital=False, library='EnergyMonitor/v_pin')
+        self.status_tracker.set_for_library(c_pin, digital=False, library='EnergyMonitor/c_pin')
 
         splitted_response = response.split(",")
         if splitted_response[0] == 'EMON_S_OK':
@@ -2151,20 +2197,39 @@ class PyArduino(object):  # pylint: disable=R0904
         if splitted_response[0] == 'EMON_R_OK':
             if len(splitted_response) == 6:
                 try:
-                    return (
+                    realPower, apparentPower, powerFactor, Vrms, Irms = (
                         float(splitted_response[1]),
                         float(splitted_response[2]),
                         float(splitted_response[3]),
                         float(splitted_response[4]),
                         float(splitted_response[5]),
                     )
+
+                    self.status_tracker.set_lib_read_value('EnergyMonitor/v_pin', {
+                        'realPower': realPower,
+                        'apparentPower': apparentPower,
+                        'powerFactor': powerFactor,
+                        'Vrms': Vrms,
+                        'Irms': Irms,
+                    })
+
+                    return (
+                        realPower,
+                        apparentPower,
+                        powerFactor,
+                        Vrms,
+                        Irms,
+                    )
                 except ValueError:
+                    self.status_tracker.set_lib_read_value(None)
                     raise(InvalidResponse("EMON_R_OK received, "
                         "but data couldn't be transformed to float"))
             else:
+                self.status_tracker.set_lib_read_value(None)
                 raise(InvalidResponse("EMON_R_OK received, "
                     "but without the expected number of data"))
 
+        self.status_tracker.set_lib_read_value(None)
         raise(InvalidResponse(splitted_response[0]))
 
     energyMonitorRead.arduino_function_name = '_emonRd'

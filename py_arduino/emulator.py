@@ -179,6 +179,19 @@ class ArduinoEmulator(threading.Thread):
             assert int(splitted[2]) >= 0
             self.serial_connection.write("EMON_R_OK,1.1,2.2,3.3,4.4,5.5\n")
 
+            #            #    'realPower': realPower,
+            #            #    'apparentPower': apparentPower,
+            #            #    'powerFactor': powerFactor,
+            #            #    'Vrms': Vrms,
+            #            #    'Irms': Irms,
+            #            self.serial_connection.write("EMON_R_OK,{},{},{},{},{}\n".format(
+            #                random.randint(0, 100) / 10.0,
+            #                random.randint(0, 100) / 10.0,
+            #                random.randint(0, 100) / 10.0,
+            #                random.randint(180, 240) / 1.0,
+            #                random.randint(5, 40) / 1.0,
+            #            ))
+
         else:
             # FUNCTION_NOT_FOUND = 6
             self.serial_connection.write("%s 6\n" % INVALID_CMD)
