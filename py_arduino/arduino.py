@@ -95,6 +95,7 @@ class PinStatus(object):
         background task that is using the pin.
     - last_update: the `time.time()` value of the last update to
         the instance.
+    - used_by_lib: name of the library that is using the pin
 
     Note: since the communication isn't "transactional", when some
     errors occurs, we don't know if the change was made in the Arduino.
@@ -113,7 +114,7 @@ class PinStatus(object):
         # analog_written_value -> PWM & analogWrite()
         # background_task -> instance of BackgroundTask()
         self.background_task = background_task
-        # self.used_by_lib = used_by_lib
+        self.used_by_lib = used_by_lib
         self.last_update = 0
 
     def as_dict(self):
@@ -126,6 +127,7 @@ class PinStatus(object):
             'mode_is_input': self.mode == INPUT,
             'mode_is_output': self.mode == OUTPUT,
             'mode_is_unknown': self.mode not in (INPUT, OUTPUT),
+            'used_by_lib': self.used_by_lib,
             'last_update': self.last_update
         }
 
@@ -179,6 +181,19 @@ class StatusTracker(object):
         status.read_value = None
         status.written_value = None
         status.analog_written_value = None
+        status.last_update = time.time()
+
+    @synchronized(STATUS_TRACKER_LOCK)
+    def set_for_library(self, pin, digital, library):
+        """
+        Set pin as to be used by library.
+        """
+        status = self.get_pin_status_instance(pin, digital)
+        status.mode = MODE_UNKNOWN
+        status.read_value = None
+        status.written_value = None
+        status.analog_written_value = None
+        status.used_by_lib = library
         status.last_update = time.time()
 
     @synchronized(STATUS_TRACKER_LOCK)
@@ -2068,6 +2083,9 @@ class PyArduino(object):  # pylint: disable=R0904
             c_pin, c_calibration)
 
         response = self.send_cmd(cmd)  # raises CommandTimeout,InvalidCommand
+
+        self.status_tracker.set_for_library(v_pin, digital=False, library='EnergyMonitor')
+        self.status_tracker.set_for_library(c_pin, digital=False, library='EnergyMonitor')
 
         splitted_response = response.split(",")
         if splitted_response[0] == 'EMON_S_OK':
