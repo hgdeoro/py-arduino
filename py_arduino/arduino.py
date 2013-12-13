@@ -150,7 +150,10 @@ class StatusTracker(object):
         self.background_tasks = {}  # Keyed by name
 
     @synchronized(STATUS_TRACKER_LOCK)
-    def get_pin_status(self, pin, digital):
+    def get_pin_status_instance(self, pin, digital):
+        """
+        Returns the instance of `PinStatus` for the requested pin.
+        """
         key = (pin, digital,)
         try:
             return self.status[key]
@@ -171,7 +174,7 @@ class StatusTracker(object):
         This resets the value of `value`
         """
         assert mode in (INPUT, OUTPUT, MODE_UNKNOWN)
-        status = self.get_pin_status(pin, digital)
+        status = self.get_pin_status_instance(pin, digital)
         status.mode = mode
         status.read_value = None
         status.written_value = None
@@ -184,7 +187,7 @@ class StatusTracker(object):
         Set the last value written. `value = None` implies we don't know the pin value
         (because an error was detected while trying to send that value to Arduino).
         """
-        status = self.get_pin_status(pin, digital)
+        status = self.get_pin_status_instance(pin, digital)
         status.written_value = written_value
         status.analog_written_value = None  # For PWM, we should put 0 or 255 here
         status.last_update = time.time()
@@ -195,7 +198,7 @@ class StatusTracker(object):
         Set the last value written. `value = None` implies we don't know the pin value
         (because an error was detected while trying to send that value to Arduino).
         """
-        status = self.get_pin_status(pin, digital)
+        status = self.get_pin_status_instance(pin, digital)
         status.analog_written_value = analog_written_value
         status.written_value = None  # we should put HIGH (255), LOW (0) or None here
         status.last_update = time.time()
@@ -206,7 +209,7 @@ class StatusTracker(object):
         Set the last read value. `value = None` implies we don't know the value read
         (because an error was detected while trying to read that value to Arduino).
         """
-        status = self.get_pin_status(pin, digital)
+        status = self.get_pin_status_instance(pin, digital)
         status.read_value = read_value
         status.last_update = time.time()
 
@@ -225,9 +228,9 @@ class StatusTracker(object):
         """
         self.reset()
         for pin in range(0, arduino_type_struct['digital_pins']):
-            self.get_pin_status(pin, digital=True)
+            self.get_pin_status_instance(pin, digital=True)
         for pin in range(0, arduino_type_struct['analog_pins']):
-            self.get_pin_status(pin, digital=False)
+            self.get_pin_status_instance(pin, digital=False)
 
     @synchronized(STATUS_TRACKER_LOCK)
     def reserve_pins(self, pin_spec_list, background_task_name):
@@ -242,7 +245,7 @@ class StatusTracker(object):
         """
         # First check if pins are available
         for pin, digital in pin_spec_list:
-            status = self.get_pin_status(pin, digital)
+            status = self.get_pin_status_instance(pin, digital)
             if status.background_task:
                 logger.info("Pin %s (%s) is already reserved - Reservation for %s failed" % (
                     pin, digital, background_task_name))
@@ -250,7 +253,7 @@ class StatusTracker(object):
 
         # Then reserve it
         for pin, digital in pin_spec_list:
-            status = self.get_pin_status(pin, digital)
+            status = self.get_pin_status_instance(pin, digital)
             if not background_task_name in self.background_tasks:
                 self.background_tasks[background_task_name] = BackgroundTask(background_task_name)
             bg_task = self.background_tasks[background_task_name]
@@ -1679,7 +1682,7 @@ class PyArduino(object):  # pylint: disable=R0904
                 'pin': dp,
                 'digital': True,
                 'pwm': (dp in arduino_type_struct['pwm_pin_list']),
-                'status': self.status_tracker.get_pin_status(dp, digital=True).as_dict(),
+                'status': self.status_tracker.get_pin_status_instance(dp, digital=True).as_dict(),
             })
         arduino_type_struct['digital_pins_struct'] = digital_pins_struct
         del dp
@@ -1691,7 +1694,7 @@ class PyArduino(object):  # pylint: disable=R0904
                 'pin': ap,
                 'digital': False,
                 'pwm': False,
-                'status': self.status_tracker.get_pin_status(ap, digital=False).as_dict(),
+                'status': self.status_tracker.get_pin_status_instance(ap, digital=False).as_dict(),
             })
         arduino_type_struct['analog_pins_struct'] = analog_pins_struct
 
