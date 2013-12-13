@@ -1,12 +1,7 @@
 function PinsController($scope, $http, $location, $interval, $route, $templateCache, remoteArduino) {
 
     var get_arduino_data_url = '/angular/get_arduino_data/';
-    var digital_pin_mode_url = '/angular/digital_pin_mode/';
-    var read_pin_url = '/angular/read_pin/';
-    var digital_write_url = '/angular/digital_write/';
-    var analog_write_url = '/angular/analog_write/';
     var update_labels_and_ids_url = '/angular/update_labels_and_ids/';
-    var control_panel_code_url = '/renderControlPanel/';
 
     var MODE_PIN_UNKNOWN = null; // 'None' of PyArduino
     var INPUT = 0;

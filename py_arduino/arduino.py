@@ -82,7 +82,19 @@ class PinStatus(object):
     """
     Class to hold transient information of pin status.
     The information we have here is from the point of view
-    of the PyArduino, NOT the real Arduino.
+    of the PyArduino, NOT the real Arduino (see note below).
+
+    Attributes:
+    - pin: the pin number
+    - digital: if the pin is digital (True) or analog (False)
+    - mode: pin mode (INPUT, OUTPUT)
+    - read_value: last read value
+    - written_value: last writen value
+    - analog_written_value: last 'analog written' value (PWM)
+    - background_task: instance of BackgroundTask, references the
+        background task that is using the pin.
+    - last_update: the `time.time()` value of the last update to
+        the instance.
 
     Note: since the communication isn't "transactional", when some
     errors occurs, we don't know if the change was made in the Arduino.
@@ -91,7 +103,7 @@ class PinStatus(object):
     'pin status' in the Arduino (maybe in some future version).
     """
     def __init__(self, pin, digital, mode=MODE_UNKNOWN, read_value=None, written_value=None,
-            analog_written_value=None, background_task=None):
+            analog_written_value=None, background_task=None, used_by_lib=None):
         self.pin = pin
         self.digital = digital
         self.mode = mode  # None == unknown
@@ -101,6 +113,7 @@ class PinStatus(object):
         # analog_written_value -> PWM & analogWrite()
         # background_task -> instance of BackgroundTask()
         self.background_task = background_task
+        # self.used_by_lib = used_by_lib
         self.last_update = 0
 
     def as_dict(self):
