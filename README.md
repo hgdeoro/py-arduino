@@ -178,6 +178,12 @@ To start Pyro (in another terminal) and automatically connect to emulator:
     $ export DJANGO_SETTINGS_MODULE=py_arduino_web.dj.settings
     $ python py_arduino_web/pyroproxy/server.py --emulator
 
+To start a background task that reads analog pin 0, run in another terminal:
+
+    $ . virtualenv/bin/activate
+    $ export PYTHONPATH=.
+    $ python examples/bg_log_values_analog_pin.py --pin=0
+
 
 TODOs
 =============
