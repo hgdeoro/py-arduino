@@ -131,3 +131,7 @@ class Storage(BaseStorage):
         or None if no Pin exists with that identifier.
         """
         return None
+
+    def get_control_panels(self):
+        """Returns the list of available control panels"""
+        return []

@@ -1,10 +1,6 @@
-function PinsController($scope, $http, $location, $interval, remoteArduino) {
+function PinsController($scope, $http, $location, $interval, $route, $templateCache, remoteArduino) {
 
     var get_arduino_data_url = '/angular/get_arduino_data/';
-    var digital_pin_mode_url = '/angular/digital_pin_mode/';
-    var read_pin_url = '/angular/read_pin/';
-    var digital_write_url = '/angular/digital_write/';
-    var analog_write_url = '/angular/analog_write/';
     var update_labels_and_ids_url = '/angular/update_labels_and_ids/';
 
     var MODE_PIN_UNKNOWN = null; // 'None' of PyArduino
@@ -191,11 +187,16 @@ function PinsController($scope, $http, $location, $interval, remoteArduino) {
     /*
      * refreshPinInfo()
      */
-    $scope.refreshPinInfo = function() {
+    $scope.refreshPinInfo = function(callback) {
         console.info("refreshPinInfo()");
 
         $http.get(get_arduino_data_url).success(function(data) {
             $scope.refreshUi(data);
+
+            if(callback) {
+                console.debug("refreshPinInfo(): will call callback");
+                callback();
+            }
 
         }).error(function(data) {
             // Check connection problem!
@@ -215,13 +216,12 @@ function PinsController($scope, $http, $location, $interval, remoteArduino) {
      */
 
     // $scope.getBackgroundProcessesStatus
-
     $scope.startAutoRefresh = function() {
         if ($scope.extras.intervalAutoRefresh)
             return;
         $scope.extras.intervalAutoRefresh = $interval(function() {
             $scope.refreshPinInfo();
-        }, 5000);
+        }, 2000);
     };
 
     $scope.stopAutoRefresh = function() {

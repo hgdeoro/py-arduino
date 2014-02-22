@@ -177,7 +177,25 @@ class ArduinoEmulator(threading.Thread):
         elif splitted[0] == '_emonRd':  # energyMonitorRead()
             assert int(splitted[1]) >= 0
             assert int(splitted[2]) >= 0
-            self.serial_connection.write("EMON_R_OK,1.1,2.2,3.3,4.4,5.5\n")
+
+            # self.serial_connection.write("EMON_R_OK,1.1,2.2,3.3,4.4,5.5\n")
+            self.serial_connection.write("EMON_R_OK,1.1,2.2,3.3,{},{}\n".format(
+                random.randint(200, 240) / 1.0,
+                random.randint(10, 40) / 1.0
+            ))
+
+            #            #    'realPower': realPower,
+            #            #    'apparentPower': apparentPower,
+            #            #    'powerFactor': powerFactor,
+            #            #    'Vrms': Vrms,
+            #            #    'Irms': Irms,
+            #            self.serial_connection.write("EMON_R_OK,{},{},{},{},{}\n".format(
+            #                random.randint(0, 100) / 10.0,
+            #                random.randint(0, 100) / 10.0,
+            #                random.randint(0, 100) / 10.0,
+            #                random.randint(180, 240) / 1.0,
+            #                random.randint(5, 40) / 1.0,
+            #            ))
 
         else:
             # FUNCTION_NOT_FOUND = 6

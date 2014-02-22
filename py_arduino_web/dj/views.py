@@ -3,9 +3,12 @@ import json
 import Pyro4
 
 from django.http.response import HttpResponse, HttpResponseRedirect, \
-    HttpResponseServerError
+    HttpResponseServerError, HttpResponseBadRequest
+from django.views.decorators.csrf import csrf_exempt
 
 from py_arduino_web.pyroproxy.utils import get_arduino_pyro, get_storage_pyro
+from py_arduino_web.dj.models import ControlPanel
+from django.shortcuts import render_to_response
 
 
 ARDUINO_PYRO = get_arduino_pyro()
@@ -103,3 +106,62 @@ def validate_connection(request):
         logging.exception("Exception raised by arduino.validate_connection(). " +
             "".join(Pyro4.util.getPyroTraceback()))
         return JsonErrorResponse(e)
+
+
+def control_panel_html(request):
+    try:
+        cp = ControlPanel.objects.get(name='default')
+        return HttpResponse(cp.html)
+    except ControlPanel.DoesNotExist:
+        return HttpResponse("<p>Control panel with name 'default' not found.</p>")
+
+
+def control_panel_js(request):
+    try:
+        cp = ControlPanel.objects.get(name='default')
+        return HttpResponse(cp.js, content_type='application/javascript')
+    except ControlPanel.DoesNotExist:
+        return HttpResponse("/* Control panel with name 'default' not found. */")
+
+
+def control_panel_combined(request):
+    try:
+        cp = ControlPanel.objects.get(name='default')
+        return JsonResponse({
+            'html': cp.html,
+            'header': cp.header,
+            'js': cp.js,
+        })
+    except ControlPanel.DoesNotExist:
+        return HttpResponse("Control panel with name 'default' not found.")
+
+
+@csrf_exempt
+def control_panel_update(request):
+    if request.method != 'POST':
+        return HttpResponseBadRequest()
+    
+    data = json.loads(request.body)
+    control_panel = ControlPanel.objects.get(name='default')
+    control_panel.html = data['html']
+    control_panel.header = data['header']
+    control_panel.js = data['js']
+    control_panel.save()
+    return HttpResponse('ok')
+
+
+@csrf_exempt
+def control_panel_view(request):
+    try:
+        cp = ControlPanel.objects.get(name='default')
+        html_contents = cp.html
+        html_header = cp.header
+    except ControlPanel.DoesNotExist:
+        html_contents = ''
+        html_header = ''
+
+    ctx = {
+        'html_header': html_header,
+        'html_contents': html_contents,
+    }
+    return render_to_response('py-arduino/control_panel_view.html', ctx)

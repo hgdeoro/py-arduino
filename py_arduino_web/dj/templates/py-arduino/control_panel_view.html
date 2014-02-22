@@ -1,0 +1,66 @@
+<!doctype html>
+<html> <!-- ng-app='PyArduino' -->
+<!--
+Too bootstrap the AngujarJs app, run:
+    angular.bootstrap(document.body, ['PyArduino']);
+ -->
+<head>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet"
+    href="/static/app/resources/bootstrap-3.0.2/css/bootstrap.min.css">
+
+<!-- Optional theme -->
+<link rel="stylesheet"
+    href="/static/app/resources/bootstrap-3.0.2/css/bootstrap-theme.min.css">
+
+<!-- Font Awesome -->
+<link
+    href="/static/app/resources/font-awesome-4.0.3/css/font-awesome.min.css"
+    rel="stylesheet">
+
+<!-- <link rel="stylesheet" href="/static/app/resources/angular-slider.css"> -->
+
+<script src="/static/app/resources/jquery-1.10.2.min.js"></script>
+
+<!-- Latest compiled and minified JavaScript -->
+<script
+    src="/static/app/resources/bootstrap-3.0.2/js/bootstrap.min.js"></script>
+
+<script
+    src="/static/app/resources/angular-1.2.3/angular.min.js"></script>
+<script
+    src="/static/app/resources/angular-1.2.3/angular-route.min.js"></script>
+
+<script src="/static/app/resources/ui-bootstrap-tpls-0.6.0.min.js"></script>
+
+{{ html_header|safe }}
+
+<script src="/static/app/controllers/controlPanel.js"></script>
+<script src="/static/app/controllers/redirect.js"></script>
+<script src="/static/app/controllers/connect.js"></script>
+<script src="/static/app/controllers/pins.js"></script>
+<script src="/static/app/controllers/main.js"></script>
+
+<script src="/control_panel/js/"></script>
+
+</head>
+
+<body ng-controller="GlobalController">
+
+	<div class="container">
+		<div ng-controller="PinsController">
+		<div ng-controller="ControlPanelController">
+
+        {{ html_contents|safe }}
+
+	    </div>
+	    </div>
+    </div>
+	<!-- /container -->
+
+</body>
+</html>

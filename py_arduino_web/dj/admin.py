@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django import forms
 
-from py_arduino_web.dj.models import Pin
+from py_arduino_web.dj.models import Pin, ControlPanel
 
 
 class PinFormAdmin(forms.ModelForm):
@@ -30,3 +30,4 @@ class PinAdmin(admin.ModelAdmin):
     pin_type.short_description = 'Pin Type'
 
 admin.site.register(Pin, PinAdmin)
+admin.site.register(ControlPanel)
