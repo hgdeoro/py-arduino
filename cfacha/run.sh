@@ -8,4 +8,6 @@ $BASEDIR/bin/run_uwsgi.sh \
 	--mule=$BASEDIR/cfacha/mule_check_disparo_alarma.py \
 	--mule=$BASEDIR/cfacha/mule_check_ds18x20_temperatura_pileta.py \
 	--mule=$BASEDIR/cfacha/mule_check_ds18x20_temperatura_patio.py \
+	--mule=$BASEDIR/cfacha/mule_log_energy_monitor.py \
 	$*
+
