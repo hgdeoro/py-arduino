@@ -7,7 +7,6 @@ import datetime
 
 
 ESPERA_ENTRE_LECTURAS = 60
-PIN_TEMPERATURA = 9
 ARCHIVO = '/home/registros/consumo.txt'
 
 V_PIN = 1
