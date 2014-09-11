@@ -41,6 +41,11 @@ SENSORES = [
 
 ESPERA_ENTRE_LECTURAS = 20
 
+CANTIDAD_LECTURAS_POR_SENSOR = 5
+"""Realiza `CANTIDAD_LECTURAS_POR_SENSOR` lecturas,
+descarta las primeras y utiliza los utimos valores leidos
+"""
+
 
 class Main(BasePyroMain):
 
@@ -74,7 +79,7 @@ class Main(BasePyroMain):
                                               "called bg_setup()")
                         return
 
-                    for _ in range(5):
+                    for _ in range(CANTIDAD_LECTURAS_POR_SENSOR):
                         realPower, apparentPower, powerFactor, Vrms, Irms = \
                             arduino.energyMonitorRead(sensor['NO_WL'],
                                                       sensor['TIMEOUT'])
