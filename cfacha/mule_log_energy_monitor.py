@@ -74,9 +74,11 @@ class Main(BasePyroMain):
                                               "called bg_setup()")
                         return
 
-                    realPower, apparentPower, powerFactor, Vrms, Irms = \
-                        arduino.energyMonitorRead(sensor['NO_WL'],
-                                                  sensor['TIMEOUT'])
+                    for _ in range(5):
+                        realPower, apparentPower, powerFactor, Vrms, Irms = \
+                            arduino.energyMonitorRead(sensor['NO_WL'],
+                                                      sensor['TIMEOUT'])
+
                     with open(sensor['ARCHIVO'], 'a') as f:
                         f.write("{:0.2f},{:0.2f},{:0.2f},{:0.2f},{:0.2f}"
                                 "".format(realPower, apparentPower,
