@@ -14,8 +14,8 @@ SENSORES = [
          V_PHASE_SHIFT=1.7,
          C_PIN=0,
          C_CALIBRATION=30,
-         NO_WL=1,
-         TIMEOUT=2,
+         NO_WL=20,
+         TIMEOUT=2000,
     ),
     dict(
          ARCHIVO='/home/registros/consumo_2.txt',
@@ -24,8 +24,8 @@ SENSORES = [
          V_PHASE_SHIFT=1.7,
          C_PIN=2,
          C_CALIBRATION=30,
-         NO_WL=1,
-         TIMEOUT=2,
+         NO_WL=20,
+         TIMEOUT=2000,
     ),
     dict(
          ARCHIVO='/home/registros/consumo_3.txt',
@@ -34,16 +34,21 @@ SENSORES = [
          V_PHASE_SHIFT=1.7,
          C_PIN=4,
          C_CALIBRATION=30,
-         NO_WL=1,
-         TIMEOUT=2,
+         NO_WL=20,
+         TIMEOUT=2000,
     ),
 ]
 
-ESPERA_ENTRE_LECTURAS = 20
+ESPERA_ENTRE_LECTURAS = 10
 
-CANTIDAD_LECTURAS_POR_SENSOR = 5
+CANTIDAD_LECTURAS_POR_SENSOR = 2
 """Realiza `CANTIDAD_LECTURAS_POR_SENSOR` lecturas,
 descarta las primeras y utiliza los utimos valores leidos
+"""
+
+ESPERA_ESTABILIZACION_SENSOR = 3
+"""Espera a realizar entre lecturas (lecturas realizadas
+mientras se esera a que el sensor se estabilice)
 """
 
 
@@ -83,6 +88,7 @@ class Main(BasePyroMain):
                         realPower, apparentPower, powerFactor, Vrms, Irms = \
                             arduino.energyMonitorRead(sensor['NO_WL'],
                                                       sensor['TIMEOUT'])
+                        time.sleep(ESPERA_ESTABILIZACION_SENSOR)
 
                     with open(sensor['ARCHIVO'], 'a') as f:
                         f.write("{:0.2f},{:0.2f},{:0.2f},{:0.2f},{:0.2f}"
