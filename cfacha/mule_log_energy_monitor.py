@@ -41,12 +41,12 @@ SENSORES = [
 
 ESPERA_ENTRE_LECTURAS = 10
 
-CANTIDAD_LECTURAS_POR_SENSOR = 2
+CANTIDAD_LECTURAS_POR_SENSOR = 10
 """Realiza `CANTIDAD_LECTURAS_POR_SENSOR` lecturas,
 descarta las primeras y utiliza los utimos valores leidos
 """
 
-ESPERA_ESTABILIZACION_SENSOR = 3
+ESPERA_ESTABILIZACION_SENSOR = 1.5
 """Espera a realizar entre lecturas (lecturas realizadas
 mientras se esera a que el sensor se estabilice)
 """
