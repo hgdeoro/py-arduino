@@ -6,7 +6,7 @@ from py_arduino_web.pyroproxy.utils import BasePyroMain
 import datetime
 
 
-ESPERA_ENTRE_LECTURAS = 60
+ESPERA_ENTRE_LECTURAS = 10
 ARCHIVO = '/home/registros/consumo_old.txt'
 
 V_PIN = 1
