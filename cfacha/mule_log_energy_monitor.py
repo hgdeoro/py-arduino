@@ -6,17 +6,40 @@ from py_arduino_web.pyroproxy.utils import BasePyroMain
 import datetime
 
 
-ESPERA_ENTRE_LECTURAS = 60
-ARCHIVO = '/home/registros/consumo.txt'
+SENSORES = [
+    dict(
+         ARCHIVO='/home/registros/consumo.txt',
+         V_PIN=1,
+         V_CALIBRATION=2.2,
+         V_PHASE_SHIFT=3.3,
+         C_PIN=4,
+         C_CALIBRATION=5.5,
+         NO_WL=1,
+         TIMEOUT=2,
+    ),
+    dict(
+         ARCHIVO='/home/registros/consumo-2.txt',
+         V_PIN=999,
+         V_CALIBRATION=2.2,
+         V_PHASE_SHIFT=3.3,
+         C_PIN=998,
+         C_CALIBRATION=5.5,
+         NO_WL=1,
+         TIMEOUT=2,
+    ),
+    dict(
+         ARCHIVO='/home/registros/consumo-3.txt',
+         V_PIN=997,
+         V_CALIBRATION=2.2,
+         V_PHASE_SHIFT=3.3,
+         C_PIN=996,
+         C_CALIBRATION=5.5,
+         NO_WL=1,
+         TIMEOUT=2,
+    ),
+]
 
-V_PIN = 1
-V_CALIBRATION = 2.2
-V_PHASE_SHIFT = 3.3
-C_PIN = 4
-C_CALIBRATION = 5.5
-
-NO_WL = 1
-TIMEOUT = 2
+ESPERA_ENTRE_LECTURAS = 20
 
 
 class Main(BasePyroMain):
@@ -33,35 +56,44 @@ class Main(BasePyroMain):
                 time.sleep(5)
             self.logger.info("Connected!")
 
-        ## setup()
-
-        try:
-            self.logger.debug("Calling energyMonitorSetup()")
-            arduino.energyMonitorSetup(V_PIN, V_CALIBRATION, V_PHASE_SHIFT, C_PIN, C_CALIBRATION)
-        except:
-            self.logger.exception("Error detected when called bg_setup()")
-            return
-
-        ## loop()
-
         try:
             self.logger.debug("Entering loop...")
             while True:
-                realPower, apparentPower, powerFactor, Vrms, Irms = arduino.energyMonitorRead(
-                    NO_WL, TIMEOUT)
-                with open(ARCHIVO, 'a') as f:
-                    f.write("{:0.2f},{:0.2f},{:0.2f},{:0.2f},{:0.2f}".format(realPower,
-                        apparentPower, powerFactor, Vrms, Irms))
-                    f.write(",")
-                    f.write(datetime.datetime.now().strftime("%H:%M:%S %Y-%m-%d"))
-                    f.write("\n")
 
-                time.sleep(ESPERA_ENTRE_LECTURAS)
+                for sensor in SENSORES:
+                    try:
+                        self.logger.debug("Calling energyMonitorSetup()")
+                        arduino.energyMonitorSetup(sensor['V_PIN'],
+                                                   sensor['V_CALIBRATION'],
+                                                   sensor['V_PHASE_SHIFT'],
+                                                   sensor['C_PIN'],
+                                                   sensor['C_CALIBRATION']
+                                                   )
+                    except:
+                        self.logger.exception("Error detected when "
+                                              "called bg_setup()")
+                        return
+
+                    realPower, apparentPower, powerFactor, Vrms, Irms = \
+                        arduino.energyMonitorRead(sensor['NO_WL'],
+                                                  sensor['TIMEOUT'])
+                    with open(sensor['ARCHIVO'], 'a') as f:
+                        f.write("{:0.2f},{:0.2f},{:0.2f},{:0.2f},{:0.2f}"
+                                "".format(realPower, apparentPower,
+                                          powerFactor, Vrms, Irms))
+                        f.write(",")
+                        f.write(datetime.datetime.now().strftime(
+                            "%H:%M:%S %Y-%m-%d"))
+                        f.write("\n")
+
+                    time.sleep(ESPERA_ENTRE_LECTURAS)
+
         except:
             self.logger.exception("Error detected in loop")
             return
 
 
 if __name__ == '__main__':
-    Main()._start(info=True, dont_check_pyro_server=True, wait_until_pyro_server_is_up=True,
-        wait_until_connected=True)
+    Main()._start(info=True, dont_check_pyro_server=True,
+                  wait_until_pyro_server_is_up=True,
+                  wait_until_connected=True)
