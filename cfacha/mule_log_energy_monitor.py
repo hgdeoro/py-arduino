@@ -85,6 +85,7 @@ class Main(BasePyroMain):
                         f.write(datetime.datetime.now().strftime(
                             "%H:%M:%S %Y-%m-%d"))
                         f.write("\n")
+                        f.close()
 
                     time.sleep(ESPERA_ENTRE_LECTURAS)
 
