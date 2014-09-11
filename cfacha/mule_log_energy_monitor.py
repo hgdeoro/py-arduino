@@ -18,7 +18,7 @@ SENSORES = [
          TIMEOUT=2,
     ),
     dict(
-         ARCHIVO='/home/registros/consumo-2.txt',
+         ARCHIVO='/home/registros/consumo_2.txt',
          V_PIN=3,
          V_CALIBRATION=239,
          V_PHASE_SHIFT=1.7,
@@ -28,7 +28,7 @@ SENSORES = [
          TIMEOUT=2,
     ),
     dict(
-         ARCHIVO='/home/registros/consumo-3.txt',
+         ARCHIVO='/home/registros/consumo_3.txt',
          V_PIN=5,
          V_CALIBRATION=239,
          V_PHASE_SHIFT=1.7,
