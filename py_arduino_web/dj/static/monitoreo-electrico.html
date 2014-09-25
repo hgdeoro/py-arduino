@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.js"></script>
+<script type="text/javascript">
+
+var test = function() {
+	
+	$.ajax({
+		  type: "GET",
+		  url: "http://127.0.0.1:8000/leer_txt_de_monitoreo_electrico/",
+		})
+		.done(function(respuesta) {
+			// ACA ACTUALIZAR EL GRAFICO CON EL VALOR DE respuesta.consumo
+		    alert(respuesta.consumo);
+		 });
+
+}
+
+</script>
+</head>
+<body>
+
+<a href="javascript:test();">TEST</a>
+
+</body>
+</html>

@@ -9,6 +9,7 @@ from django.views.decorators.csrf import csrf_exempt
 from py_arduino_web.pyroproxy.utils import get_arduino_pyro, get_storage_pyro
 from py_arduino_web.dj.models import ControlPanel
 from django.shortcuts import render_to_response
+import random
 
 
 ARDUINO_PYRO = get_arduino_pyro()
@@ -165,3 +166,10 @@ def control_panel_view(request):
         'html_contents': html_contents,
     }
     return render_to_response('py-arduino/control_panel_view.html', ctx)
+
+
+def leer_txt_de_monitoreo_electrico(request):
+    consumo = float(random.randint(100, 1000)) / 10.0
+    return JsonResponse({
+        'consumo': consumo,
+    })
