@@ -75,18 +75,6 @@ Then upload the __sketch__ from `sketches/py_arduino`, and test:
 
     $ python -m py_arduino.cli.ping /dev/ttyACM0
 
-<!--
-### Running the tests
-
-To run the tests against the emulator (if you don't have an Arduino):
-
-    $ python -m py_arduino.tests.test_all_functions /dev/ARDUINO_EMULATOR 
-
-To run the tests against a real Arduino, you have to upload the __sketch__ (from `sketches/py_arduino`), an execute:
-
-    $ python -m py_arduino.tests.test_all_functions /dev/ttyACM0 
--->
-
 
 Installation (web application)
 ==============================
@@ -111,24 +99,6 @@ and clic 'Connect'.
 To use the Django Admin (to modify pin labels, etc.), you'll need to create an user:
 
     $ python -m py_arduino_web.dj.manage createsuperuser
-
-
-<!--
-Here are some screenshots:
-
-![connect](https://raw.github.com/hgdeoro/py-arduino-proxy/master/examples/arduino-proxy-web-interface-connect.png) and 
-
-![main page](https://raw.github.com/hgdeoro/py-arduino-proxy/master/examples/arduino-proxy-web-interface-main.png).
--->
-
-
-<!--
-The recommended way to install py-arduino is using pip and/or virtualenv.
-
-1. Install PIP [manually](http://www.pip-installer.org/en/latest/installing.html "Install PIP"), or with your distribution's package manager (`sudo apt-get install python-pip` in Ubuntu), or create a [virtualenv](http://www.virtualenv.org/en/latest/ "Vitualenv Site").
-2. Run `pip install py-arduino`
--->
-
 
 
 <!--
