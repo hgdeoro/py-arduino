@@ -1,5 +1,5 @@
 py-arduino
-==============
+==========
 
 **py-arduino** is a **Python** tool/library to communicate with **Arduino**
 through USB (serial port), plus a web application on top of it.
@@ -60,8 +60,8 @@ And support for:
 but this is not part of the "core" functionality, and should be refactored.
 
 
-Quick installation instructions (low level tool/library)
-========================================================
+Quick installation instructions
+===============================
 
 Quick instructions ([see full install instructions and other documentation here](http://hgdeoro.github.io/py-arduino/))
 
@@ -79,9 +79,7 @@ Then upload the __sketch__ from `sketches/py_arduino`, and test:
 Installation (web application)
 ==============================
 
- * Note: this instructions will be shortly moved to [http://hgdeoro.github.io/py-arduino/](http://hgdeoro.github.io/py-arduino/)
-
-To install the web application, follow the steps on `Installation (low level tool/library)`, and then:
+To install the web application, follow the steps on `Quick installation instructions`, and then:
 
     $ pip install -r requirements-web.txt
     $ python -m py_arduino_web.dj.manage syncdb --noinput --migrate
