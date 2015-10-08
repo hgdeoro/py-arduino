@@ -22,7 +22,6 @@ test without actually having an Arduino connected.
 * Can recover after timeouts and connection's troubles - see: `validateConnection()`
 * Easy to extend
 * Easy to debug (with `--arduino-debug`, which dumps all the data transmitted to/from Arduino)
-* Growing [documentation](http://hgdeoro.github.io/py-arduino/)
 
 Implemented methods  
 ===================
@@ -44,16 +43,21 @@ There are other extra methods:
 * `getFreeMemory()` returns free Arduino memory
 * `autoconnect()` to automatically connect to any available serial port
 * `validateConnection()` to recover after communications problems
-* `watchInterrupt()`, `getInterruptMark()` to work with interrupts (Prototype/Work In Progress)
 * `enableDebug()`, `disableDebug()`, `enableDebugToLcd()` to show debug messages
 * `getAvrCpuType()`, `getArduinoTypeStruct()` to get information about the Arduino
-* `streamingAnalogRead()`, `streamingDigitalRead()` eficientlly receive much values (Prototype/Work In Progress)
+
+There is also work in progress related to:
+
+* `watchInterrupt()`, `getInterruptMark()` to work with interrupts (Prototype)
+* `streamingAnalogRead()`, `streamingDigitalRead()` eficientlly receive much values (Prototype)
 
 And support for:
 
 * `lcdMessage()`, `lcdWrite()`, `lcdClear()` show messages on LCDs, based on the Hitachi HD44780 (or a compatible) chipset
 * `dht11_read()` read temperature and humidity with DHT11 sensor
 * `ds18x20_read()` read temperature with DS18x20 sensor
+
+but this is not part of the "core" functionality, and should be refactored.
 
 
 Quick installation instructions (low level tool/library)
@@ -185,13 +189,13 @@ To start a background task that reads analog pin 0, run in another terminal:
     $ python examples/bg_log_values_analog_pin.py --pin=0
 
 
-TODOs
-=============
+TODOs and IDEAS
+===============
 
 * Add **INPUT_PULLUP** to pinMode()
 * Add missing basic functions: tone(), analogReference()
 * Add support to use analog pins as digital pins
-* Better streaming support
+* Finish implementing streaming support
 * Multi-read (read multiple pins in a single operation)
 * Finish support for interrupt
 * Make hardware-specific functionality optional (LCD, DHT11, etc.)
@@ -200,7 +204,7 @@ License y copyright
 ===================
 
     py-arduino - Access your Arduino from Python
-    Copyright (C) 2011-2013 - Horacio Guillermo de Oro <hgdeoro@gmail.com>
+    Copyright (C) 2011-2015 - Horacio Guillermo de Oro <hgdeoro@gmail.com>
     
     py-arduino is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
