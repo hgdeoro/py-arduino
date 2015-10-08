@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 ##-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 ##    py-arduino - Access your Arduino from Python
-##    Copyright (C) 2011-2013 - Horacio Guillermo de Oro <hgdeoro@gmail.com>
+##    Copyright (C) 2011-2015 - Horacio Guillermo de Oro <hgdeoro@gmail.com>
 ##
 ##    This file is part of py-arduino.
 ##
