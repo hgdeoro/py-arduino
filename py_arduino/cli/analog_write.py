@@ -2,10 +2,6 @@
 # Licensed under the Apache License, Version 2.0
 # Copyright (C) 2011-2015 - Horacio Guillermo de Oro <hgdeoro@gmail.com>
 
-
-from py_arduino.main_utils import BaseMain
-from py_arduino import OUTPUT
-
 """
 #===============================================================================
 # <<Writes an analog value (PWM wave) to a pin>>
@@ -23,6 +19,9 @@ To write 128 to pin 3:
     $ . virtualenv/bin/activate
 
 """
+
+from py_arduino.main_utils import BaseMain
+from py_arduino import OUTPUT
 
 
 class Main(BaseMain):

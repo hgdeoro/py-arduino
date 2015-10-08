@@ -2,9 +2,9 @@
 # Copyright (C) 2011-2015 - Horacio Guillermo de Oro <hgdeoro@gmail.com>
 
 
-#===============================================================================
+# ===============================================================================
 # Interfaces & utils
-#===============================================================================
+# ===============================================================================
 
 def default_label(pin, is_digital):
     """Returns a default label for a pin"""
@@ -15,7 +15,6 @@ def default_label(pin, is_digital):
 
 
 class BaseStorage():
-
     def enhanceArduinoTypeStruct(self, arduino_type_struct):
         """
         Returns an enhanced copy of `arduino_type_struct` with data from storage.
@@ -41,9 +40,8 @@ class BaseStorage():
 
         # create 'structs' for each digital pin
         for dp, dp_struct in zip(
-            arduino_type_struct['digital_pins_items'],
-            arduino_type_struct['digital_pins_struct']):
-
+                arduino_type_struct['digital_pins_items'],
+                arduino_type_struct['digital_pins_struct']):
             # Assert we are 'synchronized'
             assert dp == dp_struct['pin']
 
@@ -61,9 +59,8 @@ class BaseStorage():
 
         # create 'structs' for each analog pin
         for ap, ap_struct in zip(
-            arduino_type_struct['analog_pins_items'],
-            arduino_type_struct['analog_pins_struct']):
-
+                arduino_type_struct['analog_pins_items'],
+                arduino_type_struct['analog_pins_struct']):
             # Assert we are 'synchronized'
             assert ap == ap_struct['pin']
 
@@ -78,14 +75,13 @@ class BaseStorage():
         return arduino_type_struct
 
 
-#===============================================================================
+# ===============================================================================
 # Dummy implementations
-#===============================================================================
+# ===============================================================================
 
 class Pin():
-
     def __init__(self, pin=None, digital=False, label=None, enabled_in_web=True,
-        pin_id=None, pk=0):
+                 pin_id=None, pk=0):
         self.pk = pk
         self.pin_id = pin_id
         self.pin = pin
@@ -102,12 +98,11 @@ class Pin():
 
 
 class Storage(BaseStorage):
-
     def get_pin(self, pin, is_digital):
         """
         Returns a Pin instance.
         """
-        return Pin(pin, is_digital,)
+        return Pin(pin, is_digital, )
 
     def get_pin_by_id(self, pin_id):
         """

@@ -18,9 +18,10 @@ class TestPyArduinoWithInitialContentInSerialBuffer(unittest.TestCase):  # pylin
     """
     Testcase for commands.
     """
+
     def setUp(self):  # pylint: disable=C0103
         self.arduino = PyArduino(tty=DEVICE_FOR_EMULATOR,
-            call_validate_connection=True)
+                                 call_validate_connection=True)
         self.arduino.connect()
         # Inject after connect()
         self.arduino.serial_port.inject_to_in_buffer("** SOME TEXT **\n" * 5)
@@ -173,7 +174,6 @@ class TestInternalsOfPyArduino(unittest.TestCase):  # pylint: disable=R0904
         self.arduino.connect()
 
     def test_send_cmd(self):
-
         def valid_transformer1(arg1):
             return arg1
 
@@ -187,20 +187,20 @@ class TestInternalsOfPyArduino(unittest.TestCase):  # pylint: disable=R0904
             pass
 
         def invalid_transformer3(arg1):  # pylint: disable=W0613
-            raise(Exception("Exception while transforming"))
+            raise (Exception("Exception while transforming"))
 
         # send_cmd(self, cmd, expected_response=None, timeout=None, response_transformer=None):
         self.arduino.send_cmd("_ms", response_transformer=int)
         self.arduino.send_cmd("_ms", response_transformer=valid_transformer1)
         self.arduino.send_cmd("_ms", response_transformer=valid_transformer2,
-            expected_response="RESPONSE_FROM_TRANSFORMER")
+                              expected_response="RESPONSE_FROM_TRANSFORMER")
 
         self.assertRaises(InvalidResponse, self.arduino.send_cmd, "_ms",
-            response_transformer=invalid_transformer1)
+                          response_transformer=invalid_transformer1)
         self.assertRaises(InvalidResponse, self.arduino.send_cmd, "_ms",
-            response_transformer=invalid_transformer2)
+                          response_transformer=invalid_transformer2)
         self.assertRaises(InvalidResponse, self.arduino.send_cmd, "_ms",
-            response_transformer=invalid_transformer3)
+                          response_transformer=invalid_transformer3)
 
         self.assertRaises(InvalidResponse, self.arduino.send_cmd, "_ms", expected_response="X")
 
@@ -208,6 +208,7 @@ class TestInternalsOfPyArduino(unittest.TestCase):  # pylint: disable=R0904
 
     def tearDown(self):  # pylint: disable=C0103
         self.arduino.close()
+
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

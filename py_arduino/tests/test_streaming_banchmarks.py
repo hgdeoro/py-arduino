@@ -47,49 +47,49 @@ def sdr(arduino):
 
 
 class Main(BaseMain):
-
     def run(self, options, args, arduino):
-        #=======================================================================
+        # =======================================================================
         # arduino.analogRead
-        #=======================================================================
+        # =======================================================================
         print " + read %d values using arduino.analogRead()..." % NON_STREAMING_READS
         analogRead_time = nsar(arduino)
 
-        #=======================================================================
+        # =======================================================================
         # arduino.streamingAnalogRead()
-        #=======================================================================
+        # =======================================================================
         print " + read %d values using arduino.streamingAnalogRead()" % STREAMING_READS
         streamingAnalogRead_time = sar(arduino)
 
-        #=======================================================================
+        # =======================================================================
         # Stats
-        #=======================================================================
+        # =======================================================================
         non_streaming = float(NON_STREAMING_READS) / analogRead_time.total_seconds()
         streaming = float(1000.0) / streamingAnalogRead_time.total_seconds()
         print " - arduino.analogRead() -> %f reads per second" % non_streaming
         print " - arduino.streamingAnalogRead() ->  %f reads per second" % streaming
         print "     +-> speedup: X%0.2f" % (streaming / non_streaming)
 
-        #=======================================================================
+        # =======================================================================
         # arduino.digitalRead()
-        #=======================================================================
+        # =======================================================================
         print " + read %d values using arduino.digitalRead()" % NON_STREAMING_READS
         digitalRead_time = nsdr(arduino)
 
-        #=======================================================================
+        # =======================================================================
         # arduino.streamingDigitalRead
-        #=======================================================================
+        # =======================================================================
         print " + read %d values using arduino.streamingDigitalRead()" % STREAMING_READS
         streamingDigitalRead_time = sdr(arduino)
 
-        #=======================================================================
+        # =======================================================================
         # Stats
-        #=======================================================================
+        # =======================================================================
         non_streaming = float(NON_STREAMING_READS) / digitalRead_time.total_seconds()
         streaming = float(1000.0) / streamingDigitalRead_time.total_seconds()
         print " - arduino.digitalRead() -> %f reads per second" % non_streaming
         print " - arduino.streamingDigitalRead() ->  %f reads per second" % streaming
         print "     +-> speedup: X%0.2f" % (streaming / non_streaming)
+
 
 if __name__ == '__main__':
     Main().start()

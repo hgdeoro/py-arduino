@@ -2,12 +2,6 @@
 # Licensed under the Apache License, Version 2.0
 # Copyright (C) 2011-2015 - Horacio Guillermo de Oro <hgdeoro@gmail.com>
 
-import sys
-import time
-
-from py_arduino import CommandTimeout
-from py_arduino.main_utils import BaseMain
-
 """
 #===============================================================================
 # Ping to the Arduino until Ctrl+C is pressed.
@@ -25,9 +19,14 @@ To execute this, run:
 
 """
 
+import sys
+import time
+
+from py_arduino import CommandTimeout
+from py_arduino.main_utils import BaseMain
+
 
 class Main(BaseMain):
-
     def run(self, options, args, arduino):
         while True:
             sys.stdout.write("Ping sent...")
@@ -42,6 +41,7 @@ class Main(BaseMain):
             except CommandTimeout:
                 sys.stdout.write(" timeout\n")
                 sys.stdout.flush()
+
 
 if __name__ == '__main__':
     Main().start()

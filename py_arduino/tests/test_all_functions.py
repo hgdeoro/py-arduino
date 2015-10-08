@@ -4,12 +4,11 @@
 
 from py_arduino import InvalidCommand, CommandTimeout, InvalidResponse, NotConnected, \
     HIGH, OUTPUT, LSBFIRST
-from py_arduino.main_utils import  BaseMain
+from py_arduino.main_utils import BaseMain
 import py_arduino
 
 
 class Main(BaseMain):
-
     def run(self, options, args, arduino):
         print "getFreeMemory() -> %s" % str(arduino.getFreeMemory())
         print "enableDebug() -> %s" % str(arduino.enableDebug())
@@ -27,19 +26,19 @@ class Main(BaseMain):
         print "millis() -> %s " % str(arduino.millis())
         print "micros() -> %s" % str(arduino.micros())
         print "shiftOut() -> %s" % str(arduino.shiftOut(10, 11, LSBFIRST, 255,
-            set_pin_mode=True))
+                                                        set_pin_mode=True))
         print "getArduinoTypeStruct() -> %s" % str(arduino.getArduinoTypeStruct())
         print "enhanceArduinoTypeStruct() -> %s" % str(arduino.enhanceArduinoTypeStruct(
             arduino.getArduinoTypeStruct()))
 
-        #define RETURN_OK 0
-        #define READ_ONE_PARAM_NEW_LINE_FOUND 7
-        #define READ_ONE_PARAM_EMPTY_RESPONSE 1
-        #define READ_ONE_PARAM_ERROR_PARAMETER_TOO_LARGE 2
-        #define READ_PARAMETERS_ERROR_TOO_MANY_PARAMETERS 3
-        #define UNEXPECTED_RESPONSE_FROM_READ_ONE_PARAM 4
-        #define UNEXPECTED_RESPONSE_FROM_READ_PARAMETERS 5
-        #define FUNCTION_NOT_FOUND 6
+        # define RETURN_OK 0
+        # define READ_ONE_PARAM_NEW_LINE_FOUND 7
+        # define READ_ONE_PARAM_EMPTY_RESPONSE 1
+        # define READ_ONE_PARAM_ERROR_PARAMETER_TOO_LARGE 2
+        # define READ_PARAMETERS_ERROR_TOO_MANY_PARAMETERS 3
+        # define UNEXPECTED_RESPONSE_FROM_READ_ONE_PARAM 4
+        # define UNEXPECTED_RESPONSE_FROM_READ_PARAMETERS 5
+        # define FUNCTION_NOT_FOUND 6
 
         try:
             print "Check for READ_ONE_PARAM_ERROR_PARAMETER_TOO_LARGE"
@@ -95,7 +94,7 @@ class Main(BaseMain):
             pass
 
         print "Re-connecting after timeout. validateConnection() -> %s" % \
-            str(arduino.validateConnection())
+              str(arduino.validateConnection())
 
         # Now, the connection is valid again, ping() should work...
         print "ping() -> %s" % str(arduino.ping())
@@ -108,9 +107,9 @@ class Main(BaseMain):
         print "energyMonitorRead() -> %s" % str(
             arduino.energyMonitorRead(1, 2))
 
-        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # Test streaming
-        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         # Test streaming of analog values
         for val in arduino.streamingAnalogRead(0, 10):
@@ -124,9 +123,9 @@ class Main(BaseMain):
         print "millis() -> %s " % str(arduino.millis())
         # Finished!
 
-        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # Test NotConnected/close()/re-connect()
-        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         print "Test close() and re-connect()"
         assert arduino.is_connected()
         arduino.close()
@@ -140,16 +139,16 @@ class Main(BaseMain):
         arduino.connect()
         arduino.ping()
 
-        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # Test autoconnect()
-        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         print "Test autoconnect()"
         arduino.close()
         autoconnect_ok = arduino.autoconnect()
         if not autoconnect_ok and arduino.tty == py_arduino.DEVICE_FOR_EMULATOR:
             print ""
             print "autoconnect() failed, but you are using the emulator. " + \
-                "This is not considered a fail."
+                  "This is not considered a fail."
             print ""
             self.auto_close = False
         else:

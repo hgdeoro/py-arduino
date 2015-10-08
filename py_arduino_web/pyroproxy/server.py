@@ -16,14 +16,20 @@ def main():
     """
     parser = optparse.OptionParser()
     parser.add_option("--debug",
-        action="store_true", dest="debug", default=False,
-        help="Configure logging to show debug messages.")
+                      action="store_true",
+                      dest="debug",
+                      default=False,
+                      help="Configure logging to show debug messages.")
     parser.add_option("--info",
-        action="store_true", dest="info", default=False,
-        help="Configure logging to show info messages.")
+                      action="store_true",
+                      dest="info",
+                      default=False,
+                      help="Configure logging to show info messages.")
     parser.add_option("--emulator",
-        action="store_true", dest="emulator", default=False,
-        help="Automatically connect to emulator.")
+                      action="store_true",
+                      dest="emulator",
+                      default=False,
+                      help="Automatically connect to emulator.")
 
     (options, _) = parser.parse_args()
 
@@ -58,7 +64,8 @@ def main():
             status_tracker: "py_arduino.status_tracker",
         },
         host="localhost", port=61234, ns=False)
-    # FORMA DE URI -> uri_string = "PYRO:py_arduino.PyArduino@localhost:61234"
+    # URI FORMAT -> uri_string = "PYRO:py_arduino.PyArduino@localhost:61234"
+
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)

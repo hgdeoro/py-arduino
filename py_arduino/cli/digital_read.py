@@ -2,9 +2,6 @@
 # Licensed under the Apache License, Version 2.0
 # Copyright (C) 2011-2015 - Horacio Guillermo de Oro <hgdeoro@gmail.com>
 
-from py_arduino.main_utils import BaseMain
-from py_arduino import HIGH, LOW, INPUT
-
 """
 #===============================================================================
 # <<Reads the value from a specified digital pin, either HIGH or LOW>>
@@ -27,6 +24,9 @@ To print 0 or 1 instead of LOW or HIGH:
 
 """
 
+from py_arduino.main_utils import BaseMain
+from py_arduino import HIGH, LOW, INPUT
+
 
 class Main(BaseMain):
     optparse_usage = BaseMain.optparse_usage + " digital_port"
@@ -35,11 +35,11 @@ class Main(BaseMain):
     def add_options(self):
         super(Main, self).add_options()
         self.parser.add_option("--loop",
-            action="store_true", dest="loop", default=False,
-            help="Keep reading and printing the values.")
+                               action="store_true", dest="loop", default=False,
+                               help="Keep reading and printing the values.")
         self.parser.add_option("--numerical",
-            action="store_true", dest="numerical", default=False,
-            help="Prints 1 or 0 instead of 'HIGH' and 'LOW'.")
+                               action="store_true", dest="numerical", default=False,
+                               help="Prints 1 or 0 instead of 'HIGH' and 'LOW'.")
 
     def run(self, options, args, arduino):
         digital_pin = int(args[1])
@@ -57,9 +57,10 @@ class Main(BaseMain):
                 else:
                     print "LOW"
             else:
-                raise(Exception("Invalid value for a digital read: '%s'" % str(value)))
+                raise (Exception("Invalid value for a digital read: '%s'" % str(value)))
             if not options.loop:
                 break
+
 
 if __name__ == '__main__':
     Main().start()

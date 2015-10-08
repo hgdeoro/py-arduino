@@ -32,10 +32,10 @@ class ArduinoEmulator(threading.Thread):
         If parameters are OK: returns True
         If something is wrong: write response using serial connection and return False.
         """
-        #define READ_ONE_PARAM_EMPTY_RESPONSE 							1
-        #define UNEXPECTED_RESPONSE_FROM_READ_ONE_PARAM		4
-        #define UNEXPECTED_RESPONSE_FROM_READ_PARAMETERS		5
-        #define FUNCTION_NOT_FOUND													6
+        # define READ_ONE_PARAM_EMPTY_RESPONSE 							1
+        # define UNEXPECTED_RESPONSE_FROM_READ_ONE_PARAM		4
+        # define UNEXPECTED_RESPONSE_FROM_READ_PARAMETERS		5
+        # define FUNCTION_NOT_FOUND													6
         for item in splitted_params:
             if len(item) > 16:
                 # READ_ONE_PARAM_ERROR_PARAMETER_TOO_LARGE = 2
@@ -132,7 +132,7 @@ class ArduinoEmulator(threading.Thread):
 
         elif splitted[0] == '_lcdW':  # lcdWrite()
             print "LCD[col=%d][row=%d]: %s" % (int(splitted[1]), int(splitted[2]),
-                ' '.join(splitted[3:]))
+                                               ' '.join(splitted[3:]))
             self.serial_connection.write("LWOK\n")
 
         elif splitted[0] == '_strAR':  # streamingAnalogRead()
@@ -215,7 +215,8 @@ class ArduinoEmulator(threading.Thread):
     def stop_running(self):
         self.running = False
 
-## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 class SerialConnectionArduinoEmulator(object):
@@ -224,8 +225,9 @@ class SerialConnectionArduinoEmulator(object):
     The MASTER endpoint, on the PyArduino side,
     and the SLAVE endpoint, on the Arduino Emulator side.
     """
+
     def __init__(self, other_side=None, timeout=1,  # pylint: disable=W0613
-            initial_in_buffer_contents='', *args, **kwargs):
+                 initial_in_buffer_contents='', *args, **kwargs):
 
         if other_side:
             # other_side != None -> Arduino side (SLAVE)
@@ -333,5 +335,5 @@ class SerialConnectionArduinoEmulator(object):
 
     def __str__(self):
         return "SerialConnectionArduinoEmulator\n" + \
-                    " + in_buffer: %s\n" % pprint.pformat(self._in_buffer) + \
-                    " + out_buffer: %s\n" % pprint.pformat(self._out_buffer)
+               " + in_buffer: %s\n" % pprint.pformat(self._in_buffer) + \
+               " + out_buffer: %s\n" % pprint.pformat(self._out_buffer)

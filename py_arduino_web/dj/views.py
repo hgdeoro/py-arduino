@@ -1,15 +1,13 @@
 import logging
 import json
-import Pyro4
 
-from django.http.response import HttpResponse, HttpResponseRedirect, \
-    HttpResponseServerError, HttpResponseBadRequest
+import Pyro4
+from django.http.response import HttpResponse, HttpResponseRedirect, HttpResponseServerError, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
+from django.shortcuts import render_to_response
 
 from py_arduino_web.pyroproxy.utils import get_arduino_pyro, get_storage_pyro
 from py_arduino_web.dj.models import ControlPanel
-from django.shortcuts import render_to_response
-
 
 ARDUINO_PYRO = get_arduino_pyro()
 STORAGE_PYRO = get_storage_pyro()
@@ -20,7 +18,7 @@ class JsonResponse(HttpResponse):
         content = json.dumps(data, indent=indent)
         mimetype = kwargs.get('mimetype', 'application/json')
         super(JsonResponse, self).__init__(content=content, mimetype=mimetype,
-            *args, **kwargs)
+                                           *args, **kwargs)
 
 
 class JsonErrorResponse(HttpResponseServerError):
@@ -31,7 +29,7 @@ class JsonErrorResponse(HttpResponseServerError):
         })
         mimetype = kwargs.get('mimetype', 'application/json')
         super(JsonErrorResponse, self).__init__(content=content, mimetype=mimetype,
-            *args, **kwargs)
+                                                *args, **kwargs)
 
 
 def home(request):
@@ -77,7 +75,7 @@ def get_free_memory(request):
     except Exception, e:
         # FIXME: return error details and log
         logging.exception("Exception raised by arduino.get_free_memory(). " +
-            "".join(Pyro4.util.getPyroTraceback()))
+                          "".join(Pyro4.util.getPyroTraceback()))
         return JsonErrorResponse(e)
 
 
@@ -90,7 +88,7 @@ def ping(request):
     except Exception, e:
         # FIXME: return error details and log
         logging.exception("Exception raised by arduino.ping(). " +
-            "".join(Pyro4.util.getPyroTraceback()))
+                          "".join(Pyro4.util.getPyroTraceback()))
         return JsonErrorResponse(e)
 
 
@@ -104,7 +102,7 @@ def validate_connection(request):
     except Exception, e:
         # FIXME: return error details and log
         logging.exception("Exception raised by arduino.validate_connection(). " +
-            "".join(Pyro4.util.getPyroTraceback()))
+                          "".join(Pyro4.util.getPyroTraceback()))
         return JsonErrorResponse(e)
 
 
@@ -140,7 +138,7 @@ def control_panel_combined(request):
 def control_panel_update(request):
     if request.method != 'POST':
         return HttpResponseBadRequest()
-    
+
     data = json.loads(request.body)
     control_panel = ControlPanel.objects.get(name='default')
     control_panel.html = data['html']

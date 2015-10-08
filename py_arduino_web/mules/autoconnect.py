@@ -24,8 +24,10 @@ class MuleAutoconnect(BasePyroMain):
 
     def add_options(self):
         super(MuleAutoconnect, self).add_options()
-        self.parser.add_option("--delay", default="5",
-            dest="delay", help="Seconds to wait between checks")
+        self.parser.add_option("--delay",
+                               default="5",
+                               dest="delay",
+                               help="Seconds to wait between checks")
 
     def _run(self, arduino):
         """This method implements the real check"""

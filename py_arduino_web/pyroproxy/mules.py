@@ -15,17 +15,20 @@ class MulePinReader(BasePyroMain):
     def add_options(self):
         super(MulePinReader, self).add_options()
         self.parser.add_option("--pin",
-            dest="pin", help="Pin to monitor.")
+                               dest="pin",
+                               help="Pin to monitor.")
         self.parser.add_option("--description",
-            dest="description", help="Description to use for background task.")
-        self.parser.set_defaults(info=True, dont_check_pyro_server=True,
-            wait_until_pyro_server_is_up=True)
+                               dest="description",
+                               help="Description to use for background task.")
+        self.parser.set_defaults(info=True,
+                                 dont_check_pyro_server=True,
+                                 wait_until_pyro_server_is_up=True)
 
     def bg_setup(self, arduino):
-        raise(NotImplemented())
+        raise (NotImplemented())
 
     def bg_loop(self, arduino):
-        raise(NotImplemented())
+        raise (NotImplemented())
 
     def run(self, arduino):
         pin = int(self.options.pin)
@@ -38,7 +41,7 @@ class MulePinReader(BasePyroMain):
                 time.sleep(5)
             self.logger.info("Connected!")
 
-        ## setup()
+        # setup()
 
         try:
             self.logger.debug("Calling self.bg_setup()")
@@ -47,7 +50,7 @@ class MulePinReader(BasePyroMain):
             self.logger.exception("Error detected when called bg_setup()")
             return
 
-        ## loop()
+        # loop()
 
         try:
             self.logger.debug("Calling self.bg_loop()")
@@ -69,7 +72,8 @@ class MuleAnalogPinLogger(MulePinReader):
         self.logger.debug("Setting pinMode() on %s", pin)
         status_tracker = get_status_tracker()
         reserved_ok = status_tracker.reserve_pins([[pin, False]],
-            self.options.description or "MuleAnalogPinLogger on pin {}".format(pin))
+                                                  self.options.description or "MuleAnalogPinLogger on pin {}".format(
+                                                      pin))
         assert reserved_ok, "Couldn't reserve pin"
 
     def bg_loop(self, arduino):
@@ -107,7 +111,8 @@ class MuleDigitalPinMonitor(MulePinReader):
         self.logger.debug("Setting pinMode() on %s", pin)
         status_tracker = get_status_tracker()
         reserved_ok = status_tracker.reserve_pins([[pin, True]],
-            self.options.description or "MuleDigitalPinMonitor on pin {}".format(pin))
+                                                  self.options.description or "MuleDigitalPinMonitor on pin {}".format(
+                                                      pin))
         assert reserved_ok, "Couldn't reserve pin"
         arduino.pinMode(pin, INPUT)
         arduino.digitalWrite(pin, HIGH)
@@ -149,9 +154,9 @@ class MuleDigitalPinMonitorWithBounceControl(MuleDigitalPinMonitor):
             self.logger.debug("Read value: %s", new_value)
 
             if new_value != last_value:
-                #===============================================================
+                # ===============================================================
                 # Value changed
-                #===============================================================
+                # ===============================================================
                 if bounce_control_start is None:
                     bounce_control_start = datetime.datetime.now()
                     self.logger.debug("Starting bounce control: %s -> %s", last_value, new_value)
@@ -160,7 +165,7 @@ class MuleDigitalPinMonitorWithBounceControl(MuleDigitalPinMonitor):
                 if time_diff > self.bounce_control_time:
                     # We must 'commit' the change
                     self.logger.debug("New value wasn't a bouce! It's the same after %s secs. "
-                        "Taking new value: %s", time_diff, new_value)
+                                      "Taking new value: %s", time_diff, new_value)
                     last_value = new_value
                     self.value_changed(new_value)
                     bounce_control_start = None  # reset bounce control
@@ -168,9 +173,9 @@ class MuleDigitalPinMonitorWithBounceControl(MuleDigitalPinMonitor):
                 time.sleep(self.wait_after_change)
 
             else:
-                #===============================================================
+                # ===============================================================
                 # Value hasn't changed
-                #===============================================================
+                # ===============================================================
                 if bounce_control_start is not None:
                     self.logger.debug("Ignored change in value (bounce control)")
                     bounce_control_start = None  # reset bounce control

@@ -2,9 +2,6 @@
 # Licensed under the Apache License, Version 2.0
 # Copyright (C) 2011-2015 - Horacio Guillermo de Oro <hgdeoro@gmail.com>
 
-from py_arduino.main_utils import BaseMain
-from py_arduino import HIGH, LOW, OUTPUT
-
 """
 #===============================================================================
 # <<Write a HIGH or a LOW value to a digital pin.>>
@@ -27,6 +24,9 @@ To write LOW to digital pin 8:
 
 """
 
+from py_arduino.main_utils import BaseMain
+from py_arduino import HIGH, LOW, OUTPUT
+
 
 class Main(BaseMain):
     optparse_usage = BaseMain.optparse_usage + " digital_pin value"
@@ -48,6 +48,7 @@ class Main(BaseMain):
             arduino.digitalWrite(digital_pin, LOW)
         else:
             arduino.digitalWrite(digital_pin, HIGH)
+
 
 if __name__ == '__main__':
     Main().start()

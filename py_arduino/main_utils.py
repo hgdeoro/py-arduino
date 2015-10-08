@@ -57,29 +57,29 @@ class BaseMain(object):
 
     def add_options(self):
         self.parser.add_option("--debug",
-            action="store_true", dest="debug", default=False,
-            help="Configure logging to show debug messages.")
+                               action="store_true", dest="debug", default=False,
+                               help="Configure logging to show debug messages.")
         self.parser.add_option("--arduino-debug",
-            action="store_true", dest="arduino_debug", default=False,
-            help="Configure the PyArduino instance to debug all the " +
-                "comunication with Arduino (implies --info).")
+                               action="store_true", dest="arduino_debug", default=False,
+                               help="Configure the PyArduino instance to debug all the "
+                                    "comunication with Arduino (implies --info).")
         self.parser.add_option("--info",
-            action="store_true", dest="info", default=False,
-            help="Configure logging to show info messages.")
+                               action="store_true", dest="info", default=False,
+                               help="Configure logging to show info messages.")
         self.parser.add_option("--initial-wait",
-            action="store", dest="initial_wait", default=None,
-            help="How many seconds wait before conect (workaround for auto-reset on connect).")
+                               action="store", dest="initial_wait", default=None,
+                               help="How many seconds wait before conect (workaround for auto-reset on connect).")
         self.parser.add_option("--dont-call-validate-connection",
-            action="store_true", dest="dont_call_validate_connection", default=False,
-            help="Don't call validateConnection() on startup (the default is " + \
-                "to call validateConnection() automatically at startup).")
+                               action="store_true", dest="dont_call_validate_connection", default=False,
+                               help="Don't call validateConnection() on startup (the default is "
+                                    "to call validateConnection() automatically at startup).")
 
     def run(self, options, args, arduino):
         """
         To be overriden in subclass.
         Do not call this method directly! You must call `start()`.
         """
-        raise(NotImplementedError())
+        raise (NotImplementedError())
 
     def get_device(self, options, args):
         """
@@ -108,8 +108,8 @@ class BaseMain(object):
         """
         if len(args) < self.num_args:
             self.parser.error("must specify the serial device (like /dev/ttyACM0). "
-                "Serial devices that looks like "
-                "Arduinos: %s." % ', '.join(glob.glob('/dev/ttyACM*')))
+                              "Serial devices that looks like "
+                              "Arduinos: %s." % ', '.join(glob.glob('/dev/ttyACM*')))
 
     def start(self):
         (options, args) = self.parser.parse_args()
@@ -127,19 +127,19 @@ class BaseMain(object):
         logging.info("Creating PyArduino instance - serial: %s - speed: %s", serial_device, 9600)
         if options.initial_wait == 0:
             arduino = PyArduino(serial_device, 9600, wait_after_open=0,
-                call_validate_connection=not(options.dont_call_validate_connection)).connect()
+                                call_validate_connection=not (options.dont_call_validate_connection)).connect()
         elif options.initial_wait is None:
             # TODO: move this logging to PyArduino
             logging.info("Waiting some seconds to let the Arduino reset...")
             arduino = PyArduino(serial_device, 9600,
-                call_validate_connection=not(options.dont_call_validate_connection)).connect()
+                                call_validate_connection=not (options.dont_call_validate_connection)).connect()
         else:
             initial_wait = int(options.initial_wait)
             if initial_wait > 0:
                 # TODO: move this logging to PyArduino
                 logging.info("Waiting %d seconds to let the Arduino reset...", initial_wait)
             arduino = PyArduino(serial_device, 9600, wait_after_open=initial_wait,
-                call_validate_connection=not(options.dont_call_validate_connection)).connect()
+                                call_validate_connection=not (options.dont_call_validate_connection)).connect()
 
         # enable debugging if required
         if options.arduino_debug:

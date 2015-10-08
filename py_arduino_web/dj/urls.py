@@ -1,11 +1,11 @@
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
-#from django.conf import settings
 
-# Uncomment the next two lines to enable the admin:
 admin.autodiscover()
 
-urlpatterns = patterns('',
+urlpatterns = patterns(
+    '',
+
     # Global URLs
     url(r'^$', 'py_arduino_web.dj.views.home', name='home'),
     # url(r'^connect/?$', 'py_arduino_web.dj.views.connect', name='connect'),
@@ -44,5 +44,5 @@ urlpatterns = patterns('',
 )
 
 urlpatterns += patterns('django.contrib.staticfiles.views',
-    url(r'^static/(?P<path>.*)$', 'serve'),
-)
+                        url(r'^static/(?P<path>.*)$', 'serve'),
+                        )

@@ -64,9 +64,9 @@ def server_is_up():
         return False
 
 
-#===============================================================================
+# ===============================================================================
 # PyroMain
-#===============================================================================
+# ===============================================================================
 
 class BasePyroMain(object):
     """
@@ -83,25 +83,33 @@ class BasePyroMain(object):
 
     def add_options(self):
         self.parser.add_option("--debug",
-            action="store_true", dest="debug", default=False,
-            help="Configure logging to show debug messages.")
+                               action="store_true",
+                               dest="debug",
+                               default=False,
+                               help="Configure logging to show debug messages.")
         self.parser.add_option("--info",
-            action="store_true", dest="info", default=False,
-            help="Configure logging to show info messages.")
+                               action="store_true",
+                               dest="info",
+                               default=False,
+                               help="Configure logging to show info messages.")
         self.parser.add_option("--dont-check-pyro-server",
-            action="store_true", dest="dont_check_pyro_server", default=False,
-            help="Don't check if PyRO server is reachable (by default, "
-            "a check is done and we exit if the server isn't reachable.)")
+                               action="store_true",
+                               dest="dont_check_pyro_server",
+                               default=False,
+                               help="Don't check if PyRO server is reachable (by default, "
+                                    "a check is done and we exit if the server isn't reachable.)")
         self.parser.add_option("--wait-until-connected",
-            action="store_true", dest="wait_until_pyro_server_is_up", default=False,
-            help="Wait until the PyRO server is up")
+                               action="store_true",
+                               dest="wait_until_pyro_server_is_up",
+                               default=False,
+                               help="Wait until the PyRO server is up")
 
     def run(self, arduino):
         """
         To be overriden in subclass.
         Do not call this method directly! You must call `start()`.
         """
-        raise(NotImplementedError())
+        raise (NotImplementedError())
 
     def start(self):
         self.options, self.args = self.parser.parse_args()
@@ -122,7 +130,7 @@ class BasePyroMain(object):
         self._start(_debug, _info, _dont_check_pyro_server, _wait_until_pyro_server_is_up)
 
     def _start(self, debug=False, info=False, dont_check_pyro_server=False,
-        wait_until_pyro_server_is_up=False, wait_until_connected=False):
+               wait_until_pyro_server_is_up=False, wait_until_connected=False):
         """
         Internal functions that really launch the process.
         This is needed becaus for mules, it's not posible to pass command line arguments.

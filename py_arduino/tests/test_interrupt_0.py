@@ -4,13 +4,12 @@
 
 import traceback
 
-from py_arduino import  InvalidCommand, PyArduinoException, \
+from py_arduino import InvalidCommand, PyArduinoException, \
     INPUT, HIGH, ATTACH_INTERRUPT_MODE_LOW
 from py_arduino.main_utils import BaseMain
 
 
 class Main(BaseMain):
-
     def run(self, options, args, arduino):
 
         #    LOW to trigger the interrupt whenever the pin is low,
@@ -51,6 +50,7 @@ class Main(BaseMain):
                 print ""
                 print "Continuing..."
                 print ""
+
 
 if __name__ == '__main__':
     Main().start()

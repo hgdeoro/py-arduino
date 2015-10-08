@@ -29,14 +29,14 @@ from py_arduino import INPUT, OUTPUT, DEVICE_FOR_EMULATOR, \
     InvalidArgument, InvalidResponse, InvalidCommand, InvalidParameter, \
     UnsupportedCommand, CommandTimeout, INVALID_CMD, INVALID_PARAMETER, \
     UNSUPPORTED_CMD, MODE_UNKNOWN
-from py_arduino.utils import  synchronized
+from py_arduino.utils import synchronized
 from py_arduino.emulator import SerialConnectionArduinoEmulator
 
 logger = _logging.getLogger(__name__)  # pylint: disable=C0103
 
-#===============================================================================
+# ===============================================================================
 # Locks
-#===============================================================================
+# ===============================================================================
 
 STATUS_TRACKER_LOCK = threading.RLock()
 
@@ -95,9 +95,10 @@ class PinStatus(object):
     don't know if the write was done. This could be done having the
     'pin status' in the Arduino (maybe in some future version).
     """
+
     def __init__(self, pin, digital, mode=MODE_UNKNOWN, read_value=None, written_value=None,
-            analog_written_value=None, background_task=None, used_by_lib=None,
-            lib_read_value=None):
+                 analog_written_value=None, background_task=None, used_by_lib=None,
+                 lib_read_value=None):
         self.pin = pin
         self.digital = digital
         self.mode = mode  # None == unknown
@@ -136,6 +137,7 @@ class PinStatus(object):
 
 class StatusTracker(object):
     """Helper objecto to track status of all the pins"""
+
     def __init__(self):
         # self.status: (pin, digital) -> PinStatus
         # - keys are (pin, digital) tuples
@@ -219,7 +221,7 @@ class StatusTracker(object):
                 break
 
         if status is None:
-            raise(PyArduinoException("Pin not found for library '{}'".format(library_name)))
+            raise (PyArduinoException("Pin not found for library '{}'".format(library_name)))
 
         status.read_value = None
         status.lib_read_value = read_values_dict
@@ -350,7 +352,8 @@ class StatusTracker(object):
             })
         return ret
 
-## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 class PyArduino(object):  # pylint: disable=R0904
@@ -359,7 +362,7 @@ class PyArduino(object):  # pylint: disable=R0904
     """
 
     def __init__(self, tty=None, speed=DEFAULT_SERIAL_SPEED,
-        wait_after_open=2, timeout=5, call_validate_connection=True):
+                 wait_after_open=2, timeout=5, call_validate_connection=True):
         """
         Creates a PyArduino instance, BUT DOESN'T CONNECT IT.
 
@@ -402,7 +405,7 @@ class PyArduino(object):  # pylint: disable=R0904
         else:
             logger.debug("Opening serial port %s...", self.tty)
             serial_port = serial.Serial(port=self.tty, baudrate=self.speed, bytesize=8,
-                parity='N', stopbits=1, timeout=self.timeout, writeTimeout=self.timeout)
+                                        parity='N', stopbits=1, timeout=self.timeout, writeTimeout=self.timeout)
             # self.serial_port.open() - The port is opened when the instance is created!
             # This has no efect on Linux, but raises an exception on other os.
             if self.wait_after_open > 0:
@@ -448,7 +451,7 @@ class PyArduino(object):  # pylint: disable=R0904
             self.serial_port.close()
         except:
             logger.exception("Error detected when trying to close serial port. "
-                "Continuing anyway...")
+                             "Continuing anyway...")
         self.serial_port = None
         self.tty = None
         self.status_tracker.reset()
@@ -456,7 +459,7 @@ class PyArduino(object):  # pylint: disable=R0904
 
     def _assert_connected(self):
         if not self.is_connected():
-            raise(NotConnected())
+            raise (NotConnected())
 
     def is_connected(self):
         """Return whenever the PyArduino instance is connected"""
@@ -473,7 +476,7 @@ class PyArduino(object):  # pylint: disable=R0904
         Returns: True if connection was posible, False otherwise.
         """
         if self.is_connected():
-            raise(PyArduinoException("The instance is already connected"))
+            raise (PyArduinoException("The instance is already connected"))
 
         initial_tty = self.tty
         for a_serial_port in self.get_serial_ports():
@@ -514,22 +517,22 @@ class PyArduino(object):  # pylint: disable=R0904
         if autoconnect:
             self.autoconnect()
 
-    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    # ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
     def _validate_analog_pin(self, pin, pin_name='pin'):  # pylint: disable=R0201
         # FIXME: validate pin value (depends on the model of Arduino)
         if not type(pin) is int:
-            raise(InvalidArgument("%s must be an int" % pin_name))
+            raise (InvalidArgument("%s must be an int" % pin_name))
         if pin < 0:
-            raise(InvalidArgument("%s must be greater or equals to 0" % pin_name))
+            raise (InvalidArgument("%s must be greater or equals to 0" % pin_name))
 
     def _validate_digital_pin(self, pin, pin_name='pin'):  # pylint: disable=R0201
         # FIXME: validate pin value (depends on the model of Arduino)
         # TODO: Remember: all analog pins works as digital pins.
         if not type(pin) is int:
-            raise(InvalidArgument("%s must be an int" % pin_name))
+            raise (InvalidArgument("%s must be an int" % pin_name))
         if pin < 0:
-            raise(InvalidArgument("%s must be greater or equals to 0" % pin_name))
+            raise (InvalidArgument("%s must be greater or equals to 0" % pin_name))
 
     def setTimeout(self, new_timeout):  # pylint: disable=C0103
         """
@@ -579,16 +582,16 @@ class PyArduino(object):  # pylint: disable=R0904
                 # Got '' -> Timeout
                 if response.getvalue():
                     msg = "Timeout detected, with parcial response: %s" % \
-                        pprint.pformat(response.getvalue())
+                          pprint.pformat(response.getvalue())
                     logger.warn(msg)
-                    raise(CommandTimeout(msg))
+                    raise (CommandTimeout(msg))
                 else:
-                    raise(CommandTimeout())
+                    raise (CommandTimeout())
 
         response = response.getvalue().strip()
         end = time.time()
         logger.debug("get_next_response() - Got response: %s - Took: %.2f secs.",
-            pprint.pformat(response), (end - start))
+                     pprint.pformat(response), (end - start))
         return response
 
     def _check_response_for_errors(self, response, cmd):  # pylint: disable=R0201
@@ -596,30 +599,31 @@ class PyArduino(object):  # pylint: disable=R0904
         if splitted[0] == INVALID_CMD:
             if len(splitted) == 1:
                 logger.warn("Received INVALID_CMD, but without error code. " + \
-                    "The command was: %s", pprint.pformat(cmd))
-                raise(InvalidCommand("Arduino responded with INVALID_CMD. " + \
-                    "The command was: %s" % pprint.pformat(cmd)))
+                            "The command was: %s", pprint.pformat(cmd))
+                raise (InvalidCommand("Arduino responded with INVALID_CMD. " + \
+                                      "The command was: %s" % pprint.pformat(cmd)))
             else:
-                raise(InvalidCommand("Arduino responded with INVALID_CMD. " + \
-                    "The command was: %s. Error code: %s" % (pprint.pformat(cmd), splitted[1]),
-                    error_code=splitted[1]))
+                raise (InvalidCommand("Arduino responded with INVALID_CMD. " + \
+                                      "The command was: %s. Error code: %s" % (pprint.pformat(cmd), splitted[1]),
+                                      error_code=splitted[1]))
 
         if splitted[0] == INVALID_PARAMETER:
             if len(splitted) == 1:
                 logger.warn("Received INVALID_PARAMETER, but without error code. " + \
-                    "The command was: %s", pprint.pformat(cmd))
-                raise(InvalidParameter("Arduino responded with INVALID_PARAMETER. " + \
-                    "The command was: %s" % pprint.pformat(cmd)))
+                            "The command was: %s", pprint.pformat(cmd))
+                raise (InvalidParameter("Arduino responded with INVALID_PARAMETER. " + \
+                                        "The command was: %s" % pprint.pformat(cmd)))
             else:
-                raise(InvalidParameter("Arduino responded with INVALID_PARAMETER." + \
-                    "The command was: %s. The invalid parameter is %s" % (pprint.pformat(cmd),
-                    splitted[1]), error_param=splitted[1]))
+                raise (InvalidParameter("Arduino responded with INVALID_PARAMETER." + \
+                                        "The command was: %s. The invalid parameter is %s" % (pprint.pformat(cmd),
+                                                                                              splitted[1]),
+                                        error_param=splitted[1]))
 
         if splitted[0] == UNSUPPORTED_CMD:
-            raise(UnsupportedCommand("Arduino responded with UNSUPPORTED_CMD." + \
-                "The unsupported command is: %s" % splitted[1], error_param=splitted[1]))
+            raise (UnsupportedCommand("Arduino responded with UNSUPPORTED_CMD." + \
+                                      "The unsupported command is: %s" % splitted[1], error_param=splitted[1]))
 
-    #    def start_streaming(self, cmd, streamEndMark, timeout=None):
+    # def start_streaming(self, cmd, streamEndMark, timeout=None):
     #        """
     #        Note: this is a **low level** method. The only situation you may
     #        need to call this method is if you are creating new methods.
@@ -705,9 +709,9 @@ class PyArduino(object):  # pylint: disable=R0904
             try:
                 transformed_response = response_transformer(response)
             except BaseException, exception:
-                raise(InvalidResponse("The response couldn't be transformed. " + \
-                    "Response: %s. Exception: %s" % (pprint.pformat(exception),
-                    pprint.pformat(response))))
+                raise (InvalidResponse("The response couldn't be transformed. " + \
+                                       "Response: %s. Exception: %s" % (pprint.pformat(exception),
+                                                                        pprint.pformat(response))))
 
         if expected_response is not None:  # must check the response
             if type(expected_response) not in [list, tuple]:
@@ -715,25 +719,25 @@ class PyArduino(object):  # pylint: disable=R0904
                 expected_response = [expected_response]
             if transformed_response is not None:
                 if transformed_response not in expected_response:
-                    raise(InvalidResponse(
+                    raise (InvalidResponse(
                         "The response (after transforming) wasn't the expected. " + \
                         "Expected: '%s'. " % pprint.pformat(expected_response) + \
                         "Transformed response: %s. " % pprint.pformat(transformed_response) + \
                         "Original response: %s. " % pprint.pformat(response) \
-                    ))
+                        ))
             elif response not in expected_response:
-                raise(InvalidResponse(
+                raise (InvalidResponse(
                     "The response wasn't the expected. " + \
                     "Expected: %s. " % pprint.pformat(expected_response) + \
                     "Response: %s." % pprint.pformat(response) \
-                ))
+                    ))
 
         if response_transformer is not None:
             return transformed_response
         else:
             return response
 
-    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    # ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
     def get_arduino_functions(self):
         """
@@ -743,12 +747,12 @@ class PyArduino(object):  # pylint: disable=R0904
         # FIXME: this should be moved to the module (no need to be an instance method)
         all_attributes = [getattr(self, an_attribute_name) for an_attribute_name in dir(self)]
         arduino_functions = [an_attribute for an_attribute in all_attributes
-            if getattr(an_attribute, 'arduino_code', False)]
+                             if getattr(an_attribute, 'arduino_code', False)]
         return arduino_functions
 
-    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-    ## HERE STARTS PROXIED FUNCTIONS
-    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    # ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    # HERE STARTS PROXIED FUNCTIONS
+    # ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
     @synchronized(ARDUINO_LOCK)
     def pinMode(self, pin, mode):  # pylint: disable=C0103
@@ -772,7 +776,7 @@ class PyArduino(object):  # pylint: disable=R0904
         self._assert_connected()
         self._validate_digital_pin(pin)
         if not mode in [INPUT, OUTPUT, MODE_UNKNOWN]:
-            raise(InvalidArgument())
+            raise (InvalidArgument())
 
         if mode is MODE_UNKNOWN:
             self.status_tracker.set_pin_mode(pin, digital=True, mode=mode)
@@ -786,7 +790,7 @@ class PyArduino(object):  # pylint: disable=R0904
         except:
             self.status_tracker.set_pin_mode(pin, digital=True, mode=None)
             raise
-        # raises CommandTimeout,InvalidCommand,InvalidResponse
+            # raises CommandTimeout,InvalidCommand,InvalidResponse
 
     pinMode.arduino_function_name = '_pMd'
     pinMode.arduino_code = textwrap.dedent("""
@@ -803,7 +807,7 @@ class PyArduino(object):  # pylint: disable=R0904
             }
         """)
 
-    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    # ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
     @synchronized(ARDUINO_LOCK)
     def digitalWrite(self, pin, value):  # pylint: disable=C0103
@@ -822,7 +826,7 @@ class PyArduino(object):  # pylint: disable=R0904
         self._assert_connected()
         self._validate_digital_pin(pin)
         if not value in [LOW, HIGH]:
-            raise(InvalidArgument("Invalid value for 'value' parameter."))
+            raise (InvalidArgument("Invalid value for 'value' parameter."))
         cmd = "_dWrt\t%d\t%d" % (pin, value)
         try:
             self.status_tracker.set_pin_written_value(pin, digital=True, written_value=value)
@@ -830,7 +834,7 @@ class PyArduino(object):  # pylint: disable=R0904
         except:
             self.status_tracker.set_pin_written_value(pin, digital=True, written_value=None)
             raise
-        # raises CommandTimeout,InvalidCommand,InvalidResponse
+            # raises CommandTimeout,InvalidCommand,InvalidResponse
 
     digitalWrite.arduino_function_name = '_dWrt'
     digitalWrite.arduino_code = textwrap.dedent("""
@@ -848,7 +852,7 @@ class PyArduino(object):  # pylint: disable=R0904
             }
         """)
 
-    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    # ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
     @synchronized(ARDUINO_LOCK)
     def digitalRead(self, pin):  # pylint: disable=C0103
@@ -878,15 +882,15 @@ class PyArduino(object):  # pylint: disable=R0904
             int_response = int(response)
         except ValueError:
             self.status_tracker.set_pin_read_value(pin, digital=True, read_value=None)
-            raise(InvalidResponse("The response couldn't be converted to int. Response: %s" % \
-                pprint.pformat(response)))
+            raise (InvalidResponse("The response couldn't be converted to int. Response: %s" % \
+                                   pprint.pformat(response)))
 
         if int_response in [HIGH, LOW]:
             self.status_tracker.set_pin_read_value(pin, digital=True, read_value=int_response)
             return int_response
 
         self.status_tracker.set_pin_read_value(pin, digital=True, read_value=None)
-        raise(InvalidResponse("The response isn't HIGH (%d) nor LOW (%d). Response: %s" % (
+        raise (InvalidResponse("The response isn't HIGH (%d) nor LOW (%d). Response: %s" % (
             HIGH, LOW, int_response)))
 
     digitalRead.arduino_function_name = '_dRd'
@@ -899,14 +903,14 @@ class PyArduino(object):  # pylint: disable=R0904
             }
         """)
 
-    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    # ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
     # TODO: implement analogReference()
-    #Analog I/O
+    # Analog I/O
     # def analogReference(self): # pylint: disable=C0103
     #     pass
 
-    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    # ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
     @synchronized(ARDUINO_LOCK)
     def analogRead(self, pin):  # pylint: disable=C0103
@@ -937,8 +941,8 @@ class PyArduino(object):  # pylint: disable=R0904
             return response
 
         self.status_tracker.set_pin_read_value(pin, digital=False, read_value=None)
-        raise(InvalidResponse("The response isn't in the valid range of 0-1023. " + \
-            "Response: %d" % response))
+        raise (InvalidResponse("The response isn't in the valid range of 0-1023. " + \
+                               "Response: %d" % response))
 
     analogRead.arduino_function_name = '_aRd'
     analogRead.arduino_code = textwrap.dedent("""
@@ -950,7 +954,7 @@ class PyArduino(object):  # pylint: disable=R0904
             }
         """)
 
-    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    # ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
     @synchronized(ARDUINO_LOCK)
     def analogWrite(self, pin, value):  # pylint: disable=C0103
@@ -969,7 +973,7 @@ class PyArduino(object):  # pylint: disable=R0904
         self._assert_connected()
         self._validate_digital_pin(pin)  # Only for DIGITAL pins
         if not type(pin) is int or not type(value) is int or value < 0 or value > 255:
-            raise(InvalidArgument())
+            raise (InvalidArgument())
         cmd = "_aWrt\t%d\t%d" % (pin, value)
 
         try:
@@ -998,9 +1002,9 @@ class PyArduino(object):  # pylint: disable=R0904
             }
         """)
 
-    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    # ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
     ## CONNECTION TESTING FUNCTIONS
-    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    # ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
     @synchronized(ARDUINO_LOCK)
     def ping(self):  # pylint: disable=C0103
@@ -1019,7 +1023,7 @@ class PyArduino(object):  # pylint: disable=R0904
             }
         """)
 
-    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    # ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
     @synchronized(ARDUINO_LOCK)
     def validateConnection(self):  # pylint: disable=C0103
@@ -1054,7 +1058,7 @@ class PyArduino(object):  # pylint: disable=R0904
 
         while response != random_str:
             logger.warn("validateConnection(): Ignoring invalid response: %s",
-                pprint.pformat(response))
+                        pprint.pformat(response))
             # Go for the string, or a timeout exception!
             response = self.get_next_response()
 
@@ -1069,9 +1073,9 @@ class PyArduino(object):  # pylint: disable=R0904
             }
         """)
 
-    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    # ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
     ## TIME RELATED FUNCTIONS
-    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    # ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
     @synchronized(ARDUINO_LOCK)
     def delay(self, value):  # pylint: disable=C0103
@@ -1090,9 +1094,9 @@ class PyArduino(object):  # pylint: disable=R0904
         """
         self._assert_connected()
         if not type(value) is int:
-            raise(InvalidArgument("value must be an integer"))
+            raise (InvalidArgument("value must be an integer"))
         if not value >= 0:
-            raise(InvalidArgument("value must be greater or equals than 0"))
+            raise (InvalidArgument("value must be greater or equals than 0"))
 
         delay_in_seconds = math.ceil(value / 1000.0)
         if self.timeout > delay_in_seconds:
@@ -1100,7 +1104,7 @@ class PyArduino(object):  # pylint: disable=R0904
             # raises CommandTimeout,InvalidCommand,InvalidResponse
         else:
             response = self.send_cmd("_dy\t%d" % value, expected_response="D_OK",
-                timeout=(delay_in_seconds + 1))
+                                     timeout=(delay_in_seconds + 1))
             # raises CommandTimeout,InvalidCommand,InvalidResponse
         return response
 
@@ -1119,7 +1123,7 @@ class PyArduino(object):  # pylint: disable=R0904
             }
         """)
 
-    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    # ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
     @synchronized(ARDUINO_LOCK)
     def delayMicroseconds(self, value):  # pylint: disable=C0103
@@ -1138,9 +1142,9 @@ class PyArduino(object):  # pylint: disable=R0904
         """
         self._assert_connected()
         if not type(value) is int:
-            raise(InvalidArgument("value must be an integer"))
+            raise (InvalidArgument("value must be an integer"))
         if not value >= 0:
-            raise(InvalidArgument("value must be greater or equals than 0"))
+            raise (InvalidArgument("value must be greater or equals than 0"))
 
         delay_in_seconds = math.ceil(value / 1000000.0)
         if self.timeout > delay_in_seconds:
@@ -1148,7 +1152,7 @@ class PyArduino(object):  # pylint: disable=R0904
             # raises CommandTimeout,InvalidCommand,InvalidResponse
         else:
             return self.send_cmd("_dMs\t%d" % value, expected_response="DMS_OK",
-                timeout=(delay_in_seconds + 1))
+                                 timeout=(delay_in_seconds + 1))
             # raises CommandTimeout,InvalidCommand,InvalidResponse
 
     delayMicroseconds.arduino_function_name = '_dMs'
@@ -1166,7 +1170,7 @@ class PyArduino(object):  # pylint: disable=R0904
             }
         """)
 
-    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    # ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
     @synchronized(ARDUINO_LOCK)
     def millis(self):  # pylint: disable=C0103
@@ -1190,7 +1194,7 @@ class PyArduino(object):  # pylint: disable=R0904
             }
         """)
 
-    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    # ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
     @synchronized(ARDUINO_LOCK)
     def micros(self):  # pylint: disable=C0103
@@ -1215,9 +1219,9 @@ class PyArduino(object):  # pylint: disable=R0904
             }
         """)
 
-    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    # ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
     ## INTERRUPT RELATED FUNCTIONS
-    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    # ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
     @synchronized(ARDUINO_LOCK)
     def watchInterrupt(self, interrupt, mode):  # pylint: disable=C0103
@@ -1233,17 +1237,17 @@ class PyArduino(object):  # pylint: disable=R0904
         # TODO: Arduino Mega has more than 2 interrupts!
         self._assert_connected()
         if not type(interrupt) is int:
-            raise(InvalidArgument("interrupt must be an integer"))
+            raise (InvalidArgument("interrupt must be an integer"))
         if interrupt < 0 or interrupt > 1:
-            raise(InvalidArgument("interrupt must be between 0 and 1"))
+            raise (InvalidArgument("interrupt must be between 0 and 1"))
         if not mode in [ATTACH_INTERRUPT_MODE_LOW,
-                ATTACH_INTERRUPT_MODE_CHANGE,
-                ATTACH_INTERRUPT_MODE_RISING,
-                ATTACH_INTERRUPT_MODE_FALLING]:
-            raise(InvalidArgument("invalid mode: %s" % str(mode)))
+                        ATTACH_INTERRUPT_MODE_CHANGE,
+                        ATTACH_INTERRUPT_MODE_RISING,
+                        ATTACH_INTERRUPT_MODE_FALLING]:
+            raise (InvalidArgument("invalid mode: %s" % str(mode)))
 
         return self.send_cmd("_wI\t%d\t%s" % (interrupt, mode), expected_response="WI_OK")
-                                            # raises CommandTimeout,InvalidCommand,InvalidResponse
+        # raises CommandTimeout,InvalidCommand,InvalidResponse
 
     watchInterrupt.arduino_function_name = '_wI'
     watchInterrupt.arduino_code = textwrap.dedent("""
@@ -1275,7 +1279,7 @@ class PyArduino(object):  # pylint: disable=R0904
             }
         """)
 
-    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    # ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
     @synchronized(ARDUINO_LOCK)
     def getInterruptMark(self, interrupt):  # pylint: disable=C0103
@@ -1294,13 +1298,13 @@ class PyArduino(object):  # pylint: disable=R0904
         """
         self._assert_connected()
         if not type(interrupt) is int:
-            raise(InvalidArgument("interrupt must be an integer"))
+            raise (InvalidArgument("interrupt must be an integer"))
         if interrupt < 0 or interrupt > 1:
-            raise(InvalidArgument("interrupt must be between 0 and 1"))
+            raise (InvalidArgument("interrupt must be between 0 and 1"))
 
         ret = self.send_cmd("_gIM\t%d" % interrupt,
-            expected_response=["GIM_ON", "GIM_OFF"])
-            # raises CommandTimeout,InvalidCommand,InvalidResponse
+                            expected_response=["GIM_ON", "GIM_OFF"])
+        # raises CommandTimeout,InvalidCommand,InvalidResponse
 
         return bool(ret == "GIM_ON")
 
@@ -1331,9 +1335,9 @@ class PyArduino(object):  # pylint: disable=R0904
             }
         """)
 
-    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    # ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
     ## DEBUG FUNCTIONS
-    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    # ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
     @synchronized(ARDUINO_LOCK)
     def enableDebug(self):  # pylint: disable=C0103
@@ -1342,7 +1346,7 @@ class PyArduino(object):  # pylint: disable=R0904
         """
         self._assert_connected()
         return self.send_cmd("_eD", "ENA")
-            # raises CommandTimeout,InvalidCommand,InvalidResponse
+        # raises CommandTimeout,InvalidCommand,InvalidResponse
 
     enableDebug.arduino_function_name = '_eD'
     enableDebug.arduino_code = textwrap.dedent("""
@@ -1352,7 +1356,7 @@ class PyArduino(object):  # pylint: disable=R0904
             }
         """)
 
-    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    # ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
     @synchronized(ARDUINO_LOCK)
     def enableDebugToLcd(self):  # pylint: disable=C0103
@@ -1362,7 +1366,7 @@ class PyArduino(object):  # pylint: disable=R0904
         """
         self._assert_connected()
         return self.send_cmd("_eDL", "ENA")
-            # raises CommandTimeout,InvalidCommand,InvalidResponse
+        # raises CommandTimeout,InvalidCommand,InvalidResponse
 
     enableDebugToLcd.arduino_function_name = '_eDL'
     enableDebugToLcd.arduino_code = textwrap.dedent("""
@@ -1376,7 +1380,7 @@ class PyArduino(object):  # pylint: disable=R0904
             }
         """)
 
-    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    # ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
     @synchronized(ARDUINO_LOCK)
     def disableDebug(self):  # pylint: disable=C0103
@@ -1385,7 +1389,7 @@ class PyArduino(object):  # pylint: disable=R0904
         """
         self._assert_connected()
         return self.send_cmd("_dD", "DIS")
-            # raises CommandTimeout,InvalidCommand,InvalidResponse
+        # raises CommandTimeout,InvalidCommand,InvalidResponse
 
     disableDebug.arduino_function_name = '_dD'
     disableDebug.arduino_code = textwrap.dedent("""
@@ -1395,9 +1399,9 @@ class PyArduino(object):  # pylint: disable=R0904
             }
         """)
 
-    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    # ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
     ## LCD FUNCTIONS
-    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    # ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
     @synchronized(ARDUINO_LOCK)
     def lcdMessage(self, message):
@@ -1419,9 +1423,9 @@ class PyArduino(object):  # pylint: disable=R0904
             for i in range(0, len(message)):
                 self.lcdWrite(message[i], 0, i)
         else:
-            raise(InvalidArgument("message parameter must be string, list or tuple"))
+            raise (InvalidArgument("message parameter must be string, list or tuple"))
 
-    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    # ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
     @synchronized(ARDUINO_LOCK)
     def lcdWrite(self, message, col, row, clear_lcd=False):  # pylint: disable=C0103
@@ -1444,9 +1448,9 @@ class PyArduino(object):  # pylint: disable=R0904
         """
         self._assert_connected()
         if not type(col) is int:
-            raise(InvalidArgument("col must be an integer"))
+            raise (InvalidArgument("col must be an integer"))
         if not type(row) is int:
-            raise(InvalidArgument("row must be an integer"))
+            raise (InvalidArgument("row must be an integer"))
 
         # FIXME: check 'message' type and length
         # FIXME: check parameters
@@ -1456,7 +1460,7 @@ class PyArduino(object):  # pylint: disable=R0904
             self.lcdClear()
 
         return self.send_cmd("_lcdW\t%d\t%d\t%s" % (col, row, message), "LWOK")
-            # raises CommandTimeout,InvalidCommand,InvalidResponse
+        # raises CommandTimeout,InvalidCommand,InvalidResponse
 
     lcdWrite.arduino_function_name = '_lcdW'
     lcdWrite.arduino_code = textwrap.dedent("""
@@ -1525,7 +1529,7 @@ class PyArduino(object):  # pylint: disable=R0904
         #endif
         """)
 
-    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    # ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
     @synchronized(ARDUINO_LOCK)
     def lcdClear(self):  # pylint: disable=C0103
@@ -1538,7 +1542,7 @@ class PyArduino(object):  # pylint: disable=R0904
         """
         self._assert_connected()
         return self.send_cmd("_lcdClr", "LCLROK")
-            # raises CommandTimeout,InvalidCommand,InvalidResponse
+        # raises CommandTimeout,InvalidCommand,InvalidResponse
 
     lcdClear.arduino_function_name = '_lcdClr'
     lcdClear.arduino_code = textwrap.dedent("""
@@ -1552,7 +1556,7 @@ class PyArduino(object):  # pylint: disable=R0904
             }
         """)
 
-    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    # ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
     @synchronized(ARDUINO_LOCK)
     def shiftOut(self, dataPin, clockPin, bitOrder, value, set_pin_mode=False):
@@ -1574,12 +1578,12 @@ class PyArduino(object):  # pylint: disable=R0904
         self._validate_digital_pin(dataPin, 'dataPin')
         self._validate_digital_pin(clockPin, 'clockPin')
         if not type(value) is int:
-            raise(InvalidArgument("value must be an integer"))
+            raise (InvalidArgument("value must be an integer"))
         if value < 0 or value > 255:
-            raise(InvalidArgument("value must be between 0 and 255"))
+            raise (InvalidArgument("value must be between 0 and 255"))
         if not bitOrder in [LSBFIRST, MSBFIRST]:
-            raise(InvalidArgument("bitOrder must be LSBFIRST or " + \
-                "MSBFIRST"))
+            raise (InvalidArgument("bitOrder must be LSBFIRST or " + \
+                                   "MSBFIRST"))
 
         # FIXME: test detection of invalid parameters
 
@@ -1587,8 +1591,8 @@ class PyArduino(object):  # pylint: disable=R0904
             self.pinMode(dataPin, OUTPUT)
             self.pinMode(clockPin, OUTPUT)
         return self.send_cmd("_sftO\t%d\t%d\t%d\t%d" % (dataPin,
-            clockPin, bitOrder, value,), "SOOK")
-            # raises CommandTimeout,InvalidCommand,InvalidResponse
+                                                        clockPin, bitOrder, value,), "SOOK")
+        # raises CommandTimeout,InvalidCommand,InvalidResponse
 
     shiftOut.arduino_function_name = '_sftO'
     shiftOut.arduino_code = textwrap.dedent("""
@@ -1602,9 +1606,9 @@ class PyArduino(object):  # pylint: disable=R0904
             }
         """)
 
-    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    # ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
     ## HARDWARD INFO FUNCTIONS
-    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    # ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
     @synchronized(ARDUINO_LOCK)
     def getAvrCpuType(self):  # pylint: disable=C0103
@@ -1613,7 +1617,7 @@ class PyArduino(object):  # pylint: disable=R0904
         """
         self._assert_connected()
         return self.send_cmd("_gACT")
-            # raises CommandTimeout,InvalidCommand,InvalidResponse
+        # raises CommandTimeout,InvalidCommand,InvalidResponse
 
     getAvrCpuType.arduino_function_name = '_gACT'
     getAvrCpuType.arduino_code = textwrap.dedent("""
@@ -1622,7 +1626,7 @@ class PyArduino(object):  # pylint: disable=R0904
             }
         """)
 
-    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    # ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
     @synchronized(ARDUINO_LOCK)
     def getArduinoTypeStruct(self):  # pylint: disable=C0103
@@ -1745,7 +1749,7 @@ class PyArduino(object):  # pylint: disable=R0904
 
         return arduino_type_struct
 
-    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    # ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
     @synchronized(ARDUINO_LOCK)
     def getFreeMemory(self):  # pylint: disable=C0103
@@ -1754,7 +1758,7 @@ class PyArduino(object):  # pylint: disable=R0904
         """
         self._assert_connected()
         return self.send_cmd("_gFM")
-            # raises CommandTimeout,InvalidCommand,InvalidResponse
+        # raises CommandTimeout,InvalidCommand,InvalidResponse
 
     getFreeMemory.arduino_function_name = '_gFM'
     getFreeMemory.arduino_code = textwrap.dedent("""
@@ -1763,7 +1767,7 @@ class PyArduino(object):  # pylint: disable=R0904
             }
         """)
 
-    ## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+    # ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 
     @synchronized(ARDUINO_LOCK)
     def send_streaming_cmd(self, cmd, count, timeout=None, response_transformer=None):
@@ -1800,9 +1804,9 @@ class PyArduino(object):  # pylint: disable=R0904
                 try:
                     transformed_response = response_transformer(response)
                 except BaseException, exception:
-                    raise(InvalidResponse("The response couldn't be transformed. " + \
-                        "Response: %s. Exception: %s" % (pprint.pformat(exception),
-                        pprint.pformat(response))))
+                    raise (InvalidResponse("The response couldn't be transformed. " + \
+                                           "Response: %s. Exception: %s" % (pprint.pformat(exception),
+                                                                            pprint.pformat(response))))
 
             if response_transformer is not None:
                 yield transformed_response
@@ -1819,11 +1823,11 @@ class PyArduino(object):  # pylint: disable=R0904
 
         # While streaming, the final response should be "SR_OK"
         if response != "SR_OK":
-            raise(InvalidResponse(
+            raise (InvalidResponse(
                 "The response wasn't the expected. " + \
                 "Expected: %s. " % "SR_OK" + \
                 "Response: %s." % pprint.pformat(response) \
-            ))
+                ))
 
     @synchronized(ARDUINO_LOCK)
     def streamingAnalogRead(self, pin, count):  # pylint: disable=C0103
@@ -1841,8 +1845,8 @@ class PyArduino(object):  # pylint: disable=R0904
         """
         self._assert_connected()
         return self.send_streaming_cmd("_strAR\t%d\t%d" % (pin, count,),
-            count, response_transformer=int)
-            # raises CommandTimeout,InvalidCommand,InvalidResponse
+                                       count, response_transformer=int)
+        # raises CommandTimeout,InvalidCommand,InvalidResponse
 
     streamingAnalogRead.arduino_function_name = '_strAR'
     streamingAnalogRead.arduino_code = textwrap.dedent("""
@@ -1875,8 +1879,8 @@ class PyArduino(object):  # pylint: disable=R0904
         """
         self._assert_connected()
         return self.send_streaming_cmd("_strDR\t%d\t%d" % (pin, count,),
-            count, response_transformer=int)
-            # raises CommandTimeout,InvalidCommand,InvalidResponse
+                                       count, response_transformer=int)
+        # raises CommandTimeout,InvalidCommand,InvalidResponse
 
     streamingDigitalRead.arduino_function_name = '_strDR'
     streamingDigitalRead.arduino_code = textwrap.dedent("""
@@ -1893,9 +1897,9 @@ class PyArduino(object):  # pylint: disable=R0904
             }
         """)
 
-    #===============================================================================
+    # ===============================================================================
     # DHT11 - temperature and huminity sensor
-    #===============================================================================
+    # ===============================================================================
 
     @synchronized(ARDUINO_LOCK)
     def dht11_read(self, pin):  # pylint: disable=C0103
@@ -1922,12 +1926,12 @@ class PyArduino(object):  # pylint: disable=R0904
                 try:
                     return int(splitted_response[1]), int(splitted_response[2])
                 except ValueError:
-                    raise(InvalidResponse("DHTLIB_OK received, but data "
-                        "couldn't be transformed to int"))
+                    raise (InvalidResponse("DHTLIB_OK received, but data "
+                                           "couldn't be transformed to int"))
             else:
-                raise(InvalidResponse("DHTLIB_OK received, but without data"))
+                raise (InvalidResponse("DHTLIB_OK received, but without data"))
 
-        raise(InvalidResponse(splitted_response[0]))
+        raise (InvalidResponse(splitted_response[0]))
 
     dht11_read.arduino_function_name = '_dht11Rd'
     dht11_read.arduino_code = textwrap.dedent("""
@@ -1962,9 +1966,9 @@ class PyArduino(object):  # pylint: disable=R0904
             #include "dht11.h"
         """)
 
-    #===========================================================================
+    # ===========================================================================
     # OneWire - DS18x20
-    #===========================================================================
+    # ===========================================================================
 
     @synchronized(ARDUINO_LOCK)
     def ds18x20_read(self, pin):
@@ -1992,12 +1996,12 @@ class PyArduino(object):  # pylint: disable=R0904
                     temp_celcius = float(splitted_response[1]) / 16.0
                     return temp_celcius
                 except ValueError:
-                    raise(InvalidResponse("DS18X20_OK received, "
-                        "but data couldn't be transformed to int"))
+                    raise (InvalidResponse("DS18X20_OK received, "
+                                           "but data couldn't be transformed to int"))
             else:
-                raise(InvalidResponse("DS18X20_OK received, but without data"))
+                raise (InvalidResponse("DS18X20_OK received, but without data"))
 
-        raise(InvalidResponse(splitted_response[0]))
+        raise (InvalidResponse(splitted_response[0]))
 
     ds18x20_read.arduino_function_name = '_ds18x20Rd'
     ds18x20_read.arduino_code = textwrap.dedent("""
@@ -2088,9 +2092,9 @@ class PyArduino(object):  # pylint: disable=R0904
         #include "OneWire.h"
         """)
 
-    #===========================================================================
+    # ===========================================================================
     # Energy Monitor
-    #===========================================================================
+    # ===========================================================================
 
     @synchronized(ARDUINO_LOCK)
     def energyMonitorSetup(self, v_pin, v_calibration, v_phase_shift, c_pin, c_calibration):
@@ -2110,7 +2114,7 @@ class PyArduino(object):  # pylint: disable=R0904
         self._validate_digital_pin(c_pin)
 
         cmd = "_emonStp\t%d\t%f\t%f\t%d\t%f" % (v_pin, v_calibration, v_phase_shift,
-            c_pin, c_calibration)
+                                                c_pin, c_calibration)
 
         response = self.send_cmd(cmd)  # raises CommandTimeout,InvalidCommand
 
@@ -2121,7 +2125,7 @@ class PyArduino(object):  # pylint: disable=R0904
         if splitted_response[0] == 'EMON_S_OK':
             return splitted_response[0]
 
-        raise(InvalidResponse(splitted_response[0]))
+        raise (InvalidResponse(splitted_response[0]))
 
     energyMonitorSetup.arduino_function_name = '_emonStp'
     energyMonitorSetup.arduino_code = textwrap.dedent("""
@@ -2206,15 +2210,15 @@ class PyArduino(object):  # pylint: disable=R0904
                     )
                 except ValueError:
                     self.status_tracker.set_lib_read_value(None)
-                    raise(InvalidResponse("EMON_R_OK received, "
-                        "but data couldn't be transformed to float"))
+                    raise (InvalidResponse("EMON_R_OK received, "
+                                           "but data couldn't be transformed to float"))
             else:
                 self.status_tracker.set_lib_read_value(None)
-                raise(InvalidResponse("EMON_R_OK received, "
-                    "but without the expected number of data"))
+                raise (InvalidResponse("EMON_R_OK received, "
+                                       "but without the expected number of data"))
 
         self.status_tracker.set_lib_read_value(None)
-        raise(InvalidResponse(splitted_response[0]))
+        raise (InvalidResponse(splitted_response[0]))
 
     energyMonitorRead.arduino_function_name = '_emonRd'
     energyMonitorRead.arduino_code = textwrap.dedent("""
@@ -2249,11 +2253,11 @@ class PyArduino(object):  # pylint: disable=R0904
         }
         """)
 
-## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-## EXAMPLE CODE FOR NEW FUNCTIONS
-## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-## Replace '_XXXXXXXXXX' and 'newMethodName' as needed.
-## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+# ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+# # EXAMPLE CODE FOR NEW FUNCTIONS
+# ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+# # Replace '_XXXXXXXXXX' and 'newMethodName' as needed.
+# ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 #    def newMethodName(self):
 #        return self.send_cmd("_XXXXXXXXXX", expected_response="OK_RESPONSE")
 #
@@ -2270,11 +2274,11 @@ class PyArduino(object):  # pylint: disable=R0904
 #            }
 #        """
 
-## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
-## If the Arduino may take some time to respond, you can
-##  use a larger timeout. Example: with timeout=60 we will
-##  wait for 1 minute.
-## ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+# ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+# # If the Arduino may take some time to respond, you can
+# #  use a larger timeout. Example: with timeout=60 we will
+# #  wait for 1 minute.
+# ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 #    def newMethodName(self):
 #        return self.send_cmd("_XXXXXXXXXX", expected_response="OK_RESPONSE", timeout=60)
 #

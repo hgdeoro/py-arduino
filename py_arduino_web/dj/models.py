@@ -13,9 +13,9 @@ class Pin(models.Model):
     pin = models.PositiveIntegerField()
     digital = models.BooleanField()
     label = models.CharField(max_length=64,
-        help_text="Descriptive text for a pin. Ej: 'Status Led'")
+                             help_text="Descriptive text for a pin. Ej: 'Status Led'")
     pin_id = models.CharField(max_length=64, unique=True, null=True, blank=True,
-        help_text="Unique identifier for internal use of a pin. Ej: 'status-led'")
+                              help_text="Unique identifier for internal use of a pin. Ej: 'status-led'")
     enabled_in_web = models.BooleanField(default=True)
 
     def save(self, *args, **kwargs):
@@ -50,7 +50,6 @@ class ControlPanel(models.Model):
 
 
 class DjStorage(BaseStorage):
-
     def __init__(self):
         # Force access to the database, to raise exception if no DB exists
         Pin.objects.count()
@@ -59,8 +58,10 @@ class DjStorage(BaseStorage):
         try:
             return Pin.objects.get(pin=pin, digital=is_digital)
         except Pin.DoesNotExist:
-            return Pin.objects.create(pin=pin, digital=is_digital,
-                label=default_label(pin, is_digital), enabled_in_web=True)
+            return Pin.objects.create(pin=pin,
+                                      digital=is_digital,
+                                      label=default_label(pin, is_digital),
+                                      enabled_in_web=True)
 
     def get_pin_by_id(self, pin_id):
         """
