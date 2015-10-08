@@ -1,8 +1,5 @@
-'''
-Created on Jan 10, 2014
-
-@author: Horacio G. de Oro
-'''
+# Licensed under the Apache License, Version 2.0
+# Copyright (C) 2011-2015 - Horacio Guillermo de Oro <hgdeoro@gmail.com>
 
 import httplib
 import json
