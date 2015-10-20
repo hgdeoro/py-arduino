@@ -43,7 +43,7 @@ Example:
 
 class Main(BasePyroMain):
 
-    def run(self, options, args, arduino):
+    def run(self, arduino):
         try:
             arduino.ping()
         except:

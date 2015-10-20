@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 
 class Main(BasePyroMain):
 
-    def run(self, options, args, arduino):
+    def run(self, arduino):
         if len(args) > 1:
             device = args[1]
         else:

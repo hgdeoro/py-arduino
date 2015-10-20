@@ -25,7 +25,7 @@ from py_arduino_web.pyroproxy.utils import BasePyroMain
 
 class Main(BasePyroMain):
 
-    def run(self, options, args, arduino):
+    def run(self, arduino):
         while True:
             sys.stdout.write("Ping sent...")
             sys.stdout.flush()
