@@ -20,7 +20,7 @@
 import sys
 import time
 
-from py_arduino import LOW, HIGH
+from py_arduino import LOW, HIGH, OUTPUT
 from py_arduino_web.pyroproxy.utils import BasePyroMain
 
 
@@ -64,6 +64,9 @@ class Main(BasePyroMain):
         
         assert value in [LOW, HIGH]
         
+        print "Setting pin {} to OUTPUT".format(pin_number)
+        arduino.pinMode(pin_number, OUTPUT)
+
         print "Writing {} on pin {}".format(value, pin_number)
         arduino.digitalWrite(pin_number, value)
 
